@@ -7,7 +7,8 @@ import javax.inject.Singleton
 
 @Singleton
 @Component( modules = [
-    AndroidInjectionModule::class
+    AndroidInjectionModule::class,
+    ViewModelFactoryBinder::class
 ] )
 interface ReportMidAppComponent {
 
