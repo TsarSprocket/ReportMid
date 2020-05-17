@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/landingFragment">
 
+    <fragment
+        android:id="@+id/initialEnterFragment"
+        android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
+        android:label="InitialEnterFragment" />
+    <fragment
+        android:id="@+id/landingFragment"
+        android:name="com.tsarsprocket.reportmid.LandingFragment"
+        android:label="LandingFragment" />
 </navigation>
