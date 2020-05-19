@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentInitialEnterBinding
 import javax.inject.Inject
 
@@ -33,9 +35,20 @@ class LandingFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         val binding = DataBindingUtil.inflate<FragmentInitialEnterBinding>( inflater, R.layout.fragment_landing, container, false )
         binding.viewModel = viewModel
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        super.onViewCreated(view, savedInstanceState)
+
+        val navController = findNavController()
+        viewModel.hasVerifiedNameState.observe( viewLifecycleOwner, Observer { isVerified ->
+            if( !isVerified ) navController.navigate( R.id.initialEnterFragment )
+        } )
     }
 
     companion object {

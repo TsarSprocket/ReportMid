@@ -1,12 +1,17 @@
 package com.tsarsprocket.reportmid
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject
 
 class LandingViewModel @Inject constructor() : ViewModel() {
 
-    var summonerName = ""
-    private var verifiedName = false
+    var initialSummonerName = ""
 
-    fun hasVerifiedName() = verifiedName
+    val hasVerifiedNameState = MutableLiveData<Boolean>( false )
+
+    fun onValidateInitial() {
+
+        // TODO
+    }
 }

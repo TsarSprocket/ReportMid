@@ -16,6 +16,28 @@
         android:layout_height="match_parent"
         tools:context=".InitialEnterFragment">
 
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edSummonerName"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:text="@={viewModel.initialSummonerName}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.40" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/idValidate"
+            android:text="@string/fragment_initial_enter_validate_btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:onClick="@{()->viewModel.onValidateInitial()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edSummonerName" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

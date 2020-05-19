@@ -11,5 +11,5 @@
     <fragment
         android:id="@+id/landingFragment"
         android:name="com.tsarsprocket.reportmid.LandingFragment"
-        android:label="LandingFragment" />
+        android:label="LandingFragment" /><action android:id="@+id/action_global_initialEnterFragment" app:destination="@id/initialEnterFragment"/>
 </navigation>
