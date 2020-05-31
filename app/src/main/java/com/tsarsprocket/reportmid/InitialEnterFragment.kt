@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -29,6 +30,13 @@ class InitialEnterFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private val viewModel by viewModels<LandingViewModel> { viewModelFactory }
+
+    override fun onAttach(context: Context) {
+
+        ( context.applicationContext as ReportMidApp ).comp.inject( this )
+
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -12,9 +12,6 @@ import dagger.multibindings.IntoMap
 @Module
 abstract class LandingFragmentModule {
 
-    @ContributesAndroidInjector
-    abstract fun addLandingFragment(): LandingFragment
-
     @Binds
     @IntoMap
     @ViewModelKey( LandingViewModel::class )

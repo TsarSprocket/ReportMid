@@ -1,8 +1,5 @@
 package com.tsarsprocket.reportmid
 
-import android.widget.Spinner
-import androidx.databinding.InverseBindingMethod
-import androidx.databinding.InverseBindingMethods
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.merakianalytics.orianna.types.common.Region
@@ -26,6 +23,8 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
 
     fun onValidateInitial() {
 
-        activeSummoner = repository.summonerForName( activeSummonerName )
+        val reg = Region.valueOf( selectedRegionTag.value?: "RU" )
+
+        activeSummoner = repository.summonerForName( activeSummonerName, reg )
     }
 }

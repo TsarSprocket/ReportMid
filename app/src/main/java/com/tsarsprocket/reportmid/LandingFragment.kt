@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentInitialEnterBinding
+import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
@@ -30,13 +32,19 @@ class LandingFragment : BaseFragment() {
 
     private val viewModel by viewModels<LandingViewModel> { viewModelFactory }
 
+    override fun onAttach( context: Context ) {
+
+        ( context.applicationContext as ReportMidApp ).comp.inject( this )
+
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding = DataBindingUtil.inflate<FragmentInitialEnterBinding>( inflater, R.layout.fragment_landing, container, false )
+        val binding = DataBindingUtil.inflate<FragmentLandingBindingImpl>( inflater, R.layout.fragment_landing, container, false )
         binding.viewModel = viewModel
         return binding.root
     }
