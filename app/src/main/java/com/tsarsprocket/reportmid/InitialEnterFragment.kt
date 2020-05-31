@@ -9,8 +9,11 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.databinding.FragmentInitialEnterBinding
 import javax.inject.Inject
 
@@ -29,7 +32,7 @@ class InitialEnterFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel by viewModels<LandingViewModel> { viewModelFactory }
+    private val viewModel by activityViewModels<LandingViewModel> { viewModelFactory }
 
     override fun onAttach(context: Context) {
 
@@ -45,6 +48,7 @@ class InitialEnterFragment : BaseFragment() {
 
         val binding = DataBindingUtil.inflate<FragmentInitialEnterBinding>( inflater, R.layout.fragment_initial_enter, container, false )
         binding.viewModel = viewModel
+        binding.fragment = this
 
         binding.root.findViewById<Spinner>( R.id.spRegion ).onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -58,6 +62,19 @@ class InitialEnterFragment : BaseFragment() {
             }
 
         return binding.root
+    }
+
+    fun onValidateInitial( view: View? ) {
+
+        val fResult = viewModel.validateInitial()
+
+        if( fResult ) {
+
+            findNavController().navigate( R.id.action_initialEnterFragment_to_landingFragment )
+        } else {
+
+            Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
+        }
     }
 
     companion object {

@@ -21,6 +21,6 @@ class Repository @Inject constructor( private val context: Context ) {
 
     fun summonerForName( summonerName: String, region: Region ): Summoner {
 
-        return Summoner.named( summonerName ).withRegion( Region.RUSSIA ).get()
+        return Summoner.named( summonerName ).withRegion( region ).get()
     }
 }

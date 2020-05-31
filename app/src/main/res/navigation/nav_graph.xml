@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/initialEnterFragment"
         android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
-        android:label="InitialEnterFragment" />
+        android:label="InitialEnterFragment" >
+        <action
+            android:id="@+id/action_initialEnterFragment_to_landingFragment"
+            app:destination="@id/landingFragment" />
+    </fragment>
     <fragment
         android:id="@+id/landingFragment"
         android:name="com.tsarsprocket.reportmid.LandingFragment"

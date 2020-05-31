@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.merakianalytics.orianna.types.common.Region
@@ -21,10 +22,16 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
 
     val hasVerifiedNameState = MutableLiveData<Boolean>( false )
 
-    fun onValidateInitial() {
+    fun validateInitial(): Boolean {
 
-        val reg = Region.valueOf( selectedRegionTag.value?: "RU" )
+        val reg = enumValues<Region>().find { it.tag == selectedRegionTag.value } ?: return false
 
         activeSummoner = repository.summonerForName( activeSummonerName, reg )
+
+        TODO( "Fetch summoner parameters" )
+
+        Log.d( LandingViewModel::class.qualifiedName, "The summoner Id = ${activeSummoner?.id}" )
+
+        return activeSummoner != null
     }
 }

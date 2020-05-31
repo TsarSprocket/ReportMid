@@ -6,9 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="viewModel"
-            type="com.tsarsprocket.reportmid.LandingViewModel" />
+        <variable name="viewModel" type="com.tsarsprocket.reportmid.LandingViewModel" />
+        <variable name="fragment"  type="com.tsarsprocket.reportmid.InitialEnterFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,7 +42,7 @@
         <Button
             android:id="@+id/idValidate"
             android:text="@string/fragment_initial_enter_validate_btn_text"
-            android:onClick="@{()->viewModel.onValidateInitial()}"
+            android:onClick="@{fragment::onValidateInitial}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
