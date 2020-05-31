@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -35,6 +37,18 @@ class InitialEnterFragment : BaseFragment() {
 
         val binding = DataBindingUtil.inflate<FragmentInitialEnterBinding>( inflater, R.layout.fragment_initial_enter, container, false )
         binding.viewModel = viewModel
+
+        binding.root.findViewById<Spinner>( R.id.spRegion ).onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    viewModel.selectedRegionTag.value = null
+                }
+
+                override fun onItemSelected( parent: AdapterView<*>?, view: View?, position: Int, id: Long ) {
+                    viewModel.selectedRegionTag.value = parent?.adapter?.getItem( position ).toString()
+                }
+            }
+
         return binding.root
     }
 

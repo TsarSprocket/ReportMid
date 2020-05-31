@@ -10,11 +10,14 @@ import javax.inject.Singleton
 @Component( modules = [
     ReportMidAppModule::class,
     AndroidInjectionModule::class,
-    ViewModelFactoryBinder::class
+    ViewModelFactoryBinder::class,
+    LandingViewModelModule::class
 ] )
 interface ReportMidAppComponent {
 
     fun context(): Context
 
     fun inject( app: ReportMidApp )
+
+    fun landingViewModelComponentFactory(): LandingViewModelComponent.Factory
 }
