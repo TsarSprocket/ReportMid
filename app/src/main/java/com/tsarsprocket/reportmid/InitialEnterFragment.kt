@@ -66,14 +66,15 @@ class InitialEnterFragment : BaseFragment() {
 
     fun onValidateInitial( view: View? ) {
 
-        val fResult = viewModel.validateInitial()
+        val fResult = viewModel.validateInitial() { fResult ->
 
-        if( fResult ) {
+            if( fResult ) {
 
-            findNavController().navigate( R.id.action_initialEnterFragment_to_landingFragment )
-        } else {
+                findNavController().navigate( R.id.action_initialEnterFragment_to_landingFragment )
+            } else {
 
-            Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
+                Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
+            }
         }
     }
 

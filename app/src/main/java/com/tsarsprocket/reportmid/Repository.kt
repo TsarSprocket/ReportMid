@@ -13,14 +13,15 @@ import javax.inject.Singleton
 class Repository @Inject constructor( private val context: Context ) {
 
     init {
-
-        Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
+//        Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
+        Orianna.setRiotAPIKey( "RGAPI-c7fb4b5e-3f60-4d6b-99a3-02066fee6da3" )
+        Orianna.setDefaultRegion( Region.RUSSIA )
     }
 
     private fun loadOriannaConfigToString() = InputStreamReader( context.resources.openRawResource( R.raw.orianna_config ) ).readText()
 
     fun summonerForName( summonerName: String, region: Region ): Summoner {
 
-        return Summoner.named( summonerName ).withRegion( region ).get()
+        return Orianna.summonerNamed( summonerName ).withRegion( region ).get().also { it.load() }
     }
 }

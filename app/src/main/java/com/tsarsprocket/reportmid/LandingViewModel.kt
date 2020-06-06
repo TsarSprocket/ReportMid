@@ -3,8 +3,14 @@ package com.tsarsprocket.reportmid
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewModelScope
 import com.merakianalytics.orianna.types.common.Region
 import com.merakianalytics.orianna.types.core.summoner.Summoner
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.lang.RuntimeException
 import javax.inject.Inject
 
 class LandingViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
@@ -22,16 +28,19 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
 
     val hasVerifiedNameState = MutableLiveData<Boolean>( false )
 
-    fun validateInitial(): Boolean {
+    fun validateInitial( action: ( fResult: Boolean ) -> Unit ) {
 
-        val reg = enumValues<Region>().find { it.tag == selectedRegionTag.value } ?: return false
+        val reg = enumValues<Region>().find { it.tag == selectedRegionTag.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegionTag}\'" )
 
-        activeSummoner = repository.summonerForName( activeSummonerName, reg )
+        val job = viewModelScope.launch {
 
-        TODO( "Fetch summoner parameters" )
+            val futureSummoner = async( Dispatchers.IO ) { repository.summonerForName( activeSummonerName, reg ) }
 
-        Log.d( LandingViewModel::class.qualifiedName, "The summoner Id = ${activeSummoner?.id}" )
+            activeSummoner = futureSummoner.await()
 
-        return activeSummoner != null
+            Log.d( LandingViewModel::class.qualifiedName, "The summoner Id = ${activeSummoner?.id}" )
+
+            action( activeSummoner != null )
+        }
     }
 }
