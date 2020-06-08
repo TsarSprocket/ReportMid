@@ -13,7 +13,7 @@ class Repository @Inject constructor( private val context: Context ) {
 
     init {
 //        Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
-        Orianna.setRiotAPIKey( "RGAPI-c7fb4b5e-3f60-4d6b-99a3-02066fee6da3" )
+        Orianna.setRiotAPIKey( "RGAPI-faccf194-1fa9-473f-835f-cf4e10171057" )
         Orianna.setDefaultRegion( com.merakianalytics.orianna.types.common.Region.RUSSIA )
     }
 

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -47,6 +48,7 @@ class LandingFragment : BaseFragment() {
 
         val binding = DataBindingUtil.inflate<FragmentLandingBindingImpl>( inflater, R.layout.fragment_landing, container, false )
         binding.viewModel = viewModel
+        binding.root.findViewById<ImageView>( R.id.imgSummonerIcon ).setImageBitmap( viewModel.activeSummoner?.icon )
         return binding.root
     }
 

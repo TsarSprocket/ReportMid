@@ -35,7 +35,6 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
         selectedRegion.value = if( orderNo >= 0 && orderNo < allRegions.size ) allRegions[ orderNo ] else null
     }
 
-
     fun validateInitial( action: ( fResult: Boolean ) -> Unit ) {
 
         val reg = enumValues<Region>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
