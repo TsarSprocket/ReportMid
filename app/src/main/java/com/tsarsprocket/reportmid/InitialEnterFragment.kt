@@ -53,11 +53,11 @@ class InitialEnterFragment : BaseFragment() {
         binding.root.findViewById<Spinner>( R.id.spRegion ).onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    viewModel.selectedRegionTag.value = null
+                    viewModel.selectRegionByOrderNo( -1 )
                 }
 
                 override fun onItemSelected( parent: AdapterView<*>?, view: View?, position: Int, id: Long ) {
-                    viewModel.selectedRegionTag.value = parent?.adapter?.getItem( position ).toString()
+                    viewModel.selectRegionByOrderNo( position )
                 }
             }
 
