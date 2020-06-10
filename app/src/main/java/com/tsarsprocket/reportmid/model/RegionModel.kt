@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
-enum class Region(
+enum class RegionModel(
     val countryCode: String,
     val title: String,
     val shadowRegion: com.merakianalytics.orianna.types.common.Region

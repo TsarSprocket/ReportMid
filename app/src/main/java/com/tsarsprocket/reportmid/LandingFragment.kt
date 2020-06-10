@@ -9,11 +9,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.tsarsprocket.reportmid.databinding.FragmentInitialEnterBinding
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import javax.inject.Inject
 
@@ -34,6 +32,8 @@ class LandingFragment : BaseFragment() {
 
     private val viewModel by activityViewModels<LandingViewModel> { viewModelFactory }
 
+    lateinit var binding: FragmentLandingBindingImpl
+
     override fun onAttach( context: Context ) {
 
         ( context.applicationContext as ReportMidApp ).comp.inject( this )
@@ -46,9 +46,8 @@ class LandingFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val binding = DataBindingUtil.inflate<FragmentLandingBindingImpl>( inflater, R.layout.fragment_landing, container, false )
+        binding = DataBindingUtil.inflate<FragmentLandingBindingImpl>( inflater, R.layout.fragment_landing, container, false )
         binding.viewModel = viewModel
-        binding.root.findViewById<ImageView>( R.id.imgSummonerIcon ).setImageBitmap( viewModel.activeSummoner?.icon )
         return binding.root
     }
 
@@ -57,9 +56,17 @@ class LandingFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
-        viewModel.hasVerifiedNameState.observe( viewLifecycleOwner, Observer { isVerified ->
-            if( !isVerified ) navController.navigate( R.id.initialEnterFragment )
+        viewModel.state.observe( viewLifecycleOwner, Observer { state ->
+            when( state ) {
+                LandingViewModel.Status.UNVERIFIED -> navController.navigate( R.id.initialEnterFragment )
+                LandingViewModel.Status.VERIFIED -> refreshScreen()
+            }
         } )
+    }
+
+    private fun refreshScreen() {
+        binding.invalidateAll()
+        binding.root.findViewById<ImageView>( R.id.imgSummonerIcon ).setImageBitmap( viewModel.activeSummonerModel.value?.icon )
     }
 
     companion object {

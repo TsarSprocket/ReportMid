@@ -34,7 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="80dp"
-            android:text="@{viewModel.activeSummoner.name}"
+            android:text="@{viewModel.activeSummonerModel.name}"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

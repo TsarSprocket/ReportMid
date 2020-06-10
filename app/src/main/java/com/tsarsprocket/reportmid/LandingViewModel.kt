@@ -1,11 +1,10 @@
 package com.tsarsprocket.reportmid
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tsarsprocket.reportmid.model.Region
-import com.tsarsprocket.reportmid.model.Summoner
+import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.model.SummonerModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -14,21 +13,27 @@ import javax.inject.Inject
 
 class LandingViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
 
+    enum class Status { LOADING, UNVERIFIED, VERIFIED }
+
     val allRegions = repository.allRegions
     val regionTitles
         get() = allRegions.map { it.title }
 
-    val selectedRegion = MutableLiveData<Region>()
+    val selectedRegion = MutableLiveData<RegionModel>()
 
-    var activeSummonerName = ""
+    var activeSummonerName = MutableLiveData<String>( "" )
 
-    var activeSummoner: Summoner? = null
-        set( value ) {
-            field = value
-            hasVerifiedNameState.value = value != null
+    var activeSummonerModel = MutableLiveData<SummonerModel>()
+
+    val state = MutableLiveData<Status>( Status.LOADING )
+
+    init {
+        viewModelScope.launch {
+            val futureSum = async( Dispatchers.IO ) { repository.getActiveSummoner() }
+            activeSummonerModel.value = futureSum.await()
+            if( activeSummonerModel.value != null ) state.value = Status.VERIFIED
         }
-
-    val hasVerifiedNameState = MutableLiveData<Boolean>( false )
+    }
 
     fun selectRegionByOrderNo( orderNo: Int ) {
 
@@ -37,15 +42,19 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
 
     fun validateInitial( action: ( fResult: Boolean ) -> Unit ) {
 
-        val reg = enumValues<Region>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
+        val reg = enumValues<RegionModel>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
 
         val job = viewModelScope.launch {
 
-            val futureSummoner = async( Dispatchers.IO ) { repository.summonerForName( activeSummonerName, reg ) }
+            val futureSummoner = async( Dispatchers.IO ) {
+                repository.findSummonerForName( activeSummonerName.value?: "", reg ).also { repository.addSummoner( it, true ) }
+            }
 
-            activeSummoner = futureSummoner.await()
+            activeSummonerModel.value = futureSummoner.await()
 
-            action( activeSummoner != null )
+            state.value = if( activeSummonerModel.value != null ) Status.VERIFIED else Status.UNVERIFIED
+
+            action( activeSummonerModel.value != null )
         }
     }
 }
