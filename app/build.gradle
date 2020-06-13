@@ -93,4 +93,8 @@ dependencies {
 
     // Orianna API
     implementation "com.merakianalytics.orianna:orianna-android:4.0.0-rc6"
+
+    // Rx
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.4'
 }
