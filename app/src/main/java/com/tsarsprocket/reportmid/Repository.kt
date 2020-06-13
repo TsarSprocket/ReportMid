@@ -39,7 +39,7 @@ class Repository @Inject constructor( private val context: Context ) {
                     }
 
 //                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
-                    Orianna.setRiotAPIKey("RGAPI-e93d4bdd-19d4-4529-ac6d-e5b0442e7912")
+                    Orianna.setRiotAPIKey( loadRawResourceAsText( R.raw.riot_api_key ) )
                     Orianna.setDefaultRegion(com.merakianalytics.orianna.types.common.Region.RUSSIA)
 
                     return@async true
@@ -51,7 +51,7 @@ class Repository @Inject constructor( private val context: Context ) {
         }
     }
 
-//    private fun loadOriannaConfigToString() = InputStreamReader( context.resources.openRawResource( R.raw.orianna_config ) ).readText()
+    private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
 
     val allRegions = RegionModel.values()
 

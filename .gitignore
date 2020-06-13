@@ -13,3 +13,5 @@
 /database
 .externalNativeBuild
 .cxx
+/app/src/main/res/raw/riot_api_key.txt
+
