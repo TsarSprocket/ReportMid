@@ -15,8 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import javax.inject.Inject
 
-private const val NUM_OF_SEC_MASTERIES = 4
-
 class LandingFragment : BaseFragment() {
 
     @Inject
@@ -56,7 +54,7 @@ class LandingFragment : BaseFragment() {
             }
         } )
 
-        for( i: Int in 0 NUM_OF_SEC_MASTERIES ) {
+        for( i: Int in 0 until TOP_MASTERIES_NUM ) {
             viewModel.championImages[ i ].observe( viewLifecycleOwner, Observer { b ->
                 masteryGroups[ i ].findViewWithTag<ImageView>( getString( R.string.fragment_landing_tag_champion_icon ) ).setImageBitmap( b )
             } )
@@ -64,7 +62,6 @@ class LandingFragment : BaseFragment() {
     }
 
     private fun refreshScreen() {
-        binding.invalidateAll()
         binding.root.findViewById<ImageView>( R.id.imgSummonerIcon ).setImageBitmap( viewModel.activeSummonerModel.value?.icon )
 
         val masteryViewGroup = binding.root.findViewById<ViewGroup>( R.id.grpOtherChampMasteries )
@@ -72,17 +69,19 @@ class LandingFragment : BaseFragment() {
         val summonerModel = viewModel.activeSummonerModel.value
 
         if( summonerModel != null ) {
-            val extraSumSize = if( summonerModel.masteries.size < NUM_OF_SEC_MASTERIES ) summonerModel.masteries.size else NUM_OF_SEC_MASTERIES
+            val extraSumSize = if( summonerModel.masteries.size < TOP_MASTERIES_NUM ) summonerModel.masteries.size else TOP_MASTERIES_NUM
 
             masteryGroups = List<ViewGroup>( extraSumSize ) { i ->
                 val mastery = summonerModel.masteries[ i ]
                 val viewGroup = if (i <= 0) binding.root.findViewById<ViewGroup>(R.id.grpMainChampMastery)
-                    else ( layoutInflater.inflate( R.layout.champion_mastery, masteryViewGroup, true ) as ViewGroup)
+                    else ( layoutInflater.inflate( R.layout.champion_mastery, null, false ) as ViewGroup).also { masteryViewGroup.addView( it ) }
                 viewGroup.findViewById<TextView>(R.id.txtChampLevel).text = mastery.level.toString()
                 viewGroup.findViewById<TextView>(R.id.txtChampPoints).text = mastery.points.toString()
                 return@List viewGroup
             }
         }
+
+        binding.invalidateAll()
     }
 
     companion object {

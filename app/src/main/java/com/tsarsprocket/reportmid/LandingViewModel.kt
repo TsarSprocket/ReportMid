@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import java.lang.RuntimeException
 import javax.inject.Inject
 
-const val TOP_MASTERIES_NUM = 5
+const val TOP_MASTERIES_NUM = 6
 
 class LandingViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
 

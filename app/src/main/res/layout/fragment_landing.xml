@@ -36,14 +36,14 @@
             app:layout_constraintTop_toBottomOf="@id/imgSummonerIcon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             />
 
         <TextView
             android:id="@+id/txtLevelLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:text="@string/fragment_landing_level_label"
             app:layout_constraintEnd_toStartOf="@id/txtLevel"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,6 +72,7 @@
             android:layout_marginTop="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
             android:visibility="@{viewModel.activeSummonerModel.masteries.size()>0?View.VISIBLE:View.GONE}"
             >
 
