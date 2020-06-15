@@ -3,4 +3,8 @@
 
     <!-- Fragment: Initial Enter -->
     <string name="fragment_initial_enter_validate_btn_text">Validate</string>
+
+    <!-- Fragment: Landing -->
+    <string name="fragment_landing_level_label">Level:</string>
+    <string name="fragment_landing_tag_champion_icon">champion_icon</string>
 </resources>

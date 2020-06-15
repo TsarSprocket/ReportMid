@@ -1,15 +1,20 @@
 package com.tsarsprocket.reportmid
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.SummonerModel
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.lang.RuntimeException
 import javax.inject.Inject
+
+const val TOP_MASTERIES_NUM = 5
 
 class LandingViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
 
@@ -27,10 +32,13 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
 
     val state = MutableLiveData<Status>( Status.LOADING )
 
+    val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Bitmap>() }
+
     init {
         viewModelScope.launch {
             val futureSum = async( Dispatchers.IO ) { repository.getActiveSummoner() }
             activeSummonerModel.value = futureSum.await()
+            loadMasteries()
             if( activeSummonerModel.value != null ) state.value = Status.VERIFIED
         }
     }
@@ -55,6 +63,16 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
             state.value = if( activeSummonerModel.value != null ) Status.VERIFIED else Status.UNVERIFIED
 
             action( activeSummonerModel.value != null )
+        }
+    }
+
+    private fun loadMasteries() {
+        for( i in 0 until TOP_MASTERIES_NUM ) {
+            activeSummonerModel.value!!.masteries[ i ].loadAsync()
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe() { m ->
+                    championImages[ i ].value = m.champion.bitmap
+                }
         }
     }
 }

@@ -7,6 +7,7 @@
     >
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="com.tsarsprocket.reportmid.LandingViewModel" />
@@ -24,18 +25,89 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="120dp"
+            android:layout_marginTop="80dp"
             />
 
         <TextView
+            android:id="@+id/txtSummonerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{viewModel.activeSummonerModel.name}"
             app:layout_constraintTop_toBottomOf="@id/imgSummonerIcon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="80dp"
-            android:text="@{viewModel.activeSummonerModel.name}"
+            android:layout_marginTop="40dp"
             />
+
+        <TextView
+            android:id="@+id/txtLevelLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/fragment_landing_level_label"
+            app:layout_constraintEnd_toStartOf="@id/txtLevel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtSummonerName"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            />
+
+        <TextView
+            android:id="@+id/txtLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{Integer.toString(viewModel.activeSummonerModel.level)}"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txtLevelLabel"
+            app:layout_constraintTop_toTopOf="@id/txtLevelLabel"
+            />
+
+        <LinearLayout
+            android:id="@+id/grpMainChampMastery"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/txtLevelLabel"
+            android:layout_marginTop="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="@{viewModel.activeSummonerModel.masteries.size()>0?View.VISIBLE:View.GONE}"
+            >
+
+            <ImageView
+                android:tag="@string/fragment_landing_tag_champion_icon"
+                android:id="@+id/imgChampMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/txtChampLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/txtChampPoints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/grpOtherChampMasteries"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/grpMainChampMastery"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
