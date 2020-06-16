@@ -202,7 +202,6 @@
       {
         "className": "com.merakianalytics.orianna.datapipeline.riotapi.RiotAPI",
         "config": {
-          "apiKey": "RGAPI-c7fb4b5e-3f60-4d6b-99a3-02066fee6da3",
           "http404Strategy": {
             "type": "RETURN_NULL"
           },
