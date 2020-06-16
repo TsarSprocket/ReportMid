@@ -2,18 +2,30 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/landingFragment">
+    app:startDestination="@id/landingFragment"
+    >
 
     <fragment
         android:id="@+id/initialEnterFragment"
         android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
-        android:label="InitialEnterFragment" >
+        android:label="InitialEnterFragment"
+        >
         <action
             android:id="@+id/action_initialEnterFragment_to_landingFragment"
-            app:destination="@id/landingFragment" />
+            app:destination="@id/landingFragment"
+            app:popUpTo="@id/landingFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/landingFragment"
         android:name="com.tsarsprocket.reportmid.LandingFragment"
-        android:label="LandingFragment" /><action android:id="@+id/action_global_initialEnterFragment" app:destination="@id/initialEnterFragment"/>
+        android:label="LandingFragment"
+        />
+    <action
+        android:id="@+id/action_global_initialEnterFragment"
+        app:destination="@id/initialEnterFragment"
+        app:popUpTo="@id/initialEnterFragment"
+        app:popUpToInclusive="true"
+        />
 </navigation>

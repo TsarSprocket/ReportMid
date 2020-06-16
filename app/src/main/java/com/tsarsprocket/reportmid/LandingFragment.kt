@@ -26,9 +26,9 @@ class LandingFragment : BaseFragment() {
 
     lateinit var masteryGroups: List<ViewGroup>
 
-    override fun onAttach( context: Context ) {
+    override fun onAttach(context: Context) {
 
-        ( context.applicationContext as ReportMidApp ).comp.inject( this )
+        (context.applicationContext as ReportMidApp).comp.inject(this)
 
         super.onAttach(context)
     }
@@ -49,7 +49,7 @@ class LandingFragment : BaseFragment() {
         val navController = findNavController()
         viewModel.state.observe( viewLifecycleOwner, Observer { state ->
             when( state ) {
-                LandingViewModel.Status.UNVERIFIED -> navController.navigate( R.id.initialEnterFragment )
+                LandingViewModel.Status.UNVERIFIED -> navController.navigate( NavGraphDirections.actionGlobalInitialEnterFragment() )
                 LandingViewModel.Status.VERIFIED -> refreshScreen()
             }
         } )
@@ -62,21 +62,29 @@ class LandingFragment : BaseFragment() {
     }
 
     private fun refreshScreen() {
-        binding.root.findViewById<ImageView>( R.id.imgSummonerIcon ).setImageBitmap( viewModel.activeSummonerModel.value?.icon )
+        binding.root.findViewById<ImageView>(R.id.imgSummonerIcon)
+            .setImageBitmap(viewModel.activeSummonerModel.value?.icon)
 
-        val masteryViewGroup = binding.root.findViewById<ViewGroup>( R.id.grpOtherChampMasteries )
+        val masteryViewGroup = binding.root.findViewById<ViewGroup>(R.id.grpOtherChampMasteries)
 
         val summonerModel = viewModel.activeSummonerModel.value
 
-        if( summonerModel != null ) {
-            val extraSumSize = if( summonerModel.masteries.size < TOP_MASTERIES_NUM ) summonerModel.masteries.size else TOP_MASTERIES_NUM
+        if (summonerModel != null) {
+            val extraSumSize =
+                if (summonerModel.masteries.size < TOP_MASTERIES_NUM) summonerModel.masteries.size else TOP_MASTERIES_NUM
 
-            masteryGroups = List<ViewGroup>( extraSumSize ) { i ->
-                val mastery = summonerModel.masteries[ i ]
-                val viewGroup = if (i <= 0) binding.root.findViewById<ViewGroup>(R.id.grpMainChampMastery)
-                    else ( layoutInflater.inflate( R.layout.champion_mastery, null, false ) as ViewGroup).also { masteryViewGroup.addView( it ) }
+            masteryGroups = List<ViewGroup>(extraSumSize) { i ->
+                val mastery = summonerModel.masteries[i]
+                val viewGroup =
+                    if (i <= 0) binding.root.findViewById<ViewGroup>(R.id.grpMainChampMastery)
+                    else (layoutInflater.inflate(
+                        R.layout.champion_mastery,
+                        null,
+                        false
+                    ) as ViewGroup).also { masteryViewGroup.addView(it) }
                 viewGroup.findViewById<TextView>(R.id.txtChampLevel).text = mastery.level.toString()
-                viewGroup.findViewById<TextView>(R.id.txtChampPoints).text = mastery.points.toString()
+                viewGroup.findViewById<TextView>(R.id.txtChampPoints).text =
+                    mastery.points.toString()
                 return@List viewGroup
             }
         }
