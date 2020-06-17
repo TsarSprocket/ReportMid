@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
+import kotlinx.android.synthetic.main.activity_main.view.*
 import javax.inject.Inject
 
 class LandingFragment : BaseFragment() {
@@ -56,7 +58,10 @@ class LandingFragment : BaseFragment() {
 
         for( i: Int in 0 until TOP_MASTERIES_NUM ) {
             viewModel.championImages[ i ].observe( viewLifecycleOwner, Observer { b ->
-                masteryGroups[ i ].findViewWithTag<ImageView>( getString( R.string.fragment_landing_tag_champion_icon ) ).setImageBitmap( b )
+                with( masteryGroups[ i ] ) {
+                    findViewWithTag<ImageView>( getString( R.string.fragment_landing_tag_champion_icon ) ).setImageBitmap( b )
+                    findViewWithTag<TextView>( getString( R.string.fragment_landing_tag_champion_name ) ).text = viewModel.activeSummonerModel.value!!.masteries[ i ].champion.name
+                }
             } )
         }
     }
@@ -88,6 +93,8 @@ class LandingFragment : BaseFragment() {
                 return@List viewGroup
             }
         }
+
+        requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_landing_title_template ).format( viewModel.activeSummonerModel.value!!.name )
 
         binding.invalidateAll()
     }

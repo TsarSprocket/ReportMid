@@ -7,4 +7,6 @@
     <!-- Fragment: Landing -->
     <string name="fragment_landing_level_label">Level:</string>
     <string name="fragment_landing_tag_champion_icon">champion_icon</string>
+    <string name="fragment_landing_tag_champion_name">champion_name</string>
+    <string name="fragment_landing_title_template">Summoner: %s</string>
 </resources>

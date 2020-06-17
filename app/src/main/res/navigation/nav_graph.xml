@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/initialEnterFragment"
         android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
-        android:label="InitialEnterFragment"
+        android:label="Find your summoner"
         >
         <action
             android:id="@+id/action_initialEnterFragment_to_landingFragment"
@@ -20,8 +20,9 @@
     <fragment
         android:id="@+id/landingFragment"
         android:name="com.tsarsprocket.reportmid.LandingFragment"
-        android:label="LandingFragment"
-        />
+        android:label="Summoner's Page'"
+        >
+    </fragment>
     <action
         android:id="@+id/action_global_initialEnterFragment"
         app:destination="@id/initialEnterFragment"

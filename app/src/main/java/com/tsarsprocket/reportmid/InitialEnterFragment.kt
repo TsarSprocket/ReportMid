@@ -70,7 +70,8 @@ class InitialEnterFragment : BaseFragment() {
 
             if( fResult ) {
 
-                findNavController().navigate( R.id.action_initialEnterFragment_to_landingFragment )
+                val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToLandingFragment()
+                findNavController().navigate( action )
             } else {
 
                 Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
