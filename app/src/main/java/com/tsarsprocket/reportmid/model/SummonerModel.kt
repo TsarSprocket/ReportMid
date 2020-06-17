@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.model
 
 import android.graphics.Bitmap
 import com.google.common.collect.ImmutableList
+import com.merakianalytics.orianna.types.core.match.MatchHistory
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 
 data class SummonerModel(
@@ -13,4 +14,5 @@ data class SummonerModel(
     val puuid: String = shadowSummoner.puuid
     val level: Int = shadowSummoner.level
     val masteries = List<ChampionMasteryModel>( shadowSummoner.championMasteries.size ) { i -> ChampionMasteryModel( shadowSummoner.championMasteries[ i ] ) }
+    val matchHistory = MatchHistoryModel( MatchHistory.forSummoner( shadowSummoner ).get() )
 }

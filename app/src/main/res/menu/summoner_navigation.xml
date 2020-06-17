@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_overview"
+        android:title="@string/summoner_navigation_menu_item_overview" />
+    <item
+        android:id="@+id/item_matchup"
+        android:title="@string/summoner_navigation_menu_item_matchup" />
+    <item
+        android:id="@+id/item_played_games"
+        android:title="@string/summoner_navigation_menu_item_played_games" />
+</menu>

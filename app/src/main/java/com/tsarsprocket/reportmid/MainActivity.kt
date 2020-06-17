@@ -21,5 +21,6 @@ class MainActivity : BaseActivity() {
         val navController = findNavController( R.id.nav_host_fragment )
         val appBarConfiguration = AppBarConfiguration( navController.graph )
         binding.toolbar.setupWithNavController( navController, appBarConfiguration )
+        binding.bottomNavigation.setupWithNavController( navController )
     }
 }

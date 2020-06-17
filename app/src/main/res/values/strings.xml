@@ -9,4 +9,9 @@
     <string name="fragment_landing_tag_champion_icon">champion_icon</string>
     <string name="fragment_landing_tag_champion_name">champion_name</string>
     <string name="fragment_landing_title_template">Summoner: %s</string>
+
+    <!-- Menu: Summoner navigation -->
+    <string name="summoner_navigation_menu_item_overview">Overview</string>
+    <string name="summoner_navigation_menu_item_matchup">Matchup</string>
+    <string name="summoner_navigation_menu_item_played_games">Played games</string>
 </resources>

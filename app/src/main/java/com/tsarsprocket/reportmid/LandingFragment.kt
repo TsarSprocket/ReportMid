@@ -14,7 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
-import kotlinx.android.synthetic.main.activity_main.view.*
+import com.tsarsprocket.reportmid.model.SummonerModel
 import javax.inject.Inject
 
 class LandingFragment : BaseFragment() {
@@ -74,22 +74,20 @@ class LandingFragment : BaseFragment() {
 
         val summonerModel = viewModel.activeSummonerModel.value
 
-        if (summonerModel != null) {
-            val extraSumSize =
-                if (summonerModel.masteries.size < TOP_MASTERIES_NUM) summonerModel.masteries.size else TOP_MASTERIES_NUM
+        if ( summonerModel != null ) {
+            val extraSumSize = calculateActualMasteries( summonerModel )
 
-            masteryGroups = List<ViewGroup>(extraSumSize) { i ->
+            masteryGroups = List<ViewGroup>( extraSumSize ) { i ->
                 val mastery = summonerModel.masteries[i]
                 val viewGroup =
-                    if (i <= 0) binding.root.findViewById<ViewGroup>(R.id.grpMainChampMastery)
-                    else (layoutInflater.inflate(
+                    /*if (i <= 0) binding.root.findViewById<ViewGroup>(R.id.grpMainChampMastery)
+                    else*/ (layoutInflater.inflate(
                         R.layout.champion_mastery,
                         null,
                         false
                     ) as ViewGroup).also { masteryViewGroup.addView(it) }
                 viewGroup.findViewById<TextView>(R.id.txtChampLevel).text = mastery.level.toString()
-                viewGroup.findViewById<TextView>(R.id.txtChampPoints).text =
-                    mastery.points.toString()
+                viewGroup.findViewById<TextView>(R.id.txtChampPoints).text = mastery.points.toString()
                 return@List viewGroup
             }
         }
@@ -98,6 +96,9 @@ class LandingFragment : BaseFragment() {
 
         binding.invalidateAll()
     }
+
+    private fun calculateActualMasteries( summonerModel: SummonerModel ) =
+        if( summonerModel.masteries.size < TOP_MASTERIES_NUM ) summonerModel.masteries.size else TOP_MASTERIES_NUM
 
     companion object {
         @JvmStatic
