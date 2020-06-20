@@ -14,4 +14,6 @@
     <string name="summoner_navigation_menu_item_overview">Overview</string>
     <string name="summoner_navigation_menu_item_matchup">Matchup</string>
     <string name="summoner_navigation_menu_item_played_games">Played games</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

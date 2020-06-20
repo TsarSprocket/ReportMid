@@ -1,8 +1,12 @@
 package com.tsarsprocket.reportmid.di
 
+import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.LandingViewModel
+import com.tsarsprocket.reportmid.ViewModelKey
+import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
+import dagger.multibindings.IntoMap
 
 @ViewModelScope
 @Subcomponent
@@ -18,4 +22,10 @@ interface LandingViewModelComponent {
 }
 
 @Module( subcomponents = [ LandingViewModelComponent::class ] )
-class LandingViewModelModule {}
+abstract class LandingViewModelModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey( LandingViewModel::class )
+    abstract fun bindViewModel( viewModel: LandingViewModel ): ViewModel
+}

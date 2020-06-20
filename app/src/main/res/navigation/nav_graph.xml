@@ -29,4 +29,8 @@
         app:popUpTo="@id/initialEnterFragment"
         app:popUpToInclusive="true"
         />
+    <fragment
+        android:id="@+id/matchHistoryFragment"
+        android:name="com.tsarsprocket.reportmid.MatchHistoryFragment"
+        android:label="MatchHistoryFragment" />
 </navigation>
