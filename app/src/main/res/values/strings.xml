@@ -10,10 +10,13 @@
     <string name="fragment_landing_tag_champion_name">champion_name</string>
     <string name="fragment_landing_title_template">Summoner: %s</string>
 
+    <!-- Fragment: Match history -->
+    <string name="fragment_match_history_message_win">Win</string>
+    <string name="fragment_match_history_message_defeat">Defeat</string>
+
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>
     <string name="summoner_navigation_menu_item_matchup">Matchup</string>
     <string name="summoner_navigation_menu_item_played_games">Played games</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

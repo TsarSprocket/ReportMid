@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="4dp"
         >
 
         <ImageView
@@ -17,16 +21,161 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/champion_icon_placegolder"
             />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideKDA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="60dp" />
+
         <TextView
-            android:id="@+id/txtKDA"
+            android:id="@+id/txtGameOutcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imgChampionIcon"
+            app:layout_constraintStart_toEndOf="@id/guideKDA"
+            app:layout_constraintBottom_toTopOf="@id/txtTeamKDA"
+            />
+
+        <TextView
+            android:id="@+id/txtTeamKDA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/txtGameOutcome"
+            app:layout_constraintStart_toEndOf="@id/guideKDA"
+            app:layout_constraintBottom_toTopOf="@id/txtMainKDA"
+            />
+
+        <TextView
+            android:id="@+id/txtMainKDA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/txtTeamKDA"
+            app:layout_constraintStart_toEndOf="@id/guideKDA"
             app:layout_constraintBottom_toBottomOf="parent"
             />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideTeams"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="120dp"
+            />
+
+        <LinearLayout
+            android:id="@+id/layoutBlueTeamIcons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideTeams"
+            app:layout_constraintBottom_toTopOf="@id/layoutRedTeamIcons"
+            >
+
+            <ImageView
+                android:id="@+id/blueTeamIcon0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/blueTeamIcon1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/blueTeamIcon2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/blueTeamIcon3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/blueTeamIcon4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/blueTeamIcon5"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutRedTeamIcons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/layoutBlueTeamIcons"
+            app:layout_constraintStart_toEndOf="@id/guideTeams"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+
+            <ImageView
+                android:id="@+id/redTeamIcon0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/redTeamIcon1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/redTeamIcon2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/redTeamIcon3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/redTeamIcon4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+            <ImageView
+                android:id="@+id/redTeamIcon5"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/champion_icon_placegolder_one_half"
+                />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

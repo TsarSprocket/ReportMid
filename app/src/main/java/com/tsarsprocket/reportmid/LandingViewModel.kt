@@ -4,14 +4,13 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tsarsprocket.reportmid.model.MatchResultPreviewData
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.SummonerModel
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 const val TOP_MASTERIES_NUM = 5
@@ -75,4 +74,20 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
                 }
         }
     }
+
+    fun fetchMatchPreviewInfo( position: Int, processData: ( MatchResultPreviewData ) -> Unit ) {
+
+        viewModelScope.launch( Dispatchers.IO ) {
+
+            val summoner = activeSummonerModel.value?:return@launch
+            val match = summoner.matchHistory.getMatch( position )
+
+            val result = repository.getMatchResultPreviewData( match, summoner )
+
+            launch( Dispatchers.Main ) {
+                processData( result )
+            }
+        }
+    }
+
 }

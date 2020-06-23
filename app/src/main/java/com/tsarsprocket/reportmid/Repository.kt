@@ -1,9 +1,13 @@
 package com.tsarsprocket.reportmid
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Matrix
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
+import com.tsarsprocket.reportmid.model.MatchModel
+import com.tsarsprocket.reportmid.model.MatchResultPreviewData
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
@@ -104,5 +108,46 @@ class Repository @Inject constructor( private val context: Context ) {
 
             database.globalStateDAO().update( globalState )
         }
+    }
+
+    @WorkerThread
+    fun getMatchResultPreviewData( match: MatchModel, summoner: SummonerModel ): MatchResultPreviewData {
+
+        val asParticipant = match.shadowMatch.blueTeam.participants
+            .union( match.shadowMatch.redTeam.participants )
+            .find { it.summoner.puuid == summoner.puuid }?: throw RuntimeException( "Summoner ${summoner.name} is not found in match ${match.shadowMatch.id}" )
+
+        val participantStats = asParticipant.stats
+
+        var teamKills = 0
+        var teamDeaths = 0
+        var teamAssists = 0
+
+        asParticipant.team.participants.forEach() {
+            teamKills += it.stats.kills
+            teamDeaths += it.stats.deaths
+            teamAssists += it.stats.assists
+        }
+
+        val resizeMatrix = Matrix().apply { postScale(0.5f, 0.5f) }
+
+        return MatchResultPreviewData(
+            asParticipant.champion.image.get(),
+            participantStats.kills,
+            participantStats.deaths,
+            participantStats.assists,
+            teamKills,
+            teamDeaths,
+            teamAssists,
+            participantStats.isWinner,
+            Array<Bitmap>( match.shadowMatch.blueTeam.participants.size ) { i ->
+                val bm = match.shadowMatch.blueTeam.participants[i].champion.image.get()
+                return@Array Bitmap.createBitmap( bm, 0, 0, bm.width, bm.height, resizeMatrix, false )
+            },
+            Array<Bitmap>( match.shadowMatch.redTeam.participants.size ) { i ->
+                val bm = match.shadowMatch.redTeam.participants[i].champion.image.get()
+                return@Array Bitmap.createBitmap( bm, 0, 0, bm.width, bm.height, resizeMatrix, false )
+            }
+        )
     }
 }
