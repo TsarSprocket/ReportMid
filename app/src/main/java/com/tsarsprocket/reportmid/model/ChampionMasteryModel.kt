@@ -1,10 +1,13 @@
 package com.tsarsprocket.reportmid.model
 
-import io.reactivex.Observable
+import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-data class ChampionMasteryModel( val shadowMastery: com.merakianalytics.orianna.types.core.championmastery.ChampionMastery ) {
+data class ChampionMasteryModel(
+    val repository: Repository,
+    val shadowMastery: ChampionMastery
+) {
 
     lateinit var champion: ChampionModel
     val level = shadowMastery.level
@@ -18,7 +21,7 @@ data class ChampionMasteryModel( val shadowMastery: com.merakianalytics.orianna.
     }
 
     fun load() {
-        champion = ChampionModel( shadowMastery.champion )
+        champion = repository.getChampionModel( shadowMastery.champion )
         champion.load()
     }
 }

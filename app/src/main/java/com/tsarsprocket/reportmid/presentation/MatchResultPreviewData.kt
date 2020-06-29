@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.model
+package com.tsarsprocket.reportmid.presentation
 
 import android.graphics.Bitmap
 

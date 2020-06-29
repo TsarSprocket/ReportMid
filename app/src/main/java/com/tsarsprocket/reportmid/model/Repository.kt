@@ -1,15 +1,17 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.model
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
-import com.tsarsprocket.reportmid.model.MatchModel
-import com.tsarsprocket.reportmid.model.MatchResultPreviewData
-import com.tsarsprocket.reportmid.model.RegionModel
-import com.tsarsprocket.reportmid.model.SummonerModel
+import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
+import com.merakianalytics.orianna.types.core.match.Match
+import com.merakianalytics.orianna.types.core.match.MatchHistory
+import com.merakianalytics.orianna.types.core.match.Participant
+import com.merakianalytics.orianna.types.core.match.Team
+import com.merakianalytics.orianna.types.core.staticdata.Champion
+import com.merakianalytics.orianna.types.core.summoner.Summoner
+import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.SummonerEntity
@@ -20,10 +22,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Repository @Inject constructor( private val context: Context ) {
+class Repository @Inject constructor( val context: Context ) {
 
     lateinit var fInitialized: Deferred<Boolean>
     lateinit var database: MainStorage
+
+    val summoners = HashMap<String,SummonerModel>()
+    val champions = HashMap<Int,ChampionModel>()
 
     init {
         GlobalScope.launch {
@@ -43,7 +48,7 @@ class Repository @Inject constructor( private val context: Context ) {
                     }
 
 //                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
-                    Orianna.setRiotAPIKey( loadRawResourceAsText( R.raw.riot_api_key ) )
+                    Orianna.setRiotAPIKey( loadRawResourceAsText(R.raw.riot_api_key) )
                     Orianna.setDefaultRegion(com.merakianalytics.orianna.types.common.Region.RUSSIA)
 
                     return@async true
@@ -66,7 +71,7 @@ class Repository @Inject constructor( private val context: Context ) {
 
         val sum = Orianna.summonerNamed(summonerName).withRegion(regionModel.shadowRegion).get()
 
-        return SummonerModel( sum )
+        return getSummonerModel( sum )
     }
 
     @WorkerThread
@@ -74,7 +79,7 @@ class Repository @Inject constructor( private val context: Context ) {
 
         fInitialized.await()
 
-        return SummonerModel( Orianna.summonerWithPuuid( puuid ).get().also{ it.load() } )
+        return getSummonerModel( Orianna.summonerWithPuuid( puuid ).get().also{ it.load() } )
     }
 
     @WorkerThread
@@ -110,44 +115,17 @@ class Repository @Inject constructor( private val context: Context ) {
         }
     }
 
-    @WorkerThread
-    fun getMatchResultPreviewData( match: MatchModel, summoner: SummonerModel ): MatchResultPreviewData {
+    fun getChampionMasteryModel( championMastery: ChampionMastery ): ChampionMasteryModel = ChampionMasteryModel( this, championMastery )
 
-        val asParticipant = match.shadowMatch.blueTeam.participants
-            .union( match.shadowMatch.redTeam.participants )
-            .find { it.summoner.puuid == summoner.puuid }?: throw RuntimeException( "Summoner ${summoner.name} is not found in match ${match.shadowMatch.id}" )
+    fun getChampionModel( champion: Champion ): ChampionModel = champions[ champion.id ]?: ChampionModel( this, champion ).also { champions[ it.id ] = it }
 
-        val participantStats = asParticipant.stats
+    fun getMatchHistoryModel( matchHistory: MatchHistory ): MatchHistoryModel = MatchHistoryModel( this, matchHistory )
 
-        var teamKills = 0
-        var teamDeaths = 0
-        var teamAssists = 0
+    fun getMatchModel( match: Match ): MatchModel = MatchModel( this, match )
 
-        asParticipant.team.participants.forEach() {
-            teamKills += it.stats.kills
-            teamDeaths += it.stats.deaths
-            teamAssists += it.stats.assists
-        }
+    fun getParticipantModel( teamModel: TeamModel, participant: Participant ): ParticipantModel = ParticipantModel( this, teamModel, participant )
 
-        val resizeMatrix = Matrix().apply { postScale(0.5f, 0.5f) }
+    fun getSummonerModel( summoner: Summoner ): SummonerModel = summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
 
-        return MatchResultPreviewData(
-            asParticipant.champion.image.get(),
-            participantStats.kills,
-            participantStats.deaths,
-            participantStats.assists,
-            teamKills,
-            teamDeaths,
-            teamAssists,
-            participantStats.isWinner,
-            Array<Bitmap>( match.shadowMatch.blueTeam.participants.size ) { i ->
-                val bm = match.shadowMatch.blueTeam.participants[i].champion.image.get()
-                return@Array Bitmap.createBitmap( bm, 0, 0, bm.width, bm.height, resizeMatrix, false )
-            },
-            Array<Bitmap>( match.shadowMatch.redTeam.participants.size ) { i ->
-                val bm = match.shadowMatch.redTeam.participants[i].champion.image.get()
-                return@Array Bitmap.createBitmap( bm, 0, 0, bm.width, bm.height, resizeMatrix, false )
-            }
-        )
-    }
+    fun getTeamModel( team: Team ): TeamModel = TeamModel( this, team )
 }

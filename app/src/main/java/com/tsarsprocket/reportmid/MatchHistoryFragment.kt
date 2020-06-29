@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.view.children
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -17,7 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
-import com.tsarsprocket.reportmid.model.MatchResultPreviewData
+import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -113,7 +112,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
 
     interface IHistoryDataProvider {
         fun getCount(): Int
-        fun getMatchData( i: Int, processor: ( MatchResultPreviewData ) -> Unit )
+        fun getMatchData( i: Int, processor: (MatchResultPreviewData) -> Unit )
     }
 }
 

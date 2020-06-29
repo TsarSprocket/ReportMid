@@ -1,21 +1,26 @@
 package com.tsarsprocket.reportmid
 
 import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tsarsprocket.reportmid.model.MatchResultPreviewData
+import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.Exception
 
 const val TOP_MASTERIES_NUM = 5
 
-class LandingViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
+class LandingViewModel @Inject constructor( private val repository: Repository) : ViewModel() {
 
     enum class Status { LOADING, UNVERIFIED, VERIFIED }
 
@@ -75,17 +80,68 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
         }
     }
 
-    fun fetchMatchPreviewInfo( position: Int, processData: ( MatchResultPreviewData ) -> Unit ) {
+    fun fetchMatchPreviewInfo( position: Int, processData: (MatchResultPreviewData) -> Unit ) {
 
         viewModelScope.launch( Dispatchers.IO ) {
 
             val summoner = activeSummonerModel.value?:return@launch
-            val match = summoner.matchHistory.getMatch( position )
+            try {
+                Log.d( LandingViewModel::class.simpleName, "Load match info for position $position" )
+                val match = summoner.matchHistory.getMatch( position )
 
-            val result = repository.getMatchResultPreviewData( match, summoner )
+                val asParticipant = match.blueTeam.participants
+                    .union( match.redTeam.participants )
+                    .find { it.summoner.puuid == summoner.puuid }?: throw RuntimeException( "Summoner ${summoner.name} is not found in match ${match.id}" )
+                var teamKills = 0
+                var teamDeaths = 0
+                var teamAssists = 0
+                asParticipant.team.participants.forEach() {
+                    teamKills += it.kills
+                    teamDeaths += it.deaths
+                    teamAssists += it.assists
+                }
+                val resizeMatrix = Matrix().apply { postScale(0.5f, 0.5f) }
+                val result =
+                    MatchResultPreviewData(
+                        asParticipant.champion.bitmap,
+                        asParticipant.kills,
+                        asParticipant.deaths,
+                        asParticipant.assists,
+                        teamKills,
+                        teamDeaths,
+                        teamAssists,
+                        asParticipant.isWinner,
+                        Array(match.blueTeam.participants.size) { i ->
+                            val bm = match.blueTeam.participants[i].champion.bitmap
+                            return@Array Bitmap.createBitmap(
+                                bm,
+                                0,
+                                0,
+                                bm.width,
+                                bm.height,
+                                resizeMatrix,
+                                false
+                            )
+                        },
+                        Array(match.redTeam.participants.size) { i ->
+                            val bm = match.redTeam.participants[i].champion.bitmap
+                            return@Array Bitmap.createBitmap(
+                                bm,
+                                0,
+                                0,
+                                bm.width,
+                                bm.height,
+                                resizeMatrix,
+                                false
+                            )
+                        }
+                    )
 
-            launch( Dispatchers.Main ) {
-                processData( result )
+                launch( Dispatchers.Main ) {
+                    processData( result )
+                }
+            } catch ( ex: Exception ) {
+                Log.e( LandingViewModel::class.simpleName, ex.localizedMessage, ex )
             }
         }
     }
