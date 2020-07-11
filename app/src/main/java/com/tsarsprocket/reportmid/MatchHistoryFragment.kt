@@ -17,6 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -41,15 +44,17 @@ class MatchHistoryFragment : BaseFragment() {
         binding.viewModel = viewModel
 
         with( binding.matchHistoryView ) {
-
-            val summoner = viewModel.activeSummonerModel.value!!
-
             setHasFixedSize( true )
             layoutManager = LinearLayoutManager( context )
-            adapter = MatchHistoryAdapter( object: MatchHistoryAdapter.IHistoryDataProvider {
-                override fun getCount(): Int = viewModel.activeSummonerModel.value?.matchHistory?.size ?: 0
-                override fun getMatchData( i: Int, processor: (MatchResultPreviewData) -> Unit ) { viewModel.fetchMatchPreviewInfo( i, processor ) }
-            } )
+            val disposable = viewModel.activeSummonerModel.value?.matchHistory?.observeOn( AndroidSchedulers.mainThread() )?.subscribe { matchHistory ->
+                adapter = MatchHistoryAdapter( object: MatchHistoryAdapter.IHistoryDataProvider {
+                    override fun getCount(): Int = matchHistory.size
+                    override fun getMatchData(i: Int, processor: (MatchResultPreviewData) -> Unit, disposer: CompositeDisposable) {
+                        viewModel.fetchMatchPreviewInfo( i, processor, disposer )
+                    }
+                } )
+            }
+            if( disposable != null ) viewModel.allDisposables.add( disposable )
         }
 
         return binding.root
@@ -73,6 +78,10 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
 
     override fun onBindViewHolder( holder: MatchHistoryViewHolder, position: Int ) {
 
+        holder.allDisposables.dispose()
+
+        holder.allDisposables = CompositeDisposable()
+
         with( holder.cardView ) {
             findViewById<ImageView>( R.id.imgChampionIcon ).setImageResource( R.drawable.champion_icon_placegolder )
             findViewById<TextView>( R.id.txtGameOutcome ).text = ""
@@ -87,7 +96,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
             }
         }
 
-        dataProvider.getMatchData( position ) { data ->
+        dataProvider.getMatchData( position, { data ->
             with( holder.cardView ) {
                 findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
                 findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
@@ -107,14 +116,23 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                     }
                 }
             }
-        }
+        },
+        holder.allDisposables )
     }
 
     interface IHistoryDataProvider {
         fun getCount(): Int
-        fun getMatchData( i: Int, processor: (MatchResultPreviewData) -> Unit )
+        fun getMatchData(
+            i: Int,
+            processor: (MatchResultPreviewData) -> Unit,
+            disposer: CompositeDisposable
+        )
     }
 }
 
-class MatchHistoryViewHolder( val cardView: CardView ): RecyclerView.ViewHolder( cardView )
+class MatchHistoryViewHolder( val cardView: CardView ): RecyclerView.ViewHolder( cardView ) {
+
+    var allDisposables = CompositeDisposable()
+
+}
 

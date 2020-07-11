@@ -1,22 +1,21 @@
 package com.tsarsprocket.reportmid
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
-import kotlin.Exception
 
 const val TOP_MASTERIES_NUM = 5
 
@@ -38,16 +37,33 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
 
     val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Bitmap>() }
 
+    val allDisposables = CompositeDisposable()
+
     init {
-        viewModelScope.launch {
-            val futureSum = async( Dispatchers.IO ) { repository.getActiveSummoner() }
-            activeSummonerModel.value = futureSum.await()
-            loadMasteries()
-            if( activeSummonerModel.value != null ) state.value = Status.VERIFIED
-        }
+        repository.getActiveSummoner()
+            .observeOn( AndroidSchedulers.mainThread() )
+            .subscribe( object: DisposableObserver<SummonerModel>() {
+                override fun onComplete() {
+                    if( activeSummonerModel.value == null ) state.value = Status.UNVERIFIED
+                }
+                override fun onNext( summonerModel: SummonerModel ) {
+                    activeSummonerModel.value = summonerModel
+                    loadMasteries()
+                    state.value = Status.VERIFIED
+                }
+                override fun onError( e: Throwable ) {
+                    Log.d( LandingViewModel::class.simpleName, "Cannot initialize LandingViewModel", e )
+                }
+            }.also { allDisposables.add( it ) } )
     }
 
-    fun selectRegionByOrderNo( orderNo: Int ) {
+    override fun onCleared() {
+        super.onCleared()
+
+        allDisposables.dispose()
+    }
+
+    fun selectRegionByOrderNo(orderNo: Int ) {
 
         selectedRegion.value = if( orderNo >= 0 && orderNo < allRegions.size ) allRegions[ orderNo ] else null
     }
@@ -56,94 +72,111 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
 
         val reg = enumValues<RegionModel>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
 
-        val job = viewModelScope.launch {
-
-            val futureSummoner = async( Dispatchers.IO ) {
-                repository.findSummonerForName( activeSummonerName.value?: "", reg ).also { repository.addSummoner( it, true ) }
-            }
-
-            activeSummonerModel.value = futureSummoner.await()
-
-            state.value = if( activeSummonerModel.value != null ) Status.VERIFIED else Status.UNVERIFIED
-
-            action( activeSummonerModel.value != null )
-        }
+        allDisposables.add(
+            repository.findSummonerForName( activeSummonerName.value?: "", reg )
+                .observeOn( Schedulers.io() )
+                .doOnNext { summonerModel ->
+                    repository.addSummoner( summonerModel, true )
+                }
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe { summonerModel ->
+                    activeSummonerModel.value = summonerModel
+                    state.value = if( summonerModel != null ) Status.VERIFIED else Status.UNVERIFIED
+                    action( summonerModel != null )
+                }
+        )
     }
 
+    @SuppressLint("CheckResult")
     private fun loadMasteries() {
         for( i in 0 until TOP_MASTERIES_NUM ) {
-            activeSummonerModel.value!!.masteries[ i ].loadAsync()
+            activeSummonerModel.value!!.masteries
+                .flatMap { masteryList -> masteryList[ i ] }
                 .observeOn( AndroidSchedulers.mainThread() )
-                .subscribe() { m ->
-                    championImages[ i ].value = m.champion.bitmap
+                .subscribe() { masteryModel ->
+                    masteryModel.champion
+                        .observeOn( AndroidSchedulers.mainThread() )
+                        .subscribe { champ ->
+                            allDisposables.add(
+                                champ.bitmap.subscribe { bitmap ->
+                                    championImages[ i ].postValue( bitmap )
+                                }
+                            )
+                        }
                 }
         }
     }
 
-    fun fetchMatchPreviewInfo( position: Int, processData: (MatchResultPreviewData) -> Unit ) {
+    fun fetchMatchPreviewInfo(
+        position: Int,
+        processData: (MatchResultPreviewData) -> Unit,
+        disposer: CompositeDisposable
+    ): Observable<MatchResultPreviewData> {
+        val summoner = activeSummonerModel.value?:return Observable.empty()
 
-        viewModelScope.launch( Dispatchers.IO ) {
+        return summoner.matchHistory
+            .observeOn( Schedulers.io() )
+            .flatMap { matchHistoryModel ->
+                matchHistoryModel.getMatch(position)
+            }
+            .map { match ->
+                val blueTeam = match.blueTeam.blockingSingle()
+                val redTeam = match.redTeam.blockingSingle()
 
-            val summoner = activeSummonerModel.value?:return@launch
-            try {
-                Log.d( LandingViewModel::class.simpleName, "Load match info for position $position" )
-                val match = summoner.matchHistory.getMatch( position )
+                val asParticipant =  (
+                        blueTeam.participants
+                            .union( redTeam.participants )
+                            .find { it.blockingSingle().summoner.blockingSingle().puuid == summoner.puuid }
+                            ?: throw RuntimeException( "Summoner ${summoner.name} is not found in match ${match.id}" )
+                    ).blockingSingle()
 
-                val asParticipant = match.blueTeam.participants
-                    .union( match.redTeam.participants )
-                    .find { it.summoner.puuid == summoner.puuid }?: throw RuntimeException( "Summoner ${summoner.name} is not found in match ${match.id}" )
                 var teamKills = 0
                 var teamDeaths = 0
                 var teamAssists = 0
                 asParticipant.team.participants.forEach() {
-                    teamKills += it.kills
-                    teamDeaths += it.deaths
-                    teamAssists += it.assists
+                    val participant = it.blockingSingle()
+                    teamKills += participant.kills
+                    teamDeaths += participant.deaths
+                    teamAssists += participant.assists
                 }
-                val resizeMatrix = Matrix().apply { postScale(0.5f, 0.5f) }
-                val result =
-                    MatchResultPreviewData(
-                        asParticipant.champion.bitmap,
-                        asParticipant.kills,
-                        asParticipant.deaths,
-                        asParticipant.assists,
-                        teamKills,
-                        teamDeaths,
-                        teamAssists,
-                        asParticipant.isWinner,
-                        Array(match.blueTeam.participants.size) { i ->
-                            val bm = match.blueTeam.participants[i].champion.bitmap
-                            return@Array Bitmap.createBitmap(
-                                bm,
-                                0,
-                                0,
-                                bm.width,
-                                bm.height,
-                                resizeMatrix,
-                                false
-                            )
-                        },
-                        Array(match.redTeam.participants.size) { i ->
-                            val bm = match.redTeam.participants[i].champion.bitmap
-                            return@Array Bitmap.createBitmap(
-                                bm,
-                                0,
-                                0,
-                                bm.width,
-                                bm.height,
-                                resizeMatrix,
-                                false
-                            )
-                        }
-                    )
 
-                launch( Dispatchers.Main ) {
-                    processData( result )
-                }
-            } catch ( ex: Exception ) {
-                Log.e( LandingViewModel::class.simpleName, ex.localizedMessage, ex )
+                val resizeMatrix = Matrix().apply { postScale(0.5f, 0.5f) }
+
+                MatchResultPreviewData(
+                    asParticipant.champion.blockingSingle().bitmap.blockingSingle(),
+                    asParticipant.kills,
+                    asParticipant.deaths,
+                    asParticipant.assists,
+                    teamKills,
+                    teamDeaths,
+                    teamAssists,
+                    asParticipant.isWinner,
+                    Array( blueTeam.participants.size ) { i ->
+                        val bm = blueTeam.participants[i].blockingSingle().champion.blockingSingle().bitmap.blockingSingle()
+                        return@Array Bitmap.createBitmap(
+                            bm,
+                            0,
+                            0,
+                            bm.width,
+                            bm.height,
+                            resizeMatrix,
+                            false
+                        )
+                    },
+                    Array( redTeam.participants.size ) { i ->
+                        val bm = redTeam.participants[i].blockingSingle().champion.blockingSingle().bitmap.blockingSingle()
+                        return@Array Bitmap.createBitmap(
+                            bm,
+                            0,
+                            0,
+                            bm.width,
+                            bm.height,
+                            resizeMatrix,
+                            false
+                        )
+                    }
+                )
             }
-        }
     }
 
 }

@@ -1,9 +1,12 @@
 package com.tsarsprocket.reportmid.model
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
+import com.merakianalytics.orianna.types.common.Region
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.Match
 import com.merakianalytics.orianna.types.core.match.MatchHistory
@@ -15,7 +18,8 @@ import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.SummonerEntity
-import kotlinx.coroutines.*
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import java.io.InputStreamReader
 import java.lang.Exception
 import javax.inject.Inject
@@ -24,40 +28,42 @@ import javax.inject.Singleton
 @Singleton
 class Repository @Inject constructor( val context: Context ) {
 
-    lateinit var fInitialized: Deferred<Boolean>
+    val initialized: Observable<Boolean>
+
     lateinit var database: MainStorage
 
     val summoners = HashMap<String,SummonerModel>()
     val champions = HashMap<Int,ChampionModel>()
 
     init {
-        GlobalScope.launch {
 
-            fInitialized = async( Dispatchers.IO ) {
+        initialized = Observable.fromCallable {
+            try {
+                Log.d( Repository::class.simpleName, "Initializing..." )
 
-                try {
-                    database = Room.databaseBuilder( context.applicationContext, MainStorage::class.java, "database" ).build()
+                database = Room.databaseBuilder( context.applicationContext, MainStorage::class.java, "database" ).build()
 
-                    val stateList = database.globalStateDAO().getAll()
+                val stateList = database.globalStateDAO().getAll()
 
-                    if( stateList.isEmpty() ) {
+                if( stateList.isEmpty() ) {
 
-                        val sums = database.summonerDAO().getAll()
+                    val sums = database.summonerDAO().getAll()
 
-                        database.globalStateDAO().insert( GlobalStateEntity( if( sums.isNotEmpty() ) sums[ 0 ].id else -1 ) )
-                    }
+                    database.globalStateDAO().insert( GlobalStateEntity( if( sums.isNotEmpty() ) sums[ 0 ].id else -1 ) )
+                }
 
 //                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
-                    Orianna.setRiotAPIKey( loadRawResourceAsText(R.raw.riot_api_key) )
-                    Orianna.setDefaultRegion(com.merakianalytics.orianna.types.common.Region.RUSSIA)
+                Orianna.setRiotAPIKey( loadRawResourceAsText(R.raw.riot_api_key) )
+                Orianna.setDefaultRegion( Region.RUSSIA )
 
-                    return@async true
-                } catch ( ex: Exception ) {
+                Log.d( Repository::class.simpleName, "Done initialize" )
 
-                    return@async false
-                }
+                return@fromCallable true
+            } catch ( ex: Exception ) {
+
+                return@fromCallable false
             }
-        }
+        }.subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect()
     }
 
     private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
@@ -65,67 +71,89 @@ class Repository @Inject constructor( val context: Context ) {
     val allRegions = RegionModel.values()
 
     @WorkerThread
-    suspend fun findSummonerForName(summonerName: String, regionModel: RegionModel ): SummonerModel {
+    fun findSummonerForName( summonerName: String, regionModel: RegionModel ): Observable<SummonerModel> {
 
-        fInitialized.await()
-
-        val sum = Orianna.summonerNamed(summonerName).withRegion(regionModel.shadowRegion).get()
-
-        return getSummonerModel( sum )
+        return initialized.observeOn( Schedulers.io() )
+            .flatMap { fInitialized ->
+                when( fInitialized ) {
+                    true -> getSummonerModel( Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() )
+                    else -> throw RepositoryNotInitializedException()
+                }
+            }
     }
 
     @WorkerThread
-    suspend fun findSummonerByPuuid( puuid: String? ): SummonerModel? {
+    fun findSummonerByPuuid( puuid: String? ): Observable<SummonerModel> {
 
-        fInitialized.await()
-
-        return getSummonerModel( Orianna.summonerWithPuuid( puuid ).get().also{ it.load() } )
+        return initialized.observeOn( Schedulers.io() )
+            .flatMap { fInitialized ->
+                when( fInitialized ) {
+                    true -> getSummonerModel( Orianna.summonerWithPuuid( puuid ).get().also { it.load() } )
+                    else -> throw RepositoryNotInitializedException()
+                }
+            }
     }
 
     @WorkerThread
-    suspend fun getActiveSummoner(): SummonerModel? {
+    fun getActiveSummoner(): Observable<SummonerModel> {
 
-        fInitialized.await()
+        return initialized.observeOn( Schedulers.io() )
+            .flatMap { fInitialized ->
+                when( fInitialized ) {
+                    true -> {
+                        val curSumId = database.globalStateDAO().getAll()[ 0 ].curSummonerId
 
-        val curSumId = database.globalStateDAO().getAll()[ 0 ].curSummonerId
+                        return@flatMap if( curSumId >= 0 ) {
 
-        return if( curSumId >= 0 ) {
-
-            val se = database.summonerDAO().getById( curSumId )
-            findSummonerByPuuid( se.puuid )
-        } else null
+                            val se = database.summonerDAO().getById( curSumId )
+                            findSummonerByPuuid( se.puuid )
+                        } else Observable.empty()
+                    }
+                    else -> throw RepositoryNotInitializedException()
+                }
+            }
     }
 
+    @SuppressLint( "CheckResult")
     @WorkerThread
-    suspend fun addSummoner( summonerModel: SummonerModel, setActive: Boolean = false ) {
+    fun addSummoner( summonerModel: SummonerModel, setActive: Boolean = false ) {
+        initialized.observeOn( Schedulers.io() )
+            .subscribe { fInitialized ->
+                when( fInitialized ) {
+                    true -> {
+                        val summonerEntity = SummonerEntity( summonerModel.puuid )
+                        val sumId = database.summonerDAO().insert( summonerEntity )
+                        if( setActive ) {
+                            val globalState = database.globalStateDAO().getAll()[ 0 ]
+                            globalState.curSummonerId = sumId
+                            database.globalStateDAO().update( globalState )
+                        }
+                    }
+                    else -> throw RepositoryNotInitializedException()
+                }
+            }
+    }
 
-        fInitialized.await()
+    fun getChampionMasteryModel( championMastery: ChampionMastery ) = ensureInitializedDoOnIO { ChampionMasteryModel( this, championMastery ) }
 
-        val summonerEntity = SummonerEntity( summonerModel.puuid )
+    fun getChampionModel( champion: Champion ) = ensureInitializedDoOnIO { champions[ champion.id ]?: ChampionModel( this, champion ).also { champions[ it.id ] = it } }
 
-        val sumId = database.summonerDAO().insert( summonerEntity )
+    fun getMatchHistoryModel( matchHistory: MatchHistory ) = ensureInitializedDoOnIO { MatchHistoryModel( this, matchHistory ) }
 
-        if( setActive ) {
+    fun getMatchModel( match: Match ) = ensureInitializedDoOnIO { MatchModel( this, match ) }
 
-            val globalState = database.globalStateDAO().getAll()[ 0 ]
+    fun getParticipantModel( teamModel: TeamModel, participant: Participant ) = ensureInitializedDoOnIO { ParticipantModel( this, teamModel, participant ) }
 
-            globalState.curSummonerId = sumId
+    fun getSummonerModel( summoner: Summoner ) = ensureInitializedDoOnIO { summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it } }
 
-            database.globalStateDAO().update( globalState )
+    fun getTeamModel( team: Team ) = ensureInitializedDoOnIO { TeamModel( this, team ) }
+
+    private fun<T> ensureInitializedDoOnIO(l: () -> T ): Observable<T> {
+        return initialized.observeOn( Schedulers.io() ).map { fInitialized ->
+            when( fInitialized ) {
+                true -> l()
+                else -> throw RepositoryNotInitializedException()
+            }
         }
     }
-
-    fun getChampionMasteryModel( championMastery: ChampionMastery ): ChampionMasteryModel = ChampionMasteryModel( this, championMastery )
-
-    fun getChampionModel( champion: Champion ): ChampionModel = champions[ champion.id ]?: ChampionModel( this, champion ).also { champions[ it.id ] = it }
-
-    fun getMatchHistoryModel( matchHistory: MatchHistory ): MatchHistoryModel = MatchHistoryModel( this, matchHistory )
-
-    fun getMatchModel( match: Match ): MatchModel = MatchModel( this, match )
-
-    fun getParticipantModel( teamModel: TeamModel, participant: Participant ): ParticipantModel = ParticipantModel( this, teamModel, participant )
-
-    fun getSummonerModel( summoner: Summoner ): SummonerModel = summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
-
-    fun getTeamModel( team: Team ): TeamModel = TeamModel( this, team )
 }

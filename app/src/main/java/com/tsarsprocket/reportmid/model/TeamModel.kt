@@ -6,7 +6,5 @@ class TeamModel(
     val repository: Repository,
     private val shadowTeam: Team
 ) {
-    val participants = List<ParticipantModel>( shadowTeam.participants.size ) { i ->
-        repository.getParticipantModel( this, shadowTeam.participants[ i ] )
-    }
+    val participants = List( shadowTeam.participants.size ) { i -> repository.getParticipantModel( this, shadowTeam.participants[ i ] ).replay( 1 ).autoConnect() }
 }
