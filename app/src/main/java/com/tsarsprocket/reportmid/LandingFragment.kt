@@ -59,6 +59,8 @@ class LandingFragment : BaseFragment() {
             }
         } )
 
+        refreshScreen()
+
         for( i: Int in 0 until TOP_MASTERIES_NUM ) {
             viewModel.championImages[ i ].observe( viewLifecycleOwner, Observer { b ->
                 with( masteryGroups[ i ] ) {

@@ -108,9 +108,7 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
     }
 
     fun fetchMatchPreviewInfo(
-        position: Int,
-        processData: (MatchResultPreviewData) -> Unit,
-        disposer: CompositeDisposable
+        position: Int
     ): Observable<MatchResultPreviewData> {
         val summoner = activeSummonerModel.value?:return Observable.empty()
 

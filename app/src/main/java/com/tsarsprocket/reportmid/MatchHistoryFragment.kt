@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -49,8 +49,8 @@ class MatchHistoryFragment : BaseFragment() {
             val disposable = viewModel.activeSummonerModel.value?.matchHistory?.observeOn( AndroidSchedulers.mainThread() )?.subscribe { matchHistory ->
                 adapter = MatchHistoryAdapter( object: MatchHistoryAdapter.IHistoryDataProvider {
                     override fun getCount(): Int = matchHistory.size
-                    override fun getMatchData(i: Int, processor: (MatchResultPreviewData) -> Unit, disposer: CompositeDisposable) {
-                        viewModel.fetchMatchPreviewInfo( i, processor, disposer )
+                    override fun getMatchData( i: Int ): Observable<MatchResultPreviewData> {
+                        return viewModel.fetchMatchPreviewInfo( i )
                     }
                 } )
             }
@@ -96,43 +96,39 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
             }
         }
 
-        dataProvider.getMatchData( position, { data ->
-            with( holder.cardView ) {
-                findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
-                findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
-                findViewById<TextView>( R.id.txtTeamKDA ).text = "${data.teamKills}/${data.teamDeaths}/${data.teamAssists}"
-                findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
-                val viewGroups = arrayOf( findViewById<LinearLayout>( R.id.layoutBlueTeamIcons ), findViewById( R.id.layoutRedTeamIcons ) )
-                for( j in viewGroups.indices ) {
-                    for ( i in 0 until viewGroups[ j ].childCount ) {
-                        val view = viewGroups[ j ][ i ] as ImageView
-                        if ( i < data.teamsIcons[ j ].size ) {
-                            view.setImageBitmap( data.teamsIcons[ j ][ i ] )
-                            view.visibility = View.VISIBLE
-                        } else {
-                            view.setImageResource( R.drawable.champion_icon_placegolder_one_half )
-                            view.visibility = View.GONE
+        holder.allDisposables.add( dataProvider.getMatchData( position )
+            .observeOn( AndroidSchedulers.mainThread() )
+            .subscribe { data ->
+                with( holder.cardView ) {
+                    findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
+                    findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
+                    findViewById<TextView>( R.id.txtTeamKDA ).text = "${data.teamKills}/${data.teamDeaths}/${data.teamAssists}"
+                    findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
+                    val viewGroups = arrayOf( findViewById<LinearLayout>( R.id.layoutBlueTeamIcons ), findViewById( R.id.layoutRedTeamIcons ) )
+                    for( j in viewGroups.indices ) {
+                        for ( i in 0 until viewGroups[ j ].childCount ) {
+                            val view = viewGroups[ j ][ i ] as ImageView
+                            if ( i < data.teamsIcons[ j ].size ) {
+                                view.setImageBitmap( data.teamsIcons[ j ][ i ] )
+                                view.visibility = View.VISIBLE
+                            } else {
+                                view.setImageResource( R.drawable.champion_icon_placegolder_one_half )
+                                view.visibility = View.GONE
+                            }
                         }
                     }
                 }
             }
-        },
-        holder.allDisposables )
+        )
     }
 
     interface IHistoryDataProvider {
         fun getCount(): Int
-        fun getMatchData(
-            i: Int,
-            processor: (MatchResultPreviewData) -> Unit,
-            disposer: CompositeDisposable
-        )
+        fun getMatchData( i: Int ): Observable<MatchResultPreviewData>
     }
 }
 
 class MatchHistoryViewHolder( val cardView: CardView ): RecyclerView.ViewHolder( cardView ) {
-
     var allDisposables = CompositeDisposable()
-
 }
 
