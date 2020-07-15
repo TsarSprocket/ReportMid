@@ -22,11 +22,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="10dp"
             android:src="@drawable/champion_icon_placegolder"
             />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideKDA"
+            android:id="@+id/guideTextInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -37,16 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideKDA"
-            app:layout_constraintBottom_toTopOf="@id/txtTeamKDA"
-            />
-
-        <TextView
-            android:id="@+id/txtTeamKDA"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/txtGameOutcome"
-            app:layout_constraintStart_toEndOf="@id/guideKDA"
+            app:layout_constraintStart_toEndOf="@id/guideTextInfo"
             app:layout_constraintBottom_toTopOf="@id/txtMainKDA"
             />
 
@@ -54,8 +46,17 @@
             android:id="@+id/txtMainKDA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/txtTeamKDA"
-            app:layout_constraintStart_toEndOf="@id/guideKDA"
+            app:layout_constraintTop_toBottomOf="@id/txtGameOutcome"
+            app:layout_constraintStart_toEndOf="@id/guideTextInfo"
+            app:layout_constraintBottom_toTopOf="@id/txtCS"
+            />
+
+        <TextView
+            android:id="@+id/txtCS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/txtMainKDA"
+            app:layout_constraintStart_toEndOf="@id/guideTextInfo"
             app:layout_constraintBottom_toBottomOf="parent"
             />
 
@@ -64,19 +65,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="120dp"
+            app:layout_constraintGuide_begin="140dp"
             />
 
         <LinearLayout
-            android:id="@+id/layoutBlueTeamIcons"
+            android:id="@+id/layoutItemIcons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideTeams"
-            app:layout_constraintBottom_toTopOf="@id/layoutRedTeamIcons"
+            app:layout_constraintBottom_toBottomOf="parent"
             >
 
+<!--
             <ImageView
                 android:id="@+id/blueTeamIcon0"
                 android:layout_width="wrap_content"
@@ -119,9 +121,11 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/champion_icon_placegolder_one_half"
                 />
+-->
 
         </LinearLayout>
 
+<!--
         <LinearLayout
             android:id="@+id/layoutRedTeamIcons"
             android:layout_width="wrap_content"
@@ -176,6 +180,7 @@
                 />
 
         </LinearLayout>
+-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

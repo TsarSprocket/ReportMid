@@ -7,4 +7,5 @@ class MatchModel( private val repository: Repository, private val shadowMatch: M
     val blueTeam by lazy { repository.getTeamModel( shadowMatch.blueTeam ).replay( 1 ).autoConnect() }
     val redTeam by lazy { repository.getTeamModel( shadowMatch.redTeam ).replay( 1 ).autoConnect() }
     val teams by lazy { arrayOf( blueTeam, redTeam ) }
+    val gameMode by lazy { shadowMatch.mode }
 }

@@ -13,6 +13,7 @@ import com.merakianalytics.orianna.types.core.match.MatchHistory
 import com.merakianalytics.orianna.types.core.match.Participant
 import com.merakianalytics.orianna.types.core.match.Team
 import com.merakianalytics.orianna.types.core.staticdata.Champion
+import com.merakianalytics.orianna.types.core.staticdata.Item
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
@@ -147,6 +148,8 @@ class Repository @Inject constructor( val context: Context ) {
     fun getSummonerModel( summoner: Summoner ) = ensureInitializedDoOnIO { summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it } }
 
     fun getTeamModel( team: Team ) = ensureInitializedDoOnIO { TeamModel( this, team ) }
+
+    fun getItemModel( item: Item ) = ensureInitializedDoOnIO { ItemModel( this, item ) }
 
     private fun<T> ensureInitializedDoOnIO(l: () -> T ): Observable<T> {
         return initialized.observeOn( Schedulers.io() ).map { fInitialized ->

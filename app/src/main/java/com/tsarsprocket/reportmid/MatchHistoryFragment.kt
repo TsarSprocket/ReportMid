@@ -85,15 +85,16 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
         with( holder.cardView ) {
             findViewById<ImageView>( R.id.imgChampionIcon ).setImageResource( R.drawable.champion_icon_placegolder )
             findViewById<TextView>( R.id.txtGameOutcome ).text = ""
-            findViewById<TextView>( R.id.txtTeamKDA ).text = "?/?/?"
             findViewById<TextView>( R.id.txtMainKDA ).text = "?/?/?"
-            val teams = arrayListOf<ViewGroup>( findViewById<LinearLayout>(R.id.layoutBlueTeamIcons), findViewById<LinearLayout>(R.id.layoutRedTeamIcons) )
+/*
+            val teams = arrayListOf<ViewGroup>( findViewById<LinearLayout>(R.id.layoutItemIcons), findViewById<LinearLayout>(R.id.layoutRedTeamIcons) )
             for( vg in teams ) {
                 for (i: Int in 0 until vg.childCount) {
                     val v = vg[i]
                     if (v is ImageView) v.setImageResource(R.drawable.champion_icon_placegolder_one_half)
                 }
-            }
+9            }
+*/
         }
 
         holder.allDisposables.add( dataProvider.getMatchData( position )
@@ -102,8 +103,19 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                 with( holder.cardView ) {
                     findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
                     findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
-                    findViewById<TextView>( R.id.txtTeamKDA ).text = "${data.teamKills}/${data.teamDeaths}/${data.teamAssists}"
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
+                    findViewById<TextView>( R.id.txtCS ).text = data.creepScore.toString()
+                    val ltItems = findViewById<ViewGroup>( R.id.layoutItemIcons )
+
+                    for( i in ltItems.childCount until data.itemIcons.size )
+                        ltItems.addView( LayoutInflater.from( context ).inflate( R.layout.imageview_for_item, ltItems, false ) )
+
+                    for( i in data.itemIcons.indices ) {
+                        ( ltItems[ i ] as ImageView ).setImageBitmap( data.itemIcons[ i ] )
+                    }
+
+                    for( i in data.itemIcons.size until ltItems.childCount ) ltItems[ i ].visibility = View.GONE
+/*
                     val viewGroups = arrayOf( findViewById<LinearLayout>( R.id.layoutBlueTeamIcons ), findViewById( R.id.layoutRedTeamIcons ) )
                     for( j in viewGroups.indices ) {
                         for ( i in 0 until viewGroups[ j ].childCount ) {
@@ -117,6 +129,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                             }
                         }
                     }
+*/
                 }
             }
         )

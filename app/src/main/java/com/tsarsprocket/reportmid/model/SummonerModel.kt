@@ -20,7 +20,7 @@ data class SummonerModel(
 
     private fun getObservableMasteryList() = Observable.fromCallable {
         List( shadowSummoner.championMasteries.size ) { i ->
-            repository.getChampionMasteryModel(shadowSummoner.championMasteries[i]).subscribeOn(Schedulers.io()).replay(1).autoConnect()
+            repository.getChampionMasteryModel( shadowSummoner.championMasteries[ i ] ).subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect()
         }
     }.subscribeOn( Schedulers.io() )
 

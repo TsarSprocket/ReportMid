@@ -6,6 +6,8 @@ import com.merakianalytics.orianna.types.core.staticdata.Champion
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
+const val RES_NAME_PREFIX_CHAMPION = "champion_"
+
 data class ChampionModel(
     val repository: Repository,
     val shadowChampion: Champion
@@ -14,10 +16,9 @@ data class ChampionModel(
     val bitmap: Observable<Bitmap> by lazy { loadBitmap().replay( 1 ).autoConnect() }
     val name: String = shadowChampion.name
 
-    private fun loadBitmap(): Observable<Bitmap> {
-        return Observable.fromCallable() {
-            val resId = repository.context.resources.getIdentifier( shadowChampion.key.toLowerCase(),"drawable", repository.context.packageName )
+    private fun loadBitmap(): Observable<Bitmap> =
+        Observable.fromCallable() {
+            val resId = repository.context.resources.getIdentifier( RES_NAME_PREFIX_CHAMPION + shadowChampion.key.toLowerCase(),"drawable", repository.context.packageName )
             BitmapFactory.decodeResource( repository.context.resources, resId )
         }.subscribeOn( Schedulers.io() )
-    }
 }
