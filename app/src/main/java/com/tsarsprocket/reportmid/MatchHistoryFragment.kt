@@ -22,6 +22,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
+val arrIconViewIds = arrayOf( R.id.imageItem0, R.id.imageItem1, R.id.imageItem2, R.id.imageItem3, R.id.imageItem4, R.id.imageItem5 )
+
 class MatchHistoryFragment : BaseFragment() {
 
     @Inject
@@ -104,32 +106,25 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                     findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
                     findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
-                    findViewById<TextView>( R.id.txtCS ).text = data.creepScore.toString()
-                    val ltItems = findViewById<ViewGroup>( R.id.layoutItemIcons )
+                    findViewById<TextView>( R.id.txtCS ).text = "CS: ${data.creepScore.toString()}"
 
-                    for( i in ltItems.childCount until data.itemIcons.size )
-                        ltItems.addView( LayoutInflater.from( context ).inflate( R.layout.imageview_for_item, ltItems, false ) )
+                    val vlItems = List( arrIconViewIds.size ){ i -> findViewById<ImageView>( arrIconViewIds[ i ] ) }
+                    val iconWard = findViewById<ImageView>( R.id.imageWard )
 
-                    for( i in data.itemIcons.indices ) {
-                        ( ltItems[ i ] as ImageView ).setImageBitmap( data.itemIcons[ i ] )
-                    }
-
-                    for( i in data.itemIcons.size until ltItems.childCount ) ltItems[ i ].visibility = View.GONE
-/*
-                    val viewGroups = arrayOf( findViewById<LinearLayout>( R.id.layoutBlueTeamIcons ), findViewById( R.id.layoutRedTeamIcons ) )
-                    for( j in viewGroups.indices ) {
-                        for ( i in 0 until viewGroups[ j ].childCount ) {
-                            val view = viewGroups[ j ][ i ] as ImageView
-                            if ( i < data.teamsIcons[ j ].size ) {
-                                view.setImageBitmap( data.teamsIcons[ j ][ i ] )
-                                view.visibility = View.VISIBLE
-                            } else {
-                                view.setImageResource( R.drawable.champion_icon_placegolder_one_half )
-                                view.visibility = View.GONE
-                            }
+                    for( i in vlItems.indices ) {
+                        val imageView = vlItems[ i ]
+                        if( i < data.itemIcons.size - 1 ) {
+                            imageView.setImageBitmap( data.itemIcons[ i ] )/*.also { visibility = View.VISIBLE }*/
+                        } else {
+                            imageView.setImageResource( R.drawable.item_empty ) // imageView.visibility = View.INVISIBLE
                         }
                     }
-*/
+
+                    if( data.itemIcons.isNotEmpty() ) {
+                        iconWard.setImageBitmap( data.itemIcons.last() ).also { visibility = View.VISIBLE }
+                    } else {
+                        iconWard.setImageResource( R.drawable.item_empty ) // iconWard.visibility = View.INVISIBLE
+                    }
                 }
             }
         )

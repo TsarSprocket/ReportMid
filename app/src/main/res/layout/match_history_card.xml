@@ -61,126 +61,83 @@
             />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideTeams"
+            android:id="@+id/guideItems"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_begin="140dp"
             />
 
-        <LinearLayout
-            android:id="@+id/layoutItemIcons"
+        <ImageView
+            android:id="@+id/imageItem0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideTeams"
-            app:layout_constraintBottom_toBottomOf="parent"
-            >
+            app:layout_constraintStart_toEndOf="@id/guideItems"
+            app:layout_constraintBottom_toTopOf="@id/imageItem3"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:src="@drawable/item_icon_placegolder"
+            />
 
-<!--
-            <ImageView
-                android:id="@+id/blueTeamIcon0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/blueTeamIcon1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/blueTeamIcon2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/blueTeamIcon3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/blueTeamIcon4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/blueTeamIcon5"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
--->
-
-        </LinearLayout>
-
-<!--
-        <LinearLayout
-            android:id="@+id/layoutRedTeamIcons"
+        <ImageView
+            android:id="@+id/imageItem1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layoutBlueTeamIcons"
-            app:layout_constraintStart_toEndOf="@id/guideTeams"
+            app:layout_constraintTop_toTopOf="@id/imageItem0"
+            app:layout_constraintStart_toEndOf="@id/imageItem0"
+            app:layout_constraintBottom_toBottomOf="@id/imageItem0"
+            android:src="@drawable/item_icon_placegolder"
+            />
+
+        <ImageView
+            android:id="@+id/imageItem2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/imageItem1"
+            app:layout_constraintStart_toEndOf="@id/imageItem1"
+            app:layout_constraintBottom_toBottomOf="@id/imageItem1"
+            android:src="@drawable/item_icon_placegolder"
+            />
+
+        <ImageView
+            android:id="@+id/imageItem3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/imageItem0"
+            app:layout_constraintStart_toEndOf="@id/guideItems"
             app:layout_constraintBottom_toBottomOf="parent"
-            >
+            android:src="@drawable/item_icon_placegolder"
+            />
 
-            <ImageView
-                android:id="@+id/redTeamIcon0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
+        <ImageView
+            android:id="@+id/imageItem4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/imageItem3"
+            app:layout_constraintStart_toEndOf="@id/imageItem3"
+            app:layout_constraintBottom_toBottomOf="@id/imageItem3"
+            android:src="@drawable/item_icon_placegolder"
+            />
 
-            <ImageView
-                android:id="@+id/redTeamIcon1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
+        <ImageView
+            android:id="@+id/imageItem5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/imageItem4"
+            app:layout_constraintStart_toEndOf="@id/imageItem4"
+            app:layout_constraintBottom_toBottomOf="@id/imageItem4"
+            android:src="@drawable/item_icon_placegolder"
+            />
 
-            <ImageView
-                android:id="@+id/redTeamIcon2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/redTeamIcon3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/redTeamIcon4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-            <ImageView
-                android:id="@+id/redTeamIcon5"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/champion_icon_placegolder_one_half"
-                />
-
-        </LinearLayout>
--->
+        <ImageView
+            android:id="@+id/imageWard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/imageItem2"
+            app:layout_constraintStart_toEndOf="@id/imageItem2"
+            app:layout_constraintBottom_toBottomOf="@id/imageItem5"
+            android:src="@drawable/item_icon_placegolder"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
