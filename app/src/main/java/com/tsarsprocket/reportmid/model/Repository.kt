@@ -14,6 +14,7 @@ import com.merakianalytics.orianna.types.core.match.Participant
 import com.merakianalytics.orianna.types.core.match.Team
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.merakianalytics.orianna.types.core.staticdata.Item
+import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
@@ -151,7 +152,9 @@ class Repository @Inject constructor( val context: Context ) {
 
     fun getItemModel( item: Item ) = ensureInitializedDoOnIO { ItemModel( this, item ) }
 
-    private fun<T> ensureInitializedDoOnIO(l: () -> T ): Observable<T> {
+    fun getSummonerSpell( l: () -> SummonerSpell ) = ensureInitializedDoOnIO { SummonerSpellModel( this, l() ) }
+
+    private fun<T> ensureInitializedDoOnIO( l: () -> T ): Observable<T> {
         return initialized.observeOn( Schedulers.io() ).map { fInitialized ->
             when( fInitialized ) {
                 true -> l()

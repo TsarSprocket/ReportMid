@@ -108,6 +108,9 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
                     findViewById<TextView>( R.id.txtCS ).text = "CS: ${data.creepScore.toString()}"
 
+                    findViewById<ImageView>( R.id.iconSummonerSpellD ).setImageBitmap( data.bmSummonerSpellD )
+                    findViewById<ImageView>( R.id.iconSummonerSpellF ).setImageBitmap( data.bmSummonerSpellF )
+
                     val vlItems = List( arrIconViewIds.size ){ i -> findViewById<ImageView>( arrIconViewIds[ i ] ) }
                     val iconWard = findViewById<ImageView>( R.id.imageWard )
 

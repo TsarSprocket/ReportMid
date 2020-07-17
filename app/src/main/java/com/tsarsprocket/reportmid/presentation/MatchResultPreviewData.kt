@@ -10,6 +10,8 @@ data class MatchResultPreviewData (
     val hasWon: Boolean,
     val creepScore: Int,
     val gameMode: String,
+    val bmSummonerSpellD: Bitmap,
+    val bmSummonerSpellF: Bitmap,
     val itemIcons: Array<Bitmap>
 ) {
 }

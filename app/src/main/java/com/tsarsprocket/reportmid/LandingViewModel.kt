@@ -129,6 +129,8 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
                     asParticipant.isWinner,
                     asParticipant.creepScore,
                     match.gameMode.toString(),
+                    asParticipant.summonerSpellD.blockingSingle().icon.blockingSingle(),
+                    asParticipant.summonerSpellF.blockingSingle().icon.blockingSingle(),
                     getItemIcons( asParticipant )
                 )
             }

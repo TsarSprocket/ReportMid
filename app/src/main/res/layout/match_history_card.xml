@@ -61,11 +61,40 @@
             />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideItems"
+            android:id="@+id/guideSummonerSpells"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_begin="140dp"
+            />
+
+        <ImageView
+            android:id="@+id/iconSummonerSpellD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideSummonerSpells"
+            app:layout_constraintBottom_toTopOf="@id/iconSummonerSpellF"
+            android:src="@drawable/item_icon_placegolder"
+            />
+
+        <ImageView
+            android:id="@+id/iconSummonerSpellF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/iconSummonerSpellD"
+            app:layout_constraintStart_toStartOf="@id/iconSummonerSpellD"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/item_icon_placegolder"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="180dp"
             />
 
         <ImageView
