@@ -12,9 +12,16 @@ class ParticipantModel( private val repository: Repository, val team: TeamModel,
     val assists = shadowParticipant.stats.assists
     val isWinner = shadowParticipant.stats.isWinner
     val creepScore = shadowParticipant.stats.creepScore
-    val summonerSpellD by lazy { repository.getSummonerSpell { shadowParticipant.summonerSpellD }.replay( 1 ).autoConnect() }
-    val summonerSpellF by lazy { repository.getSummonerSpell { shadowParticipant.summonerSpellF }.replay( 1 ).autoConnect() }
+    val summonerSpellD by lazy { Observable.fromCallable { shadowParticipant.summonerSpellD }.subscribeOn( Schedulers.io() ).flatMap { spell -> repository.getSummonerSpell { spell } }.replay( 1 ).autoConnect() }
+    val summonerSpellF by lazy { Observable.fromCallable { shadowParticipant.summonerSpellF }.subscribeOn( Schedulers.io() ).flatMap { spell -> repository.getSummonerSpell { spell } }.replay( 1 ).autoConnect() }
     val items by lazy{ getObservableItemsList().replay( 1 ).autoConnect() }
+    val primaryRunePath by lazy { Observable.fromCallable { shadowParticipant.primaryRunePath }.subscribeOn( Schedulers.io() ).map { path -> Repository.getRunePath( path.id ) } }
+    val secondaryRunePath by lazy { Observable.fromCallable { shadowParticipant.secondaryRunePath }.subscribeOn( Schedulers.io() ).map { path -> Repository.getRunePath( path.id ) } }
+    val runeStats by lazy { getObservableRuneStatsList().replay( 1 ).autoConnect() }
+
+    private fun getObservableRuneStatsList() = Observable.fromCallable {
+        List( shadowParticipant.runeStats.size ) { i -> repository.getRuneStats( shadowParticipant.runeStats[ i ] ).replay().autoConnect() }
+    }.subscribeOn( Schedulers.io() )
 
     private fun getObservableItemsList(): Observable<List<Observable<ItemModel>>> = Observable.fromCallable {
         List( shadowParticipant.items.size ) { i ->

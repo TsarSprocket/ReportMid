@@ -104,6 +104,10 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
             .subscribe { data ->
                 with( holder.cardView ) {
                     findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
+
+                    findViewById<ImageView>( R.id.iconPrimaryRune ).setImageResource( data.primaryRuneIconResId )
+                    findViewById<ImageView>( R.id.iconSecondaryRunePath ).setImageResource( data.secondaryRunePathIconResId )
+
                     findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
                     findViewById<TextView>( R.id.txtCS ).text = "CS: ${data.creepScore.toString()}"

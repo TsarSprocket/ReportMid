@@ -15,6 +15,13 @@
         android:layout_margin="4dp"
         >
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideMiddle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
         <ImageView
             android:id="@+id/imgChampionIcon"
             android:layout_width="wrap_content"
@@ -27,11 +34,41 @@
             />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideTextInfo"
+            android:id="@+id/guideRunes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_begin="60dp" />
+
+        <ImageView
+            android:id="@+id/iconPrimaryRune"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideRunes"
+            app:layout_constraintBottom_toTopOf="@id/iconSecondaryRunePath"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:src="@drawable/item_icon_placegolder"
+            />
+
+        <ImageView
+            android:id="@+id/iconSecondaryRunePath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/iconPrimaryRune"
+            app:layout_constraintStart_toStartOf="@id/iconPrimaryRune"
+            app:layout_constraintEnd_toEndOf="@id/iconPrimaryRune"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/item_icon_placegolder"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideTextInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="110dp" />
 
         <TextView
             android:id="@+id/txtGameOutcome"
@@ -65,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="140dp"
+            app:layout_constraintGuide_begin="160dp"
             />
 
         <ImageView
@@ -94,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="180dp"
+            app:layout_constraintGuide_begin="210dp"
             />
 
         <ImageView

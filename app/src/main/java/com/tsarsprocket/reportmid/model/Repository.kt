@@ -7,13 +7,12 @@ import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.Region
+import com.merakianalytics.orianna.types.common.RunePath
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
-import com.merakianalytics.orianna.types.core.match.Match
-import com.merakianalytics.orianna.types.core.match.MatchHistory
-import com.merakianalytics.orianna.types.core.match.Participant
-import com.merakianalytics.orianna.types.core.match.Team
+import com.merakianalytics.orianna.types.core.match.*
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.merakianalytics.orianna.types.core.staticdata.Item
+import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
@@ -24,6 +23,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.io.InputStreamReader
 import java.lang.Exception
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,8 +34,10 @@ class Repository @Inject constructor( val context: Context ) {
 
     lateinit var database: MainStorage
 
-    val summoners = HashMap<String,SummonerModel>()
-    val champions = HashMap<Int,ChampionModel>()
+    val summoners = ConcurrentHashMap<String,SummonerModel>()
+    val champions = ConcurrentHashMap<Int,ChampionModel>()
+    val summonerSpells = ConcurrentHashMap<Int,SummonerSpellModel>()
+    val runes = ConcurrentHashMap<Int,RuneModel>()
 
     init {
 
@@ -152,7 +154,18 @@ class Repository @Inject constructor( val context: Context ) {
 
     fun getItemModel( item: Item ) = ensureInitializedDoOnIO { ItemModel( this, item ) }
 
-    fun getSummonerSpell( l: () -> SummonerSpell ) = ensureInitializedDoOnIO { SummonerSpellModel( this, l() ) }
+    fun getSummonerSpell( l: () -> SummonerSpell ) = ensureInitializedDoOnIO {
+        val spell = l();
+        summonerSpells[ spell.id ]?: SummonerSpellModel( this, spell ).also { summonerSpells[ spell.id ] = it }
+    }
+
+    fun getRuneStats( runeStats: RuneStats ) = ensureInitializedDoOnIO { RuneStatsModel( this, runeStats ) }
+
+    fun getRune( reforgedRune: ReforgedRune ) = ensureInitializedDoOnIO { runes[ reforgedRune.id ]?: RuneModel( this, reforgedRune ).also { runes[ reforgedRune.id ] = it } }
+
+    companion object {
+        fun getRunePath( pathId: Int ) = RunePathModel.byId[ pathId ]
+    }
 
     private fun<T> ensureInitializedDoOnIO( l: () -> T ): Observable<T> {
         return initialized.observeOn( Schedulers.io() ).map { fInitialized ->

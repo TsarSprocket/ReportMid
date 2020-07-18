@@ -118,17 +118,25 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
             }
             .map { match ->
                 val asParticipant = findParticipant( match, summoner )
+                val asChampion = asParticipant.champion.blockingSingle()
 
 //                val resizeMatrix = Matrix().apply { postScale( 0.5f, 0.5f ) }
 
+                val runeModels = asParticipant.runeStats.blockingSingle().map { o -> o.blockingSingle().rune.blockingSingle() }
+
+                // The two exceptions below should never be thrown
+                val primaryRune = runeModels.find { it.slot == 0 }?: throw RuntimeException( "Did not find rune with slot 0 in ${asChampion.name}" )
+
                 MatchResultPreviewData(
-                    asParticipant.champion.blockingSingle().bitmap.blockingSingle(),
+                    asChampion.bitmap.blockingSingle(),
                     asParticipant.kills,
                     asParticipant.deaths,
                     asParticipant.assists,
                     asParticipant.isWinner,
                     asParticipant.creepScore,
                     match.gameMode.toString(),
+                    primaryRune.iconResId,
+                    asParticipant.secondaryRunePath.blockingSingle()!!.iconResId,
                     asParticipant.summonerSpellD.blockingSingle().icon.blockingSingle(),
                     asParticipant.summonerSpellF.blockingSingle().icon.blockingSingle(),
                     getItemIcons( asParticipant )
