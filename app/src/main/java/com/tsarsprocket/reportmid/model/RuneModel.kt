@@ -13,7 +13,7 @@ class RuneModel( val repository: Repository, private val reforgedRune: ReforgedR
     val runePath = Repository.getRunePath( reforgedRune.path.id )
     val iconResId = getIconResId( key )
 
-    private fun getIconResId(key: String?): Int {
+    private fun getIconResId( key: String? ): Int {
         val splitPath = imagePath.split( '/', '.' )
         val resKey = splitPath[ splitPath.size - 2 ]
         val resName = "${RES_NAME_PREFIX_RUNE}_${resKey.toLowerCase()}"

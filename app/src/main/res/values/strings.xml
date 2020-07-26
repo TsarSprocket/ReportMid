@@ -13,6 +13,7 @@
     <!-- Fragment: Match history -->
     <string name="fragment_match_history_message_win">Win</string>
     <string name="fragment_match_history_message_defeat">Defeat</string>
+    <string name="fragment_match_history_title_template">Matches of %s</string>
 
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>

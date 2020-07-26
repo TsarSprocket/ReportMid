@@ -12,7 +12,7 @@ data class SummonerModel(
 ) {
 
     val name: String = shadowSummoner.name
-    val icon: Observable<Bitmap> by lazy { Observable.fromCallable { shadowSummoner.profileIcon.image.get() }.subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect() }
+    val icon: Observable<Bitmap> by lazy { Observable.fromCallable { shadowSummoner.profileIcon.image.get()!! }.subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect() }
     val puuid: String = shadowSummoner.puuid
     val level: Int = shadowSummoner.level
     val masteries: Observable<List<Observable<ChampionMasteryModel>>> by lazy { getObservableMasteryList().replay( 1 ).autoConnect() }
@@ -25,7 +25,7 @@ data class SummonerModel(
     }.subscribeOn( Schedulers.io() )
 
     private fun getObservableMatchHistoryForSummoner( summoner: Summoner ): Observable<MatchHistoryModel> =
-        Observable.fromCallable { MatchHistory.forSummoner( summoner ).get() }
+        Observable.fromCallable { MatchHistory.forSummoner( summoner ).get()!! }
             .subscribeOn( Schedulers.io() )
             .flatMap { shadowHistory -> repository.getMatchHistoryModel( shadowHistory ) }
 }

@@ -6,10 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
-import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -55,9 +54,14 @@ class MatchHistoryFragment : BaseFragment() {
                         return viewModel.fetchMatchPreviewInfo( i )
                     }
                 } )
+
+                binding.matchHistoryView.visibility = View.VISIBLE
+                binding.progressLoading.visibility = View.GONE
             }
             if( disposable != null ) viewModel.allDisposables.add( disposable )
         }
+
+        requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_match_history_title_template ).format( viewModel.activeSummonerModel.value?.name )
 
         return binding.root
     }
@@ -86,7 +90,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
 
         with( holder.cardView ) {
             findViewById<ImageView>( R.id.imgChampionIcon ).setImageResource( R.drawable.champion_icon_placegolder )
-            findViewById<TextView>( R.id.txtGameOutcome ).text = ""
+            findViewById<TextView>( R.id.txtGameMode ).text = ""
             findViewById<TextView>( R.id.txtMainKDA ).text = "?/?/?"
 /*
             val teams = arrayListOf<ViewGroup>( findViewById<LinearLayout>(R.id.layoutItemIcons), findViewById<LinearLayout>(R.id.layoutRedTeamIcons) )
@@ -108,7 +112,9 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                     findViewById<ImageView>( R.id.iconPrimaryRune ).setImageResource( data.primaryRuneIconResId )
                     findViewById<ImageView>( R.id.iconSecondaryRunePath ).setImageResource( data.secondaryRunePathIconResId )
 
-                    findViewById<TextView>( R.id.txtGameOutcome ).text = if( data.hasWon ) context.getString( R.string.fragment_match_history_message_win ) else context.getString( R.string.fragment_match_history_message_defeat )
+                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.colorBGRemake else if( data.hasWon ) R.color.colorBGWin else R.color.colorBGDefeat ) )
+
+                    findViewById<TextView>( R.id.txtGameMode ).text = resources.getString( data.gameModeNameResId )
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
                     findViewById<TextView>( R.id.txtCS ).text = "CS: ${data.creepScore.toString()}"
 

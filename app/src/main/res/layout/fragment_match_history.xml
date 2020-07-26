@@ -5,6 +5,7 @@
     >
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="viewModel"
             type="com.tsarsprocket.reportmid.LandingViewModel" />
@@ -20,6 +21,15 @@
             android:id="@+id/matchHistoryView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
+            />
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/progressLoading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="true"
+            android:visibility="visible"
             />
 
     </FrameLayout>

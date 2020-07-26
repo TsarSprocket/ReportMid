@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gamemode_title_custom_blind_sr">Cust SR Blind</string>
+    <string name="gamemode_title_custom_blind_ha">Cust HA Blind</string>
+    <string name="gamemode_title_custom_draft_sr">Cust SR Draft</string>
+    <string name="gamemode_title_custom_draft_ha">Cust HA Draft</string>
+    <string name="gamemode_title_custom_random_sr">Cust SR Random</string>
+    <string name="gamemode_title_custom_random_ha">Cust HA Random</string>
+    <string name="gamemode_title_normal_draft">Normal Draft</string>
+    <string name="gamemode_title_aram">A.R.A.M.</string>
+
+    <string name="gamemode_title_arsr">A.R.S.R.</string>
+    <string name="gamemode_title_ascension">Ascension</string>
+    <string name="gamemode_title_assassinate">Assassinate</string>
+    <string name="gamemode_title_classic">Classic</string>
+    <string name="gamemode_title_darkstar">Dark Star</string>
+    <string name="gamemode_title_doombotsteemo">Doom Bots</string>
+    <string name="gamemode_title_firstblood">First Blood</string>
+    <string name="gamemode_title_kingporo">King Poro</string>
+    <string name="gamemode_title_odin">Odin</string>
+    <string name="gamemode_title_oneforall">One for All</string>
+    <string name="gamemode_title_overcharge">Overcharge</string>
+    <string name="gamemode_title_practicetool">Practice</string>
+    <string name="gamemode_title_project">Project</string>
+    <string name="gamemode_title_siege">Siege</string>
+    <string name="gamemode_title_snowurf">Snow U.R.F.</string>
+    <string name="gamemode_title_startguardian">Star Guardian</string>
+    <string name="gamemode_title_tutorial">Tutorial</string>
+    <string name="gamemode_title_tutorial_module_1">Tutorial 1</string>
+    <string name="gamemode_title_tutorial_module_2">Tutorial 2</string>
+    <string name="gamemode_title_tutorial_module_3">Tutorial 3</string>
+    <string name="gamemode_title_urf">U.R.F.</string>
+
+    <string name="gamemode_title_unknown">Unknown</string>
+</resources>

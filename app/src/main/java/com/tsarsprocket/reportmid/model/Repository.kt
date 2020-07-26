@@ -6,8 +6,10 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
+import com.merakianalytics.orianna.types.common.GameMode
+import com.merakianalytics.orianna.types.common.GameType
+import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.common.Region
-import com.merakianalytics.orianna.types.common.RunePath
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.*
 import com.merakianalytics.orianna.types.core.staticdata.Champion
@@ -23,6 +25,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.io.InputStreamReader
 import java.lang.Exception
+import java.lang.RuntimeException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -164,13 +167,15 @@ class Repository @Inject constructor( val context: Context ) {
     fun getRune( reforgedRune: ReforgedRune ) = ensureInitializedDoOnIO { runes[ reforgedRune.id ]?: RuneModel( this, reforgedRune ).also { runes[ reforgedRune.id ] = it } }
 
     companion object {
-        fun getRunePath( pathId: Int ) = RunePathModel.byId[ pathId ]
+        fun getRunePath( pathId: Int ) = RunePathModel.byId[ pathId ]?: throw RuntimeException( "Incorrect rune pathj ID: $pathId" )
+        fun getGameType( gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null ) =
+            GameTypeModel.by( gameType, queue, gameMode, gameMap )
     }
 
     private fun<T> ensureInitializedDoOnIO( l: () -> T ): Observable<T> {
         return initialized.observeOn( Schedulers.io() ).map { fInitialized ->
             when( fInitialized ) {
-                true -> l()
+                true -> l()!!
                 else -> throw RepositoryNotInitializedException()
             }
         }

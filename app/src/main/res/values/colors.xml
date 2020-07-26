@@ -3,4 +3,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="colorBGWin">#3C7339</color> <!-- Material: #004d40 -->
+    <color name="colorBGDefeat">#832B21</color> <!-- Material: #7f0000 -->
+    <color name="colorBGRemake">#565656</color>
 </resources>
