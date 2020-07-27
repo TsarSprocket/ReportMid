@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -74,6 +75,8 @@ class MatchHistoryFragment : BaseFragment() {
 
 class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerView.Adapter<MatchHistoryViewHolder>() {
 
+    var cardBGColour: ColorStateList? = null
+
     override fun onCreateViewHolder( parent: ViewGroup, viewType: Int ): MatchHistoryViewHolder {
         val cardView = LayoutInflater.from( parent.context )
             .inflate( R.layout.match_history_card, parent, false ) as CardView
@@ -89,37 +92,47 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
         holder.allDisposables = CompositeDisposable()
 
         with( holder.cardView ) {
+
+            if( cardBGColour == null ) {
+                cardBGColour = cardBackgroundColor
+            } else {
+                setCardBackgroundColor( cardBGColour )
+            }
+
             findViewById<ImageView>( R.id.imgChampionIcon ).setImageResource( R.drawable.champion_icon_placegolder )
+
+            findViewById<ImageView>( R.id.iconPrimaryRune ).visibility = View.INVISIBLE
+            findViewById<ImageView>( R.id.iconSecondaryRunePath ).visibility = View.INVISIBLE
+
             findViewById<TextView>( R.id.txtGameMode ).text = ""
             findViewById<TextView>( R.id.txtMainKDA ).text = "?/?/?"
-/*
-            val teams = arrayListOf<ViewGroup>( findViewById<LinearLayout>(R.id.layoutItemIcons), findViewById<LinearLayout>(R.id.layoutRedTeamIcons) )
-            for( vg in teams ) {
-                for (i: Int in 0 until vg.childCount) {
-                    val v = vg[i]
-                    if (v is ImageView) v.setImageResource(R.drawable.champion_icon_placegolder_one_half)
-                }
-9            }
-*/
+            findViewById<TextView>( R.id.txtCS ).text = "CS: ?"
+
+            findViewById<ImageView>( R.id.iconSummonerSpellD ).visibility = View.INVISIBLE
+            findViewById<ImageView>( R.id.iconSummonerSpellF ).visibility = View.INVISIBLE
+
+            arrIconViewIds.forEach { findViewById<ImageView>( it ).visibility = View.INVISIBLE }
+
+            findViewById<ImageView>( R.id.imageWard ).visibility = View.INVISIBLE
         }
 
         holder.allDisposables.add( dataProvider.getMatchData( position )
             .observeOn( AndroidSchedulers.mainThread() )
             .subscribe { data ->
                 with( holder.cardView ) {
+                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.colorBGRemake else if( data.hasWon ) R.color.colorBGWin else R.color.colorBGDefeat ) )
+
                     findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
 
-                    findViewById<ImageView>( R.id.iconPrimaryRune ).setImageResource( data.primaryRuneIconResId )
-                    findViewById<ImageView>( R.id.iconSecondaryRunePath ).setImageResource( data.secondaryRunePathIconResId )
-
-                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.colorBGRemake else if( data.hasWon ) R.color.colorBGWin else R.color.colorBGDefeat ) )
+                    with( findViewById<ImageView>( R.id.iconPrimaryRune ) ) { setImageResource( data.primaryRuneIconResId ); visibility = View.VISIBLE }
+                    with( findViewById<ImageView>( R.id.iconSecondaryRunePath ) ){ setImageResource( data.secondaryRunePathIconResId ); visibility = View.VISIBLE }
 
                     findViewById<TextView>( R.id.txtGameMode ).text = resources.getString( data.gameModeNameResId )
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
                     findViewById<TextView>( R.id.txtCS ).text = "CS: ${data.creepScore.toString()}"
 
-                    findViewById<ImageView>( R.id.iconSummonerSpellD ).setImageBitmap( data.bmSummonerSpellD )
-                    findViewById<ImageView>( R.id.iconSummonerSpellF ).setImageBitmap( data.bmSummonerSpellF )
+                    with( findViewById<ImageView>( R.id.iconSummonerSpellD ) ){ setImageBitmap( data.bmSummonerSpellD ); visibility = View.VISIBLE }
+                    with( findViewById<ImageView>( R.id.iconSummonerSpellF ) ){ setImageBitmap( data.bmSummonerSpellF ); visibility = View.VISIBLE }
 
                     val vlItems = List( arrIconViewIds.size ){ i -> findViewById<ImageView>( arrIconViewIds[ i ] ) }
                     val iconWard = findViewById<ImageView>( R.id.imageWard )
@@ -131,6 +144,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                         } else {
                             imageView.setImageResource( R.drawable.item_empty ) // imageView.visibility = View.INVISIBLE
                         }
+                        imageView.visibility = View.VISIBLE
                     }
 
                     if( data.itemIcons.isNotEmpty() ) {
@@ -138,6 +152,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
                     } else {
                         iconWard.setImageResource( R.drawable.item_empty ) // iconWard.visibility = View.INVISIBLE
                     }
+                    iconWard.visibility = View.VISIBLE
                 }
             }
         )
