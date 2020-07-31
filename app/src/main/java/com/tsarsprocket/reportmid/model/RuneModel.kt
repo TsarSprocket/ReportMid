@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.model
 
 import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
+import io.reactivex.Maybe
 
 const val RES_NAME_PREFIX_RUNE= "rune"
 
@@ -10,7 +11,7 @@ class RuneModel( val repository: Repository, private val reforgedRune: ReforgedR
     val imagePath = reforgedRune.image
     val longDesc = reforgedRune.longDescription
     val slot = reforgedRune.slot
-    val runePath = Repository.getRunePath( reforgedRune.path.id )
+    val runePath = Repository.getRunePath( Maybe.just( reforgedRune.path.id ) )
     val iconResId = getIconResId( key )
 
     private fun getIconResId( key: String? ): Int {

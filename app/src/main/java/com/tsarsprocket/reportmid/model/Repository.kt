@@ -21,6 +21,7 @@ import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.SummonerEntity
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.io.InputStreamReader
@@ -167,7 +168,7 @@ class Repository @Inject constructor( val context: Context ) {
     fun getRune( reforgedRune: ReforgedRune ) = ensureInitializedDoOnIO { runes[ reforgedRune.id ]?: RuneModel( this, reforgedRune ).also { runes[ reforgedRune.id ] = it } }
 
     companion object {
-        fun getRunePath( pathId: Int ) = RunePathModel.byId[ pathId ]?: throw RuntimeException( "Incorrect rune pathj ID: $pathId" )
+        fun getRunePath( pathId: Maybe<Int> ) = if( pathId.isEmpty.blockingGet() ) Maybe.empty() else Maybe.just( RunePathModel.byId[ pathId.blockingGet() ]?: throw RuntimeException( "Incorrect rune pathj ID: $pathId" ) )
         fun getGameType( gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null ) =
             GameTypeModel.by( gameType, queue, gameMode, gameMap )
     }

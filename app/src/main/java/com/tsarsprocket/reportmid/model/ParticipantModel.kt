@@ -1,6 +1,8 @@
 package com.tsarsprocket.reportmid.model
 
+import com.merakianalytics.orianna.types.common.RunePath
 import com.merakianalytics.orianna.types.core.match.Participant
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
@@ -15,8 +17,8 @@ class ParticipantModel( private val repository: Repository, val team: TeamModel,
     val summonerSpellD by lazy { Observable.fromCallable { shadowParticipant.summonerSpellD!! }.subscribeOn( Schedulers.io() ).flatMap { spell -> repository.getSummonerSpell { spell } }.replay( 1 ).autoConnect() }
     val summonerSpellF by lazy { Observable.fromCallable { shadowParticipant.summonerSpellF!! }.subscribeOn( Schedulers.io() ).flatMap { spell -> repository.getSummonerSpell { spell } }.replay( 1 ).autoConnect() }
     val items by lazy{ getObservableItemsList().replay( 1 ).autoConnect() }
-    val primaryRunePath by lazy { Observable.fromCallable { shadowParticipant.primaryRunePath!! }.subscribeOn( Schedulers.io() ).map { path -> Repository.getRunePath( path.id ) }.replay( 1 ).autoConnect() }
-    val secondaryRunePath by lazy { Observable.fromCallable { shadowParticipant.secondaryRunePath!! }.subscribeOn( Schedulers.io() ).map { path -> Repository.getRunePath( path.id ) }.replay( 1 ).autoConnect() }
+    val primaryRunePath by lazy { getMaybePath( shadowParticipant.primaryRunePath ).replay( 1 ).autoConnect() }
+    val secondaryRunePath by lazy { getMaybePath( shadowParticipant.secondaryRunePath ).replay( 1 ).autoConnect() }
     val runeStats by lazy { getObservableRuneStatsList().replay( 1 ).autoConnect() }
 
     private fun getObservableRuneStatsList() = Observable.fromCallable {
@@ -28,4 +30,13 @@ class ParticipantModel( private val repository: Repository, val team: TeamModel,
             repository.getItemModel( shadowParticipant.items[ i ] ).replay( 1 ).autoConnect()
         }
     }.observeOn( Schedulers.io() )
+
+    private fun getMaybePath( runePath: RunePath? ): Observable<Maybe<RunePathModel>> {
+        return Observable.fromCallable {
+            val path = runePath
+            if (path != null) Maybe.just(path) else Maybe.empty()
+        }.subscribeOn(Schedulers.io()).map { path ->
+            Repository.getRunePath(if (path.isEmpty.blockingGet()) Maybe.empty() else Maybe.just(path.blockingGet().id))
+        }
+    }
 }

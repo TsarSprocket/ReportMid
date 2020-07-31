@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.*
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -34,9 +35,10 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
 
     val state = MutableLiveData<Status>( Status.LOADING )
 
-    val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Bitmap>() }
+    val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Maybe<Bitmap>>() }
 
     val allDisposables = CompositeDisposable()
+    val summonerDisposables = CompositeDisposable()
 
     init {
         repository.getActiveSummoner()
@@ -47,13 +49,13 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
                 }
                 override fun onNext( summonerModel: SummonerModel ) {
                     activeSummonerModel.value = summonerModel
-                    loadMasteries()
                     state.value = Status.VERIFIED
                 }
                 override fun onError( e: Throwable ) {
                     Log.d( LandingViewModel::class.simpleName, "Cannot initialize LandingViewModel", e )
                 }
             }.also { allDisposables.add( it ) } )
+        observeMasteries()
     }
 
     override fun onCleared() {
@@ -87,7 +89,58 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
     }
 
     @SuppressLint("CheckResult")
-    private fun loadMasteries() {
+    private fun observeMasteries() {
+        activeSummonerModel.observeForever { summoner ->
+            summonerDisposables.clear()
+            summonerDisposables.add( summoner.masteries.flatMapIterable { arrMasteries ->
+                val extraSize = TOP_MASTERIES_NUM - arrMasteries.size
+                val indexed: List<IndexedValue<Maybe<Observable<ChampionMasteryModel>>>> = arrMasteries.withIndex().map { IndexedValue( it.index, Maybe.just( it.value ) ) }
+/* Not needed
+                if( extraSize > 0 ) indexed + List( extraSize ) { i -> IndexedValue( indexed.size + i, Maybe.empty<Observable<ChampionMasteryModel>>() ) }
+                else
+*/
+                indexed
+            }
+                .flatMap { indexedObservableMastery ->
+                    if( indexedObservableMastery.value.isEmpty.blockingGet() ) Observable.just( Pair( indexedObservableMastery.index, Maybe.empty() ) )
+                    else indexedObservableMastery.value.blockingGet().map{ mastery -> Pair( indexedObservableMastery.index, Maybe.just( mastery ) ) }
+                }
+                .flatMap { indexedMastery ->
+                    if( indexedMastery.second.isEmpty.blockingGet() ) Observable.just( Pair( indexedMastery.first, Maybe.empty() ) )
+                    else indexedMastery.second.blockingGet().champion.map { champion -> Pair( indexedMastery.first, Maybe.just( champion ) ) }
+                }
+                .flatMap { indexedChamp ->
+                    if( indexedChamp.second.isEmpty.blockingGet() ) Observable.just( Pair( indexedChamp.first, Maybe.empty() ) )
+                    else indexedChamp.second.blockingGet().bitmap.map{ bitmap -> Pair( indexedChamp.first, Maybe.just( bitmap ) ) }
+                }
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe {
+                    val ( i, maybeBitmap ) = it
+                    championImages[ i ].value = maybeBitmap
+                }
+            )
+        }
+
+
+/*
+        val observableMasteries = activeSummonerModel.value?.masteries
+        if( observableMasteries != null ) {
+            allDisposables.add( observableMasteries.subscribe { masteries ->
+                for( i in 0 until if ( masteries.size < TOP_MASTERIES_NUM ) masteries.size else TOP_MASTERIES_NUM ) {
+                    masteries[i].observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { mastery -> mastery.champion }
+                        .flatMap { champ -> champ.bitmap }
+                        .observeOn( AndroidSchedulers.mainThread() )
+                        .subscribe { bitmap ->
+                            championImages[i].value = bitmap
+                        }
+
+                }
+            } )
+        }
+*/
+
+/*
         for( i in 0 until TOP_MASTERIES_NUM ) {
             activeSummonerModel.value!!.masteries
                 .flatMap { masteryList -> masteryList[ i ] }
@@ -104,6 +157,7 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
                         }
                 }
         }
+*/
     }
 
     fun fetchMatchPreviewInfo(
@@ -125,7 +179,8 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
                 val runeModels = asParticipant.runeStats.blockingSingle().map { o -> o.blockingSingle().rune.blockingSingle() }
 
                 // The two exceptions below should never be thrown
-                val primaryRune = runeModels.find { it.slot == 0 }?: throw RuntimeException( "Did not find rune with slot 0 in ${asChampion.name}" )
+
+                val maybeSecondaryPath = asParticipant.secondaryRunePath.blockingSingle()
 
                 MatchResultPreviewData(
                     asChampion.bitmap.blockingSingle(),
@@ -136,8 +191,8 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
                     match.remake,
                     asParticipant.creepScore,
                     match.gameType.titleResId,
-                    primaryRune.iconResId,
-                    asParticipant.secondaryRunePath.blockingSingle()!!.iconResId,
+                    runeModels.find { it.slot == 0 }?.iconResId,
+                    if( maybeSecondaryPath.isEmpty.blockingGet() ) null else maybeSecondaryPath.blockingGet().iconResId,
                     asParticipant.summonerSpellD.blockingSingle().icon.blockingSingle(),
                     asParticipant.summonerSpellF.blockingSingle().icon.blockingSingle(),
                     getItemIcons( asParticipant )

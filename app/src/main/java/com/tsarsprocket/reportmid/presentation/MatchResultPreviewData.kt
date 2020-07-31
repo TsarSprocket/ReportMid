@@ -11,8 +11,8 @@ data class MatchResultPreviewData (
     val remake: Boolean,
     val creepScore: Int,
     val gameModeNameResId: Int,
-    val primaryRuneIconResId: Int,
-    val secondaryRunePathIconResId: Int,
+    val primaryRuneIconResId: Int?,
+    val secondaryRunePathIconResId: Int?,
     val bmSummonerSpellD: Bitmap,
     val bmSummonerSpellF: Bitmap,
     val itemIcons: Array<Bitmap>

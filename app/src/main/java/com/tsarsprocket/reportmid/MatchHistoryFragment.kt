@@ -124,8 +124,15 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
 
                     findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( data.mainChampionBitmap )
 
-                    with( findViewById<ImageView>( R.id.iconPrimaryRune ) ) { setImageResource( data.primaryRuneIconResId ); visibility = View.VISIBLE }
-                    with( findViewById<ImageView>( R.id.iconSecondaryRunePath ) ){ setImageResource( data.secondaryRunePathIconResId ); visibility = View.VISIBLE }
+                    if( data.primaryRuneIconResId != null ) {
+                        with( findViewById<ImageView>( R.id.iconPrimaryRune ) ) { setImageResource(data.primaryRuneIconResId); visibility = View.VISIBLE }
+                    }
+
+                    if( data.secondaryRunePathIconResId != null ) {
+                        with( findViewById<ImageView>( R.id.iconSecondaryRunePath ) ) {
+                            setImageResource(data.secondaryRunePathIconResId); visibility = View.VISIBLE
+                        }
+                    }
 
                     findViewById<TextView>( R.id.txtGameMode ).text = resources.getString( data.gameModeNameResId )
                     findViewById<TextView>( R.id.txtMainKDA ).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"

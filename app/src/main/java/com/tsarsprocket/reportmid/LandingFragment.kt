@@ -62,7 +62,14 @@ class LandingFragment : BaseFragment() {
         for( i: Int in 0 until TOP_MASTERIES_NUM ) {
             viewModel.championImages[ i ].observe( viewLifecycleOwner, Observer { b ->
                 with( masteryGroups[ i ] ) {
-                    findViewWithTag<ImageView>( getString( R.string.fragment_landing_tag_champion_icon ) ).setImageBitmap( b )
+                    with( findViewWithTag<ImageView>( getString( R.string.fragment_landing_tag_champion_icon ) ) ) {
+                        if( !b.isEmpty.blockingGet() ) {
+                            setImageBitmap( b.blockingGet() )
+                            visibility = View.VISIBLE
+                        } else {
+                            visibility = View.GONE
+                        }
+                    }
 
                     fragmentDisposables.add( viewModel.activeSummonerModel.value!!.masteries
                         .flatMap { masteryList -> masteryList[ i ] }
