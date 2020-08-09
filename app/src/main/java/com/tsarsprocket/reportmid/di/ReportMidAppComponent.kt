@@ -1,10 +1,7 @@
 package com.tsarsprocket.reportmid.di
 
 import android.content.Context
-import com.tsarsprocket.reportmid.InitialEnterFragment
-import com.tsarsprocket.reportmid.LandingFragment
-import com.tsarsprocket.reportmid.MatchHistoryFragment
-import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.*
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
@@ -15,7 +12,8 @@ import javax.inject.Singleton
     ReportMidAppModule::class,
     MainActivityModule::class,
     ViewModelFactoryBinder::class,
-    LandingViewModelModule::class
+    LandingViewModelModule::class,
+    MatchupViewModelModule::class
 ] )
 interface ReportMidAppComponent {
 
@@ -31,4 +29,5 @@ interface ReportMidAppComponent {
     fun inject( landingFragment: LandingFragment )
     fun inject( initialEnterFragment: InitialEnterFragment )
     fun inject( matchHistoryFragment: MatchHistoryFragment )
+    fun inject( matchupFragment: MatchupFragment )
 }

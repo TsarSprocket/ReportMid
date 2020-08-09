@@ -8,6 +8,7 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.presentation.MasteryLive
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -19,7 +20,7 @@ import javax.inject.Inject
 
 const val TOP_MASTERIES_NUM = 5
 
-class LandingViewModel @Inject constructor( private val repository: Repository) : ViewModel() {
+class LandingViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
 
     enum class Status { LOADING, UNVERIFIED, VERIFIED }
 
@@ -35,26 +36,22 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
 
     val state = MutableLiveData<Status>( Status.LOADING )
 
-    val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Maybe<Bitmap>>() }
+    val masteries = Array( TOP_MASTERIES_NUM ) { MasteryLive() }
+//    val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Maybe<Bitmap>>() }
 
     val allDisposables = CompositeDisposable()
     val summonerDisposables = CompositeDisposable()
 
     init {
-        repository.getActiveSummoner()
+        allDisposables.add( repository.getActiveSummoner()
             .observeOn( AndroidSchedulers.mainThread() )
-            .subscribe( object: DisposableObserver<SummonerModel>() {
-                override fun onComplete() {
-                    if( activeSummonerModel.value == null ) state.value = Status.UNVERIFIED
-                }
-                override fun onNext( summonerModel: SummonerModel ) {
-                    activeSummonerModel.value = summonerModel
-                    state.value = Status.VERIFIED
-                }
-                override fun onError( e: Throwable ) {
-                    Log.d( LandingViewModel::class.simpleName, "Cannot initialize LandingViewModel", e )
-                }
-            }.also { allDisposables.add( it ) } )
+            .doOnNext { summonerModel ->
+                activeSummonerModel.value = summonerModel
+                state.value = Status.VERIFIED
+            }
+            .doOnComplete { if( activeSummonerModel.value == null ) state.value = Status.UNVERIFIED }
+            .doOnError { e -> Log.d( LandingViewModel::class.simpleName, "Cannot initialize LandingViewModel", e ) }
+            .subscribe() )
         observeMasteries()
     }
 
@@ -94,29 +91,32 @@ class LandingViewModel @Inject constructor( private val repository: Repository) 
             summonerDisposables.clear()
             summonerDisposables.add( summoner.masteries.flatMapIterable { arrMasteries ->
                 val extraSize = TOP_MASTERIES_NUM - arrMasteries.size
-                val indexed: List<IndexedValue<Maybe<Observable<ChampionMasteryModel>>>> = arrMasteries.withIndex().map { IndexedValue( it.index, Maybe.just( it.value ) ) }
-/* Not needed
+                val indexed: List<IndexedValue<Maybe<Observable<ChampionMasteryModel>>>> = arrMasteries.take( TOP_MASTERIES_NUM ).withIndex().map { IndexedValue( it.index, Maybe.just( it.value ) ) }
                 if( extraSize > 0 ) indexed + List( extraSize ) { i -> IndexedValue( indexed.size + i, Maybe.empty<Observable<ChampionMasteryModel>>() ) }
-                else
-*/
-                indexed
+                else indexed
             }
                 .flatMap { indexedObservableMastery ->
                     if( indexedObservableMastery.value.isEmpty.blockingGet() ) Observable.just( Pair( indexedObservableMastery.index, Maybe.empty() ) )
-                    else indexedObservableMastery.value.blockingGet().map{ mastery -> Pair( indexedObservableMastery.index, Maybe.just( mastery ) ) }
+                    else indexedObservableMastery.value.blockingGet().map{ mastery ->
+                            masteries[ indexedObservableMastery.index ].skillsLive.postValue( MasteryLive.Skills( level = mastery.level, points = mastery.points ) )
+                            return@map Pair( indexedObservableMastery.index, Maybe.just( mastery ) )
+                        }
                 }
                 .flatMap { indexedMastery ->
                     if( indexedMastery.second.isEmpty.blockingGet() ) Observable.just( Pair( indexedMastery.first, Maybe.empty() ) )
-                    else indexedMastery.second.blockingGet().champion.map { champion -> Pair( indexedMastery.first, Maybe.just( champion ) ) }
+                    else indexedMastery.second.blockingGet().champion.map { champion ->
+                        masteries[ indexedMastery.first ].champNameLive.postValue( champion.name )
+                        return@map Pair( indexedMastery.first, Maybe.just( champion ) )
+                    }
                 }
-                .flatMap { indexedChamp ->
-                    if( indexedChamp.second.isEmpty.blockingGet() ) Observable.just( Pair( indexedChamp.first, Maybe.empty() ) )
-                    else indexedChamp.second.blockingGet().bitmap.map{ bitmap -> Pair( indexedChamp.first, Maybe.just( bitmap ) ) }
-                }
-                .observeOn( AndroidSchedulers.mainThread() )
-                .subscribe {
-                    val ( i, maybeBitmap ) = it
-                    championImages[ i ].value = maybeBitmap
+                .subscribe { indexedChamp ->
+                    if( indexedChamp.second.isEmpty.blockingGet() ) masteries[ indexedChamp.first ].shownLive.postValue( false )
+                    else indexedChamp.second.blockingGet().bitmap.subscribe{ bitmap ->
+                        with( masteries[ indexedChamp.first ] ) {
+                            bitmapLive.postValue( bitmap )
+                            shownLive.postValue( true )
+                        }
+                    }
                 }
             )
         }

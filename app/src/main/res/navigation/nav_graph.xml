@@ -2,27 +2,22 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/landingFragment"
-    >
+    app:startDestination="@id/landingFragment">
 
     <fragment
         android:id="@+id/initialEnterFragment"
         android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
-        android:label="Find your summoner"
-        >
+        android:label="Find your summoner">
         <action
             android:id="@+id/action_initialEnterFragment_to_landingFragment"
             app:destination="@id/landingFragment"
             app:popUpTo="@id/landingFragment"
-            app:popUpToInclusive="true"
-            />
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/landingFragment"
         android:name="com.tsarsprocket.reportmid.LandingFragment"
-        android:label="Summoner's Page'"
-        >
-    </fragment>
+        android:label="Summoner's Page'"/>
     <action
         android:id="@+id/action_global_initialEnterFragment"
         app:destination="@id/initialEnterFragment"
@@ -33,4 +28,10 @@
         android:id="@+id/matchHistoryFragment"
         android:name="com.tsarsprocket.reportmid.MatchHistoryFragment"
         android:label="MatchHistoryFragment" />
+    <action
+        android:id="@+id/action_global_matchHistoryFragment"
+        app:destination="@id/matchHistoryFragment"
+        app:popUpTo="@id/matchHistoryFragment"
+        app:popUpToInclusive="true"
+        />
 </navigation>

@@ -63,49 +63,6 @@
             app:layout_constraintTop_toTopOf="@id/txtLevelLabel"
             />
 
-<!--
-        <LinearLayout
-            android:id="@+id/grpMainChampMastery"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/txtLevelLabel"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:gravity="center"
-            android:visibility="@{viewModel.activeSummonerModel.masteries.size()>0?View.VISIBLE:View.GONE}"
-            >
-
-            <ImageView
-                android:tag="@string/fragment_landing_tag_champion_icon"
-                android:id="@+id/imgChampMain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-            <TextView
-                android:tag="@string/fragment_landing_tag_champion_name"
-                android:id="@+id/txtChampName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-            <TextView
-                android:id="@+id/txtChampLevel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-            <TextView
-                android:id="@+id/txtChampPoints"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-        </LinearLayout>
--->
-
         <LinearLayout
             android:id="@+id/grpOtherChampMasteries"
             android:orientation="horizontal"

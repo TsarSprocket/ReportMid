@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -16,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.fragment_landing.view.*
 import javax.inject.Inject
 
 class LandingFragment : BaseFragment() {
@@ -42,8 +44,12 @@ class LandingFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate<FragmentLandingBindingImpl>( inflater, R.layout.fragment_landing, container, false )
+        binding = DataBindingUtil.inflate( inflater, R.layout.fragment_landing, container, false )
         binding.viewModel = viewModel
+        for( i in 0 until TOP_MASTERIES_NUM ) {
+            val masteryGroup = layoutInflater.inflate( R.layout.champion_mastery, binding.root.grpOtherChampMasteries, false )
+            binding.root.grpOtherChampMasteries.addView( masteryGroup )
+        }
         return binding.root
     }
 
@@ -55,10 +61,46 @@ class LandingFragment : BaseFragment() {
         viewModel.state.observe( viewLifecycleOwner, Observer { state ->
             when( state ) {
                 LandingViewModel.Status.UNVERIFIED -> navController.navigate( NavGraphDirections.actionGlobalInitialEnterFragment() )
-                LandingViewModel.Status.VERIFIED -> refreshScreen()
             }
         } )
 
+        viewModel.activeSummonerModel.observe( { this.viewLifecycleOwner.lifecycle } ) { summoner ->
+            fragmentDisposables.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
+                binding.root.imgSummonerIcon.setImageBitmap( bitmap )
+            } )
+            requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_landing_title_template ).format( summoner.name )
+        }
+
+        for( i in 0 until TOP_MASTERIES_NUM ) {
+            with( viewModel.masteries[ i ] ) {
+                shownLive.observe( { lifecycle } ) { fShow ->
+                    if( fShow != null ) {
+                        binding.root.grpOtherChampMasteries[ i ].visibility = if( fShow ) View.VISIBLE else View.GONE
+                    }
+                }
+                bitmapLive.observe( { lifecycle } ) { bitmap ->
+                    if( bitmap != null ) {
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString( R.string.fragment_landing_tag_champion_icon ) )
+                            .setImageBitmap( bitmap )
+                    }
+                }
+                champNameLive.observe( { lifecycle } ) { name ->
+                    if( name != null ) {
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString( R.string.fragment_landing_tag_champion_name ) ).text =
+                            name
+                    }
+                }
+                skillsLive.observe( { lifecycle } ) { skills ->
+                    if( skills != null ) {
+                        with(binding.root.grpOtherChampMasteries[i]) {
+                            findViewWithTag<TextView>(resources.getString(R.string.fragment_landing_tag_champion_level)).text = skills.level.toString()
+                            findViewWithTag<TextView>(resources.getString(R.string.fragment_landing_tag_champion_points)).text = skills.points.toString()
+                        }
+                    }
+                }
+            }
+        }
+/*
         for( i: Int in 0 until TOP_MASTERIES_NUM ) {
             viewModel.championImages[ i ].observe( viewLifecycleOwner, Observer { b ->
                 with( masteryGroups[ i ] ) {
@@ -81,8 +123,7 @@ class LandingFragment : BaseFragment() {
                 }
             } )
         }
-
-        refreshScreen()
+*/
     }
 
     override fun onDestroy() {
@@ -90,44 +131,33 @@ class LandingFragment : BaseFragment() {
         super.onDestroy()
     }
 
-    private fun refreshScreen() {
-        val summoner = viewModel.activeSummonerModel.value
-
-        val iconSubscription = summoner?.icon?.observeOn( AndroidSchedulers.mainThread() )?.subscribe { bitmap ->
-            binding.root.findViewById<ImageView>( R.id.imgSummonerIcon ).setImageBitmap( bitmap )
-        }
-        if( iconSubscription != null ) fragmentDisposables.add( iconSubscription )
-
+/*
+    private fun refreshScreen( summoner: SummonerModel ) {
         val masteryViewGroup = binding.root.findViewById<ViewGroup>( R.id.grpOtherChampMasteries )
 
-        if ( summoner != null ) {
-            fragmentDisposables.add( summoner.masteries.observeOn( AndroidSchedulers.mainThread() ).subscribe { masteries ->
-                val extraSumSize = if( masteries.size < TOP_MASTERIES_NUM ) masteries.size else TOP_MASTERIES_NUM
+        masteryViewGroup.children.forEach { child -> child.visibility = View.GONE }
 
-                masteryGroups = List<ViewGroup>( extraSumSize ) { i ->
-                    val mastery = masteries[i]
-                    val viewGroup =
-                        /*if (i <= 0) binding.root.findViewById<ViewGroup>(R.id.grpMainChampMastery)
-                        else*/ (layoutInflater.inflate(
-                        R.layout.champion_mastery,
-                        null,
-                        false
-                    ) as ViewGroup).also { masteryViewGroup.addView(it) }
+        fragmentDisposables.add( summoner.masteries.observeOn( AndroidSchedulers.mainThread() ).subscribe { masteries ->
+            val extraSumSize = if( masteries.size < TOP_MASTERIES_NUM ) masteries.size else TOP_MASTERIES_NUM
 
-                    fragmentDisposables.add( mastery.observeOn( AndroidSchedulers.mainThread() ).subscribe { m ->
-                        viewGroup.findViewById<TextView>(R.id.txtChampLevel).text = m.level.toString()
-                        viewGroup.findViewById<TextView>(R.id.txtChampPoints).text = m.points.toString()
-                    } )
+            masteryGroups = List<ViewGroup>( extraSumSize ) { i ->
+                val mastery = masteries[i]
+                val viewGroup = layoutInflater.inflate( R.layout.champion_mastery, masteryViewGroup, false )
+                    .also { masteryViewGroup.addView( it ) } as ViewGroup
 
-                    return@List viewGroup
-                }
+                fragmentDisposables.add( mastery.observeOn( AndroidSchedulers.mainThread() ).subscribe { m ->
+                    viewGroup.findViewById<TextView>(R.id.txtChampLevel).text = m.level.toString()
+                    viewGroup.findViewById<TextView>(R.id.txtChampPoints).text = m.points.toString()
+                } )
 
-                requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_landing_title_template ).format( summoner.name )
+                return@List viewGroup
+            }
 
-                binding.invalidateAll()
-            } )
-        }
+
+            binding.invalidateAll()
+        } )
     }
+*/
 
     companion object {
         @JvmStatic

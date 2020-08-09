@@ -35,9 +35,14 @@ android {
         }
     }
 
+    buildFeatures {
+        dataBinding = true
+    }
+/*
     dataBinding {
         enabled = true
     }
+*/
 
     compileOptions {
         sourceCompatibility = 1.8
