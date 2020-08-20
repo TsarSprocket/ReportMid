@@ -6,4 +6,6 @@
     <color name="colorBGWin">#3C7339</color> <!-- Material: #004d40 -->
     <color name="colorBGDefeat">#832B21</color> <!-- Material: #7f0000 -->
     <color name="colorBGRemake">#565656</color>
+    <color name="redTeamBG">#B71C1C</color>
+    <color name="blueTeamBG">#0D47A1</color>
 </resources>

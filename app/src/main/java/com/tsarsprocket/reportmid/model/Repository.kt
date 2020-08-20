@@ -6,17 +6,19 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
-import com.merakianalytics.orianna.types.common.GameMode
-import com.merakianalytics.orianna.types.common.GameType
-import com.merakianalytics.orianna.types.common.Queue
-import com.merakianalytics.orianna.types.common.Region
+import com.merakianalytics.orianna.types.common.*
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
+import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.match.*
+import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
+import com.merakianalytics.orianna.types.core.spectator.CurrentMatchTeam
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.merakianalytics.orianna.types.core.staticdata.Item
 import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
+import com.merakianalytics.orianna.types.core.spectator.Player
+import com.merakianalytics.orianna.types.core.spectator.Runes
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
 import com.tsarsprocket.reportmid.room.MainStorage
@@ -24,17 +26,18 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import java.io.InputStreamReader
 import java.lang.Exception
-import java.lang.RuntimeException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.RuntimeException
 
 @Singleton
 class Repository @Inject constructor( val context: Context ) {
 
-    val initialized: Observable<Boolean>
+    val initialized = BehaviorSubject.create<Boolean>()
 
     lateinit var database: MainStorage
 
@@ -45,7 +48,7 @@ class Repository @Inject constructor( val context: Context ) {
 
     init {
 
-        initialized = Observable.fromCallable {
+        Observable.fromCallable {
             try {
                 Log.d( Repository::class.simpleName, "Initializing..." )
 
@@ -71,7 +74,7 @@ class Repository @Inject constructor( val context: Context ) {
 
                 return@fromCallable false
             }
-        }.subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect()
+        }.subscribeOn( Schedulers.io() ).subscribe( initialized )
     }
 
     private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
@@ -84,23 +87,14 @@ class Repository @Inject constructor( val context: Context ) {
         return initialized.observeOn( Schedulers.io() )
             .flatMap { fInitialized ->
                 when( fInitialized ) {
-                    true -> getSummonerModel( Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() )
+                    true -> getSummonerModel{ Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() }
                     else -> throw RepositoryNotInitializedException()
                 }
             }
     }
 
     @WorkerThread
-    fun findSummonerByPuuid( puuid: String? ): Observable<SummonerModel> {
-
-        return initialized.observeOn( Schedulers.io() )
-            .flatMap { fInitialized ->
-                when( fInitialized ) {
-                    true -> getSummonerModel( Orianna.summonerWithPuuid( puuid ).get().also { it.load() } )
-                    else -> throw RepositoryNotInitializedException()
-                }
-            }
-    }
+    fun findSummonerByPuuid( puuid: String? ) = getSummonerModel{ Orianna.summonerWithPuuid( puuid ).get().also { it.load() } }
 
     @WorkerThread
     fun getActiveSummoner(): Observable<SummonerModel> {
@@ -115,7 +109,7 @@ class Repository @Inject constructor( val context: Context ) {
 
                             val se = database.summonerDAO().getById( curSumId )
                             findSummonerByPuuid( se.puuid )
-                        } else Observable.empty()
+                        } else BehaviorSubject.create<SummonerModel>().also{ it.onComplete() }
                     }
                     else -> throw RepositoryNotInitializedException()
                 }
@@ -144,7 +138,10 @@ class Repository @Inject constructor( val context: Context ) {
 
     fun getChampionMasteryModel( championMastery: ChampionMastery ) = ensureInitializedDoOnIO { ChampionMasteryModel( this, championMastery ) }
 
-    fun getChampionModel( champion: Champion ) = ensureInitializedDoOnIO { champions[ champion.id ]?: ChampionModel( this, champion ).also { champions[ it.id ] = it } }
+    fun getChampionModel( lmdChampion: () -> Champion ) = ensureInitializedDoOnIO {
+        val champion = lmdChampion()
+        champions[ champion.id ]?: ChampionModel( this, champion ).also { champions[ it.id ] = it }
+    }
 
     fun getMatchHistoryModel( matchHistory: MatchHistory ) = ensureInitializedDoOnIO { MatchHistoryModel( this, matchHistory ) }
 
@@ -152,33 +149,53 @@ class Repository @Inject constructor( val context: Context ) {
 
     fun getParticipantModel( teamModel: TeamModel, participant: Participant ) = ensureInitializedDoOnIO { ParticipantModel( this, teamModel, participant ) }
 
-    fun getSummonerModel( summoner: Summoner ) = ensureInitializedDoOnIO { summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it } }
+    fun getSummonerModel( lmdSummoner: () -> Summoner ) = ensureInitializedDoOnIO {
+        val summoner = lmdSummoner()
+        summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
+    }
 
     fun getTeamModel( team: Team ) = ensureInitializedDoOnIO { TeamModel( this, team ) }
 
     fun getItemModel( item: Item ) = ensureInitializedDoOnIO { ItemModel( this, item ) }
 
-    fun getSummonerSpell( l: () -> SummonerSpell ) = ensureInitializedDoOnIO {
-        val spell = l();
+    fun getSummonerSpell( lmdSummonerSpell: () -> SummonerSpell ) = ensureInitializedDoOnIO {
+        val spell = lmdSummonerSpell()
         summonerSpells[ spell.id ]?: SummonerSpellModel( this, spell ).also { summonerSpells[ spell.id ] = it }
     }
 
     fun getRuneStats( runeStats: RuneStats ) = ensureInitializedDoOnIO { RuneStatsModel( this, runeStats ) }
 
-    fun getRune( reforgedRune: ReforgedRune ) = ensureInitializedDoOnIO { runes[ reforgedRune.id ]?: RuneModel( this, reforgedRune ).also { runes[ reforgedRune.id ] = it } }
-
-    companion object {
-        fun getRunePath( pathId: Maybe<Int> ) = if( pathId.isEmpty.blockingGet() ) Maybe.empty() else Maybe.just( RunePathModel.byId[ pathId.blockingGet() ]?: throw RuntimeException( "Incorrect rune pathj ID: $pathId" ) )
-        fun getGameType( gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null ) =
-            GameTypeModel.by( gameType, queue, gameMode, gameMap )
+    fun getRune( lmdReforgedRune: () -> ReforgedRune ) = ensureInitializedDoOnIO {
+        val reforgedRune = lmdReforgedRune()
+        runes[ reforgedRune.id ]?: RuneModel( this, reforgedRune ).also { runes[ reforgedRune.id ] = it }
     }
 
-    private fun<T> ensureInitializedDoOnIO( l: () -> T ): Observable<T> {
-        return initialized.observeOn( Schedulers.io() ).map { fInitialized ->
+    fun getCurrentMatch( lmdCurrentMatch: () -> CurrentMatch ) = ensureInitializedDoOnIO { CurrentMatchModel( this, lmdCurrentMatch() ) }
+
+    fun getCurrentMatchTeam( lmdCurrentMatchTeam: () -> CurrentMatchTeam ) = ensureInitializedDoOnIO { CurrentMatchTeamModel( this, lmdCurrentMatchTeam() ) }
+
+    fun getPlayer( lmdPlayer: () -> Player ) = ensureInitializedDoOnIO { PlayerModel( this, lmdPlayer() ) }
+
+    fun getPlayerRunes( lmdRunes: () -> Runes ) = ensureInitializedDoOnIO { PlayerRunesModel( this, lmdRunes() ) }
+
+    fun getLeaguePosition( lmdLeagueEntry: () -> LeagueEntry ) = ensureInitializedDoOnIO { LeaguePositionModel( this, lmdLeagueEntry() ) }
+
+    companion object {
+        fun getRunePath( pathId: Maybe<Int> ) = if( pathId.isEmpty.blockingGet() ) Maybe.empty() else Maybe.just( RunePathModel.byId[ pathId.blockingGet() ]?: throw IncorrectRunePathIdException( pathId.blockingGet() ) )
+        fun getGameType( gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null ) =
+            GameTypeModel.by( gameType, queue, gameMode, gameMap )
+        fun getSide( side: Side ) = SideModel.fromExternal( side )
+        fun getQueue( queue: Queue ) = QueueModel.values().find { it.shadowQueue.id == queue.id }?: throw RuntimeException( "Queue $queue is not defined in the model" )
+        fun getTier( tier: Tier ) = TierModel.values().find { it.shadowTier == tier }?: throw RuntimeException( "Tier $tier is not mapped" )
+        fun getDivision( division: Division ) = DivisionModel.values().find { it.shadowDivision == division }?: throw RuntimeException( "Division $division is not mapped" )
+    }
+
+    private fun<T> ensureInitializedDoOnIO( l: () -> T ) = BehaviorSubject.create<T>().also { subject ->
+        initialized.observeOn( Schedulers.io() ).map { fInitialized ->
             when( fInitialized ) {
                 true -> l()!!
                 else -> throw RepositoryNotInitializedException()
             }
-        }
+        }.subscribe( subject )
     }
 }

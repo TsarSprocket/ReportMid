@@ -9,7 +9,7 @@ data class ChampionMasteryModel(
     val repository: Repository,
     val shadowMastery: ChampionMastery
 ) {
-    val champion: Observable<ChampionModel> by lazy { repository.getChampionModel( shadowMastery.champion ).replay( 1 ).autoConnect() }
+    val champion: Observable<ChampionModel> by lazy { repository.getChampionModel { shadowMastery.champion } }
     val level = shadowMastery.level
     val points = shadowMastery.points
 }

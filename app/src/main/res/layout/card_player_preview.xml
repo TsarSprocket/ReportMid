@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Horisontal markup -->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideH2Line0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.30" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideH2Line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.70" />
+
+        <!-- -->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideChampion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="50dp" />
+
+
+        <ImageView
+            android:id="@+id/imgChampionIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideChampion"
+            app:layout_constraintEnd_toEndOf="@id/guideChampion"
+            app:layout_constraintBottom_toTopOf="@id/txtChampionSkill"
+            android:src="@drawable/champion_icon_placegolder" />
+
+        <TextView
+            android:id="@+id/txtChampionSkill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/imgChampionIcon"
+            app:layout_constraintStart_toStartOf="@id/guideChampion"
+            app:layout_constraintEnd_toEndOf="@id/guideChampion"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/lorem_ipsum_short" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideSummonerInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="100dp" />
+
+        <TextView
+            android:id="@+id/txtSummonerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line0"
+            app:layout_constraintStart_toEndOf="@id/guideSummonerInfo"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
+            android:text="@string/lorem_ipsum_short" />
+
+        <TextView
+            android:id="@+id/txtSummonerLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line1"
+            app:layout_constraintStart_toStartOf="@id/guideSummonerInfo"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
+            android:text="@string/lorem_ipsum_short" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideSummonerRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="200dp" />
+
+        <TextView
+            android:id="@+id/txtSummonerSoloQueueRank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line0"
+            app:layout_constraintStart_toStartOf="@id/guideSummonerRank"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
+            android:text="@string/lorem_ipsum_short" />
+
+        <TextView
+            android:id="@+id/txtSummonerSoloQueueWinRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line1"
+            app:layout_constraintStart_toStartOf="@id/guideSummonerRank"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
+            android:text="@string/lorem_ipsum_short" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideSummonerSpells"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="300dp" />
+
+        <ImageView
+            android:id="@+id/imgSummonerSpellD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/item_icon_placegolder"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line0"
+            app:layout_constraintStart_toEndOf="@id/guideSummonerSpells"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line0" />
+
+        <ImageView
+            android:id="@+id/imgSummonerSpellF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/item_icon_placegolder"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line1"
+            app:layout_constraintStart_toEndOf="@id/guideSummonerSpells"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideSummonerRunes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="330dp" />
+
+        <ImageView
+            android:id="@+id/imgPrimaryRunePath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/runepath_sorcery"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line0"
+            app:layout_constraintStart_toEndOf="@id/guideSummonerRunes"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line0" />
+
+        <ImageView
+            android:id="@+id/imgSecondaryRunePath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/runepath_domination"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line1"
+            app:layout_constraintStart_toEndOf="@id/guideSummonerRunes"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

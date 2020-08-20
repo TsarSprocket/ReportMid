@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.model
 
 import android.graphics.Bitmap
+import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.match.MatchHistory
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import io.reactivex.Observable
@@ -8,7 +9,7 @@ import io.reactivex.schedulers.Schedulers
 
 data class SummonerModel(
     val repository: Repository,
-    val shadowSummoner: Summoner
+    private val shadowSummoner: Summoner
 ) {
 
     val name: String = shadowSummoner.name
@@ -17,6 +18,8 @@ data class SummonerModel(
     val level: Int = shadowSummoner.level
     val masteries: Observable<List<Observable<ChampionMasteryModel>>> by lazy { getObservableMasteryList().replay( 1 ).autoConnect() }
     val matchHistory: Observable<MatchHistoryModel> by lazy { getObservableMatchHistoryForSummoner( shadowSummoner ).replay( 1 ).autoConnect() }
+    val currentMatch by lazy { repository.getCurrentMatch{ shadowSummoner.currentMatch } }
+    val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
 
     private fun getObservableMasteryList() = Observable.fromCallable {
         List( shadowSummoner.championMasteries.size ) { i ->
