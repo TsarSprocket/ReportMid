@@ -17,7 +17,15 @@
     <fragment
         android:id="@+id/landingFragment"
         android:name="com.tsarsprocket.reportmid.LandingFragment"
-        android:label="Summoner's Page'"/>
+        android:label="Summoner's Page'">
+        <action
+            android:id="@+id/action_landingFragment_to_matchHistoryFragment"
+            app:destination="@id/matchHistoryFragment" />
+        <action
+            android:id="@+id/action_landingFragment_to_matchupFragment"
+            app:destination="@id/matchupFragment"
+            app:launchSingleTop="true" />
+    </fragment>
     <action
         android:id="@+id/action_global_initialEnterFragment"
         app:destination="@id/initialEnterFragment"
@@ -27,11 +35,32 @@
     <fragment
         android:id="@+id/matchHistoryFragment"
         android:name="com.tsarsprocket.reportmid.MatchHistoryFragment"
-        android:label="MatchHistoryFragment" />
+        android:label="MatchHistoryFragment" >
+        <action
+            android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
+            app:destination="@id/matchupFragment" />
+        <action
+            android:id="@+id/action_matchHistoryFragment_to_landingFragment"
+            app:destination="@id/landingFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_matchHistoryFragment"
         app:destination="@id/matchHistoryFragment"
         app:popUpTo="@id/matchHistoryFragment"
         app:popUpToInclusive="true"
         />
+    <fragment
+        android:id="@+id/matchupFragment"
+        android:name="com.tsarsprocket.reportmid.MatchupFragment"
+        android:label="MatchupFragment" >
+        <action
+            android:id="@+id/action_matchupFragment_to_matchHistoryFragment"
+            app:destination="@id/matchHistoryFragment" />
+        <action
+            android:id="@+id/action_matchupFragment_to_landingFragment"
+            app:destination="@id/landingFragment" />
+        <argument
+            android:name="ARG_PUUID"
+            app:argType="string" />
+    </fragment>
 </navigation>

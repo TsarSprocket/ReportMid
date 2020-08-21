@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,6 +14,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,11 +48,17 @@ class LandingFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate( inflater, R.layout.fragment_landing, container, false )
+
         binding.viewModel = viewModel
         for( i in 0 until TOP_MASTERIES_NUM ) {
             val masteryGroup = layoutInflater.inflate( R.layout.champion_mastery, binding.root.grpOtherChampMasteries, false )
             binding.root.grpOtherChampMasteries.addView( masteryGroup )
         }
+
+        with( binding.root.bottomNavigation.menu ) {
+            for( i in 0 until size() ) get( i ).isEnabled = false
+        }
+
         return binding.root
     }
 
@@ -69,6 +78,9 @@ class LandingFragment : BaseFragment() {
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )
             requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_landing_title_template ).format( summoner.name )
+            with( binding.root.bottomNavigation.menu ) {
+                for( i in 0 until size() ) with( get( i ) ) { if( id != R.id.landingFragment ) isEnabled = true }
+            }
         }
 
         for( i in 0 until TOP_MASTERIES_NUM ) {
@@ -99,7 +111,10 @@ class LandingFragment : BaseFragment() {
                     }
                 }
             }
+
+            binding.root.bottomNavigation.setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
         }
+
 /*
         for( i: Int in 0 until TOP_MASTERIES_NUM ) {
             viewModel.championImages[ i ].observe( viewLifecycleOwner, Observer { b ->
@@ -124,6 +139,23 @@ class LandingFragment : BaseFragment() {
             } )
         }
 */
+    }
+
+    fun navigateToSibling( item: MenuItem ): Boolean {
+        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.landingFragment, true ).build()
+        when( item.itemId ) {
+            R.id.matchupFragment -> {
+                val action = LandingFragmentDirections.actionLandingFragmentToMatchupFragment( viewModel.activeSummonerModel.value!!.puuid )
+                findNavController().navigate( action, navOptions )
+                return true
+            }
+            R.id.matchHistoryFragment -> {
+                val action = LandingFragmentDirections.actionLandingFragmentToMatchHistoryFragment()
+                findNavController().navigate( action, navOptions )
+                return true
+            }
+            else -> return false
+        }
     }
 
     override fun onDestroy() {

@@ -49,7 +49,9 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
                 activeSummonerModel.value = summonerModel
                 state.value = Status.VERIFIED
             }
-            .doOnComplete { if( activeSummonerModel.value == null ) state.value = Status.UNVERIFIED }
+            .doOnComplete {
+                if( activeSummonerModel.value == null ) state.value = Status.UNVERIFIED
+            }
             .doOnError { e -> Log.d( LandingViewModel::class.simpleName, "Cannot initialize LandingViewModel", e ) }
             .subscribe() )
         observeMasteries()
@@ -70,8 +72,13 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
 
         val reg = enumValues<RegionModel>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
 
+        repository.initialized.subscribe {
+            Log.d( LandingViewModel::class.simpleName, "Repository initialized: $it" )
+        }
+
         allDisposables.add(
             repository.findSummonerForName( activeSummonerName.value?: "", reg )
+                .doOnError { Log.d( LandingViewModel::class.simpleName, "Error findinmg summoner: ${it.localizedMessage}", it ) }
                 .observeOn( Schedulers.io() )
                 .doOnNext { summonerModel ->
                     repository.addSummoner( summonerModel, true )

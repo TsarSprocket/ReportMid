@@ -12,13 +12,13 @@ import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.match.*
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatchTeam
+import com.merakianalytics.orianna.types.core.spectator.Player
+import com.merakianalytics.orianna.types.core.spectator.Runes
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.merakianalytics.orianna.types.core.staticdata.Item
 import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
-import com.merakianalytics.orianna.types.core.spectator.Player
-import com.merakianalytics.orianna.types.core.spectator.Runes
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
 import com.tsarsprocket.reportmid.room.MainStorage
@@ -26,18 +26,16 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
-import java.lang.Exception
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.RuntimeException
 
 @Singleton
 class Repository @Inject constructor( val context: Context ) {
 
-    val initialized = BehaviorSubject.create<Boolean>()
+    val initialized = ReplaySubject.createWithSize<Boolean>( 1 )
 
     lateinit var database: MainStorage
 
@@ -109,7 +107,7 @@ class Repository @Inject constructor( val context: Context ) {
 
                             val se = database.summonerDAO().getById( curSumId )
                             findSummonerByPuuid( se.puuid )
-                        } else BehaviorSubject.create<SummonerModel>().also{ it.onComplete() }
+                        } else Observable.empty<SummonerModel>()
                     }
                     else -> throw RepositoryNotInitializedException()
                 }
@@ -190,7 +188,7 @@ class Repository @Inject constructor( val context: Context ) {
         fun getDivision( division: Division ) = DivisionModel.values().find { it.shadowDivision == division }?: throw RuntimeException( "Division $division is not mapped" )
     }
 
-    private fun<T> ensureInitializedDoOnIO( l: () -> T ) = BehaviorSubject.create<T>().also { subject ->
+    private fun<T> ensureInitializedDoOnIO( l: () -> T ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
         initialized.observeOn( Schedulers.io() ).map { fInitialized ->
             when( fInitialized ) {
                 true -> l()!!

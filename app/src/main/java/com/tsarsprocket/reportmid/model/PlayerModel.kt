@@ -1,17 +1,15 @@
 package com.tsarsprocket.reportmid.model
 
 import android.graphics.Bitmap
-import com.merakianalytics.orianna.types.core.spectator.GameCustomizationObject
 import com.merakianalytics.orianna.types.core.spectator.Player
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 
 class PlayerModel( val repository: Repository, private val shadowPlayer: Player ) {
     val champion by lazy { repository.getChampionModel{ shadowPlayer.champion } }
     val summoner by lazy { repository.getSummonerModel{ shadowPlayer.summoner } }
-    val profileIcon by lazy { BehaviorSubject.create<Bitmap>().also { subject ->
+    val profileIcon by lazy { ReplaySubject.createWithSize<Bitmap>( 1 ).also { subject ->
         Observable.fromCallable{ shadowPlayer.profileIcon.image.get() }.observeOn( Schedulers.io() ).subscribe( subject ) }
     }
     val summonerSpellD by lazy { repository.getSummonerSpell { shadowPlayer.summonerSpellD } }

@@ -10,7 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -61,7 +61,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     }
 
     private fun obtainTeamParticipants(
-        obsCurTeamModel: BehaviorSubject<CurrentMatchTeamModel>,
+        obsCurTeamModel: ReplaySubject<CurrentMatchTeamModel>,
         participantsListLive: MutableLiveData<List<PlayerPresentation>>,
         disposer: CompositeDisposable
     ) {

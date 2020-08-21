@@ -1,9 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.subjects.BehaviorSubject
 import java.util.*
 
 class CurrentMatchModel( val repository: Repository, private val shadowCurrentMatch: CurrentMatch ) {

@@ -3,17 +3,22 @@ package com.tsarsprocket.reportmid
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.fragment_landing.view.*
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -56,7 +61,29 @@ class MatchHistoryFragment : BaseFragment() {
 
         requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_match_history_title_template ).format( viewModel.activeSummonerModel.value?.name )
 
+        with( binding.root.bottomNavigation.menu ) {
+            for( i in 0 until size() ) with( get( i ) ) { if( id != R.id.matchHistoryFragment ) isEnabled = true }
+        }
+        binding.root.bottomNavigation.setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+
         return binding.root
+    }
+
+    fun navigateToSibling( item: MenuItem): Boolean {
+        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.landingFragment, true ).build()
+        when( item.itemId ) {
+            R.id.landingFragment -> {
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToLandingFragment()
+                findNavController().navigate( action, navOptions )
+                return true
+            }
+            R.id.matchupFragment -> {
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToMatchupFragment( viewModel.activeSummonerModel.value!!.puuid )
+                findNavController().navigate( action, navOptions )
+                return true
+            }
+            else -> return false
+        }
     }
 
     companion object {

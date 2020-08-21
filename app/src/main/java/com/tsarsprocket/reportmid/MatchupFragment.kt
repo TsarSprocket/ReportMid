@@ -17,8 +17,6 @@ import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import javax.inject.Inject
 
-private const val ARG_PUUID = "com.tsarsprocket.reportmid.MatchupFragmentKt.ARG_PUUID"
-
 class MatchupFragment : BaseFragment() {
 
     @Inject
