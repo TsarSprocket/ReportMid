@@ -176,7 +176,7 @@ class Repository @Inject constructor( val context: Context ) {
 
     fun getPlayerRunes( lmdRunes: () -> Runes ) = ensureInitializedDoOnIO { PlayerRunesModel( this, lmdRunes() ) }
 
-    fun getLeaguePosition( lmdLeagueEntry: () -> LeagueEntry ) = ensureInitializedDoOnIO { LeaguePositionModel( this, lmdLeagueEntry() ) }
+    fun getLeaguePosition( lmdLeagueEntry: () -> LeagueEntry? ) = ensureInitializedDoOnIO { lmdLeagueEntry()?.let { LeaguePositionModel( this, it ) } }
 
     companion object {
         fun getRunePath( pathId: Maybe<Int> ) = if( pathId.isEmpty.blockingGet() ) Maybe.empty() else Maybe.just( RunePathModel.byId[ pathId.blockingGet() ]?: throw IncorrectRunePathIdException( pathId.blockingGet() ) )
@@ -188,7 +188,7 @@ class Repository @Inject constructor( val context: Context ) {
         fun getDivision( division: Division ) = DivisionModel.values().find { it.shadowDivision == division }?: throw RuntimeException( "Division $division is not mapped" )
     }
 
-    private fun<T> ensureInitializedDoOnIO( l: () -> T ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
+    private fun<T> ensureInitializedDoOnIO( l: () -> T? ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
         initialized.observeOn( Schedulers.io() ).flatMap { fInitialized ->
             when( fInitialized ) {
                 true -> {

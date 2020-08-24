@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid
 
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -9,6 +10,7 @@ import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.util.*
@@ -28,7 +30,7 @@ private val DUR_FMT_MS = "%02d:%02d"
 
 class MatchupViewModel @Inject constructor( private val repository: Repository ): ViewModel() {
 
-    lateinit var summoner: SummonerModel
+    var summoner: SummonerModel? = null
 
     val currentMatchLive = MutableLiveData<CurrentMatchModel>()
 
@@ -42,7 +44,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     val matchDisposables = CompositeDisposable()
 
     init {
-        allDisposables.add( Observable.timer( 1, TimeUnit.SECONDS ).observeOn( AndroidSchedulers.mainThread() ).subscribe{
+        allDisposables.add( Observable.interval( 1, TimeUnit.SECONDS ).observeOn( AndroidSchedulers.mainThread() ).subscribe{
             updateDuration()
         } )
     }
@@ -74,21 +76,26 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
                         lstObsPlayerModels
                             .map { subject -> subject.blockingSingle() }
                             .map { playerModel ->
-                                val champion = playerModel.champion.blockingSingle()
-                                val summoner = playerModel.summoner.blockingSingle()
-                                val soloQueuePosition = try { summoner.soloQueuePosition.blockingSingle() } catch( e: RuntimeException ) { null }
-                                PlayerPresentation(
-                                    champion.bitmap.blockingSingle(),
-                                    getSkillForChampion( summoner, champion ),
-                                    summoner.name,
-                                    summoner.level,
-                                    if( soloQueuePosition != null ) soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric else "n/a",
-                                    if( soloQueuePosition != null ) ( soloQueuePosition.wins.toFloat() / ( soloQueuePosition.wins + soloQueuePosition.losses ).toFloat() ).takeUnless { it.isNaN() }?: 0f else 0f,
-                                    playerModel.summonerSpellD.blockingSingle().icon.blockingSingle(),
-                                    playerModel.summonerSpellF.blockingSingle().icon.blockingSingle(),
-                                    playerModel.primaryRunePath.iconResId,
-                                    playerModel.secondaryRunePath.iconResId
+                                val playerPresentation =  PlayerPresentation()
+                                matchDisposables.addAll(
+                                    playerModel.champion.flatMap { it.bitmap }.subscribe{ playerPresentation.championIconLive.postValue( it ) },
+                                    Observable.zip( playerModel.champion, playerModel.summoner, BiFunction<ChampionModel,SummonerModel,Observable<Int>> { ch, su -> getSkillForChampion( su, ch ) } )
+                                        .flatMap { it }
+                                        .concatWith( Observable.just( -1 ) )
+                                        .take( 1 )
+                                        .subscribe { playerPresentation.summonerChampionSkillLive.postValue( it ) },
+                                    playerModel.summoner.subscribe { playerPresentation.summonerNameLive.postValue( it.name ); playerPresentation.summonerLevelLive.postValue( it.level ) },
+                                    playerModel.summoner.flatMap { it.soloQueuePosition }.subscribe { soloQueuePosition ->
+                                        playerPresentation.soloqueueRankLive.postValue( soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric )
+                                        playerPresentation.soloqueueWinrateLive.postValue( ( soloQueuePosition.wins.toFloat() / ( soloQueuePosition.wins + soloQueuePosition.losses ).toFloat() ).takeUnless { it.isNaN() }?: 0f )
+                                    },
+                                    playerModel.summonerSpellD.flatMap { it.icon }.subscribe{ playerPresentation.summonerSpellDLive.postValue( it ) },
+                                    playerModel.summonerSpellF.flatMap { it.icon }.subscribe{ playerPresentation.summonerSpellFLive.postValue( it ) }
                                 )
+                                playerPresentation.primaryRunePathIconResIdLive.postValue( playerModel.primaryRunePath.iconResId )
+                                playerPresentation.secondaryRunePathIconResIdLive.postValue( playerModel.secondaryRunePath.iconResId )
+
+                                playerPresentation
                             }
                     )
                 }
@@ -96,10 +103,11 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     }
 
     private fun getSkillForChampion( summoner: SummonerModel, champion: ChampionModel ) =
-        summoner.masteries.blockingSingle().find {
-            val mastery = it.blockingSingle()
-            mastery.champion.blockingSingle().id == champion.id
-        }?.blockingSingle()?.points?: 0
+        summoner.masteries
+            .flatMapIterable { it }
+            .flatMap { it }
+            .filter { mastery -> mastery.champion.blockingSingle().id == champion.id }
+            .map { it.points }
 
     @MainThread
     private fun updateDuration() {

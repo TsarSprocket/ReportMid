@@ -16,10 +16,38 @@
         tools:context=".MatchupFragment"
         >
 
+        <TextView
+            android:id="@+id/gameType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.gameTypeTextLive}"
+            style="?android:textAppearanceLarge"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            />
+
+        <TextView
+            android:id="@+id/gameDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.durationTextLive}"
+            app:layout_constraintTop_toBottomOf="@id/gameType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/gameDuration"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
@@ -28,32 +56,30 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.gameTypeTextLive}"
-                    style="?android:textAppearanceLarge" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.durationTextLive}" />
+                android:orientation="vertical"
+                android:divider="@drawable/players_divider"
+                android:showDividers="middle"
+                >
 
                 <LinearLayout
                     android:id="@+id/blueTeam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@color/blueTeamBG" />
+                    android:background="@color/blueTeamBG"
+                    android:divider="@drawable/players_divider"
+                    android:showDividers="middle"
+                    />
 
                 <LinearLayout
                     android:id="@+id/redTeam"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@color/redTeamBG" />
+                    android:background="@color/redTeamBG"
+                    android:divider="@drawable/players_divider"
+                    android:showDividers="middle"
+                    />
 
             </LinearLayout>
 

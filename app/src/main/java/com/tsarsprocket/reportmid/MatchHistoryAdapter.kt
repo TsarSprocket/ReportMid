@@ -71,7 +71,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerVie
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data ->
                 with( holder.cardView ) {
-                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.colorBGRemake else if( data.hasWon ) R.color.colorBGWin else R.color.colorBGDefeat) )
+                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.bgRemake else if( data.hasWon ) R.color.bgWin else R.color.bgDefeat) )
 
                     findViewById<ImageView>(R.id.imgChampionIcon).setImageBitmap( data.mainChampionBitmap )
 

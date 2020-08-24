@@ -10,7 +10,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        >
 
         <!-- Horisontal markup -->
 
@@ -35,7 +38,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="50dp" />
+            app:layout_constraintGuide_begin="50dp"
+            />
 
 
         <ImageView
@@ -67,12 +71,17 @@
 
         <TextView
             android:id="@+id/txtSummonerName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/guideH2Line0"
             app:layout_constraintStart_toEndOf="@id/guideSummonerInfo"
+            app:layout_constraintEnd_toEndOf="@id/guideSummonerRank"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
-            android:text="@string/lorem_ipsum_short" />
+            android:layout_marginEnd="6dp"
+            android:layout_marginRight="6dp"
+            android:text="@string/lorem_ipsum_short"
+            android:ellipsize="end"
+            />
 
         <TextView
             android:id="@+id/txtSummonerLevel"
@@ -88,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="200dp" />
+            app:layout_constraintGuide_begin="240dp" />
 
         <TextView
             android:id="@+id/txtSummonerSoloQueueRank"
@@ -97,7 +106,7 @@
             app:layout_constraintTop_toTopOf="@id/guideH2Line0"
             app:layout_constraintStart_toStartOf="@id/guideSummonerRank"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
-            android:text="@string/lorem_ipsum_short" />
+            android:text="@string/fragment_matchup_player_solo_rank_na" />
 
         <TextView
             android:id="@+id/txtSummonerSoloQueueWinRate"
@@ -106,14 +115,14 @@
             app:layout_constraintTop_toTopOf="@id/guideH2Line1"
             app:layout_constraintStart_toStartOf="@id/guideSummonerRank"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
-            android:text="@string/lorem_ipsum_short" />
+            android:text="@string/fragment_matchup_player_solo_winrate_0" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideSummonerSpells"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="300dp" />
+            app:layout_constraintGuide_begin="270dp" />
 
         <ImageView
             android:id="@+id/imgSummonerSpellD"
@@ -138,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="330dp" />
+            app:layout_constraintGuide_begin="300dp" />
 
         <ImageView
             android:id="@+id/imgPrimaryRunePath"
