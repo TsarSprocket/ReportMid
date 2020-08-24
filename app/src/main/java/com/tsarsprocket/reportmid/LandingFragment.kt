@@ -55,14 +55,10 @@ class LandingFragment : BaseFragment() {
             binding.root.grpOtherChampMasteries.addView( masteryGroup )
         }
 
-        with( binding.root.bottomNavigation.menu ) {
-            for( i in 0 until size() ) get( i ).isEnabled = false
-        }
-
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated( view: View, savedInstanceState: Bundle? ) {
 
         super.onViewCreated(view, savedInstanceState)
 
@@ -78,9 +74,6 @@ class LandingFragment : BaseFragment() {
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )
             requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_landing_title_template ).format( summoner.name )
-            with( binding.root.bottomNavigation.menu ) {
-                for( i in 0 until size() ) with( get( i ) ) { if( id != R.id.landingFragment ) isEnabled = true }
-            }
         }
 
         for( i in 0 until TOP_MASTERIES_NUM ) {
@@ -112,7 +105,10 @@ class LandingFragment : BaseFragment() {
                 }
             }
 
-            binding.root.bottomNavigation.setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+            with( binding.root.bottomNavigation ) {
+                setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+                selectedItemId = R.id.landingFragment
+            }
         }
 
 /*
@@ -143,18 +139,19 @@ class LandingFragment : BaseFragment() {
 
     fun navigateToSibling( item: MenuItem ): Boolean {
         val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.landingFragment, true ).build()
-        when( item.itemId ) {
+        return when( item.itemId ) {
+            R.id.landingFragment -> true
             R.id.matchupFragment -> {
                 val action = LandingFragmentDirections.actionLandingFragmentToMatchupFragment( viewModel.activeSummonerModel.value!!.puuid )
                 findNavController().navigate( action, navOptions )
-                return true
+                true
             }
             R.id.matchHistoryFragment -> {
                 val action = LandingFragmentDirections.actionLandingFragmentToMatchHistoryFragment()
                 findNavController().navigate( action, navOptions )
-                return true
+                true
             }
-            else -> return false
+            else -> false
         }
     }
 

@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,8 +14,11 @@ import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
+import kotlinx.android.synthetic.main.fragment_landing.view.*
 import javax.inject.Inject
 
 class MatchupFragment : BaseFragment() {
@@ -39,23 +43,47 @@ class MatchupFragment : BaseFragment() {
         viewModel.blueTeamParticipants.observe( { lifecycle } ) { if( it != null ) populateTeam( binding.blueTeam, it ) }
         viewModel.redTeamParticipants.observe( { lifecycle } ) { if( it != null ) populateTeam( binding.redTeam, it ) }
 
+        with( binding.root.bottomNavigation ) {
+            setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+            selectedItemId = R.id.matchupFragment
+        }
+
         return binding.root
     }
 
     private fun populateTeam( teamLayout: LinearLayout, playerPresentations: List<PlayerPresentation> ) {
         teamLayout.removeAllViews()
         playerPresentations.forEach { playerPresentation ->
-            val card = layoutInflater.inflate( R.layout.card_player_preview, teamLayout, true ) as CardView
-            ( card[ R.id.imgChampionIcon ] as ImageView ).setImageBitmap( playerPresentation.championIcon )
-            ( card[ R.id.txtChampionSkill ] as TextView ).text = playerPresentation.summonerChampionSkill.toString()
-            ( card[ R.id.txtSummonerName ] as TextView ).text = playerPresentation.summonerName
-            ( card[ R.id.txtSummonerLevel ] as TextView ).text = playerPresentation.summonerLevel.toString()
-            ( card[ R.id.txtSummonerSoloQueueRank ] as TextView ).text = playerPresentation.soloqueueRank
-            ( card[ R.id.txtSummonerSoloQueueWinRate ] as TextView ).text = ( Math.round( playerPresentation.soloqueueWinrate * 10f ) / 10f ).toString()
-            ( card[ R.id.imgSummonerSpellD ] as ImageView ).setImageBitmap( playerPresentation.summonerSpellD )
-            ( card[ R.id.imgSummonerSpellF ] as ImageView ).setImageBitmap( playerPresentation.summonerSpellF )
-            ( card[ R.id.imgPrimaryRunePath ] as ImageView ).setImageResource( playerPresentation.primaryRunePathIconResId )
-            ( card[ R.id.imgSecondaryRunePath ] as ImageView ).setImageResource( playerPresentation.secondaryRunePathIconResIs )
+            val card = layoutInflater.inflate( R.layout.card_player_preview, teamLayout, false ) as CardView
+            card.findViewById<ImageView>( R.id.imgChampionIcon ).setImageBitmap( playerPresentation.championIcon )
+            card.findViewById<TextView>( R.id.txtChampionSkill ).text = playerPresentation.summonerChampionSkill.toString()
+            card.findViewById<TextView>( R.id.txtSummonerName ).text = playerPresentation.summonerName
+            card.findViewById<TextView>( R.id.txtSummonerLevel ).text = playerPresentation.summonerLevel.toString()
+            card.findViewById<TextView>( R.id.txtSummonerSoloQueueRank ).text = playerPresentation.soloqueueRank
+            card.findViewById<TextView>( R.id.txtSummonerSoloQueueWinRate ).text = ( Math.round( playerPresentation.soloqueueWinrate * 10f ) / 10f ).toString()
+            card.findViewById<ImageView>( R.id.imgSummonerSpellD ).setImageBitmap( playerPresentation.summonerSpellD )
+            card.findViewById<ImageView>( R.id.imgSummonerSpellF ).setImageBitmap( playerPresentation.summonerSpellF )
+            card.findViewById<ImageView>( R.id.imgPrimaryRunePath ).setImageResource( playerPresentation.primaryRunePathIconResId )
+            card.findViewById<ImageView>( R.id.imgSecondaryRunePath ).setImageResource( playerPresentation.secondaryRunePathIconResIs )
+            teamLayout.addView( card )
+        }
+    }
+
+    fun navigateToSibling( item: MenuItem): Boolean {
+        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.matchupFragment, true ).build()
+        return when( item.itemId ) {
+            R.id.landingFragment -> {
+                val action = MatchupFragmentDirections.actionMatchupFragmentToLandingFragment()
+                findNavController().navigate( action, navOptions )
+                true
+            }
+            R.id.matchupFragment -> true
+            R.id.matchHistoryFragment -> {
+                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment()
+                findNavController().navigate( action, navOptions )
+                true
+            }
+            else -> false
         }
     }
 

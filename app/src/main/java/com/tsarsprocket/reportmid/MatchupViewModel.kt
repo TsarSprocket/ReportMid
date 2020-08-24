@@ -76,14 +76,14 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
                             .map { playerModel ->
                                 val champion = playerModel.champion.blockingSingle()
                                 val summoner = playerModel.summoner.blockingSingle()
-                                val soloQueuePosition = summoner.soloQueuePosition.blockingSingle()
+                                val soloQueuePosition = try { summoner.soloQueuePosition.blockingSingle() } catch( e: RuntimeException ) { null }
                                 PlayerPresentation(
                                     champion.bitmap.blockingSingle(),
                                     getSkillForChampion( summoner, champion ),
                                     summoner.name,
                                     summoner.level,
-                                    soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric,
-                                    ( soloQueuePosition.wins.toFloat() / ( soloQueuePosition.wins + soloQueuePosition.losses ).toFloat() ).takeUnless { it.isNaN() }?: 0f,
+                                    if( soloQueuePosition != null ) soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric else "n/a",
+                                    if( soloQueuePosition != null ) ( soloQueuePosition.wins.toFloat() / ( soloQueuePosition.wins + soloQueuePosition.losses ).toFloat() ).takeUnless { it.isNaN() }?: 0f else 0f,
                                     playerModel.summonerSpellD.blockingSingle().icon.blockingSingle(),
                                     playerModel.summonerSpellF.blockingSingle().icon.blockingSingle(),
                                     playerModel.primaryRunePath.iconResId,

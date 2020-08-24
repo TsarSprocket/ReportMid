@@ -189,10 +189,13 @@ class Repository @Inject constructor( val context: Context ) {
     }
 
     private fun<T> ensureInitializedDoOnIO( l: () -> T ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
-        initialized.observeOn( Schedulers.io() ).map { fInitialized ->
+        initialized.observeOn( Schedulers.io() ).flatMap { fInitialized ->
             when( fInitialized ) {
-                true -> l()!!
-                else -> throw RepositoryNotInitializedException()
+                true -> {
+                    val v = l()
+                    if( v != null ) Observable.just( v ) else Observable.empty()
+                }
+                else -> Observable.error( RepositoryNotInitializedException() )
             }
         }.subscribe( subject )
     }

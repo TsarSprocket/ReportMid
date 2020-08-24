@@ -64,13 +64,16 @@ class MatchHistoryFragment : BaseFragment() {
         with( binding.root.bottomNavigation.menu ) {
             for( i in 0 until size() ) with( get( i ) ) { if( id != R.id.matchHistoryFragment ) isEnabled = true }
         }
-        binding.root.bottomNavigation.setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+        with( binding.root.bottomNavigation ) {
+            setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+            selectedItemId = R.id.matchHistoryFragment
+        }
 
         return binding.root
     }
 
     fun navigateToSibling( item: MenuItem): Boolean {
-        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.landingFragment, true ).build()
+        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.matchHistoryFragment, true ).build()
         when( item.itemId ) {
             R.id.landingFragment -> {
                 val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToLandingFragment()
@@ -82,6 +85,7 @@ class MatchHistoryFragment : BaseFragment() {
                 findNavController().navigate( action, navOptions )
                 return true
             }
+            R.id.matchHistoryFragment -> return true
             else -> return false
         }
     }

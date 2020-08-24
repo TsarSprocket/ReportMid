@@ -20,11 +20,16 @@
         android:label="Summoner's Page'">
         <action
             android:id="@+id/action_landingFragment_to_matchHistoryFragment"
-            app:destination="@id/matchHistoryFragment" />
+            app:destination="@id/matchHistoryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/landingFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_landingFragment_to_matchupFragment"
             app:destination="@id/matchupFragment"
-            app:launchSingleTop="true" />
+            app:launchSingleTop="true"
+            app:popUpTo="@id/landingFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/action_global_initialEnterFragment"
@@ -38,10 +43,16 @@
         android:label="MatchHistoryFragment" >
         <action
             android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
-            app:destination="@id/matchupFragment" />
+            app:destination="@id/matchupFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/matchHistoryFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_matchHistoryFragment_to_landingFragment"
-            app:destination="@id/landingFragment" />
+            app:destination="@id/landingFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/matchHistoryFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/action_global_matchHistoryFragment"
@@ -55,10 +66,16 @@
         android:label="MatchupFragment" >
         <action
             android:id="@+id/action_matchupFragment_to_matchHistoryFragment"
-            app:destination="@id/matchHistoryFragment" />
+            app:destination="@id/matchHistoryFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/matchupFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_matchupFragment_to_landingFragment"
-            app:destination="@id/landingFragment" />
+            app:destination="@id/landingFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/matchupFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="ARG_PUUID"
             app:argType="string" />
