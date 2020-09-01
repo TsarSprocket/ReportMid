@@ -48,6 +48,7 @@ class LandingFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate( inflater, R.layout.fragment_landing, container, false )
+        binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
         for( i in 0 until TOP_MASTERIES_NUM ) {
@@ -147,7 +148,7 @@ class LandingFragment : BaseFragment() {
                 true
             }
             R.id.matchHistoryFragment -> {
-                val action = LandingFragmentDirections.actionLandingFragmentToMatchHistoryFragment()
+                val action = LandingFragmentDirections.actionLandingFragmentToMatchHistoryFragment( viewModel.activeSummonerModel.value!!.puuid )
                 findNavController().navigate( action, navOptions )
                 true
             }

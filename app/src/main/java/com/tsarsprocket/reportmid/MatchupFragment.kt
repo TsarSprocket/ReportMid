@@ -34,7 +34,10 @@ class MatchupFragment : BaseFragment() {
     override fun onAttach( context: Context ) {
         ( context.applicationContext as ReportMidApp ).comp.inject( this )
         super.onAttach( context )
-        if( viewModel.summoner == null ) requireArguments().let { viewModel.loadForSummoner( puuid = it.getString( ARG_PUUID )!! )  }
+        if( viewModel.summoner == null ) requireArguments().let {
+            viewModel.puuid = it.getString( ARG_PUUID )
+            viewModel.loadForSummoner( puuid = viewModel.puuid!! )
+        }
     }
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
@@ -85,9 +88,14 @@ class MatchupFragment : BaseFragment() {
             }
             R.id.matchupFragment -> true
             R.id.matchHistoryFragment -> {
-                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment()
-                findNavController().navigate( action, navOptions )
-                true
+                val puuid = viewModel.puuid
+                if( puuid != null ) {
+                    val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment( puuid )
+                    findNavController().navigate(action, navOptions)
+                    true
+                } else {
+                    false
+                }
             }
             else -> false
         }

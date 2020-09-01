@@ -2,6 +2,8 @@ package com.tsarsprocket.reportmid.model
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
@@ -186,7 +188,54 @@ class Repository @Inject constructor( val context: Context ) {
         fun getQueue( queue: Queue ) = QueueModel.values().find { it.shadowQueue.id == queue.id }?: throw RuntimeException( "Queue $queue is not defined in the model" )
         fun getTier( tier: Tier ) = TierModel.values().find { it.shadowTier == tier }?: throw RuntimeException( "Tier $tier is not mapped" )
         fun getDivision( division: Division ) = DivisionModel.values().find { it.shadowDivision == division }?: throw RuntimeException( "Division $division is not mapped" )
+
+        @WorkerThread
+        fun findParticipant( match: MatchModel, summoner: SummonerModel ): ParticipantModel {
+            val blueTeam = match.blueTeam.blockingSingle()
+            val redTeam = match.redTeam.blockingSingle()
+
+            val firstInBlue = blueTeam.participants.first().blockingSingle()
+            if( firstInBlue.summoner.blockingSingle().puuid == summoner.puuid ) return firstInBlue
+
+            val firstInRed = redTeam.participants.first().blockingSingle()
+            if( firstInRed.summoner.blockingSingle().puuid == summoner.puuid ) return firstInRed
+
+            return (
+                    blueTeam.participants.subList( 1, blueTeam.participants.size )
+                        .union( redTeam.participants.subList( 1, redTeam.participants.size ) )
+                        .find { it.blockingSingle().summoner.blockingSingle().puuid == summoner.puuid }
+                        ?: throw RuntimeException("Summoner ${summoner.name} is not found in match ${match.id}")
+                    ).blockingSingle()
+        }
+
+        @WorkerThread
+        fun getItemIcons( participant: ParticipantModel ): Array<Bitmap> {
+            val items = participant.items.blockingSingle()
+            return Array( items.size ) { i -> items[ i ].blockingSingle().bitmap.blockingSingle() }
+        }
+
+        @WorkerThread
+        fun getTeamIcons( team: TeamModel, resizeMatrix: Matrix) = Array( team.participants.size ) { i ->
+            val bm = team.participants[i].blockingSingle().champion.blockingSingle().bitmap.blockingSingle()
+            Bitmap.createBitmap( bm,0, 0, bm.width, bm.height, resizeMatrix, false )
+        }
+
+        @WorkerThread
+        fun calculateTeamKDA( asParticipant: ParticipantModel ): Triple<Int,Int,Int> {
+            var teamKills = 0
+            var teamDeaths = 0
+            var teamAssists = 0
+            asParticipant.team.participants.forEach {
+                val participant = it.blockingSingle()
+                teamKills += participant.kills
+                teamDeaths += participant.deaths
+                teamAssists += participant.assists
+            }
+            return Triple( teamKills, teamDeaths, teamAssists )
+        }
     }
+
+    /*  Tools ****************************************************************/
 
     private fun<T> ensureInitializedDoOnIO( l: () -> T? ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
         initialized.observeOn( Schedulers.io() ).flatMap { fInitialized ->

@@ -47,6 +47,7 @@ class InitialEnterFragment : BaseFragment() {
     ): View? {
 
         val binding = DataBindingUtil.inflate<FragmentInitialEnterBinding>( inflater, R.layout.fragment_initial_enter, container, false )
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.fragment = this
 

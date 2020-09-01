@@ -10,11 +10,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
+import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,13 +28,14 @@ class MatchHistoryFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel by activityViewModels<LandingViewModel> { viewModelFactory }
+    private val viewModel by viewModels<MatchHistoryViewModel> { viewModelFactory }
 
     private lateinit var binding: FragmentMatchHistoryBinding
 
     override fun onAttach( context: Context ) {
         ( context.applicationContext as ReportMidApp ).comp.inject( this )
-        super.onAttach(context)
+        super.onAttach( context )
+        viewModel.initialize( requireArguments().getString( ARG_PUUID )?: throw IllegalArgumentException( "Missing PUUID argument" ) )
     }
 
     override fun onCreateView(
@@ -40,12 +43,19 @@ class MatchHistoryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate( inflater, R.layout.fragment_match_history, container, false )
+        binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         with( binding.matchHistoryView ) {
             setHasFixedSize( true )
             layoutManager = LinearLayoutManager( context )
-            val disposable = viewModel.activeSummonerModel.value?.matchHistory?.observeOn( AndroidSchedulers.mainThread() )?.subscribe { matchHistory ->
+            val disposable = Observable.create<SummonerModel> { emitter ->
+                viewModel.activeSummonerModel.observe( { lifecycle } ) { summonerModel ->
+                    emitter.onNext( summonerModel )
+                    emitter.onComplete()
+                } }
+                .flatMap{ summonerModel -> summonerModel.matchHistory }
+                .observeOn( AndroidSchedulers.mainThread() ).subscribe { matchHistory ->
                 adapter = MatchHistoryAdapter( object: MatchHistoryAdapter.IHistoryDataProvider {
                     override fun getCount(): Int = matchHistory.size
                     override fun getMatchData( i: Int ): Observable<MatchResultPreviewData> {
@@ -59,14 +69,16 @@ class MatchHistoryFragment : BaseFragment() {
             if( disposable != null ) viewModel.allDisposables.add( disposable )
         }
 
-        requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_match_history_title_template ).format( viewModel.activeSummonerModel.value?.name )
-
         with( binding.root.bottomNavigation.menu ) {
             for( i in 0 until size() ) with( get( i ) ) { if( id != R.id.matchHistoryFragment ) isEnabled = true }
         }
         with( binding.root.bottomNavigation ) {
             setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
             selectedItemId = R.id.matchHistoryFragment
+        }
+
+        viewModel.activeSummonerModel.observe( {  lifecycle } ) {
+            requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_match_history_title_template ).format( it.name )
         }
 
         return binding.root
@@ -92,7 +104,9 @@ class MatchHistoryFragment : BaseFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = MatchHistoryFragment()
+        fun newInstance( puuid: String ) = MatchHistoryFragment().apply {
+            arguments = Bundle( 1 ). apply { putString( ARG_PUUID, puuid ) }
+        }
     }
 }
 

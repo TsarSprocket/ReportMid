@@ -13,7 +13,8 @@ import javax.inject.Singleton
     MainActivityModule::class,
     ViewModelFactoryBinder::class,
     LandingViewModelModule::class,
-    MatchupViewModelModule::class
+    MatchupViewModelModule::class,
+    MatchHistoryViewModelModule::class
 ] )
 interface ReportMidAppComponent {
 

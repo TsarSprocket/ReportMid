@@ -37,7 +37,6 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
     val state = MutableLiveData<Status>( Status.LOADING )
 
     val masteries = Array( TOP_MASTERIES_NUM ) { MasteryLive() }
-//    val championImages = Array( TOP_MASTERIES_NUM ) { MutableLiveData<Maybe<Bitmap>>() }
 
     val allDisposables = CompositeDisposable()
     val summonerDisposables = CompositeDisposable()
@@ -58,24 +57,16 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
     }
 
     override fun onCleared() {
-        super.onCleared()
-
         allDisposables.dispose()
+        super.onCleared()
     }
 
-    fun selectRegionByOrderNo(orderNo: Int ) {
-
+    fun selectRegionByOrderNo( orderNo: Int ) {
         selectedRegion.value = if( orderNo >= 0 && orderNo < allRegions.size ) allRegions[ orderNo ] else null
     }
 
     fun validateInitial( action: ( fResult: Boolean ) -> Unit ) {
-
         val reg = enumValues<RegionModel>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
-
-        repository.initialized.subscribe {
-            Log.d( LandingViewModel::class.simpleName, "Repository initialized: $it" )
-        }
-
         allDisposables.add(
             repository.findSummonerForName( activeSummonerName.value?: "", reg )
                 .doOnError { Log.d( LandingViewModel::class.simpleName, "Error findinmg summoner: ${it.localizedMessage}", it ) }
@@ -127,130 +118,5 @@ class LandingViewModel @Inject constructor( private val repository: Repository )
                 }
             )
         }
-
-
-/*
-        val observableMasteries = activeSummonerModel.value?.masteries
-        if( observableMasteries != null ) {
-            allDisposables.add( observableMasteries.subscribe { masteries ->
-                for( i in 0 until if ( masteries.size < TOP_MASTERIES_NUM ) masteries.size else TOP_MASTERIES_NUM ) {
-                    masteries[i].observeOn(AndroidSchedulers.mainThread())
-                        .flatMap { mastery -> mastery.champion }
-                        .flatMap { champ -> champ.bitmap }
-                        .observeOn( AndroidSchedulers.mainThread() )
-                        .subscribe { bitmap ->
-                            championImages[i].value = bitmap
-                        }
-
-                }
-            } )
-        }
-*/
-
-/*
-        for( i in 0 until TOP_MASTERIES_NUM ) {
-            activeSummonerModel.value!!.masteries
-                .flatMap { masteryList -> masteryList[ i ] }
-                .observeOn( AndroidSchedulers.mainThread() )
-                .subscribe() { masteryModel ->
-                    masteryModel.champion
-                        .observeOn( AndroidSchedulers.mainThread() )
-                        .subscribe { champ ->
-                            allDisposables.add(
-                                champ.bitmap.subscribe { bitmap ->
-                                    championImages[ i ].postValue( bitmap )
-                                }
-                            )
-                        }
-                }
-        }
-*/
     }
-
-    fun fetchMatchPreviewInfo(
-        position: Int
-    ): Observable<MatchResultPreviewData> {
-        val summoner = activeSummonerModel.value?:return Observable.empty()
-
-        return summoner.matchHistory
-            .observeOn( Schedulers.io() )
-            .flatMap { matchHistoryModel ->
-                matchHistoryModel.getMatch(position)
-            }
-            .map { match ->
-                val asParticipant = findParticipant( match, summoner )
-                val asChampion = asParticipant.champion.blockingSingle()
-
-//                val resizeMatrix = Matrix().apply { postScale( 0.5f, 0.5f ) }
-
-                val runeModels = asParticipant.runeStats.blockingSingle().map { o -> o.blockingSingle().rune.blockingSingle() }
-
-                // The two exceptions below should never be thrown
-
-                val maybeSecondaryPath = asParticipant.secondaryRunePath.blockingSingle()
-
-                MatchResultPreviewData(
-                    asChampion.bitmap.blockingSingle(),
-                    asParticipant.kills,
-                    asParticipant.deaths,
-                    asParticipant.assists,
-                    asParticipant.isWinner,
-                    match.remake,
-                    asParticipant.creepScore,
-                    match.gameType.titleResId,
-                    runeModels.find { it.slot == 0 }?.iconResId,
-                    if( maybeSecondaryPath.isEmpty.blockingGet() ) null else maybeSecondaryPath.blockingGet().iconResId,
-                    asParticipant.summonerSpellD.blockingSingle().icon.blockingSingle(),
-                    asParticipant.summonerSpellF.blockingSingle().icon.blockingSingle(),
-                    getItemIcons( asParticipant )
-                )
-            }
-    }
-
-    @WorkerThread
-    private fun getItemIcons( participant: ParticipantModel ): Array<Bitmap> {
-        val items = participant.items.blockingSingle()
-        return Array( items.size ) { i -> items[ i ].blockingSingle().bitmap.blockingSingle() }
-    }
-
-    @WorkerThread
-    private fun findParticipant( match: MatchModel, summoner: SummonerModel ): ParticipantModel {
-
-        val blueTeam = match.blueTeam.blockingSingle()
-        val redTeam = match.redTeam.blockingSingle()
-
-        val firstInBlue = blueTeam.participants.first().blockingSingle()
-        if( firstInBlue.summoner.blockingSingle().puuid == summoner.puuid ) return firstInBlue
-
-        val firstInRed = redTeam.participants.first().blockingSingle()
-        if( firstInRed.summoner.blockingSingle().puuid == summoner.puuid ) return firstInRed
-
-        return (
-                blueTeam.participants.subList( 1, blueTeam.participants.size )
-                    .union( redTeam.participants.subList( 1, redTeam.participants.size ) )
-                    .find { it.blockingSingle().summoner.blockingSingle().puuid == summoner.puuid }
-                    ?: throw RuntimeException("Summoner ${summoner.name} is not found in match ${match.id}")
-                ).blockingSingle()
-    }
-
-    @WorkerThread
-    private fun getTeamIcons( team: TeamModel, resizeMatrix: Matrix ) = Array( team.participants.size ) { i ->
-            val bm = team.participants[i].blockingSingle().champion.blockingSingle().bitmap.blockingSingle()
-            Bitmap.createBitmap( bm,0, 0, bm.width, bm.height, resizeMatrix, false )
-        }
-
-    @WorkerThread
-    fun calculateTeamKDA( asParticipant: ParticipantModel ): Triple<Int,Int,Int> {
-        var teamKills = 0
-        var teamDeaths = 0
-        var teamAssists = 0
-        asParticipant.team.participants.forEach {
-            val participant = it.blockingSingle()
-            teamKills += participant.kills
-            teamDeaths += participant.deaths
-            teamAssists += participant.assists
-        }
-        return Triple( teamKills, teamDeaths, teamAssists )
-    }
-
 }
