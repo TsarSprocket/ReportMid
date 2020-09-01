@@ -95,15 +95,8 @@ class MatchupFragment : BaseFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance( puuid: String ): MatchupFragment {
-            val fragment = MatchupFragment()
-
-            val args = Bundle( 1 )
-            args.putString( ARG_PUUID, puuid )
-
-            fragment.arguments = args
-
-            return fragment
+        fun newInstance( puuid: String ) = MatchupFragment().apply {
+            arguments = Bundle( 1 ).apply { putString( ARG_PUUID, puuid ) }
         }
     }
 }
