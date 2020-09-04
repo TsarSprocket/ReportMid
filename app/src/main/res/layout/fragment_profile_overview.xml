@@ -10,13 +10,13 @@
         <import type="android.view.View"/>
         <variable
             name="viewModel"
-            type="com.tsarsprocket.reportmid.LandingViewModel" />
+            type="com.tsarsprocket.reportmid.ProfileOverviewViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".LandingFragment">
+        tools:context=".ProfileOverviewFragment">
 
         <ImageView
             android:id="@+id/imgSummonerIcon"

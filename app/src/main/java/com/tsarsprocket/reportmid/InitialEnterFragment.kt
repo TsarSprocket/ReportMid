@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -32,7 +31,7 @@ class InitialEnterFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel by activityViewModels<LandingViewModel> { viewModelFactory }
+    private val viewModel by viewModels<InitialEntryViewModel> { viewModelFactory }
 
     override fun onAttach(context: Context) {
 
@@ -65,20 +64,23 @@ class InitialEnterFragment : BaseFragment() {
         return binding.root
     }
 
-    fun onValidateInitial( view: View? ) {
-
-        val fResult = viewModel.validateInitial() { fResult ->
-
-            if( fResult ) {
-
-                val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToLandingFragment()
-                findNavController().navigate( action )
-            } else {
-
-                Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val navController = findNavController()
+        viewModel.state.observe( viewLifecycleOwner, { state ->
+            when (state) {
+                InitialEntryViewModel.Status.VERIFIED -> {
+                    val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToProfileOverviewFragment( viewModel.activeSummonerModel.value!!.puuid )
+                    findNavController().navigate( action )
+                }
+                InitialEntryViewModel.Status.UNVERIFIED -> {
+                    Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
+                }
             }
-        }
+        })
     }
+
+    fun onValidateInitial( view: View? ) { viewModel.validateInitial() }
 
     companion object {
         @JvmStatic

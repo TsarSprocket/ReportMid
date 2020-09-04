@@ -63,4 +63,9 @@ class MatchHistoryViewModel @Inject constructor( private val repository: Reposit
                 )
             }
     }
+
+    override fun onCleared() {
+        allDisposables.clear()
+        super.onCleared()
+    }
 }

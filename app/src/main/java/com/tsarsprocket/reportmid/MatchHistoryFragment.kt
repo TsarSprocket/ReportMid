@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
@@ -20,7 +19,7 @@ import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_landing.view.*
+import kotlinx.android.synthetic.main.fragment_profile_overview.view.*
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -35,7 +34,9 @@ class MatchHistoryFragment : BaseFragment() {
     override fun onAttach( context: Context ) {
         ( context.applicationContext as ReportMidApp ).comp.inject( this )
         super.onAttach( context )
-        viewModel.initialize( requireArguments().getString( ARG_PUUID )?: throw IllegalArgumentException( "Missing PUUID argument" ) )
+        if( viewModel.activeSummonerModel.value == null ) {
+            viewModel.initialize( requireArguments().getString( ARG_PUUID )?: throw IllegalArgumentException( "Missing PUUID argument" ) )
+        }
     }
 
     override fun onCreateView(
@@ -87,8 +88,8 @@ class MatchHistoryFragment : BaseFragment() {
     fun navigateToSibling( item: MenuItem): Boolean {
         val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.matchHistoryFragment, true ).build()
         when( item.itemId ) {
-            R.id.landingFragment -> {
-                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToLandingFragment()
+            R.id.profileOverviewFragment -> {
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToProfileOverviewFragment( viewModel.activeSummonerModel.value!!.puuid )
                 findNavController().navigate( action, navOptions )
                 return true
             }

@@ -12,7 +12,8 @@ import javax.inject.Singleton
     ReportMidAppModule::class,
     MainActivityModule::class,
     ViewModelFactoryBinder::class,
-    LandingViewModelModule::class,
+    InitialEntryViewModelModule::class,
+    ProfileOverviewViewModelModule::class,
     MatchupViewModelModule::class,
     MatchHistoryViewModelModule::class
 ] )
@@ -24,10 +25,13 @@ interface ReportMidAppComponent {
     fun inject( app: ReportMidApp )
 
     // Viewmodel
-    fun landingViewModelComponentFactory(): LandingViewModelComponent.Factory
+    fun landingViewModelComponentFactory(): InitialEntryViewModelComponent.Factory
+    fun profileOverviewViewModelComponentFactory(): ProfileOverviewViewModelComponent.Factory
+    fun matchupViewModelComponentFactory(): MatchupViewModelComponent.Factory
+    fun matchHistoryViewModelComponentFactory(): MatchHistoryViewModelComponent.Factory
 
     // Fragments
-    fun inject( landingFragment: LandingFragment )
+    fun inject( profileOverviewFragment: ProfileOverviewFragment )
     fun inject( initialEnterFragment: InitialEnterFragment )
     fun inject( matchHistoryFragment: MatchHistoryFragment )
     fun inject( matchupFragment: MatchupFragment )

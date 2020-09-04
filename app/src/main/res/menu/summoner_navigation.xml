@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@id/landingFragment"
+        android:id="@id/profileOverviewFragment"
         android:title="@string/summoner_navigation_menu_item_overview" />
     <item
         android:id="@id/matchupFragment"

@@ -124,7 +124,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     }
 
     override fun onCleared() {
-        allDisposables.dispose()
+        allDisposables.clear()
         super.onCleared()
     }
 }

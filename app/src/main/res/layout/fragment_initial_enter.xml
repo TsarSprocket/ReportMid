@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewModel" type="com.tsarsprocket.reportmid.LandingViewModel" />
+        <variable name="viewModel" type="com.tsarsprocket.reportmid.InitialEntryViewModel" />
         <variable name="fragment"  type="com.tsarsprocket.reportmid.InitialEnterFragment" />
     </data>
 

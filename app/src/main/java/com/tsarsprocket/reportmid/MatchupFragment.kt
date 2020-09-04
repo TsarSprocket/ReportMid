@@ -12,13 +12,14 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
-import kotlinx.android.synthetic.main.fragment_landing.view.*
+import kotlinx.android.synthetic.main.fragment_matchup.view.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -81,10 +82,13 @@ class MatchupFragment : BaseFragment() {
     fun navigateToSibling( item: MenuItem): Boolean {
         val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.matchupFragment, true ).build()
         return when( item.itemId ) {
-            R.id.landingFragment -> {
-                val action = MatchupFragmentDirections.actionMatchupFragmentToLandingFragment()
-                findNavController().navigate( action, navOptions )
-                true
+            R.id.profileOverviewFragment -> {
+                val puuid = viewModel.puuid
+                if( puuid != null ) {
+                    val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment( puuid )
+                    findNavController().navigate(action, navOptions)
+                    true
+                } else { false }
             }
             R.id.matchupFragment -> true
             R.id.matchHistoryFragment -> {
@@ -93,9 +97,7 @@ class MatchupFragment : BaseFragment() {
                     val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment( puuid )
                     findNavController().navigate(action, navOptions)
                     true
-                } else {
-                    false
-                }
+                } else { false }
             }
             else -> false
         }
