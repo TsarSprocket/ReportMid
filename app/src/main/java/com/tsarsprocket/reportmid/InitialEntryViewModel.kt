@@ -21,14 +21,15 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
 
     val selectedRegion = MutableLiveData<RegionModel>()
 
-    var activeSummonerName = MutableLiveData<String>( "" )
+    var activeSummonerName = MutableLiveData( "" )
 
     var activeSummonerModel = MutableLiveData<SummonerModel>()
 
-    val state = MutableLiveData<Status>( Status.LOADING )
+    val state = MutableLiveData( Status.LOADING )
 
     val allDisposables = CompositeDisposable()
 
+/*
     init {
         allDisposables.add( repository.getActiveSummoner()
             .observeOn( AndroidSchedulers.mainThread() )
@@ -42,6 +43,7 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
             .doOnError { e -> Log.d( InitialEntryViewModel::class.simpleName, "Cannot initialize LandingViewModel", e ) }
             .subscribe() )
     }
+*/
 
     override fun onCleared() {
         allDisposables.dispose()

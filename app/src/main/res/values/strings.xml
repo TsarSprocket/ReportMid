@@ -5,12 +5,15 @@
     <string name="fragment_initial_enter_validate_btn_text">Validate</string>
 
     <!-- Fragment: Landing -->
-    <string name="fragment_landing_level_label">Level:</string>
-    <string name="fragment_landing_tag_champion_icon">champion_icon</string>
-    <string name="fragment_landing_tag_champion_name">champion_name</string>
-    <string name="fragment_landing_tag_champion_level">champion_level</string>
-    <string name="fragment_landing_tag_champion_points">champion_points</string>
-    <string name="fragment_landing_title_template">Summoner: %s</string>
+    <string name="loading">Loading…</string>
+
+    <!-- Fragment: Profile Overview -->
+    <string name="fragment_profile_overview_level_label">Level:</string>
+    <string name="fragment_profile_overview_tag_champion_icon">champion_icon</string>
+    <string name="fragment_profile_overview_tag_champion_name">champion_name</string>
+    <string name="fragment_profile_overview_tag_champion_level">champion_level</string>
+    <string name="fragment_profile_overview_tag_champion_points">champion_points</string>
+    <string name="fragment_profile_overview_title_template">Summoner: %s</string>
 
     <!-- Fragment: Matchup -->
     <string name="fragment_matchup_player_solo_rank_na">n/a</string>
@@ -28,5 +31,7 @@
 
     <!-- technical -->
     <string name="lorem_ipsum_short">Lorem Ipsum</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

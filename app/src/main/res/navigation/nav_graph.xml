@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/initialEnterFragment">
+    app:startDestination="@id/landingFragment">
 
     <fragment
         android:id="@+id/initialEnterFragment"
@@ -32,12 +33,6 @@
             android:name="ARG_PUUID"
             app:argType="string" />
     </fragment>
-    <action
-        android:id="@+id/action_global_initialEnterFragment"
-        app:destination="@id/initialEnterFragment"
-        app:popUpTo="@id/initialEnterFragment"
-        app:popUpToInclusive="true"
-        />
     <fragment
         android:id="@+id/matchHistoryFragment"
         android:name="com.tsarsprocket.reportmid.MatchHistoryFragment"
@@ -83,5 +78,21 @@
         <argument
             android:name="ARG_PUUID"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/landingFragment"
+        android:name="com.tsarsprocket.reportmid.LandingFragment"
+        android:label="fragment_landing"
+        tools:layout="@layout/fragment_landing" >
+        <action
+            android:id="@+id/action_landingFragment_to_initialEnterFragment"
+            app:destination="@id/initialEnterFragment"
+            app:popUpTo="@id/landingFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_landingFragment_to_profileOverviewFragment"
+            app:destination="@id/profileOverviewFragment"
+            app:popUpTo="@id/landingFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

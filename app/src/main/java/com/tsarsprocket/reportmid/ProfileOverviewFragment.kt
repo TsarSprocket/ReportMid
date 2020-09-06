@@ -66,7 +66,7 @@ class ProfileOverviewFragment : BaseFragment() {
             fragmentDisposables.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )
-            requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_landing_title_template ).format( summoner.name )
+            requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_profile_overview_title_template ).format( summoner.name )
         }
 
         for( i in 0 until TOP_MASTERIES_NUM ) {
@@ -78,21 +78,21 @@ class ProfileOverviewFragment : BaseFragment() {
                 }
                 bitmapLive.observe( { lifecycle } ) { bitmap ->
                     if( bitmap != null ) {
-                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString( R.string.fragment_landing_tag_champion_icon ) )
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString( R.string.fragment_profile_overview_tag_champion_icon ) )
                             .setImageBitmap( bitmap )
                     }
                 }
                 champNameLive.observe( { lifecycle } ) { name ->
                     if( name != null ) {
-                        binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString( R.string.fragment_landing_tag_champion_name ) ).text =
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString( R.string.fragment_profile_overview_tag_champion_name ) ).text =
                             name
                     }
                 }
                 skillsLive.observe( { lifecycle } ) { skills ->
                     if( skills != null ) {
                         with(binding.root.grpOtherChampMasteries[i]) {
-                            findViewWithTag<TextView>(resources.getString(R.string.fragment_landing_tag_champion_level)).text = skills.level.toString()
-                            findViewWithTag<TextView>(resources.getString(R.string.fragment_landing_tag_champion_points)).text = skills.points.toString()
+                            findViewWithTag<TextView>(resources.getString(R.string.fragment_profile_overview_tag_champion_level)).text = skills.level.toString()
+                            findViewWithTag<TextView>(resources.getString(R.string.fragment_profile_overview_tag_champion_points)).text = skills.points.toString()
                         }
                     }
                 }

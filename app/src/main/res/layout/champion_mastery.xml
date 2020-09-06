@@ -11,25 +11,25 @@
     >
 
     <ImageView
-        android:tag="@string/fragment_landing_tag_champion_icon"
+        android:tag="@string/fragment_profile_overview_tag_champion_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:tag="@string/fragment_landing_tag_champion_name"
+        android:tag="@string/fragment_profile_overview_tag_champion_name"
         android:id="@+id/txtChampName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
 
     <TextView
-        android:tag="@string/fragment_landing_tag_champion_level"
+        android:tag="@string/fragment_profile_overview_tag_champion_level"
         android:id="@+id/txtChampLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
-        android:tag="@string/fragment_landing_tag_champion_points"
+        android:tag="@string/fragment_profile_overview_tag_champion_points"
         android:id="@+id/txtChampPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

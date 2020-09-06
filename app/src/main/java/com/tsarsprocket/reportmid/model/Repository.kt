@@ -34,6 +34,8 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
+const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
+
 @Singleton
 class Repository @Inject constructor( val context: Context ) {
 
@@ -97,24 +99,19 @@ class Repository @Inject constructor( val context: Context ) {
     fun findSummonerByPuuid( puuid: String? ) = getSummonerModel{ Orianna.summonerWithPuuid( puuid ).get().also { it.load() } }
 
     @WorkerThread
-    fun getActiveSummoner(): Observable<SummonerModel> {
-
-        return initialized.observeOn( Schedulers.io() )
-            .flatMap { fInitialized ->
-                when( fInitialized ) {
-                    true -> {
-                        val curSumId = database.globalStateDAO().getAll()[ 0 ].curSummonerId
-
-                        return@flatMap if( curSumId >= 0 ) {
-
-                            val se = database.summonerDAO().getById( curSumId )
-                            findSummonerByPuuid( se.puuid )
-                        } else Observable.empty<SummonerModel>()
-                    }
-                    else -> throw RepositoryNotInitializedException()
+    fun getActiveSummonerPUUID() = initialized.observeOn( Schedulers.io() )
+        .flatMap { fInitialized ->
+            when( fInitialized ) {
+                true -> {
+                    val curSummonerId = database.globalStateDAO().getAll()[ 0 ].curSummonerId
+                    if( curSummonerId >= 0 ) Observable.just( database.summonerDAO().getById( curSummonerId ).puuid!! ) else  Observable.empty()
                 }
+                else -> throw RepositoryNotInitializedException()
             }
-    }
+        }
+
+    @WorkerThread
+    fun getActiveSummoner() = getActiveSummonerPUUID().flatMap { puuid -> findSummonerByPuuid( puuid ) }
 
     @SuppressLint( "CheckResult")
     @WorkerThread
