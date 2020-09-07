@@ -15,7 +15,7 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
 
     enum class Status { LOADING, UNVERIFIED, VERIFIED }
 
-    val allRegions = repository.allRegions
+    val allRegions = Repository.allRegions
     val regionTitles
         get() = allRegions.map { it.title }
 

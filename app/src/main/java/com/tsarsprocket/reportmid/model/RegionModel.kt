@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.model
 
 enum class RegionModel(
-    val countryCode: String,
+    val tag: String,
     val title: String,
     val shadowRegion: com.merakianalytics.orianna.types.common.Region
 ) {
@@ -16,4 +16,9 @@ enum class RegionModel(
     OCEANIA( com.merakianalytics.orianna.types.common.Region.OCEANIA.tag, "Oceania", com.merakianalytics.orianna.types.common.Region.OCEANIA ),
     RUSSIA( com.merakianalytics.orianna.types.common.Region.RUSSIA.tag, "Russia", com.merakianalytics.orianna.types.common.Region.RUSSIA ),
     TURKEY( com.merakianalytics.orianna.types.common.Region.TURKEY.tag, "Turkey", com.merakianalytics.orianna.types.common.Region.TURKEY );
+
+    companion object {
+        val byTag = values().map { it.tag to it }.toMap()
+        val byShadowRegion = values().map { it.shadowRegion to it }.toMap()
+    }
 }

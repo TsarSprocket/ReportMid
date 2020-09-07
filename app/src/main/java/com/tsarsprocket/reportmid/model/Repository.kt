@@ -24,6 +24,7 @@ import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.room.GlobalStateEntity
 import com.tsarsprocket.reportmid.room.MainStorage
+import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -60,9 +61,9 @@ class Repository @Inject constructor( val context: Context ) {
 
                 if( stateList.isEmpty() ) {
 
-                    val sums = database.summonerDAO().getAll()
+                    val accs = database.myAccountDAO().getAll()
 
-                    database.globalStateDAO().insert( GlobalStateEntity( if( sums.isNotEmpty() ) sums[ 0 ].id else -1 ) )
+                    database.globalStateDAO().insert( GlobalStateEntity( accs.firstOrNull()?.id ) )
                 }
 
 //                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
@@ -80,8 +81,6 @@ class Repository @Inject constructor( val context: Context ) {
     }
 
     private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
-
-    val allRegions = RegionModel.values()
 
     @WorkerThread
     fun findSummonerForName( summonerName: String, regionModel: RegionModel ): Observable<SummonerModel> {
@@ -103,8 +102,12 @@ class Repository @Inject constructor( val context: Context ) {
         .flatMap { fInitialized ->
             when( fInitialized ) {
                 true -> {
-                    val curSummonerId = database.globalStateDAO().getAll()[ 0 ].curSummonerId
-                    if( curSummonerId >= 0 ) Observable.just( database.summonerDAO().getById( curSummonerId ).puuid!! ) else  Observable.empty()
+                    val curAccId = database.globalStateDAO().getAll().first().curMyAccountId
+
+                    if( curAccId != null ) {
+                        val curSummonerId = database.myAccountDAO().getById( curAccId ).summonerId
+                        Observable.just( database.summonerDAO().getById( curSummonerId ).puuid )
+                    } else  Observable.empty()
                 }
                 else -> throw RepositoryNotInitializedException()
             }
@@ -120,11 +123,14 @@ class Repository @Inject constructor( val context: Context ) {
             .subscribe { fInitialized ->
                 when( fInitialized ) {
                     true -> {
-                        val summonerEntity = SummonerEntity( summonerModel.puuid )
+                        val regionEntity = database.regionDAO().getByTag( summonerModel.region.tag )
+                        val summonerEntity = SummonerEntity( summonerModel.puuid, regionEntity.id )
                         val sumId = database.summonerDAO().insert( summonerEntity )
+                        val myAccountEntity = MyAccountEntity( sumId )
+                        val accId = database.myAccountDAO().insert( myAccountEntity )
                         if( setActive ) {
                             val globalState = database.globalStateDAO().getAll()[ 0 ]
-                            globalState.curSummonerId = sumId
+                            globalState.curMyAccountId = accId
                             database.globalStateDAO().update( globalState )
                         }
                     }
@@ -178,6 +184,8 @@ class Repository @Inject constructor( val context: Context ) {
     fun getLeaguePosition( lmdLeagueEntry: () -> LeagueEntry? ) = ensureInitializedDoOnIO { lmdLeagueEntry()?.let { LeaguePositionModel( this, it ) } }
 
     companion object {
+        val allRegions = RegionModel.values()
+        fun getRegion( region: Region ) = RegionModel.byShadowRegion[ region ]?: throw RuntimeException( "No such region: ${region.tag}" )
         fun getRunePath( pathId: Maybe<Int> ) = if( pathId.isEmpty.blockingGet() ) Maybe.empty() else Maybe.just( RunePathModel.byId[ pathId.blockingGet() ]?: throw IncorrectRunePathIdException( pathId.blockingGet() ) )
         fun getGameType( gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null ) =
             GameTypeModel.by( gameType, queue, gameMode, gameMap )

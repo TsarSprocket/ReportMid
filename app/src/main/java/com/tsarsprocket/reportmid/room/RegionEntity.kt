@@ -1,14 +1,13 @@
 package com.tsarsprocket.reportmid.room
 
-import androidx.annotation.Nullable
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity( tableName = "global_state" )
-data class GlobalStateEntity(
-    @ColumnInfo( name = "cur_my_account_id" ) var curMyAccountId: Long?
+@Entity( tableName = "regions" )
+data class RegionEntity(
+    @NonNull @ColumnInfo( name = "tag", index = true ) var tag: String
 ) {
-
     @ColumnInfo( name = "id" ) @PrimaryKey( autoGenerate = true ) var id: Long = 0
 }

@@ -6,6 +6,7 @@ import com.merakianalytics.orianna.types.core.match.MatchHistory
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.ReplaySubject
 
 data class SummonerModel(
     val repository: Repository,
@@ -20,6 +21,7 @@ data class SummonerModel(
     val matchHistory: Observable<MatchHistoryModel> by lazy { getObservableMatchHistoryForSummoner( shadowSummoner ).replay( 1 ).autoConnect() }
     val currentMatch by lazy { repository.getCurrentMatch{ shadowSummoner.currentMatch } }
     val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
+    val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
 
     private fun getObservableMasteryList() = Observable.fromCallable {
         List( shadowSummoner.championMasteries.size ) { i ->

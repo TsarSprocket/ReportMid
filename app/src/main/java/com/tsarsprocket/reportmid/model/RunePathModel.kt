@@ -11,7 +11,7 @@ enum class RunePathModel( val pathId: Int, val iconResId: Int ) {
     SORCERY( 8200, R.drawable.runepath_sorcery );
 
     companion object {
-        val byId = RunePathModel.values().map{ it.pathId to it }.toMap()
+        val byId = values().map{ it.pathId to it }.toMap()
     }
 }
 
