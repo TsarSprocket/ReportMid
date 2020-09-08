@@ -22,10 +22,11 @@ import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
-import com.tsarsprocket.reportmid.room.GlobalStateEntity
+import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
+import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -57,13 +58,13 @@ class Repository @Inject constructor( val context: Context ) {
 
                 database = Room.databaseBuilder( context.applicationContext, MainStorage::class.java, "database" ).build()
 
-                val stateList = database.globalStateDAO().getAll()
+                val stateList = database.globalDAO().getAll()
 
                 if( stateList.isEmpty() ) {
 
                     val accs = database.myAccountDAO().getAll()
 
-                    database.globalStateDAO().insert( GlobalStateEntity( accs.firstOrNull()?.id ) )
+                    database.globalDAO().insert( GlobalEntity( accs.firstOrNull()?.id ) )
                 }
 
 //                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
@@ -102,10 +103,11 @@ class Repository @Inject constructor( val context: Context ) {
         .flatMap { fInitialized ->
             when( fInitialized ) {
                 true -> {
-                    val curAccId = database.globalStateDAO().getAll().first().curMyAccountId
+                    val curAccId = database.globalDAO().getAll().first().currentAccountId
 
                     if( curAccId != null ) {
-                        val curSummonerId = database.myAccountDAO().getById( curAccId ).summonerId
+                        val accId = database.currentAccountDAO().getById( curAccId ).accountId
+                        val curSummonerId = database.myAccountDAO().getById( accId ).summonerId
                         Observable.just( database.summonerDAO().getById( curSummonerId ).puuid )
                     } else  Observable.empty()
                 }
@@ -118,7 +120,7 @@ class Repository @Inject constructor( val context: Context ) {
 
     @SuppressLint( "CheckResult")
     @WorkerThread
-    fun addSummoner( summonerModel: SummonerModel, setActive: Boolean = false ) {
+    fun addMyAccount( summonerModel: SummonerModel, setCurrent: Boolean = false ) {
         initialized.observeOn( Schedulers.io() )
             .subscribe { fInitialized ->
                 when( fInitialized ) {
@@ -128,10 +130,18 @@ class Repository @Inject constructor( val context: Context ) {
                         val sumId = database.summonerDAO().insert( summonerEntity )
                         val myAccountEntity = MyAccountEntity( sumId )
                         val accId = database.myAccountDAO().insert( myAccountEntity )
-                        if( setActive ) {
-                            val globalState = database.globalStateDAO().getAll()[ 0 ]
-                            globalState.curMyAccountId = accId
-                            database.globalStateDAO().update( globalState )
+                        if( setCurrent ) {
+                            val current = database.currentAccountDAO().getByRegion( regionEntity.id )
+                            val currentId = if( current != null ) {
+                                current.accountId = accId
+                                database.currentAccountDAO().update( current )
+                                current.id
+                            } else {
+                                database.currentAccountDAO().insert( CurrentAccountEntity( regionId = regionEntity.id, accountId = accId ) )
+                            }
+                            val globalState = database.globalDAO().getAll()[ 0 ]
+                            globalState.currentAccountId = currentId
+                            database.globalDAO().update( globalState )
                         }
                     }
                     else -> throw RepositoryNotInitializedException()

@@ -61,7 +61,7 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
                 .doOnError { Log.d( InitialEntryViewModel::class.simpleName, "Error findinmg summoner: ${it.localizedMessage}", it ) }
                 .observeOn( Schedulers.io() )
                 .doOnNext { summonerModel ->
-                    repository.addSummoner( summonerModel, true )
+                    repository.addMyAccount( summonerModel, true )
                 }
                 .observeOn( AndroidSchedulers.mainThread() )
                 .subscribe { summonerModel ->

@@ -2,10 +2,15 @@ package com.tsarsprocket.reportmid.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.tsarsprocket.reportmid.room.state.CurrentAccountDAO
+import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
+import com.tsarsprocket.reportmid.room.state.GlobalDAO
+import com.tsarsprocket.reportmid.room.state.GlobalEntity
 
 @Database(
     entities = [
-        GlobalStateEntity::class,
+        GlobalEntity::class,
+        CurrentAccountEntity::class,
         MyAccountEntity::class,
         MyFriendEntity::class,
         RegionEntity::class,
@@ -13,7 +18,9 @@ import androidx.room.RoomDatabase
     ], version = 1 )
 abstract class MainStorage: RoomDatabase() {
 
-    abstract fun globalStateDAO(): GlobalStateDAO
+    abstract fun globalDAO(): GlobalDAO
+
+    abstract fun currentAccountDAO(): CurrentAccountDAO
 
     abstract fun myAccountDAO(): MyAccountDAO
 
