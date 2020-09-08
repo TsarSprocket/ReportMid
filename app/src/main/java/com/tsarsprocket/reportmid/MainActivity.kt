@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -19,7 +20,7 @@ class MainActivity : BaseActivity() {
         binding.setLifecycleOwner { this.lifecycle }
 
         val navController = findNavController( R.id.nav_host_fragment )
-        val appBarConfiguration = AppBarConfiguration( navController.graph )
+        val appBarConfiguration = AppBarConfiguration( navController.graph, drawerLayout = binding.root as DrawerLayout )
         binding.toolbar.setupWithNavController( navController, appBarConfiguration )
 //        binding.bottomNavigation.setupWithNavController( navController )
     }

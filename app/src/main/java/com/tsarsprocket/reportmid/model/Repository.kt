@@ -56,7 +56,7 @@ class Repository @Inject constructor( val context: Context ) {
             try {
                 Log.d( Repository::class.simpleName, "Initializing..." )
 
-                database = Room.databaseBuilder( context.applicationContext, MainStorage::class.java, "database" ).build()
+                database = Room.databaseBuilder( context.applicationContext, MainStorage::class.java, "database" ).createFromAsset( "database/init.db" ).build()
 
                 val stateList = database.globalDAO().getAll()
 
@@ -79,6 +79,12 @@ class Repository @Inject constructor( val context: Context ) {
                 return@fromCallable false
             }
         }.subscribeOn( Schedulers.io() ).subscribe( initialized )
+    }
+
+    fun getCurrentRegions() = ensureInitializedDoOnIO {
+        database.currentAccountDAO().getAll()
+            .map { database.regionDAO().getById( it.regionId ) }
+            .map { RegionModel.byTag[ it.tag ]?: throw RuntimeException( "Region ${it.tag} not found" ) }
     }
 
     private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
@@ -126,19 +132,29 @@ class Repository @Inject constructor( val context: Context ) {
                 when( fInitialized ) {
                     true -> {
                         val regionEntity = database.regionDAO().getByTag( summonerModel.region.tag )
+
                         val summonerEntity = SummonerEntity( summonerModel.puuid, regionEntity.id )
+
                         val sumId = database.summonerDAO().insert( summonerEntity )
+
                         val myAccountEntity = MyAccountEntity( sumId )
+
                         val accId = database.myAccountDAO().insert( myAccountEntity )
-                        if( setCurrent ) {
-                            val current = database.currentAccountDAO().getByRegion( regionEntity.id )
-                            val currentId = if( current != null ) {
+
+                        val current = database.currentAccountDAO().getByRegion( regionEntity.id )
+
+                        val currentId = if( current != null ) {
+                            if( current.accountId != accId && setCurrent ) {
                                 current.accountId = accId
                                 database.currentAccountDAO().update( current )
-                                current.id
-                            } else {
-                                database.currentAccountDAO().insert( CurrentAccountEntity( regionId = regionEntity.id, accountId = accId ) )
                             }
+
+                            current.id
+                        } else {
+                            database.currentAccountDAO().insert( CurrentAccountEntity( regionId = regionEntity.id, accountId = accId ) )
+                        }
+
+                        if( setCurrent ) {
                             val globalState = database.globalDAO().getAll()[ 0 ]
                             globalState.currentAccountId = currentId
                             database.globalDAO().update( globalState )
@@ -250,7 +266,7 @@ class Repository @Inject constructor( val context: Context ) {
         }
     }
 
-    /*  Tools ****************************************************************/
+    /*  Tools  ***************************************************************/
 
     private fun<T> ensureInitializedDoOnIO( l: () -> T? ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
         initialized.observeOn( Schedulers.io() ).flatMap { fInitialized ->

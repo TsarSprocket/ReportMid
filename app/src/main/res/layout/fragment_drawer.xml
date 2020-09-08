@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".DrawerFragment">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.tsarsprocket.reportmid.DrawerViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity = "start"
+        android:background="@color/primary"
+        >
+
+        <TextView
+            android:id="@+id/regionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Region:"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <Spinner
+            android:id="@+id/regionSelector"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/regionLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:entries="@{viewModel.regionTitles}"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
