@@ -1,15 +1,11 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.model.MatchHistoryModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
-import io.reactivex.Emitter
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject

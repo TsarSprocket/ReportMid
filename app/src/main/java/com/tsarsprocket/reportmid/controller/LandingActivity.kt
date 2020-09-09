@@ -1,8 +1,9 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import com.tsarsprocket.reportmid.BaseActivity
+import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.databinding.ActivityLandingBinding
 
 class LandingActivity : BaseActivity() {
@@ -12,7 +13,7 @@ class LandingActivity : BaseActivity() {
     override fun onCreate( savedInstanceState: Bundle? ) {
         super.onCreate( savedInstanceState )
 
-        binding = DataBindingUtil.setContentView( this, R.layout.activity_landing )
+        binding = DataBindingUtil.setContentView( this, R.layout.activity_landing)
         binding.lifecycleOwner = this
     }
 }

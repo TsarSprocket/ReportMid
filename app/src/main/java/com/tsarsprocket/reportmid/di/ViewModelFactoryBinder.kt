@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModelProvider
-import com.tsarsprocket.reportmid.ViewModelFactory
+import com.tsarsprocket.reportmid.viewmodel.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 

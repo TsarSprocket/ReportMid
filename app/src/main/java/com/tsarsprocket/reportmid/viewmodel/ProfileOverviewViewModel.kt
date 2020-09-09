@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.viewmodel
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData

@@ -1,13 +1,11 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import com.tsarsprocket.reportmid.BaseActivity
+import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.databinding.ActivityMainBinding
 
 class MainActivity : BaseActivity() {

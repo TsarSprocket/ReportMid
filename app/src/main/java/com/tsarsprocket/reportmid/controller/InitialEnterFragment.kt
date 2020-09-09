@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
@@ -13,19 +13,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.tsarsprocket.reportmid.BaseFragment
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentInitialEnterBinding
+import com.tsarsprocket.reportmid.viewmodel.InitialEntryViewModel
 import javax.inject.Inject
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [InitialEnterFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class InitialEnterFragment : BaseFragment() {
 
     @Inject
@@ -35,7 +29,7 @@ class InitialEnterFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
 
-        ( context.applicationContext as ReportMidApp ).comp.inject( this )
+        ( context.applicationContext as ReportMidApp).comp.inject( this )
 
         super.onAttach(context)
     }
@@ -50,7 +44,7 @@ class InitialEnterFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.fragment = this
 
-        binding.root.findViewById<Spinner>( R.id.spRegion ).onItemSelectedListener =
+        binding.root.findViewById<Spinner>(R.id.spRegion).onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     viewModel.selectRegionByOrderNo( -1 )
@@ -70,7 +64,7 @@ class InitialEnterFragment : BaseFragment() {
         viewModel.state.observe( viewLifecycleOwner, { state ->
             when (state) {
                 InitialEntryViewModel.Status.VERIFIED -> {
-                    val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToMainActivity( viewModel.activeSummonerModel.value!!.puuid )
+                    val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToMainActivity(viewModel.activeSummonerModel.value!!.puuid)
                     findNavController().navigate( action )
                     requireActivity().finish()
                 }

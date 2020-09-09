@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
@@ -8,14 +8,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider ): RecyclerView.Adapter<MatchHistoryViewHolder>() {
+class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView.Adapter<MatchHistoryViewHolder>() {
 
-    val arrIconViewIds = arrayOf( R.id.imageItem0, R.id.imageItem1, R.id.imageItem2, R.id.imageItem3, R.id.imageItem4, R.id.imageItem5 )
+    val arrIconViewIds = arrayOf(R.id.imageItem0, R.id.imageItem1, R.id.imageItem2, R.id.imageItem3, R.id.imageItem4, R.id.imageItem5)
 
     var cardBGColour: ColorStateList? = null
 

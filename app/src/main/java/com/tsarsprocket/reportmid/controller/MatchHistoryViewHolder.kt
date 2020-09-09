@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView

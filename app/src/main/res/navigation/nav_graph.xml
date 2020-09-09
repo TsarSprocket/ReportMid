@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/profileOverviewFragment"
-        android:name="com.tsarsprocket.reportmid.ProfileOverviewFragment"
+        android:name="com.tsarsprocket.reportmid.controller.ProfileOverviewFragment"
         android:label="Summoner's Page'">
         <action
             android:id="@+id/action_profileOverviewFragment_to_matchHistoryFragment"
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/matchHistoryFragment"
-        android:name="com.tsarsprocket.reportmid.MatchHistoryFragment"
+        android:name="com.tsarsprocket.reportmid.controller.MatchHistoryFragment"
         android:label="MatchHistoryFragment" >
         <action
             android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
@@ -47,7 +47,7 @@
     </fragment>
     <fragment
         android:id="@+id/matchupFragment"
-        android:name="com.tsarsprocket.reportmid.MatchupFragment"
+        android:name="com.tsarsprocket.reportmid.controller.MatchupFragment"
         android:label="MatchupFragment" >
         <action
             android:id="@+id/action_matchupFragment_to_matchHistoryFragment"

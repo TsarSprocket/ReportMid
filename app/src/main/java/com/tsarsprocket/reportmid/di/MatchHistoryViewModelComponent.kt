@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.MatchHistoryViewModel
-import com.tsarsprocket.reportmid.ViewModelKey
+import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
+import com.tsarsprocket.reportmid.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
@@ -12,7 +12,7 @@ import dagger.multibindings.IntoMap
 @Subcomponent
 interface MatchHistoryViewModelComponent {
 
-    fun inject( matchHistoryViewModel: MatchHistoryViewModel )
+    fun inject( matchHistoryViewModel: MatchHistoryViewModel)
 
     @Subcomponent.Factory
     interface Factory {
@@ -26,5 +26,5 @@ abstract class MatchHistoryViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey( MatchHistoryViewModel::class )
-    abstract fun bindViewModel( matchHistoryViewModel: MatchHistoryViewModel ): ViewModel
+    abstract fun bindViewModel( matchHistoryViewModel: MatchHistoryViewModel): ViewModel
 }

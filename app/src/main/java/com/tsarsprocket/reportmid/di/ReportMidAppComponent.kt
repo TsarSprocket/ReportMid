@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import android.content.Context
 import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.controller.*
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
@@ -36,10 +37,10 @@ interface ReportMidAppComponent {
     fun matchHistoryViewModelComponentFactory(): MatchHistoryViewModelComponent.Factory
 
     // Fragments
-    fun inject( drawerFragment: DrawerFragment )
-    fun inject( landingFragment: LandingFragment )
-    fun inject( initialEnterFragment: InitialEnterFragment )
-    fun inject( profileOverviewFragment: ProfileOverviewFragment )
-    fun inject( matchHistoryFragment: MatchHistoryFragment )
-    fun inject( matchupFragment: MatchupFragment )
+    fun inject( drawerFragment: DrawerFragment)
+    fun inject( landingFragment: LandingFragment)
+    fun inject( initialEnterFragment: InitialEnterFragment)
+    fun inject( profileOverviewFragment: ProfileOverviewFragment)
+    fun inject( matchHistoryFragment: MatchHistoryFragment)
+    fun inject( matchupFragment: MatchupFragment)
 }

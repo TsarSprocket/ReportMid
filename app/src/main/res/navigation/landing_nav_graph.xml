@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/landingFragment"
-        android:name="com.tsarsprocket.reportmid.LandingFragment"
+        android:name="com.tsarsprocket.reportmid.controller.LandingFragment"
         android:label="LandingFragment" >
         <action
             android:id="@+id/action_landingFragment_to_mainActivity"
@@ -21,7 +21,7 @@
     </fragment>
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.tsarsprocket.reportmid.MainActivity"
+        android:name="com.tsarsprocket.reportmid.controller.MainActivity"
         android:label="activity_main"
         tools:layout="@layout/activity_main" >
         <argument
@@ -30,7 +30,7 @@
     </activity>
     <fragment
         android:id="@+id/initialEnterFragment"
-        android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
+        android:name="com.tsarsprocket.reportmid.controller.InitialEnterFragment"
         android:label="InitialEnterFragment" >
         <action
             android:id="@+id/action_initialEnterFragment_to_mainActivity"

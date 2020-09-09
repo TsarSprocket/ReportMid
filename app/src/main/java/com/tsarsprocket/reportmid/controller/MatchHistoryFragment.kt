@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
@@ -14,12 +14,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
+import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_profile_overview.view.*
+import kotlinx.android.synthetic.main.fragment_match_history.view.*
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -32,7 +34,7 @@ class MatchHistoryFragment : BaseFragment() {
     private lateinit var binding: FragmentMatchHistoryBinding
 
     override fun onAttach( context: Context ) {
-        ( context.applicationContext as ReportMidApp ).comp.inject( this )
+        ( context.applicationContext as ReportMidApp).comp.inject( this )
         super.onAttach( context )
         if( viewModel.activeSummonerModel.value == null ) {
             viewModel.initialize( requireArguments().getString( ARG_PUUID )?: throw IllegalArgumentException( "Missing PUUID argument" ) )
@@ -79,22 +81,22 @@ class MatchHistoryFragment : BaseFragment() {
         }
 
         viewModel.activeSummonerModel.observe( {  lifecycle } ) {
-            requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_match_history_title_template ).format( it.name )
+            requireActivity().findViewById<Toolbar>(R.id.toolbar).title = getString(R.string.fragment_match_history_title_template).format( it.name )
         }
 
         return binding.root
     }
 
     fun navigateToSibling( item: MenuItem): Boolean {
-        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.matchHistoryFragment, true ).build()
+        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.matchHistoryFragment, true ).build()
         when( item.itemId ) {
             R.id.profileOverviewFragment -> {
-                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToProfileOverviewFragment( viewModel.activeSummonerModel.value!!.puuid )
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToProfileOverviewFragment(viewModel.activeSummonerModel.value!!.puuid)
                 findNavController().navigate( action, navOptions )
                 return true
             }
             R.id.matchupFragment -> {
-                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToMatchupFragment( viewModel.activeSummonerModel.value!!.puuid )
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToMatchupFragment(viewModel.activeSummonerModel.value!!.puuid)
                 findNavController().navigate( action, navOptions )
                 return true
             }

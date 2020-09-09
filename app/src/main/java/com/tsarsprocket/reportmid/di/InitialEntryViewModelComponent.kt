@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.InitialEntryViewModel
-import com.tsarsprocket.reportmid.ViewModelKey
+import com.tsarsprocket.reportmid.viewmodel.InitialEntryViewModel
+import com.tsarsprocket.reportmid.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
@@ -12,7 +12,7 @@ import dagger.multibindings.IntoMap
 @Subcomponent
 interface InitialEntryViewModelComponent {
 
-    fun inject(initialEntryViewModel: InitialEntryViewModel )
+    fun inject(initialEntryViewModel: InitialEntryViewModel)
 
     @Subcomponent.Factory
     interface Factory {
@@ -27,5 +27,5 @@ abstract class InitialEntryViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey( InitialEntryViewModel::class )
-    abstract fun bindViewModel( viewModel: InitialEntryViewModel ): ViewModel
+    abstract fun bindViewModel( viewModel: InitialEntryViewModel): ViewModel
 }

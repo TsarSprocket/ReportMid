@@ -2,12 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".DrawerFragment">
+    tools:context=".controller.DrawerFragment">
 
     <data>
         <variable
             name="viewModel"
-            type="com.tsarsprocket.reportmid.DrawerViewModel" />
+            type="com.tsarsprocket.reportmid.viewmodel.DrawerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

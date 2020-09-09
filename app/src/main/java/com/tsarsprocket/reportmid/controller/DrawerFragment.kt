@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBindingImpl
+import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
 import javax.inject.Inject
 
 class DrawerFragment : Fragment() {

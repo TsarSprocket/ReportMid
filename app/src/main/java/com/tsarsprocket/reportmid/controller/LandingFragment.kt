@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
@@ -10,19 +10,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
+import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LandingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LandingFragment : Fragment() {
 
     @Inject

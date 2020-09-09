@@ -4,7 +4,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity"
+    tools:context=".controller.MainActivity"
     >
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -52,7 +52,7 @@
 
         <fragment
             android:id="@+id/drawerFragment"
-            android:name="com.tsarsprocket.reportmid.DrawerFragment"
+            android:name="com.tsarsprocket.reportmid.controller.DrawerFragment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity = "start"

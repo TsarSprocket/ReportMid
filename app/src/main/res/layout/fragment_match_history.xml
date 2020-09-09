@@ -7,13 +7,13 @@
         <import type="android.view.View"/>
         <variable
             name="viewModel"
-            type="com.tsarsprocket.reportmid.MatchHistoryViewModel" />
+            type="com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MatchHistoryFragment"
+        tools:context=".controller.MatchHistoryFragment"
         >
 
         <androidx.recyclerview.widget.RecyclerView

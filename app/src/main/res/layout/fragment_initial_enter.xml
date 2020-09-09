@@ -6,14 +6,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewModel" type="com.tsarsprocket.reportmid.InitialEntryViewModel" />
-        <variable name="fragment"  type="com.tsarsprocket.reportmid.InitialEnterFragment" />
+        <variable name="viewModel" type="com.tsarsprocket.reportmid.viewmodel.InitialEntryViewModel" />
+        <variable name="fragment"  type="com.tsarsprocket.reportmid.controller.InitialEnterFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".InitialEnterFragment">
+        tools:context=".controller.InitialEnterFragment">
 
         <EditText
             android:id="@+id/edSummonerName"

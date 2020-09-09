@@ -1,6 +1,5 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.viewmodel
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations

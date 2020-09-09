@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.DrawerViewModel
-import com.tsarsprocket.reportmid.ViewModelKey
+import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
+import com.tsarsprocket.reportmid.viewmodel.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
@@ -11,7 +11,7 @@ import dagger.multibindings.IntoMap
 @ViewModelScope
 @Subcomponent
 interface DrawerViewModelComponent {
-    fun inject( drawerViewModel: DrawerViewModel )
+    fun inject( drawerViewModel: DrawerViewModel)
 
     @Subcomponent.Factory
     interface Factory {
@@ -24,5 +24,5 @@ abstract class DrawerViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey( DrawerViewModel::class )
-    abstract fun bindViewModel( drawerViewModel: DrawerViewModel ): ViewModel
+    abstract fun bindViewModel( drawerViewModel: DrawerViewModel): ViewModel
 }

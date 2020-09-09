@@ -1,8 +1,7 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.Repository
 import io.reactivex.BackpressureStrategy
 import javax.inject.Inject

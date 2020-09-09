@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +25,7 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
 
     var activeSummonerModel = MutableLiveData<SummonerModel>()
 
-    val state = MutableLiveData( Status.LOADING )
+    val state = MutableLiveData(Status.LOADING)
 
     val allDisposables = CompositeDisposable()
 

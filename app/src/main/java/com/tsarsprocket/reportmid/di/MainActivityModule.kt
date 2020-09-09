@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.di
 
-import com.tsarsprocket.reportmid.MainActivity
+import com.tsarsprocket.reportmid.controller.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +12,7 @@ class LandingViewModel @Inject constructor( val repository: Repository ) : ViewM
     enum class STATE { LOADING, FOUND, NOT_FOUND }
 
     var puuid = ""
-    val stateLive = MutableLiveData( STATE.LOADING )
+    val stateLive = MutableLiveData(STATE.LOADING)
 
     val disposer = CompositeDisposable()
 
@@ -24,7 +24,7 @@ class LandingViewModel @Inject constructor( val repository: Repository ) : ViewM
                 this.puuid = puuid
                 stateLive.value = STATE.FOUND
             }
-            .doOnComplete { if( stateLive.value != STATE.FOUND ) stateLive.value = STATE.NOT_FOUND }
+            .doOnComplete { if( stateLive.value != STATE.FOUND) stateLive.value = STATE.NOT_FOUND }
             .subscribe() )
     }
 

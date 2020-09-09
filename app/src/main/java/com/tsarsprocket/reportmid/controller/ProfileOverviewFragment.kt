@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid
+package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
@@ -15,7 +15,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentProfileOverviewBindingImpl
+import com.tsarsprocket.reportmid.viewmodel.ProfileOverviewViewModel
+import com.tsarsprocket.reportmid.viewmodel.TOP_MASTERIES_NUM
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_profile_overview.view.*
@@ -34,7 +37,7 @@ class ProfileOverviewFragment : BaseFragment() {
 
     val fragmentDisposables = CompositeDisposable()
 
-    override fun onAttach(context: Context) {
+    override fun onAttach( context: Context ) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
         super.onAttach(context)
         if( viewModel.activeSummonerModel.value == null ) {
@@ -51,7 +54,7 @@ class ProfileOverviewFragment : BaseFragment() {
 
         binding.viewModel = viewModel
         for( i in 0 until TOP_MASTERIES_NUM ) {
-            val masteryGroup = layoutInflater.inflate( R.layout.champion_mastery, binding.root.grpOtherChampMasteries, false )
+            val masteryGroup = layoutInflater.inflate(R.layout.champion_mastery, binding.root.grpOtherChampMasteries, false )
             binding.root.grpOtherChampMasteries.addView( masteryGroup )
         }
 
@@ -66,7 +69,7 @@ class ProfileOverviewFragment : BaseFragment() {
             fragmentDisposables.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )
-            requireActivity().findViewById<Toolbar>( R.id.toolbar ).title = getString( R.string.fragment_profile_overview_title_template ).format( summoner.name )
+            requireActivity().findViewById<Toolbar>(R.id.toolbar).title = getString(R.string.fragment_profile_overview_title_template).format( summoner.name )
         }
 
         for( i in 0 until TOP_MASTERIES_NUM ) {
@@ -78,13 +81,13 @@ class ProfileOverviewFragment : BaseFragment() {
                 }
                 bitmapLive.observe( { lifecycle } ) { bitmap ->
                     if( bitmap != null ) {
-                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString( R.string.fragment_profile_overview_tag_champion_icon ) )
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString(R.string.fragment_profile_overview_tag_champion_icon) )
                             .setImageBitmap( bitmap )
                     }
                 }
                 champNameLive.observe( { lifecycle } ) { name ->
                     if( name != null ) {
-                        binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString( R.string.fragment_profile_overview_tag_champion_name ) ).text =
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString(R.string.fragment_profile_overview_tag_champion_name) ).text =
                             name
                     }
                 }
@@ -106,16 +109,16 @@ class ProfileOverviewFragment : BaseFragment() {
     }
 
     fun navigateToSibling( item: MenuItem ): Boolean {
-        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo( R.id.profileOverviewFragment, true ).build()
+        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.profileOverviewFragment, true ).build()
         return when( item.itemId ) {
             R.id.profileOverviewFragment -> true
             R.id.matchupFragment -> {
-                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchupFragment( viewModel.activeSummonerModel.value!!.puuid )
+                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchupFragment(viewModel.activeSummonerModel.value!!.puuid)
                 findNavController().navigate( action, navOptions )
                 true
             }
             R.id.matchHistoryFragment -> {
-                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchHistoryFragment( viewModel.activeSummonerModel.value!!.puuid )
+                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchHistoryFragment(viewModel.activeSummonerModel.value!!.puuid)
                 findNavController().navigate( action, navOptions )
                 true
             }
