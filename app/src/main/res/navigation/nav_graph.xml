@@ -3,16 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/landingFragment">
+    app:startDestination="@id/profileOverviewFragment">
 
-    <fragment
-        android:id="@+id/initialEnterFragment"
-        android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
-        android:label="Find your summoner">
-        <action
-            android:id="@+id/action_initialEnterFragment_to_profileOverviewFragment"
-            app:destination="@id/profileOverviewFragment" />
-    </fragment>
     <fragment
         android:id="@+id/profileOverviewFragment"
         android:name="com.tsarsprocket.reportmid.ProfileOverviewFragment"
@@ -53,12 +45,6 @@
             android:name="ARG_PUUID"
             app:argType="string" />
     </fragment>
-    <action
-        android:id="@+id/action_global_matchHistoryFragment"
-        app:destination="@id/matchHistoryFragment"
-        app:popUpTo="@id/matchHistoryFragment"
-        app:popUpToInclusive="true"
-        />
     <fragment
         android:id="@+id/matchupFragment"
         android:name="com.tsarsprocket.reportmid.MatchupFragment"
@@ -78,21 +64,5 @@
         <argument
             android:name="ARG_PUUID"
             app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/landingFragment"
-        android:name="com.tsarsprocket.reportmid.LandingFragment"
-        android:label="fragment_landing"
-        tools:layout="@layout/fragment_landing" >
-        <action
-            android:id="@+id/action_landingFragment_to_initialEnterFragment"
-            app:destination="@id/initialEnterFragment"
-            app:popUpTo="@id/landingFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_landingFragment_to_profileOverviewFragment"
-            app:destination="@id/profileOverviewFragment"
-            app:popUpTo="@id/landingFragment"
-            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

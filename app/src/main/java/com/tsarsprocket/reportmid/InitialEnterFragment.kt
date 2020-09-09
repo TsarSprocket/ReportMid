@@ -70,8 +70,9 @@ class InitialEnterFragment : BaseFragment() {
         viewModel.state.observe( viewLifecycleOwner, { state ->
             when (state) {
                 InitialEntryViewModel.Status.VERIFIED -> {
-                    val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToProfileOverviewFragment( viewModel.activeSummonerModel.value!!.puuid )
+                    val action = InitialEnterFragmentDirections.actionInitialEnterFragmentToMainActivity( viewModel.activeSummonerModel.value!!.puuid )
                     findNavController().navigate( action )
+                    requireActivity().finish()
                 }
                 InitialEntryViewModel.Status.UNVERIFIED -> {
                     Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()

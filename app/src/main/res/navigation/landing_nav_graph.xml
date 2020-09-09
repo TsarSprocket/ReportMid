@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/landing_nav_graph"
+    app:startDestination="@id/landingFragment">
+
+    <fragment
+        android:id="@+id/landingFragment"
+        android:name="com.tsarsprocket.reportmid.LandingFragment"
+        android:label="LandingFragment" >
+        <action
+            android:id="@+id/action_landingFragment_to_mainActivity"
+            app:destination="@id/mainActivity"
+            app:popUpTo="@id/landing_nav_graph"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_landingFragment_to_initialEnterFragment"
+            app:destination="@id/initialEnterFragment"
+            app:popUpTo="@id/landingFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.tsarsprocket.reportmid.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" >
+        <argument
+            android:name="ARG_PUUID"
+            app:argType="string" />
+    </activity>
+    <fragment
+        android:id="@+id/initialEnterFragment"
+        android:name="com.tsarsprocket.reportmid.InitialEnterFragment"
+        android:label="InitialEnterFragment" >
+        <action
+            android:id="@+id/action_initialEnterFragment_to_mainActivity"
+            app:destination="@id/mainActivity"
+            app:popUpTo="@id/landing_nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

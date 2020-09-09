@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -20,8 +21,12 @@ class MainActivity : BaseActivity() {
         binding.setLifecycleOwner { this.lifecycle }
 
         val navController = findNavController( R.id.nav_host_fragment )
+        navController.setGraph( R.navigation.nav_graph, intent.extras )
+
+        binding.toolbar.setNavigationOnClickListener { binding.drawerLayout.openDrawer( GravityCompat.START ) }
+/*
         val appBarConfiguration = AppBarConfiguration( navController.graph, drawerLayout = binding.root as DrawerLayout )
         binding.toolbar.setupWithNavController( navController, appBarConfiguration )
-//        binding.bottomNavigation.setupWithNavController( navController )
+*/
     }
 }

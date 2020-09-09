@@ -10,7 +10,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.tsarsprocket.reportmid.databinding.FragmentLandingBinding
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import javax.inject.Inject
 
@@ -52,8 +51,9 @@ class LandingFragment : Fragment() {
         viewModel.stateLive.observe( { lifecycle } ) {
             when( it ) {
                 LandingViewModel.STATE.FOUND -> {
-                    val action = LandingFragmentDirections.actionLandingFragmentToProfileOverviewFragment( viewModel.puuid )
+                    val action = LandingFragmentDirections.actionLandingFragmentToMainActivity( viewModel.puuid )
                     findNavController().navigate( action )
+                    requireActivity().finish()
                 }
                 LandingViewModel.STATE.NOT_FOUND -> {
                     val action = LandingFragmentDirections.actionLandingFragmentToInitialEnterFragment()

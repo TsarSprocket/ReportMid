@@ -10,6 +10,7 @@ import javax.inject.Singleton
 @Component( modules = [
     AndroidInjectionModule::class,
     ReportMidAppModule::class,
+    LandingActivityModule::class,
     MainActivityModule::class,
     ViewModelFactoryBinder::class,
     DrawerViewModelModule::class,
