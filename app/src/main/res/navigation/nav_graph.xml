@@ -8,7 +8,9 @@
     <fragment
         android:id="@+id/profileOverviewFragment"
         android:name="com.tsarsprocket.reportmid.controller.ProfileOverviewFragment"
-        android:label="Summoner's Page'">
+        android:label="Summoner's Page'"
+        tools:layout="@layout/fragment_profile_overview"
+        >
         <action
             android:id="@+id/action_profileOverviewFragment_to_matchHistoryFragment"
             app:destination="@id/matchHistoryFragment"
@@ -28,7 +30,9 @@
     <fragment
         android:id="@+id/matchHistoryFragment"
         android:name="com.tsarsprocket.reportmid.controller.MatchHistoryFragment"
-        android:label="MatchHistoryFragment" >
+        android:label="MatchHistoryFragment"
+        tools:layout="@layout/fragment_match_history"
+        >
         <action
             android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
             app:destination="@id/matchupFragment"
@@ -48,7 +52,9 @@
     <fragment
         android:id="@+id/matchupFragment"
         android:name="com.tsarsprocket.reportmid.controller.MatchupFragment"
-        android:label="MatchupFragment" >
+        android:label="MatchupFragment"
+        tools:layout="@layout/fragment_matchup"
+        >
         <action
             android:id="@+id/action_matchupFragment_to_matchHistoryFragment"
             app:destination="@id/matchHistoryFragment"

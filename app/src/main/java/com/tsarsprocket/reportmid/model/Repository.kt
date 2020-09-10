@@ -29,6 +29,7 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
@@ -90,12 +91,12 @@ class Repository @Inject constructor( val context: Context ) {
     private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
 
     @WorkerThread
-    fun findSummonerForName( summonerName: String, regionModel: RegionModel ): Observable<SummonerModel> {
+    fun findSummonerForName( summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false ): Observable<SummonerModel> {
 
         return initialized.observeOn( Schedulers.io() )
             .flatMap { fInitialized ->
                 when( fInitialized ) {
-                    true -> getSummonerModel{ Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() }
+                    true -> getSummonerModel( true ) { Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() }
                     else -> throw RepositoryNotInitializedException()
                 }
             }
@@ -124,11 +125,15 @@ class Repository @Inject constructor( val context: Context ) {
     @WorkerThread
     fun getActiveSummoner() = getActiveSummonerPUUID().flatMap { puuid -> findSummonerByPuuid( puuid ) }
 
+    /**
+     * @return <code>Observable&lt;Boolean&gt;</code> that always fires <code>true</code>
+     * @throws <code>RepositoryNotInitializedException</code>
+     */
     @SuppressLint( "CheckResult")
     @WorkerThread
-    fun addMyAccount( summonerModel: SummonerModel, setCurrent: Boolean = false ) {
+    fun getMyAccountAdder( summonerModel: SummonerModel, setCurrent: Boolean = false ) =
         initialized.observeOn( Schedulers.io() )
-            .subscribe { fInitialized ->
+            .doOnNext { fInitialized ->
                 when( fInitialized ) {
                     true -> {
                         val regionEntity = database.regionDAO().getByTag( summonerModel.region.tag )
@@ -163,7 +168,6 @@ class Repository @Inject constructor( val context: Context ) {
                     else -> throw RepositoryNotInitializedException()
                 }
             }
-    }
 
     fun getChampionMasteryModel( championMastery: ChampionMastery ) = ensureInitializedDoOnIO { ChampionMasteryModel( this, championMastery ) }
 
@@ -178,9 +182,11 @@ class Repository @Inject constructor( val context: Context ) {
 
     fun getParticipantModel( teamModel: TeamModel, participant: Participant ) = ensureInitializedDoOnIO { ParticipantModel( this, teamModel, participant ) }
 
-    fun getSummonerModel( lmdSummoner: () -> Summoner ) = ensureInitializedDoOnIO {
+    fun getSummonerModel( failOnNull: Boolean = false, lmdSummoner: () -> Summoner ) = ensureInitializedDoOnIO( failOnNull ) {
         val summoner = lmdSummoner()
-        summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
+        if( summoner.puuid != null ) {
+            summoners[ summoner.puuid ] ?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
+        } else null
     }
 
     fun getTeamModel( team: Team ) = ensureInitializedDoOnIO { TeamModel( this, team ) }
@@ -268,12 +274,12 @@ class Repository @Inject constructor( val context: Context ) {
 
     /*  Tools  ***************************************************************/
 
-    private fun<T> ensureInitializedDoOnIO( l: () -> T? ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
+    private fun<T> ensureInitializedDoOnIO( failOnNull: Boolean = false, l: () -> T? ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
         initialized.observeOn( Schedulers.io() ).flatMap { fInitialized ->
             when( fInitialized ) {
                 true -> {
                     val v = l()
-                    if( v != null ) Observable.just( v ) else Observable.empty()
+                    if( v != null ) Observable.just( v ) else if( failOnNull ) throw NullPointerException() else Observable.empty()
                 }
                 else -> Observable.error( RepositoryNotInitializedException() )
             }

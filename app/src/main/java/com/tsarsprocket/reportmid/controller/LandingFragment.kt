@@ -11,8 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RESULT_PUUID
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
+import com.tsarsprocket.reportmid.getNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
 
@@ -41,12 +43,14 @@ class LandingFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        getNavigationResult<String>( RESULT_PUUID ).observe( viewLifecycleOwner ) { puuid ->
+            viewModel.defineMainAccount( puuid ).observe( viewLifecycleOwner ) { navigateToMainAndFinish( puuid ) }
+        }
+
         viewModel.stateLive.observe( { lifecycle } ) {
             when( it ) {
                 LandingViewModel.STATE.FOUND -> {
-                    val action = LandingFragmentDirections.actionLandingFragmentToMainActivity( viewModel.puuid )
-                    findNavController().navigate( action )
-                    requireActivity().finish()
+                    navigateToMainAndFinish( viewModel.puuid )
                 }
                 LandingViewModel.STATE.NOT_FOUND -> {
                     val action = LandingFragmentDirections.actionLandingFragmentToInitialEnterFragment()
@@ -56,6 +60,12 @@ class LandingFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun navigateToMainAndFinish( puuid: String ) {
+        val action = LandingFragmentDirections.actionLandingFragmentToMainActivity( puuid )
+        findNavController().navigate( action )
+        requireActivity().finish()
     }
 
     companion object {

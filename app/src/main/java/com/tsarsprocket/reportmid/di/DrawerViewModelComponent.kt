@@ -11,7 +11,7 @@ import dagger.multibindings.IntoMap
 @ViewModelScope
 @Subcomponent
 interface DrawerViewModelComponent {
-    fun inject( drawerViewModel: DrawerViewModel)
+    fun inject( drawerViewModel: DrawerViewModel )
 
     @Subcomponent.Factory
     interface Factory {

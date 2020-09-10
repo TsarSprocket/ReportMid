@@ -1,16 +1,34 @@
 package com.tsarsprocket.reportmid
 
+import android.app.Activity
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
+import kotlin.math.roundToInt
 
-fun<T> Fragment.getNavigationResult( key: String = "result" ) =
-    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key) ?: throw RuntimeException( "No backstack entry found" )
 
-fun<T> Fragment.setNavigationResult( result: T, key: String = "result") {
+fun <T> Fragment.getNavigationResult(key: String = "result") =
+    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(key) ?: throw RuntimeException("No backstack entry found")
+
+fun <T> Fragment.setNavigationResult( result: T, key: String = "result" ) {
     val previousBackStackEntry = findNavController().previousBackStackEntry
 
     if( previousBackStackEntry != null ) {
-        previousBackStackEntry.savedStateHandle[ key ] = result
-    } else throw RuntimeException( "No previous backstack entry found" )
+        previousBackStackEntry.savedStateHandle[key] = result
+    } else throw RuntimeException("No previous backstack entry found")
 }
+
+fun setSoftInputVisibility( context: Context, view: View, visibility: Boolean ) {
+    val imm: InputMethodManager = context.getSystemService( Activity.INPUT_METHOD_SERVICE ) as InputMethodManager
+    if( visibility ) {
+        imm.showSoftInput( view, 0 )
+    } else {
+        imm.hideSoftInputFromWindow( view.windowToken, 0 )
+    }
+}
+
+fun formatLevel( level: Int ) = if( level >= 10_000_000 ) "${( level.toFloat() / 1_000_000f ).roundToInt()}M"
+    else if( level >= 10_000 ) "${(level.toFloat() / 1_000f ).roundToInt()}K"
+        else level.toString()

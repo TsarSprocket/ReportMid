@@ -1,8 +1,11 @@
 <resources>
+    <!-- Fragment: General -->
     <string name="app_name">Report Mid</string>
+    <string name="general_yes">Yes</string>
+    <string name="general_no">no</string>
 
-    <!-- Fragment: Initial Enter -->
-    <string name="fragment_initial_enter_validate_btn_text">Validate</string>
+    <!-- Fragment: Add Summoner -->
+    <string name="fragment_add_summoner_validate_btn_text">Find</string>
 
     <!-- Fragment: Landing -->
     <string name="loading">Loading…</string>
@@ -33,5 +36,6 @@
     <string name="lorem_ipsum_short">Lorem Ipsum</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="snack_summoner_not_found">Summoner %s not found</string>
 
 </resources>

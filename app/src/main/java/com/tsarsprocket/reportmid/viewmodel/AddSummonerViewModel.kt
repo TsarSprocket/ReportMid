@@ -1,17 +1,15 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 const val TOP_MASTERIES_NUM = 5
 
-class InitialEntryViewModel @Inject constructor(private val repository: Repository ) : ViewModel() {
+class AddSummonerViewModel @Inject constructor(private val repository: Repository ) : ViewModel() {
 
     enum class Status { LOADING, UNVERIFIED, VERIFIED }
 
@@ -29,21 +27,9 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
 
     val allDisposables = CompositeDisposable()
 
-/*
-    init {
-        allDisposables.add( repository.getActiveSummoner()
-            .observeOn( AndroidSchedulers.mainThread() )
-            .doOnNext { summonerModel ->
-                activeSummonerModel.value = summonerModel
-                state.value = Status.VERIFIED
-            }
-            .doOnComplete {
-                if( activeSummonerModel.value == null ) state.value = Status.UNVERIFIED
-            }
-            .doOnError { e -> Log.d( InitialEntryViewModel::class.simpleName, "Cannot initialize LandingViewModel", e ) }
-            .subscribe() )
-    }
-*/
+    val showSoftInput = MutableLiveData( true )
+
+    val showNotFoundNotifier = MutableLiveData<Int>()
 
     override fun onCleared() {
         allDisposables.dispose()
@@ -54,19 +40,20 @@ class InitialEntryViewModel @Inject constructor(private val repository: Reposito
         selectedRegion.value = if( orderNo >= 0 && orderNo < allRegions.size ) allRegions[ orderNo ] else null
     }
 
-    fun validateInitial() {
+    fun checkSummoner() {
+        showSoftInput.value = false
         val reg = enumValues<RegionModel>().find { it == selectedRegion.value } ?: throw RuntimeException( "Incorrect region code \'${selectedRegion}\'" )
         allDisposables.add(
             repository.findSummonerForName( activeSummonerName.value?: "", reg )
-                .doOnError { Log.d( InitialEntryViewModel::class.simpleName, "Error findinmg summoner: ${it.localizedMessage}", it ) }
-                .observeOn( Schedulers.io() )
-                .doOnNext { summonerModel ->
-                    repository.addMyAccount( summonerModel, true )
-                }
                 .observeOn( AndroidSchedulers.mainThread() )
-                .subscribe { summonerModel ->
+                .subscribe( { summonerModel ->
                     activeSummonerModel.value = summonerModel
                     state.value = if( summonerModel != null ) Status.VERIFIED else Status.UNVERIFIED
+                } ) {
+                    with( showNotFoundNotifier ) {
+                        val ct = value
+                        value = if( ct == null ) 0 else ct + 1
+                    }
                 }
         )
     }

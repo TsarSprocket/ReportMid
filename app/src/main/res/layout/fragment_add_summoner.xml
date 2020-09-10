@@ -6,14 +6,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable name="viewModel" type="com.tsarsprocket.reportmid.viewmodel.InitialEntryViewModel" />
-        <variable name="fragment"  type="com.tsarsprocket.reportmid.controller.InitialEnterFragment" />
+        <variable name="viewModel" type="com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel" />
+        <variable name="fragment"  type="com.tsarsprocket.reportmid.controller.AddSummonerFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".controller.InitialEnterFragment">
+        tools:context=".controller.AddSummonerFragment">
 
         <EditText
             android:id="@+id/edSummonerName"
@@ -43,7 +43,7 @@
 
         <Button
             android:id="@+id/idValidate"
-            android:text="@string/fragment_initial_enter_validate_btn_text"
+            android:text="@string/fragment_add_summoner_validate_btn_text"
             android:onClick="@{fragment::onValidateInitial}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
