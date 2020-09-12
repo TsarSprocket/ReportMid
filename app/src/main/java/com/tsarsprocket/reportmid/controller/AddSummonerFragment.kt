@@ -53,20 +53,18 @@ class AddSummonerFragment : BaseFragment() {
         binding.root.findViewById<Spinner>( R.id.spRegion ).onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected( parent: AdapterView<*>? ) {
+                    viewModel.selectedPosition = -1
                     viewModel.selectRegionByOrderNo( -1 )
                 }
 
                 override fun onItemSelected( parent: AdapterView<*>?, view: View?, position: Int, id: Long ) {
+                    viewModel.selectedPosition = position
                     viewModel.selectRegionByOrderNo( position )
                 }
             }
 
-        viewModel.showSoftInput.observe( viewLifecycleOwner ) { setSoftInputVisibility( requireContext(), binding.root.edSummonerName, it ) }
-
-        viewModel.showNotFoundNotifier.observe( viewLifecycleOwner ) {
-            viewModel.activeSummonerName.observe( viewLifecycleOwner ) { summonerName ->
-                Snackbar.make( binding.root, Formatter().format( getString( R.string.snack_summoner_not_found ), summonerName ).toString(), Snackbar.LENGTH_SHORT ).show()
-            }
+        if( viewModel.selectedPosition >= 0 ) {
+            binding.spRegion.setSelection( viewModel.selectedPosition )
         }
 
         return binding.root
@@ -74,25 +72,28 @@ class AddSummonerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.state.observe( viewLifecycleOwner, { state ->
-            when (state) {
-                AddSummonerViewModel.Status.VERIFIED -> {
-                    val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment( viewModel.activeSummonerModel.value!!.puuid )
-                    findNavController().navigate( action )
-                }
-                AddSummonerViewModel.Status.UNVERIFIED -> {
-                    Snackbar.make( requireView(), "No summoner fount for name ${viewModel.activeSummonerName}", Snackbar.LENGTH_LONG ).show()
-                }
+
+        getNavigationResult<Boolean>( RESULT_CONFIRM )
+            .switchMap { confirmed ->
+                if( confirmed ) { viewModel.activeSummonerModel } else MutableLiveData()
             }
-        })
-        getNavigationResult<Boolean>( RESULT_CONFIRM ).switchMap { confirmed -> if( confirmed ) viewModel.activeSummonerModel else MutableLiveData() }
-            .observe( this.viewLifecycleOwner ) { summoner ->
-                setNavigationResult( result = summoner.puuid, key = RESULT_PUUID )
+            .observe( this.viewLifecycleOwner ) { summonerModel ->
+                setNavigationResult( result = summonerModel.puuid, key = RESULT_PUUID )
                 findNavController().popBackStack()
-            }
+        }
     }
 
-    fun onValidateInitial( view: View? ) { viewModel.checkSummoner() }
+    fun onValidateInitial( view: View? ) {
+        setSoftInputVisibility( requireContext(), binding.root.edSummonerName, false )
+        viewModel.checkSummoner().observe( viewLifecycleOwner ) { maybe ->
+            if( maybe.isEmpty.blockingGet() ) {
+                Snackbar.make( binding.root, Formatter().format( getString( R.string.snack_summoner_not_found ), viewModel.activeSummonerName.value ).toString(), Snackbar.LENGTH_SHORT ).show()
+            } else {
+                val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment( maybe.blockingGet().puuid )
+                findNavController().navigate( action )
+            }
+        }
+    }
 
     companion object {
         @JvmStatic

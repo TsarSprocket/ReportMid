@@ -10,11 +10,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.tsarsprocket.reportmid.R
-import com.tsarsprocket.reportmid.RESULT_PUUID
-import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
-import com.tsarsprocket.reportmid.getNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
 
@@ -53,8 +50,10 @@ class LandingFragment : Fragment() {
                     navigateToMainAndFinish( viewModel.puuid )
                 }
                 LandingViewModel.STATE.NOT_FOUND -> {
-                    val action = LandingFragmentDirections.actionLandingFragmentToInitialEnterFragment()
-                    findNavController().navigate( action )
+                    if( peekNavigationResult<String>( RESULT_PUUID ) == null ) {
+                        val action = LandingFragmentDirections.actionLandingFragmentToInitialEnterFragment()
+                        findNavController().navigate(action)
+                    }
                 }
             }
         }
