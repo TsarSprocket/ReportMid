@@ -62,7 +62,7 @@ fun setSoftInputVisibility( context: Context, view: View, visibility: Boolean ) 
 
 // Text tools
 
-fun formatLevel( level: Int ) = if( level >= 10_000_000 ) "${( level.toFloat() / 1_000_000f ).roundToInt()}M"
+fun formatPoints(level: Int ) = if( level >= 10_000_000 ) "${( level.toFloat() / 1_000_000f ).roundToInt()}M"
     else if( level >= 10_000 ) "${(level.toFloat() / 1_000f ).roundToInt()}K"
         else level.toString()
 

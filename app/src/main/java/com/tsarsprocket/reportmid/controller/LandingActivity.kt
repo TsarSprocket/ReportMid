@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.controller
 
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.tsarsprocket.reportmid.BaseActivity
 import com.tsarsprocket.reportmid.R
@@ -10,7 +11,7 @@ class LandingActivity : BaseActivity() {
 
     lateinit var binding: ActivityLandingBinding
 
-    override fun onCreate( savedInstanceState: Bundle? ) {
+    override fun onCreate(savedInstanceState: Bundle? ) {
         super.onCreate( savedInstanceState )
 
         binding = DataBindingUtil.setContentView( this, R.layout.activity_landing)

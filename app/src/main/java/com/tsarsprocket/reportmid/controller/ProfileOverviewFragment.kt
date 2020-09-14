@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -21,6 +20,7 @@ import com.tsarsprocket.reportmid.viewmodel.ProfileOverviewViewModel
 import com.tsarsprocket.reportmid.viewmodel.TOP_MASTERIES_NUM
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profile_overview.view.*
 import javax.inject.Inject
 
@@ -33,9 +33,7 @@ class ProfileOverviewFragment : BaseFragment() {
 
     lateinit var binding: FragmentProfileOverviewBindingImpl
 
-    lateinit var masteryGroups: List<ViewGroup>
-
-    val fragmentDisposables = CompositeDisposable()
+    private val disposer = CompositeDisposable()
 
     override fun onAttach( context: Context ) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
@@ -66,10 +64,10 @@ class ProfileOverviewFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.activeSummonerModel.observe( { this.viewLifecycleOwner.lifecycle } ) { summoner ->
-            fragmentDisposables.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
+            disposer.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )
-            requireActivity().findViewById<Toolbar>(R.id.toolbar).title = getString(R.string.fragment_profile_overview_title_template).format( summoner.name )
+            baseActivity.toolbar.title = summoner.name
         }
 
         for( i in 0 until TOP_MASTERIES_NUM ) {
@@ -97,7 +95,7 @@ class ProfileOverviewFragment : BaseFragment() {
                     if( skills != null ) {
                         with(binding.root.grpOtherChampMasteries[i]) {
                             findViewWithTag<TextView>(resources.getString(R.string.fragment_profile_overview_tag_champion_level)).text = skills.level.toString()
-                            findViewWithTag<TextView>(resources.getString(R.string.fragment_profile_overview_tag_champion_points)).text = skills.points.toString()
+                            findViewWithTag<TextView>(resources.getString(R.string.fragment_profile_overview_tag_champion_points)).text = formatPoints( skills.points )
                         }
                     }
                 }
@@ -129,7 +127,7 @@ class ProfileOverviewFragment : BaseFragment() {
     }
 
     override fun onDestroy() {
-        fragmentDisposables.dispose()
+        disposer.dispose()
         super.onDestroy()
     }
 

@@ -2,7 +2,9 @@ package com.tsarsprocket.reportmid.model
 
 import android.graphics.Bitmap
 import com.merakianalytics.orianna.types.common.Queue
+import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.MatchHistory
+import com.merakianalytics.orianna.types.core.staticdata.Masteries
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -22,6 +24,9 @@ data class SummonerModel(
     val currentMatch by lazy { repository.getCurrentMatch{ shadowSummoner.currentMatch } }
     val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
     val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
+
+    fun getMasteryWithChampion( championModel: ChampionModel ) =
+        Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( championModel.shadowChampion ).get() }.subscribeOn( Schedulers.io() )
 
     private fun getObservableMasteryList() = Observable.fromCallable {
         List( shadowSummoner.championMasteries.size ) { i ->

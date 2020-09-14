@@ -20,6 +20,7 @@ import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import com.tsarsprocket.reportmid.viewmodel.MatchupViewModel
+import kotlinx.android.synthetic.main.card_player_preview.view.*
 import kotlinx.android.synthetic.main.fragment_matchup.view.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -36,9 +37,9 @@ class MatchupFragment : BaseFragment() {
     override fun onAttach( context: Context ) {
         ( context.applicationContext as ReportMidApp).comp.inject( this )
         super.onAttach( context )
-        if( viewModel.summoner == null ) requireArguments().let {
-            viewModel.puuid = it.getString( ARG_PUUID )
-            viewModel.loadForSummoner( puuid = viewModel.puuid!! )
+        if( !viewModel.isPuuidInitialized ) requireArguments().let {
+            viewModel.puuid = it.getString( ARG_PUUID )?: throw RuntimeException( "Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID argument" )
+            viewModel.loadForSummoner( puuid = viewModel.puuid )
         }
     }
 
@@ -58,21 +59,30 @@ class MatchupFragment : BaseFragment() {
         return binding.root
     }
 
-    private fun populateTeam( teamLayout: LinearLayout, playerPresentations: List<PlayerPresentation>, side: SideModel ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.summoner.observe( viewLifecycleOwner ) {
+            baseActivity.toolbar.title = getString( R.string.fragment_matchup_title_template ).format( it.name )
+        }
+    }
+
+    private fun populateTeam(teamLayout: LinearLayout, playerPresentations: List<PlayerPresentation>, side: SideModel ) {
         teamLayout.removeAllViews()
         playerPresentations.forEach { playerPresentation ->
             val card = layoutInflater.inflate(R.layout.card_player_preview, teamLayout, false ) as CardView
 
-            playerPresentation.championIconLive.observe( { lifecycle } ) { card.findViewById<ImageView>(R.id.imgChampionIcon).setImageBitmap( it ) }
-            playerPresentation.summonerChampionSkillLive.observe( { lifecycle } ) { card.findViewById<TextView>(R.id.txtChampionSkill).text = if( it >= 0 ) it.toString() else "n/a" }
-            playerPresentation.summonerNameLive.observe( { lifecycle } ) { card.findViewById<TextView>(R.id.txtSummonerName).text = it }
-            playerPresentation.summonerLevelLive.observe( { lifecycle } ) { card.findViewById<TextView>(R.id.txtSummonerLevel).text = it.toString() }
-            playerPresentation.soloqueueRankLive.observe( { lifecycle } ) { card.findViewById<TextView>(R.id.txtSummonerSoloQueueRank).text = it }
-            playerPresentation.soloqueueWinrateLive.observe( { lifecycle } ) { card.findViewById<TextView>(R.id.txtSummonerSoloQueueWinRate).text = ( ( it * 10 ).roundToInt() / 10f ).toString() }
-            playerPresentation.summonerSpellDLive.observe( { lifecycle } ) { card.findViewById<ImageView>(R.id.imgSummonerSpellD).setImageBitmap( it ) }
-            playerPresentation.summonerSpellFLive.observe( { lifecycle } ) { card.findViewById<ImageView>(R.id.imgSummonerSpellF).setImageBitmap( it ) }
-            playerPresentation.primaryRunePathIconResIdLive.observe( { lifecycle } ) { card.findViewById<ImageView>(R.id.imgPrimaryRunePath).setImageResource( it ) }
-            playerPresentation.secondaryRunePathIconResIdLive.observe( { lifecycle } ) { card.findViewById<ImageView>(R.id.imgSecondaryRunePath).setImageResource( it ) }
+            card.txtChampionSkill.text = getString( R.string.fragment_matchup_tmp_calculating )
+
+            playerPresentation.championIconLive.observe( { lifecycle } ) { card.imgChampionIcon.setImageBitmap( it ) }
+            playerPresentation.summonerChampionSkillLive.observe( { lifecycle } ) { card.txtChampionSkill.text = if( it >= 0 ) formatPoints( it ) else "n/a" }
+            playerPresentation.summonerNameLive.observe( { lifecycle } ) { card.txtSummonerName.text = it }
+            playerPresentation.summonerLevelLive.observe( { lifecycle } ) { card.txtSummonerLevel.text = it.toString() }
+            playerPresentation.soloqueueRankLive.observe( { lifecycle } ) { card.txtSummonerSoloQueueRank.text = it }
+            playerPresentation.soloqueueWinrateLive.observe( { lifecycle } ) { card.txtSummonerSoloQueueWinRate.text = ( ( it * 10 ).roundToInt() / 10f ).toString() }
+            playerPresentation.summonerSpellDLive.observe( { lifecycle } ) { card.imgSummonerSpellD.setImageBitmap( it ) }
+            playerPresentation.summonerSpellFLive.observe( { lifecycle } ) { card.imgSummonerSpellF.setImageBitmap( it ) }
+            playerPresentation.primaryRunePathIconResIdLive.observe( { lifecycle } ) { card.imgPrimaryRunePath.setImageResource( it ) }
+            playerPresentation.secondaryRunePathIconResIdLive.observe( { lifecycle } ) { card.imgSecondaryRunePath.setImageResource( it ) }
 
             card.setCardBackgroundColor( resources.getColor( if( side == SideModel.BLUE ) R.color.blueTeamBG else R.color.redTeamBG) )
 
@@ -84,21 +94,15 @@ class MatchupFragment : BaseFragment() {
         val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.matchupFragment, true ).build()
         return when( item.itemId ) {
             R.id.profileOverviewFragment -> {
-                val puuid = viewModel.puuid
-                if( puuid != null ) {
-                    val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment(puuid)
-                    findNavController().navigate(action, navOptions)
-                    true
-                } else { false }
+                val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment( viewModel.puuid )
+                findNavController().navigate( action, navOptions )
+                true
             }
             R.id.matchupFragment -> true
             R.id.matchHistoryFragment -> {
-                val puuid = viewModel.puuid
-                if( puuid != null ) {
-                    val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment(puuid)
-                    findNavController().navigate(action, navOptions)
-                    true
-                } else { false }
+                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment( viewModel.puuid )
+                findNavController().navigate( action, navOptions )
+                true
             }
             else -> false
         }

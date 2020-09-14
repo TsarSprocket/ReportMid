@@ -6,4 +6,6 @@ import dagger.android.HasAndroidInjector
 import dagger.internal.Preconditions
 
 abstract class BaseFragment : Fragment() {
+
+    val baseActivity by lazy { requireActivity() as BaseActivity }
 }

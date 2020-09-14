@@ -80,8 +80,8 @@ class MatchHistoryFragment : BaseFragment() {
             selectedItemId = R.id.matchHistoryFragment
         }
 
-        viewModel.activeSummonerModel.observe( {  lifecycle } ) {
-            requireActivity().findViewById<Toolbar>(R.id.toolbar).title = getString(R.string.fragment_match_history_title_template).format( it.name )
+        viewModel.activeSummonerModel.observe( viewLifecycleOwner ) {
+            baseActivity.toolbar.title = getString(R.string.fragment_match_history_title_template).format( it.name )
         }
 
         return binding.root

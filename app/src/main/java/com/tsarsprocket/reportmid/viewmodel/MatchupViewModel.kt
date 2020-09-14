@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.annotation.MainThread
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.logging.LogManager
 import javax.inject.Inject
 
 const val STR_NO_DURATION = "--:--"
@@ -29,9 +31,10 @@ private val DUR_FMT_MS = "%02d:%02d"
 
 class MatchupViewModel @Inject constructor( private val repository: Repository ): ViewModel() {
 
-    var puuid: String? = null
+    lateinit var puuid: String
+    val isPuuidInitialized get() = this::puuid.isInitialized
 
-    var summoner: SummonerModel? = null
+    var summoner = MutableLiveData<SummonerModel>()
 
     val currentMatchLive = MutableLiveData<CurrentMatchModel>()
 
@@ -53,7 +56,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     fun loadForSummoner( puuid: String ) {
         allDisposables.add( repository.findSummonerByPuuid( puuid )
             .observeOn( AndroidSchedulers.mainThread() )
-            .flatMap{ summoner = it; it.currentMatch }
+            .flatMap{ summoner.value = it; it.currentMatch }
             .observeOn( AndroidSchedulers.mainThread() )
             .subscribe{ match ->
                 currentMatchLive.value = match
@@ -104,11 +107,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     }
 
     private fun getSkillForChampion( summoner: SummonerModel, champion: ChampionModel ) =
-        summoner.masteries
-            .flatMapIterable { it }
-            .flatMap { it }
-            .filter { mastery -> mastery.champion.blockingSingle().id == champion.id }
-            .map { it.points }
+        summoner.getMasteryWithChampion( champion ).map { it.points }
 
     @MainThread
     private fun updateDuration() {

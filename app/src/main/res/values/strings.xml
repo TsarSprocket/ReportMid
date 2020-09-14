@@ -21,11 +21,13 @@
     <!-- Fragment: Matchup -->
     <string name="fragment_matchup_player_solo_rank_na">n/a</string>
     <string name="fragment_matchup_player_solo_winrate_0">0</string>
+    <string name="fragment_matchup_title_template">%s in Game</string>
+    <string name="fragment_matchup_tmp_calculating">calculating…</string>
 
     <!-- Fragment: Match history -->
     <string name="fragment_match_history_message_win">Win</string>
     <string name="fragment_match_history_message_defeat">Defeat</string>
-    <string name="fragment_match_history_title_template">Matches of %s</string>
+    <string name="fragment_match_history_title_template">%s\&apos;s History</string>
 
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>
