@@ -44,7 +44,7 @@ class ProfileOverviewViewModel @Inject constructor( private val repository: Repo
                 .flatMap { indexedMastery ->
                     if( indexedMastery.second.isEmpty.blockingGet() ) Observable.just( Pair( indexedMastery.first, Maybe.empty() ) )
                     else indexedMastery.second.blockingGet().champion.map { champion ->
-                        masteries[ indexedMastery.first ].champNameLive.postValue( champion.name )
+//                        masteries[ indexedMastery.first ].champNameLive.postValue( champion.name )
                         return@map Pair( indexedMastery.first, Maybe.just( champion ) )
                     }
                 }

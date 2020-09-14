@@ -85,12 +85,14 @@ class ProfileOverviewFragment : BaseFragment() {
                             .setImageBitmap( bitmap )
                     }
                 }
+/*
                 champNameLive.observe( { lifecycle } ) { name ->
                     if( name != null ) {
                         binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString(R.string.fragment_profile_overview_tag_champion_name) ).text =
                             name
                     }
                 }
+*/
                 skillsLive.observe( { lifecycle } ) { skills ->
                     if( skills != null ) {
                         with(binding.root.grpOtherChampMasteries[i]) {
