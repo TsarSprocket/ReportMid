@@ -19,22 +19,17 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
     val regionTitles
         get() = allRegions.map { it.title }
 
-    val selectedRegion = MutableLiveData<RegionModel>()
-    var selectedPosition: Int = -1
+    val selectedRegionPosition = MutableLiveData<Int>()
 
     var activeSummonerName = MutableLiveData( "" )
 
     var activeSummonerModel = MutableLiveData<SummonerModel>()
 
-    fun selectRegionByOrderNo( orderNo: Int ) {
-        selectedRegion.value = if( orderNo >= 0 && orderNo < allRegions.size ) allRegions[ orderNo ] else null
-    }
 
     fun checkSummoner() =
         LiveDataReactiveStreams.fromPublisher(
             repository.findSummonerForName( activeSummonerName.value?: "",
-                enumValues<RegionModel>().find { it == selectedRegion.value } ?:
-                                throw RuntimeException( "Incorrect region code \'$selectedRegion\'" ))
+                allRegions[ selectedRegionPosition.value!! ] )
                 .observeOn( AndroidSchedulers.mainThread() )
                 .map { summonerModel ->
                     Maybe.just( summonerModel )

@@ -24,6 +24,8 @@ import java.text.Format
 import java.util.*
 import javax.inject.Inject
 
+private const val VAR_REGION_POS = "VAR_REGION_POS"
+
 class AddSummonerFragment : BaseFragment() {
 
     @Inject
@@ -45,33 +47,20 @@ class AddSummonerFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate<FragmentAddSummonerBinding>( inflater, R.layout.fragment_add_summoner, container, false )
+        binding = DataBindingUtil.inflate( inflater, R.layout.fragment_add_summoner, container, false )
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.fragment = this
 
-        binding.root.findViewById<Spinner>( R.id.spRegion ).onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected( parent: AdapterView<*>? ) {
-                    viewModel.selectedPosition = -1
-                    viewModel.selectRegionByOrderNo( -1 )
-                }
-
-                override fun onItemSelected( parent: AdapterView<*>?, view: View?, position: Int, id: Long ) {
-                    viewModel.selectedPosition = position
-                    viewModel.selectRegionByOrderNo( position )
-                }
-            }
-
-        if( viewModel.selectedPosition >= 0 ) {
-            binding.spRegion.setSelection( viewModel.selectedPosition )
-        }
+        binding.edSummonerName.requestFocus()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setSoftInputVisibility( requireContext(), binding.edSummonerName, true )
 
         getNavigationResult<Boolean>( RESULT_CONFIRM )
             .switchMap { confirmed ->
@@ -83,7 +72,7 @@ class AddSummonerFragment : BaseFragment() {
         }
     }
 
-    fun onValidateInitial( view: View? ) {
+    fun onValidateInitial(view: View? ) {
         setSoftInputVisibility( requireContext(), binding.root.edSummonerName, false )
         viewModel.checkSummoner().observe( viewLifecycleOwner ) { maybe ->
             if( maybe.isEmpty.blockingGet() ) {

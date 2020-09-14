@@ -19,6 +19,7 @@ class LandingViewModel @Inject constructor( val repository: Repository ) : ViewM
 
     val disposer = CompositeDisposable()
 
+    var beenThereDoneThat = false
 
     init {
         disposer.add( repository.getActiveSummonerPUUID()

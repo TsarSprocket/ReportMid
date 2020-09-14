@@ -28,6 +28,7 @@ class LandingFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject( this )
+
         super.onAttach(context)
     }
 
@@ -50,13 +51,16 @@ class LandingFragment : Fragment() {
                     navigateToMainAndFinish( viewModel.puuid )
                 }
                 LandingViewModel.STATE.NOT_FOUND -> {
-                    if( peekNavigationResult<String>( RESULT_PUUID ) == null ) {
-                        val action = LandingFragmentDirections.actionLandingFragmentToInitialEnterFragment()
+                    if( peekNavigationResult<String>( RESULT_PUUID ) == null && !viewModel.beenThereDoneThat ) {
+                        val action = LandingFragmentDirections.actionLandingFragmentToAddSummonerFragment()
                         findNavController().navigate(action)
+                        viewModel.beenThereDoneThat = true
                     }
                 }
             }
         }
+
+        if( viewModel.beenThereDoneThat ) requireActivity().finish()
 
         return binding.root
     }

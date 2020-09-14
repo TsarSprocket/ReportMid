@@ -34,6 +34,21 @@ fun <T> Fragment.removeNavigationResult( key: String = "result" ): T? {
     return currentBackStackEntry?.savedStateHandle?.remove<T>(key)
 }
 
+fun <T> Fragment.getPermVar( varName: String ): T? {
+    val currentBackStackEntry = findNavController().currentBackStackEntry
+    return currentBackStackEntry?.savedStateHandle?.get<T>( varName )
+}
+
+fun <T> Fragment.setPermVar( varName: String, value: T ) {
+    val currentBackStackEntry = findNavController().currentBackStackEntry
+    currentBackStackEntry?.savedStateHandle?.set( varName, value )
+}
+
+fun <T> Fragment.removePermVar( varName: String ): T? {
+    val currentBackStackEntry = findNavController().currentBackStackEntry
+    return currentBackStackEntry?.savedStateHandle?.remove<T>( varName )
+}
+
 // UI helpers
 
 fun setSoftInputVisibility( context: Context, view: View, visibility: Boolean ) {

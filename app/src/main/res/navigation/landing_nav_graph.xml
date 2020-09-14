@@ -16,7 +16,7 @@
             app:popUpTo="@id/landing_nav_graph"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_landingFragment_to_initialEnterFragment"
+            android:id="@+id/action_landingFragment_to_addSummonerFragment"
             app:destination="@id/addSummonerFragment"
             app:popUpToInclusive="false" />
     </fragment>
