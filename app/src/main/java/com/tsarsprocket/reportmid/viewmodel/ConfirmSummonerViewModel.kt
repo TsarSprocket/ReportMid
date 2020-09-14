@@ -13,7 +13,7 @@ class ConfirmSummonerViewModel @Inject constructor( val repository: Repository )
     val summoner = LiveDataReactiveStreams.fromPublisher( puuidSubj.flatMap { puuid -> repository.findSummonerByPuuid( puuid ) }.toFlowable( BackpressureStrategy.LATEST ) )
     val bitmap = summoner.switchMap { sum -> LiveDataReactiveStreams.fromPublisher( sum.icon.toFlowable( BackpressureStrategy.LATEST ) ) }
     val name = summoner.map { sum -> sum.name }
-    val level = summoner.map { sum -> sum.level }
+    val level = summoner.map { sum -> sum.level.toString() }
     val confirm = MutableLiveData<Boolean>()
 
     fun init( puuid: String ) {
