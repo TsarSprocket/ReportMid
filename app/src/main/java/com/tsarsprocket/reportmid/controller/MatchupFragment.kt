@@ -51,6 +51,11 @@ class MatchupFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        viewModel.matchInProgress.observe( viewLifecycleOwner ) { isInProgress ->
+            binding.matchGroup.visibility = if( isInProgress ) View.VISIBLE else View.GONE
+            binding.matchNotInProgressGroup.visibility = if( !isInProgress ) View.VISIBLE else View.GONE
+        }
+
         viewModel.blueTeamParticipants.observe( { lifecycle } ) { if( it != null ) populateTeam( binding.blueTeam, it, SideModel.BLUE ) }
         viewModel.redTeamParticipants.observe( { lifecycle } ) { if( it != null ) populateTeam( binding.redTeam, it, SideModel.RED ) }
 

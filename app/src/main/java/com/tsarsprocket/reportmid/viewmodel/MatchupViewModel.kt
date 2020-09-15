@@ -35,10 +35,13 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
 
     var summoner = MutableLiveData<SummonerModel>()
 
+    val matchInProgress = MutableLiveData<Boolean>()
+
     val currentMatchLive = MutableLiveData<CurrentMatchModel>()
 
     val gameTypeTextLive = Transformations.map( currentMatchLive ) { match -> match.gameType.name }
-    val durationTextLive = MutableLiveData<String>( STR_NO_DURATION )
+// Temporary removed:
+//    val durationTextLive = MutableLiveData<String>( STR_NO_DURATION )
 
     val blueTeamParticipants = MutableLiveData<List<PlayerPresentation>>()
     val redTeamParticipants = MutableLiveData<List<PlayerPresentation>>()
@@ -55,13 +58,17 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     fun loadForSummoner( puuid: String ) {
         allDisposables.add( repository.findSummonerByPuuid( puuid )
             .observeOn( AndroidSchedulers.mainThread() )
-            .flatMap{ summoner.value = it; it.currentMatch }
+            .flatMap{ summoner.value = it; it.getCurrentMatch() }
             .observeOn( AndroidSchedulers.mainThread() )
-            .subscribe{ match ->
+            .subscribe( { match ->
                 currentMatchLive.value = match
                 matchDisposables.clear()
                 obtainTeamParticipants( match.blueTeam, blueTeamParticipants, matchDisposables )
                 obtainTeamParticipants( match.redTeam, redTeamParticipants, matchDisposables )
+                matchInProgress.value = true
+            } ) {
+                matchDisposables.clear()
+                matchInProgress.value = false
             } )
     }
 
@@ -116,7 +123,8 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
             val hours = durMillis / MILLIS_IN_HOUR
             val minutes = durMillis / MILLIS_IN_MINUTE - hours * MINUTES_IN_HOUR
             val seconds = durMillis / MILLIS_IN_SECOND - ( hours * MINUTES_IN_HOUR + minutes ) * SECONDS_IN_MINUTE
-            durationTextLive.value = if( hours > 0 ) Formatter().format( DUR_FMT_HMS, hours, minutes, seconds ).toString() else Formatter().format( DUR_FMT_MS, minutes, seconds ).toString()
+// Temporary removed:
+//            durationTextLive.value = if( hours > 0 ) Formatter().format( DUR_FMT_HMS, hours, minutes, seconds ).toString() else Formatter().format( DUR_FMT_MS, minutes, seconds ).toString()
         }
     }
 
