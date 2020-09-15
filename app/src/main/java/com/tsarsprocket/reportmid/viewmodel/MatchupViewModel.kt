@@ -32,7 +32,6 @@ private val DUR_FMT_MS = "%02d:%02d"
 class MatchupViewModel @Inject constructor( private val repository: Repository ): ViewModel() {
 
     lateinit var puuid: String
-    val isPuuidInitialized get() = this::puuid.isInitialized
 
     var summoner = MutableLiveData<SummonerModel>()
 

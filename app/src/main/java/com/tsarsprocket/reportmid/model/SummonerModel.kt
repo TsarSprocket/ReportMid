@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.MatchHistory
+import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
 import com.merakianalytics.orianna.types.core.staticdata.Masteries
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import io.reactivex.Observable
@@ -21,7 +22,7 @@ data class SummonerModel(
     val level: Int = shadowSummoner.level
     val masteries: Observable<List<Observable<ChampionMasteryModel>>> by lazy { getObservableMasteryList().replay( 1 ).autoConnect() }
     val matchHistory: Observable<MatchHistoryModel> by lazy { getObservableMatchHistoryForSummoner( shadowSummoner ).replay( 1 ).autoConnect() }
-    val currentMatch by lazy { repository.getCurrentMatch{ shadowSummoner.currentMatch } }
+    val currentMatch get() = repository.getCurrentMatch{ CurrentMatch.forSummoner( shadowSummoner ).get() } // Caution: HOT!!!
     val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
     val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
 

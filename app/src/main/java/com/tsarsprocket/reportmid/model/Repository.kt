@@ -96,14 +96,15 @@ class Repository @Inject constructor( val context: Context ) {
         return initialized.observeOn( Schedulers.io() )
             .flatMap { fInitialized ->
                 when( fInitialized ) {
-                    true -> getSummonerModel( true ) { Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() }
+                    true -> getSummonerModel( failOnNull = failOnNotFound ) { Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() }
                     else -> throw RepositoryNotInitializedException()
                 }
             }
     }
 
     @WorkerThread
-    fun findSummonerByPuuid( puuid: String? ) = getSummonerModel{ Orianna.summonerWithPuuid( puuid ).get().also { it.load() } }
+    fun findSummonerByPuuid( puuid: String? ) =
+        getSummonerModel() { Orianna.summonerWithPuuid( puuid ).get().also { it.load() } }
 
     @WorkerThread
     fun getActiveSummonerPUUID() = initialized.observeOn( Schedulers.io() )
@@ -185,7 +186,7 @@ class Repository @Inject constructor( val context: Context ) {
     fun getSummonerModel( failOnNull: Boolean = false, lmdSummoner: () -> Summoner ) = ensureInitializedDoOnIO( failOnNull ) {
         val summoner = lmdSummoner()
         if( summoner.puuid != null ) {
-            summoners[ summoner.puuid ] ?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
+            summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
         } else null
     }
 

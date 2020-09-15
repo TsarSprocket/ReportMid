@@ -29,7 +29,7 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
     fun checkSummoner() =
         LiveDataReactiveStreams.fromPublisher(
             repository.findSummonerForName( activeSummonerName.value?: "",
-                allRegions[ selectedRegionPosition.value!! ] )
+                allRegions[ selectedRegionPosition.value!! ], failOnNotFound = true )
                 .observeOn( AndroidSchedulers.mainThread() )
                 .map { summonerModel ->
                     Maybe.just( summonerModel )

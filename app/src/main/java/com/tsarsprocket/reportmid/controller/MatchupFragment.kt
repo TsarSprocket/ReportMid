@@ -37,9 +37,12 @@ class MatchupFragment : BaseFragment() {
     override fun onAttach( context: Context ) {
         ( context.applicationContext as ReportMidApp).comp.inject( this )
         super.onAttach( context )
-        if( !viewModel.isPuuidInitialized ) requireArguments().let {
-            viewModel.puuid = it.getString( ARG_PUUID )?: throw RuntimeException( "Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID argument" )
-            viewModel.loadForSummoner( puuid = viewModel.puuid )
+        requireArguments().let {
+            if( it.getBoolean( ARG_RELOAD ) ) {
+                viewModel.puuid = it.getString( ARG_PUUID ) ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID argument")
+                viewModel.loadForSummoner( puuid = viewModel.puuid )
+                it.putBoolean( ARG_RELOAD, false )
+            }
         }
     }
 
