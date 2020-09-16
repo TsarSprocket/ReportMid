@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
@@ -19,6 +18,7 @@ import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
+import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.MatchupViewModel
 import kotlinx.android.synthetic.main.card_player_preview.view.*
 import kotlinx.android.synthetic.main.fragment_matchup.view.*
@@ -32,16 +32,22 @@ class MatchupFragment : BaseFragment() {
 
     private val viewModel by viewModels<MatchupViewModel> { viewModelFactory }
 
+    private val activityViewModel by activityViewModels<MainActivityViewModel> { viewModelFactory }
+
     private lateinit var binding: FragmentMatchupBinding
 
     override fun onAttach( context: Context ) {
         ( context.applicationContext as ReportMidApp).comp.inject( this )
         super.onAttach( context )
+        reloadMatch(false)
+    }
+
+    private fun reloadMatch(forceReload: Boolean) {
         requireArguments().let {
-            if( it.getBoolean( ARG_RELOAD ) ) {
-                viewModel.puuid = it.getString( ARG_PUUID ) ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID argument")
-                viewModel.loadForSummoner( puuid = viewModel.puuid )
-                it.putBoolean( ARG_RELOAD, false )
+            if (it.getBoolean(ARG_RELOAD) || forceReload) {
+                viewModel.puuid = it.getString(ARG_PUUID) ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID argument")
+                viewModel.loadForSummoner(puuid = viewModel.puuid)
+                it.putBoolean(ARG_RELOAD, false)
             }
         }
     }
@@ -62,6 +68,12 @@ class MatchupFragment : BaseFragment() {
         with( binding.root.bottomNavigation ) {
             setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
             selectedItemId = R.id.matchupFragment
+        }
+
+        activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ){ menuItemId ->
+            when (menuItemId) {
+                R.id.matchupRefresh -> reloadMatch(true)
+            }
         }
 
         return binding.root

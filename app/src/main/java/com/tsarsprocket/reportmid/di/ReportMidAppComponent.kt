@@ -13,6 +13,7 @@ import javax.inject.Singleton
     ReportMidAppModule::class,
     LandingActivityModule::class,
     MainActivityModule::class,
+    MainActivityViewModelModule::class,
     ViewModelFactoryBinder::class,
     DrawerViewModelModule::class,
     LandingViewModelModule::class,
@@ -30,6 +31,7 @@ interface ReportMidAppComponent {
     fun inject( app: ReportMidApp )
 
     // Viewmodel
+    fun mainActivityViewModelComponent(): MainActivityViewModelComponent.Factory
     fun drawerViewModelComponent(): DrawerViewModelComponent.Factory
     fun landingViewModelComponent(): LandingViewModelComponent.Factory
     fun addSummonerViewModelComponentFactory(): AddSummonerViewModelComponent.Factory

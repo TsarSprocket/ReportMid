@@ -23,7 +23,8 @@
     <string name="fragment_matchup_player_solo_winrate_0">0</string>
     <string name="fragment_matchup_title_template">%s in Game</string>
     <string name="fragment_matchup_tmp_calculating">calculating…</string>
-    <string name="fragment_matchup_no_match_in_progress">No match is in progress</string>
+    <string name="fragment_matchup_no_match_in_progress">No match in progress</string>
+    <string name="fragment_matchup_menu_refresh">Refresh</string>
 
     <!-- Fragment: Match history -->
     <string name="fragment_match_history_message_win">Win</string>
