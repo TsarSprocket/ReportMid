@@ -1,18 +1,22 @@
 package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.databinding.FragmentDrawerBindingImpl
+import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
+import kotlinx.android.synthetic.main.fragment_drawer.view.*
+import kotlinx.android.synthetic.main.layout_my_summoner_line.view.*
 import javax.inject.Inject
 
 class DrawerFragment : Fragment() {
@@ -22,7 +26,7 @@ class DrawerFragment : Fragment() {
 
     private val viewModel by viewModels<DrawerViewModel> { viewModelFactory }
 
-    lateinit var binding: FragmentDrawerBindingImpl
+    lateinit var binding: FragmentDrawerBinding
 
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject( this )
@@ -34,12 +38,21 @@ class DrawerFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        viewModel.mySummonersInSelectedRegion.observe( { lifecycle } ) { updateMySummoners( it ) }
+
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        // TODO: Use the ViewModel
+    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Bitmap,String,Boolean>> ) {
+        val group = binding.root.llMySummoners
+        group.removeAllViews()
+        listOfMarkedSummoners.forEach { (icon, name, isSelected)->
+            val view = layoutInflater.inflate(R.layout.layout_my_summoner_line, group, false) as ConstraintLayout
+            view.iconSummoner.setImageBitmap( icon )
+            view.txtSummonerName.text = name
+            view.cbSelected.isChecked = isSelected
+            group.addView( view )
+        }
     }
 
     companion object {

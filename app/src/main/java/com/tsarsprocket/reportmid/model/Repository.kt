@@ -29,7 +29,6 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
@@ -82,10 +81,34 @@ class Repository @Inject constructor( val context: Context ) {
         }.subscribeOn( Schedulers.io() ).subscribe( initialized )
     }
 
+    fun getSelectedAccountSummoner() = ensureInitializedDoOnIO {
+        database.globalDAO().getAll()
+            .map { database.currentAccountDAO().getById( it.currentAccountId!! ) }
+            .map { database.summonerDAO().getById( it.accountId ) }
+            .first()
+    }.flatMap { findSummonerByPuuid( it.puuid ) }
+
+    fun getSelectedAccountRegion() = ensureInitializedDoOnIO {
+        database.globalDAO().getAll()
+            .map { database.currentAccountDAO().getById( it.currentAccountId!! ) }
+            .map { database.regionDAO().getById( it.regionId ) }
+            .first()
+    }.map { RegionModel.byTag[ it.tag ] }
+
     fun getCurrentRegions() = ensureInitializedDoOnIO {
         database.currentAccountDAO().getAll()
             .map { database.regionDAO().getById( it.regionId ) }
             .map { RegionModel.byTag[ it.tag ]?: throw RuntimeException( "Region ${it.tag} not found" ) }
+    }
+
+    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel,Boolean>>> = ensureInitializedDoOnIO {
+        val regEnt = database.regionDAO().getByTag(reg.tag)
+        val myCurAccEnt = database.myAccountDAO().getById(database.currentAccountDAO().getByRegion( regEnt.id )!!.accountId)
+        val arrObsSumModel = database.summonerDAO().getMySummonersByRegion(regEnt.id)
+            .map { sumEnt -> Pair(sumEnt,sumEnt.id == myCurAccEnt.summonerId) }
+            .map { (sumEnt,isSelected) -> findSummonerByPuuid(sumEnt.puuid).map{ Pair(it,isSelected) } }.toTypedArray()
+        val lst = Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
+        lst
     }
 
     private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()

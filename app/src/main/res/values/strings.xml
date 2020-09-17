@@ -31,6 +31,14 @@
     <string name="fragment_match_history_message_defeat">Defeat</string>
     <string name="fragment_match_history_title_template">%s\&apos;s History</string>
 
+    <!-- Fragment: Drawer -->
+    <string name="fragment_drawer_my_summoners_label">My Summoners</string>
+    <string name="fragment_drawer_edit_my_summoners_button">edit</string>
+    <string name="fragment_drawer_my_friends_label">My Friends</string>
+    <string name="fragment_drawer_edit_my_friends_button">edit</string>
+
+    <!-- My Summoner -->
+
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>
     <string name="summoner_navigation_menu_item_matchup">Matchup</string>
