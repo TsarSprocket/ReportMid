@@ -37,7 +37,9 @@
     <string name="fragment_drawer_my_friends_label">My Friends</string>
     <string name="fragment_drawer_edit_my_friends_button">edit</string>
 
-    <!-- My Summoner -->
+    <!-- Fragment: My Summoners -->
+    <string name="fragment_manage_my_summoners_title">My Summoners</string>
+    <string name="fragment_manage_my_summoners_menu_delete">Delete</string>
 
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>

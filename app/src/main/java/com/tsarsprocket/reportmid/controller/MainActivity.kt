@@ -30,12 +30,12 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.setLifecycleOwner { this.lifecycle }
+        binding.lifecycleOwner = this
 
         val navController = findNavController(R.id.nav_host_fragment)
         navController.setGraph(R.navigation.nav_graph, intent.extras)
 
-        setSupportActionBar( binding.toolbar )
+        setSupportActionBar(binding.toolbar)
 
         binding.toolbar.setNavigationOnClickListener { binding.drawerLayout.openDrawer(GravityCompat.START) }
 
@@ -46,7 +46,7 @@ class MainActivity : BaseActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ -> updateToolbarMenu(destination) }
 
-        viewModel.updateToolbarMenuForDestination.observe({ lifecycle }) { destId ->
+        viewModel.updateToolbarMenuForDestination.observe(this) { destId ->
             findNavController(R.id.nav_host_fragment).currentDestination?.let { currentDestination ->
                 if (currentDestination.id == destId) updateToolbarMenu(currentDestination)
             }
@@ -59,6 +59,10 @@ class MainActivity : BaseActivity() {
 
     private fun updateToolbarMenu(destination: NavDestination) {
         toolbar.menu.clear()
-        viewModel.toolbarMenuByDestination[destination.id]?.let { menuId -> menuInflater.inflate( menuId, toolbar.menu ) }
+        viewModel.toolbarMenuByDestination[destination.id]?.let { menuId -> menuInflater.inflate(menuId, toolbar.menu) }
+    }
+
+    override fun closeDrawers() {
+        binding.drawerLayout.closeDrawers()
     }
 }

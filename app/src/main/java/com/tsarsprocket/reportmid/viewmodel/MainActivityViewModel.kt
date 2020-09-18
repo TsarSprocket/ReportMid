@@ -20,6 +20,8 @@ class MainActivityViewModel @Inject constructor() : ViewModel() {
 
     val selectedMenuItem = MutableLiveData<Int>()
 
+    //  Methods  //////////////////////////////////////////////////////////////
+
     fun setToolbarMenuForDestination(destinationId: Int, menuId: Int) {
         mutableToolbarMenuByDestination[destinationId] = menuId
         updateToolbarMenuForDestination.value = destinationId

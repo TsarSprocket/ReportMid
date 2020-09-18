@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/matchupRefresh"
+        android:id="@+id/miMatchupRefresh"
         android:title="@string/fragment_matchup_menu_refresh"
         />
 </menu>

@@ -8,6 +8,9 @@
         <variable
             name="viewModel"
             type="com.tsarsprocket.reportmid.viewmodel.DrawerViewModel" />
+        <variable
+            name="eventHandler"
+            type="com.tsarsprocket.reportmid.controller.DrawerFragment.EventHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -67,6 +70,7 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintBaseline_toBaselineOf="@id/labelMySummoners"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:onClick="@{eventHandler::manageMySummoners}"
                     />
 
                 <LinearLayout

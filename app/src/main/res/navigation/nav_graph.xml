@@ -75,4 +75,15 @@
             app:popUpTo="@id/matchupFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/manageMySummonersFragment"
+        android:name="com.tsarsprocket.reportmid.controller.ManageMySummonersFragment"
+        android:label="fragment_manage_my_summoners"
+        tools:layout="@layout/fragment_manage_my_summoners" />
+    <fragment
+        android:id="@+id/drawerFragment2"
+        android:name="com.tsarsprocket.reportmid.controller.DrawerFragment"
+        android:label="fragment_drawer"
+        tools:layout="@layout/fragment_drawer" />
+    <action android:id="@+id/action_global_manageMySummonersFragment" app:destination="@id/manageMySummonersFragment" />
 </navigation>

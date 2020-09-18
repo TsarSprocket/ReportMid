@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="text">#E6EE9C</color>
-    <color name="primary">#6200EE</color>
-    <color name="primaryDark">#3700B3</color>
-    <color name="accent">#03DAC5</color>
+    <color name="primary">#411a80</color>
+    <color name="primaryDark">#311B92</color>
+    <color name="secondary">#59801a</color>
+    <color name="accent">#802d1a</color>
     <color name="bgWin">#3C7339</color> <!-- Material: #004d40 -->
     <color name="bgDefeat">#832B21</color> <!-- Material: #7f0000 -->
     <color name="bgRemake">#565656</color>
     <color name="redTeamBG">#880E4F</color>
     <color name="blueTeamBG">#1A237E</color>
     <color name="transparent">#00000000</color>
+    <color name="background">#303030</color>
 </resources>

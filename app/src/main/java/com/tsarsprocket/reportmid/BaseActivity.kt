@@ -31,4 +31,6 @@ abstract class BaseActivity : AppCompatActivity(), HasAndroidInjector {
 
         return dispatchingAndroidInjector
     }
+
+    open fun closeDrawers() {}
 }

@@ -72,7 +72,7 @@ class MatchupFragment : BaseFragment() {
 
         activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ){ menuItemId ->
             when (menuItemId) {
-                R.id.matchupRefresh -> reloadMatch(true)
+                R.id.miMatchupRefresh -> reloadMatch(true)
             }
         }
 

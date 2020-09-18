@@ -12,7 +12,7 @@ import dagger.multibindings.IntoMap
 @Subcomponent
 interface MatchHistoryViewModelComponent {
 
-    fun inject( matchHistoryViewModel: MatchHistoryViewModel)
+    fun inject(matchHistoryViewModel: MatchHistoryViewModel)
 
     @Subcomponent.Factory
     interface Factory {
@@ -20,11 +20,11 @@ interface MatchHistoryViewModelComponent {
     }
 }
 
-@Module( subcomponents = [ MatchHistoryViewModelComponent::class ] )
+@Module(subcomponents = [MatchHistoryViewModelComponent::class])
 abstract class MatchHistoryViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey( MatchHistoryViewModel::class )
-    abstract fun bindViewModel( matchHistoryViewModel: MatchHistoryViewModel): ViewModel
+    @ViewModelKey(MatchHistoryViewModel::class)
+    abstract fun bindViewModel(matchHistoryViewModel: MatchHistoryViewModel): ViewModel
 }
