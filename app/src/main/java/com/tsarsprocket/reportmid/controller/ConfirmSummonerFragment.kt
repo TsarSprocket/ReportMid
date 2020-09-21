@@ -40,8 +40,8 @@ class ConfirmSummonerFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.bitmap.observe( this.viewLifecycleOwner ) { bitmap -> binding.root.imgSummonerIcon.setImageBitmap( bitmap ) }
-        viewModel.confirm.observe( this.viewLifecycleOwner ) { confirmed -> setNavigationResult( confirmed, RESULT_CONFIRM ); findNavController().popBackStack() }
+        viewModel.bitmap.observe( { lifecycle } ) { bitmap -> binding.root.imgSummonerIcon.setImageBitmap( bitmap ) }
+        viewModel.confirm.observe( { lifecycle } ) { confirmed -> setNavigationResult( confirmed, RESULT_CONFIRM ); findNavController().popBackStack() }
 
         viewModel.init( arguments?.getString( ARG_PUUID )?: throw IllegalArgumentException( "Fragment ${javaClass.kotlin.simpleName} requires $ARG_PUUID argument" ) )
 

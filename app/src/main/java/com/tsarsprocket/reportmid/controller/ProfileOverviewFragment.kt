@@ -63,7 +63,7 @@ class ProfileOverviewFragment : BaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.activeSummonerModel.observe( { this.viewLifecycleOwner.lifecycle } ) { summoner ->
+        viewModel.activeSummonerModel.observe( { lifecycle } ) { summoner ->
             disposer.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )

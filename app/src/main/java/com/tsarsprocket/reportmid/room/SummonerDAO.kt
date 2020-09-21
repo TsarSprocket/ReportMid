@@ -22,6 +22,13 @@ interface SummonerDAO {
     """)
     fun getMySummonersByRegion(regionId: Long): List<SummonerEntity>
 
+    @Query("""
+        SELECT s.*
+        FROM summoners AS s
+            JOIN my_accounts ma ON s.id = ma.summoner_id
+    """)
+    fun getMySummoners(): List<SummonerEntity>
+
     @Insert
     fun insert(summonerEntity: SummonerEntity): Long
 

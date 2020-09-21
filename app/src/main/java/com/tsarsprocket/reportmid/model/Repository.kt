@@ -39,250 +39,266 @@ import javax.inject.Singleton
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
 @Singleton
-class Repository @Inject constructor( val context: Context ) {
+class Repository @Inject constructor(val context: Context) {
 
-    val initialized = ReplaySubject.createWithSize<Boolean>( 1 )
+    val initialized = ReplaySubject.createWithSize<Boolean>(1)
 
     lateinit var database: MainStorage
 
-    val summoners = ConcurrentHashMap<String,SummonerModel>()
-    val champions = ConcurrentHashMap<Int,ChampionModel>()
-    val summonerSpells = ConcurrentHashMap<Int,SummonerSpellModel>()
-    val runes = ConcurrentHashMap<Int,RuneModel>()
+    val summoners = ConcurrentHashMap<String, SummonerModel>()
+    val champions = ConcurrentHashMap<Int, ChampionModel>()
+    val summonerSpells = ConcurrentHashMap<Int, SummonerSpellModel>()
+    val runes = ConcurrentHashMap<Int, RuneModel>()
 
     init {
 
         Observable.fromCallable {
             try {
-                Log.d( Repository::class.simpleName, "Initializing..." )
+                Log.d(Repository::class.simpleName, "Initializing...")
 
-                database = Room.databaseBuilder( context.applicationContext, MainStorage::class.java, "database" ).createFromAsset( "database/init.db" ).build()
+                database = Room.databaseBuilder(context.applicationContext, MainStorage::class.java, "database").createFromAsset("database/init.db").build()
 
                 val stateList = database.globalDAO().getAll()
 
-                if( stateList.isEmpty() ) {
+                if (stateList.isEmpty()) {
 
                     val accs = database.myAccountDAO().getAll()
 
-                    database.globalDAO().insert( GlobalEntity( accs.firstOrNull()?.id ) )
+                    database.globalDAO().insert(GlobalEntity(accs.firstOrNull()?.id))
                 }
 
 //                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
-                Orianna.setRiotAPIKey( loadRawResourceAsText(R.raw.riot_api_key) )
-                Orianna.setDefaultRegion( Region.RUSSIA )
+                Orianna.setRiotAPIKey(loadRawResourceAsText(R.raw.riot_api_key))
+                Orianna.setDefaultRegion(Region.RUSSIA)
 
-                Log.d( Repository::class.simpleName, "Done initialize" )
+                Log.d(Repository::class.simpleName, "Done initialize")
 
                 return@fromCallable true
-            } catch ( ex: Exception ) {
+            } catch (ex: Exception) {
 
                 return@fromCallable false
             }
-        }.subscribeOn( Schedulers.io() ).subscribe( initialized )
+        }.subscribeOn(Schedulers.io()).subscribe(initialized)
     }
 
     fun getSelectedAccountSummoner() = ensureInitializedDoOnIO {
         database.globalDAO().getAll()
-            .map { database.currentAccountDAO().getById( it.currentAccountId!! ) }
-            .map { database.summonerDAO().getById( it.accountId ) }
+            .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
+            .map { database.summonerDAO().getById(it.accountId) }
             .first()
-    }.flatMap { findSummonerByPuuid( it.puuid ) }
+    }.flatMap { findSummonerByPuuid(it.puuid) }
 
     fun getSelectedAccountRegion() = ensureInitializedDoOnIO {
         database.globalDAO().getAll()
-            .map { database.currentAccountDAO().getById( it.currentAccountId!! ) }
-            .map { database.regionDAO().getById( it.regionId ) }
+            .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
+            .map { database.regionDAO().getById(it.regionId) }
             .first()
-    }.map { RegionModel.byTag[ it.tag ] }
+    }.map { RegionModel.byTag[it.tag] }
 
     fun getCurrentRegions() = ensureInitializedDoOnIO {
         database.currentAccountDAO().getAll()
-            .map { database.regionDAO().getById( it.regionId ) }
-            .map { RegionModel.byTag[ it.tag ]?: throw RuntimeException( "Region ${it.tag} not found" ) }
+            .map { database.regionDAO().getById(it.regionId) }
+            .map { RegionModel.byTag[it.tag] ?: throw RuntimeException("Region ${it.tag} not found") }
     }
 
-    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel,Boolean>>> = ensureInitializedDoOnIO {
+    fun getMySummonersObservable(): ReplaySubject<List<SummonerModel>> = ensureInitializedDoOnIO {
+        val arrObsSumModel = database.summonerDAO().getMySummoners()
+            .map { sumEnt -> findSummonerByPuuid(sumEnt.puuid) }.toTypedArray()
+        Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
+    }
+
+    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIO {
         val regEnt = database.regionDAO().getByTag(reg.tag)
-        val myCurAccEnt = database.myAccountDAO().getById(database.currentAccountDAO().getByRegion( regEnt.id )!!.accountId)
+        val myCurAccEnt = database.myAccountDAO().getById(database.currentAccountDAO().getByRegion(regEnt.id)!!.accountId)
         val arrObsSumModel = database.summonerDAO().getMySummonersByRegion(regEnt.id)
-            .map { sumEnt -> Pair(sumEnt,sumEnt.id == myCurAccEnt.summonerId) }
-            .map { (sumEnt,isSelected) -> findSummonerByPuuid(sumEnt.puuid).map{ Pair(it,isSelected) } }.toTypedArray()
-        val lst = Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
-        lst
+            .map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) }
+            .map { (sumEnt, isSelected) -> findSummonerByPuuid(sumEnt.puuid).map { Pair(it, isSelected) } }.toTypedArray()
+        Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
     }
 
-    private fun loadRawResourceAsText( resId: Int ) = InputStreamReader( context.resources.openRawResource( resId ) ).readText()
+    private fun loadRawResourceAsText(resId: Int) = InputStreamReader(context.resources.openRawResource(resId)).readText()
 
     @WorkerThread
-    fun findSummonerForName( summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false ): Observable<SummonerModel> {
+    fun findSummonerForName(summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false): Observable<SummonerModel> {
 
-        return initialized.observeOn( Schedulers.io() )
+        return initialized.observeOn(Schedulers.io())
             .flatMap { fInitialized ->
-                when( fInitialized ) {
-                    true -> getSummonerModel( failOnNull = failOnNotFound ) { Orianna.summonerNamed( summonerName ).withRegion( regionModel.shadowRegion ).get() }
+                when (fInitialized) {
+                    true -> getSummonerModel(failOnNull = failOnNotFound) { Orianna.summonerNamed(summonerName).withRegion(regionModel.shadowRegion).get() }
                     else -> throw RepositoryNotInitializedException()
                 }
             }
     }
 
     @WorkerThread
-    fun findSummonerByPuuid( puuid: String? ) =
-        getSummonerModel() { Orianna.summonerWithPuuid( puuid ).get().also { it.load() } }
+    fun findSummonerByPuuid(puuid: String?) =
+        getSummonerModel() { Orianna.summonerWithPuuid(puuid).get().also { it.load() } }
+
+    fun findSummonersByPuuids(puuidsList: List<String>) = ensureInitializedDoOnIO {
+        puuidsList.map { puuid -> summoners[puuid] ?: SummonerModel(this, Orianna.summonerWithPuuid(puuid).get()) }
+    }
 
     @WorkerThread
-    fun getActiveSummonerPUUID() = initialized.observeOn( Schedulers.io() )
+    fun getActiveSummonerPUUID() = initialized.observeOn(Schedulers.io())
         .flatMap { fInitialized ->
-            when( fInitialized ) {
+            when (fInitialized) {
                 true -> {
                     val curAccId = database.globalDAO().getAll().first().currentAccountId
 
-                    if( curAccId != null ) {
-                        val accId = database.currentAccountDAO().getById( curAccId ).accountId
-                        val curSummonerId = database.myAccountDAO().getById( accId ).summonerId
-                        Observable.just( database.summonerDAO().getById( curSummonerId ).puuid )
-                    } else  Observable.empty()
+                    if (curAccId != null) {
+                        val accId = database.currentAccountDAO().getById(curAccId).accountId
+                        val curSummonerId = database.myAccountDAO().getById(accId).summonerId
+                        Observable.just(database.summonerDAO().getById(curSummonerId).puuid)
+                    } else Observable.empty()
                 }
                 else -> throw RepositoryNotInitializedException()
             }
         }
 
     @WorkerThread
-    fun getActiveSummoner() = getActiveSummonerPUUID().flatMap { puuid -> findSummonerByPuuid( puuid ) }
+    fun getActiveSummoner() = getActiveSummonerPUUID().flatMap { puuid -> findSummonerByPuuid(puuid) }
 
     /**
      * @return <code>Observable&lt;Boolean&gt;</code> that always fires <code>true</code>
      * @throws <code>RepositoryNotInitializedException</code>
      */
-    @SuppressLint( "CheckResult")
+    @SuppressLint("CheckResult")
     @WorkerThread
-    fun getMyAccountAdder( summonerModel: SummonerModel, setCurrent: Boolean = false ) =
-        initialized.observeOn( Schedulers.io() )
+    fun getMyAccountAdder(summonerModel: SummonerModel, setCurrent: Boolean = false) =
+        initialized.observeOn(Schedulers.io())
             .doOnNext { fInitialized ->
-                when( fInitialized ) {
+                when (fInitialized) {
                     true -> {
-                        val regionEntity = database.regionDAO().getByTag( summonerModel.region.tag )
+                        val regionEntity = database.regionDAO().getByTag(summonerModel.region.tag)
 
-                        val summonerEntity = SummonerEntity( summonerModel.puuid, regionEntity.id )
+                        val summonerEntity = SummonerEntity(summonerModel.puuid, regionEntity.id)
 
-                        val sumId = database.summonerDAO().insert( summonerEntity )
+                        val sumId = database.summonerDAO().insert(summonerEntity)
 
-                        val myAccountEntity = MyAccountEntity( sumId )
+                        val myAccountEntity = MyAccountEntity(sumId)
 
-                        val accId = database.myAccountDAO().insert( myAccountEntity )
+                        val accId = database.myAccountDAO().insert(myAccountEntity)
 
-                        val current = database.currentAccountDAO().getByRegion( regionEntity.id )
+                        val current = database.currentAccountDAO().getByRegion(regionEntity.id)
 
-                        val currentId = if( current != null ) {
-                            if( current.accountId != accId && setCurrent ) {
+                        val currentId = if (current != null) {
+                            if (current.accountId != accId && setCurrent) {
                                 current.accountId = accId
-                                database.currentAccountDAO().update( current )
+                                database.currentAccountDAO().update(current)
                             }
 
                             current.id
                         } else {
-                            database.currentAccountDAO().insert( CurrentAccountEntity( regionId = regionEntity.id, accountId = accId ) )
+                            database.currentAccountDAO().insert(CurrentAccountEntity(regionId = regionEntity.id, accountId = accId))
                         }
 
-                        if( setCurrent ) {
-                            val globalState = database.globalDAO().getAll()[ 0 ]
+                        if (setCurrent) {
+                            val globalState = database.globalDAO().getAll()[0]
                             globalState.currentAccountId = currentId
-                            database.globalDAO().update( globalState )
+                            database.globalDAO().update(globalState)
                         }
                     }
                     else -> throw RepositoryNotInitializedException()
                 }
             }
 
-    fun getChampionMasteryModel( championMastery: ChampionMastery ) = ensureInitializedDoOnIO { ChampionMasteryModel( this, championMastery ) }
+    fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIO { ChampionMasteryModel(this, championMastery) }
 
-    fun getChampionModel( lmdChampion: () -> Champion ) = ensureInitializedDoOnIO {
+    fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIO {
         val champion = lmdChampion()
-        champions[ champion.id ]?: ChampionModel( this, champion ).also { champions[ it.id ] = it }
+        champions[champion.id] ?: ChampionModel(this, champion).also { champions[it.id] = it }
     }
 
-    fun getMatchHistoryModel( matchHistory: MatchHistory ) = ensureInitializedDoOnIO { MatchHistoryModel( this, matchHistory ) }
+    fun getMatchHistoryModel(matchHistory: MatchHistory) = ensureInitializedDoOnIO { MatchHistoryModel(this, matchHistory) }
 
-    fun getMatchModel( match: Match ) = ensureInitializedDoOnIO { MatchModel( this, match ) }
+    fun getMatchModel(match: Match) = ensureInitializedDoOnIO { MatchModel(this, match) }
 
-    fun getParticipantModel( teamModel: TeamModel, participant: Participant ) = ensureInitializedDoOnIO { ParticipantModel( this, teamModel, participant ) }
+    fun getParticipantModel(teamModel: TeamModel, participant: Participant) = ensureInitializedDoOnIO { ParticipantModel(this, teamModel, participant) }
 
-    fun getSummonerModel( failOnNull: Boolean = false, lmdSummoner: () -> Summoner ) = ensureInitializedDoOnIO( failOnNull ) {
+    fun getSummonerModel(failOnNull: Boolean = false, lmdSummoner: () -> Summoner) = ensureInitializedDoOnIO(failOnNull) {
         val summoner = lmdSummoner()
-        if( summoner.puuid != null ) {
-            summoners[ summoner.puuid ]?: SummonerModel( this, summoner ).also { summoners[ it.puuid ] = it }
+        if (summoner.puuid != null) {
+            summoners[summoner.puuid] ?: SummonerModel(this, summoner).also { summoners[it.puuid] = it }
         } else null
     }
 
-    fun getTeamModel( team: Team ) = ensureInitializedDoOnIO { TeamModel( this, team ) }
+    fun getTeamModel(team: Team) = ensureInitializedDoOnIO { TeamModel(this, team) }
 
-    fun getItemModel( item: Item ) = ensureInitializedDoOnIO { ItemModel( this, item ) }
+    fun getItemModel(item: Item) = ensureInitializedDoOnIO { ItemModel(this, item) }
 
-    fun getSummonerSpell( lmdSummonerSpell: () -> SummonerSpell ) = ensureInitializedDoOnIO {
+    fun getSummonerSpell(lmdSummonerSpell: () -> SummonerSpell) = ensureInitializedDoOnIO {
         val spell = lmdSummonerSpell()
-        summonerSpells[ spell.id ]?: SummonerSpellModel( this, spell ).also { summonerSpells[ spell.id ] = it }
+        summonerSpells[spell.id] ?: SummonerSpellModel(this, spell).also { summonerSpells[spell.id] = it }
     }
 
-    fun getRuneStats( runeStats: RuneStats ) = ensureInitializedDoOnIO { RuneStatsModel( this, runeStats ) }
+    fun getRuneStats(runeStats: RuneStats) = ensureInitializedDoOnIO { RuneStatsModel(this, runeStats) }
 
-    fun getRune( lmdReforgedRune: () -> ReforgedRune ) = ensureInitializedDoOnIO {
+    fun getRune(lmdReforgedRune: () -> ReforgedRune) = ensureInitializedDoOnIO {
         val reforgedRune = lmdReforgedRune()
-        runes[ reforgedRune.id ]?: RuneModel( this, reforgedRune ).also { runes[ reforgedRune.id ] = it }
+        runes[reforgedRune.id] ?: RuneModel(this, reforgedRune).also { runes[reforgedRune.id] = it }
     }
 
-    fun getCurrentMatch( lmdCurrentMatch: () -> CurrentMatch ) = ensureInitializedDoOnIO { CurrentMatchModel( this, lmdCurrentMatch() ) }
+    fun getCurrentMatch(lmdCurrentMatch: () -> CurrentMatch) = ensureInitializedDoOnIO { CurrentMatchModel(this, lmdCurrentMatch()) }
 
-    fun getCurrentMatchTeam( lmdCurrentMatchTeam: () -> CurrentMatchTeam ) = ensureInitializedDoOnIO { CurrentMatchTeamModel( this, lmdCurrentMatchTeam() ) }
+    fun getCurrentMatchTeam(lmdCurrentMatchTeam: () -> CurrentMatchTeam) = ensureInitializedDoOnIO { CurrentMatchTeamModel(this, lmdCurrentMatchTeam()) }
 
-    fun getPlayer( lmdPlayer: () -> Player ) = ensureInitializedDoOnIO { PlayerModel( this, lmdPlayer() ) }
+    fun getPlayer(lmdPlayer: () -> Player) = ensureInitializedDoOnIO { PlayerModel(this, lmdPlayer()) }
 
-    fun getPlayerRunes( lmdRunes: () -> Runes ) = ensureInitializedDoOnIO { PlayerRunesModel( this, lmdRunes() ) }
+    fun getPlayerRunes(lmdRunes: () -> Runes) = ensureInitializedDoOnIO { PlayerRunesModel(this, lmdRunes()) }
 
-    fun getLeaguePosition( lmdLeagueEntry: () -> LeagueEntry? ) = ensureInitializedDoOnIO { lmdLeagueEntry()?.let { LeaguePositionModel( this, it ) } }
+    fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIO { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
     companion object {
         val allRegions = RegionModel.values()
-        fun getRegion( region: Region ) = RegionModel.byShadowRegion[ region ]?: throw RuntimeException( "No such region: ${region.tag}" )
-        fun getRunePath( pathId: Maybe<Int> ) = if( pathId.isEmpty.blockingGet() ) Maybe.empty() else Maybe.just( RunePathModel.byId[ pathId.blockingGet() ]?: throw IncorrectRunePathIdException( pathId.blockingGet() ) )
-        fun getGameType( gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null ) =
-            GameTypeModel.by( gameType, queue, gameMode, gameMap )
-        fun getSide( side: Side ) = SideModel.fromExternal( side )
-        fun getQueue( queue: Queue ) = QueueModel.values().find { it.shadowQueue.id == queue.id }?: throw RuntimeException( "Queue $queue is not defined in the model" )
-        fun getTier( tier: Tier ) = TierModel.values().find { it.shadowTier == tier }?: throw RuntimeException( "Tier $tier is not mapped" )
-        fun getDivision( division: Division ) = DivisionModel.values().find { it.shadowDivision == division }?: throw RuntimeException( "Division $division is not mapped" )
+        fun getRegion(region: Region) = RegionModel.byShadowRegion[region] ?: throw RuntimeException("No such region: ${region.tag}")
+        fun getRunePath(pathId: Maybe<Int>) = if (pathId.isEmpty.blockingGet()) Maybe.empty() else Maybe.just(
+            RunePathModel.byId[pathId.blockingGet()] ?: throw IncorrectRunePathIdException(pathId.blockingGet())
+        )
+
+        fun getGameType(gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null) =
+            GameTypeModel.by(gameType, queue, gameMode, gameMap)
+
+        fun getSide(side: Side) = SideModel.fromExternal(side)
+        fun getQueue(queue: Queue) =
+            QueueModel.values().find { it.shadowQueue.id == queue.id } ?: throw RuntimeException("Queue $queue is not defined in the model")
+
+        fun getTier(tier: Tier) = TierModel.values().find { it.shadowTier == tier } ?: throw RuntimeException("Tier $tier is not mapped")
+        fun getDivision(division: Division) =
+            DivisionModel.values().find { it.shadowDivision == division } ?: throw RuntimeException("Division $division is not mapped")
 
         @WorkerThread
-        fun findParticipant( match: MatchModel, summoner: SummonerModel ): ParticipantModel {
+        fun findParticipant(match: MatchModel, summoner: SummonerModel): ParticipantModel {
             val blueTeam = match.blueTeam.blockingSingle()
             val redTeam = match.redTeam.blockingSingle()
 
             val firstInBlue = blueTeam.participants.first().blockingSingle()
-            if( firstInBlue.summoner.blockingSingle().puuid == summoner.puuid ) return firstInBlue
+            if (firstInBlue.summoner.blockingSingle().puuid == summoner.puuid) return firstInBlue
 
             val firstInRed = redTeam.participants.first().blockingSingle()
-            if( firstInRed.summoner.blockingSingle().puuid == summoner.puuid ) return firstInRed
+            if (firstInRed.summoner.blockingSingle().puuid == summoner.puuid) return firstInRed
 
             return (
-                    blueTeam.participants.subList( 1, blueTeam.participants.size )
-                        .union( redTeam.participants.subList( 1, redTeam.participants.size ) )
+                    blueTeam.participants.subList(1, blueTeam.participants.size)
+                        .union(redTeam.participants.subList(1, redTeam.participants.size))
                         .find { it.blockingSingle().summoner.blockingSingle().puuid == summoner.puuid }
                         ?: throw RuntimeException("Summoner ${summoner.name} is not found in match ${match.id}")
                     ).blockingSingle()
         }
 
         @WorkerThread
-        fun getItemIcons( participant: ParticipantModel ): Array<Bitmap> {
+        fun getItemIcons(participant: ParticipantModel): Array<Bitmap> {
             val items = participant.items.blockingSingle()
-            return Array( items.size ) { i -> items[ i ].blockingSingle().bitmap.blockingSingle() }
+            return Array(items.size) { i -> items[i].blockingSingle().bitmap.blockingSingle() }
         }
 
         @WorkerThread
-        fun getTeamIcons( team: TeamModel, resizeMatrix: Matrix) = Array( team.participants.size ) { i ->
+        fun getTeamIcons(team: TeamModel, resizeMatrix: Matrix) = Array(team.participants.size) { i ->
             val bm = team.participants[i].blockingSingle().champion.blockingSingle().bitmap.blockingSingle()
-            Bitmap.createBitmap( bm,0, 0, bm.width, bm.height, resizeMatrix, false )
+            Bitmap.createBitmap(bm, 0, 0, bm.width, bm.height, resizeMatrix, false)
         }
 
         @WorkerThread
-        fun calculateTeamKDA( asParticipant: ParticipantModel ): Triple<Int,Int,Int> {
+        fun calculateTeamKDA(asParticipant: ParticipantModel): Triple<Int, Int, Int> {
             var teamKills = 0
             var teamDeaths = 0
             var teamAssists = 0
@@ -292,21 +308,21 @@ class Repository @Inject constructor( val context: Context ) {
                 teamDeaths += participant.deaths
                 teamAssists += participant.assists
             }
-            return Triple( teamKills, teamDeaths, teamAssists )
+            return Triple(teamKills, teamDeaths, teamAssists)
         }
     }
 
     /*  Tools  ***************************************************************/
 
-    private fun<T> ensureInitializedDoOnIO( failOnNull: Boolean = false, l: () -> T? ) = ReplaySubject.createWithSize<T>( 1 ).also { subject ->
-        initialized.observeOn( Schedulers.io() ).flatMap { fInitialized ->
-            when( fInitialized ) {
+    private fun <T> ensureInitializedDoOnIO(failOnNull: Boolean = false, l: () -> T?) = ReplaySubject.createWithSize<T>(1).also { subject ->
+        initialized.observeOn(Schedulers.io()).flatMap { fInitialized ->
+            when (fInitialized) {
                 true -> {
                     val v = l()
-                    if( v != null ) Observable.just( v ) else if( failOnNull ) throw NullPointerException() else Observable.empty()
+                    if (v != null) Observable.just(v) else if (failOnNull) throw NullPointerException() else Observable.empty()
                 }
-                else -> Observable.error( RepositoryNotInitializedException() )
+                else -> Observable.error(RepositoryNotInitializedException())
             }
-        }.subscribe( subject )
+        }.subscribe(subject)
     }
 }

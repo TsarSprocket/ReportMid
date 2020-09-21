@@ -66,7 +66,7 @@ class AddSummonerFragment : BaseFragment() {
             .switchMap { confirmed ->
                 if( confirmed ) { viewModel.activeSummonerModel } else MutableLiveData()
             }
-            .observe( this.viewLifecycleOwner ) { summonerModel ->
+            .observe( { lifecycle } ) { summonerModel ->
                 setNavigationResult( result = summonerModel.puuid, key = RESULT_PUUID )
                 findNavController().popBackStack()
         }
@@ -74,7 +74,7 @@ class AddSummonerFragment : BaseFragment() {
 
     fun onValidateInitial(view: View? ) {
         setSoftInputVisibility( requireContext(), binding.root.edSummonerName, false )
-        viewModel.checkSummoner().observe( viewLifecycleOwner ) { maybe ->
+        viewModel.checkSummoner().observe( { lifecycle } ) { maybe ->
             if( maybe.isEmpty.blockingGet() ) {
                 Snackbar.make( binding.root, Formatter().format( getString( R.string.snack_summoner_not_found ), viewModel.activeSummonerName.value ).toString(), Snackbar.LENGTH_SHORT ).show()
             } else {

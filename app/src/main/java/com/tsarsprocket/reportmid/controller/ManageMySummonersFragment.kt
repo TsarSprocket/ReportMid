@@ -1,21 +1,24 @@
 package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentManageMySummonersBinding
+import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.viewmodel.ManageMySummonersViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.card_my_managed_summoner.view.*
 import javax.inject.Inject
 
 class ManageMySummonersFragment : BaseFragment() {
@@ -41,6 +44,18 @@ class ManageMySummonersFragment : BaseFragment() {
 
         baseActivity.toolbar.title = getString(R.string.fragment_manage_my_summoners_title)
 
+        val mySummonersAdapter = MySummonersAdapter()
+        with(binding.recvMySummoners) {
+            layoutManager = LinearLayoutManager(context)
+            setHasFixedSize(true)
+            adapter = mySummonersAdapter
+            viewModel.mySummonersLive.observe({ lifecycle }) { lstSummoners ->
+                binding.progressLoading.visibility = View.GONE
+                visibility = View.VISIBLE
+                mySummonersAdapter.summoners = lstSummoners.toTypedArray()
+            }
+        }
+
         return binding.root
     }
 
@@ -48,4 +63,31 @@ class ManageMySummonersFragment : BaseFragment() {
         fun newInstance() = ManageMySummonersFragment()
     }
 
+
+    class MySummonersAdapter : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
+
+        var summoners: Array<SummonerModel> = arrayOf()
+            set(v: Array<SummonerModel>) {
+                field = v
+                notifyDataSetChanged()
+            }
+
+        val checkedItems = HashSet<SummonerModel>()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            CardViewHolderWithDisposer(LayoutInflater.from(parent.context).inflate(R.layout.card_my_managed_summoner, parent, false) as CardView)
+
+        override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
+            holder.disposer.clear()
+            val summoner = summoners[position]
+            with(holder.cardView) {
+                cbSelected.setOnCheckedChangeListener { _, isChecked -> if (isChecked) checkedItems.add(summoner) else checkedItems.remove(summoner) }
+                holder.disposer.add(summoner.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { bmp -> imgProfileIcon.setImageBitmap(bmp) })
+                txtSummonerName.text = summoner.name
+                txtRegion.text = summoner.region.tag
+            }
+        }
+
+        override fun getItemCount() = summoners.size
+    }
 }

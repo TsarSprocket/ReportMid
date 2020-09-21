@@ -41,8 +41,8 @@ class LandingFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        getNavigationResult<String>( RESULT_PUUID ).observe( viewLifecycleOwner ) { puuid ->
-            viewModel.defineMainAccount( puuid ).observe( viewLifecycleOwner ) { navigateToMainAndFinish( puuid ) }
+        getNavigationResult<String>( RESULT_PUUID ).observe( { lifecycle } ) { puuid ->
+            viewModel.defineMainAccount( puuid ).observe( { lifecycle } ) { navigateToMainAndFinish( puuid ) }
         }
 
         viewModel.stateLive.observe( { lifecycle } ) {

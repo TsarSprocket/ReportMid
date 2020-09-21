@@ -57,7 +57,7 @@ class MatchupFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.matchInProgress.observe( viewLifecycleOwner ) { isInProgress ->
+        viewModel.matchInProgress.observe( { lifecycle } ) { isInProgress ->
             binding.matchGroup.visibility = if( isInProgress ) View.VISIBLE else View.GONE
             binding.matchNotInProgressGroup.visibility = if( !isInProgress ) View.VISIBLE else View.GONE
         }
@@ -70,7 +70,7 @@ class MatchupFragment : BaseFragment() {
             selectedItemId = R.id.matchupFragment
         }
 
-        activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ){ menuItemId ->
+        activityViewModel.selectedMenuItem.observe( { lifecycle } ){ menuItemId ->
             when (menuItemId) {
                 R.id.miMatchupRefresh -> reloadMatch(true)
             }
@@ -81,7 +81,7 @@ class MatchupFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.summoner.observe( viewLifecycleOwner ) {
+        viewModel.summoner.observe( { lifecycle } ) {
             baseActivity.toolbar.title = getString( R.string.fragment_matchup_title_template ).format( it.name )
         }
     }

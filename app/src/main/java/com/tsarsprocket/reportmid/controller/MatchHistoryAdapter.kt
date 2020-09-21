@@ -14,25 +14,23 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 
-class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView.Adapter<MatchHistoryViewHolder>() {
+class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
     val arrIconViewIds = arrayOf(R.id.imageItem0, R.id.imageItem1, R.id.imageItem2, R.id.imageItem3, R.id.imageItem4, R.id.imageItem5)
 
     var cardBGColour: ColorStateList? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int ): MatchHistoryViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int ): CardViewHolderWithDisposer {
         val cardView = LayoutInflater.from(parent.context)
             .inflate(R.layout.card_match_history, parent, false ) as CardView
-        return MatchHistoryViewHolder(cardView)
+        return CardViewHolderWithDisposer(cardView)
     }
 
     override fun getItemCount(): Int = dataProvider.getCount()
 
-    override fun onBindViewHolder(holder: MatchHistoryViewHolder, position: Int ) {
+    override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int ) {
 
-        holder.allDisposables.dispose()
-
-        holder.allDisposables = CompositeDisposable()
+        holder.disposer.clear()
 
         with( holder.cardView ) {
 
@@ -68,7 +66,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
                 View.INVISIBLE
         }
 
-        holder.allDisposables.add( dataProvider.getMatchData( position )
+        holder.disposer.add( dataProvider.getMatchData( position )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data ->
                 with( holder.cardView ) {
