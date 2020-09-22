@@ -5,7 +5,7 @@
     app:startDestination="@id/addSummonerFragment">
 
     <fragment
-        android:id="@+id/confirmSummonerFragment2"
+        android:id="@+id/confirmSummonerFragment"
         android:name="com.tsarsprocket.reportmid.controller.ConfirmSummonerFragment"
         android:label="fragment_confirm_summoner"
         tools:layout="@layout/fragment_confirm_summoner" >
@@ -18,8 +18,8 @@
         android:name="com.tsarsprocket.reportmid.controller.AddSummonerFragment"
         android:label="AddSummonerFragment" >
         <action
-            android:id="@+id/action_addSummonerFragment_to_confirmSummonerFragment2"
-            app:destination="@id/confirmSummonerFragment2" />
+            android:id="@+id/action_addSummonerFragment_to_confirmSummonerFragment"
+            app:destination="@id/confirmSummonerFragment" />
         <argument
             android:name="ARG_REGION"
             app:argType="string"

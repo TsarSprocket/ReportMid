@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,21 +64,11 @@ class AddSummonerFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setSoftInputVisibility(requireContext(), binding.edSummonerName, true)
-
-        getNavigationResult<Boolean>(RESULT_CONFIRM)
-            .switchMap { confirmed ->
-                if (confirmed) {
-                    viewModel.activeSummonerModel
-                } else MutableLiveData()
-            }
-            .observe({ lifecycle }) { summonerModel ->
-                setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID)
-                findNavController().popBackStack()
-            }
     }
 
     fun onValidateInitial(view: View?) {
         setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
+
         viewModel.checkSummoner().observe({ lifecycle }) { maybe ->
             if (maybe.isEmpty.blockingGet()) {
                 viewModel.activeSummonerName.observe( this ) { summonerName ->
@@ -92,6 +83,18 @@ class AddSummonerFragment : BaseFragment() {
                 findNavController().navigate(action)
             }
         }
+
+        getNavigationResult<Boolean>(RESULT_CONFIRM)
+            .switchMap { confirmed ->
+                if (confirmed) {
+                    viewModel.activeSummonerModel
+                } else MutableLiveData()
+            }
+            .observe({ lifecycle }) { summonerModel ->
+                setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
+                setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID)
+                findNavController().popBackStack()
+            }
     }
 
     companion object {

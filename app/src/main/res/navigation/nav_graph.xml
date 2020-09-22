@@ -84,7 +84,13 @@
         tools:layout="@layout/fragment_manage_my_summoners" >
         <action
             android:id="@+id/action_manageMySummonersFragment_to_add_summoner_graph"
-            app:destination="@id/add_summoner_graph" />
+            app:destination="@id/add_summoner_graph" >
+            <argument
+                android:name="ARG_REGION"
+                app:argType="string"
+                app:nullable="true"
+                />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/drawerFragment2"

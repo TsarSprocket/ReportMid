@@ -9,11 +9,10 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tsarsprocket.reportmid.BaseFragment
-import com.tsarsprocket.reportmid.R
-import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentManageMySummonersBinding
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.viewmodel.ManageMySummonersViewModel
@@ -41,6 +40,7 @@ class ManageMySummonersFragment : BaseFragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_my_summoners, container, false)
         binding.lifecycleOwner = this
+        binding.handler = EventHandler()
 
         baseActivity.toolbar.title = getString(R.string.fragment_manage_my_summoners_title)
 
@@ -59,10 +59,16 @@ class ManageMySummonersFragment : BaseFragment() {
         return binding.root
     }
 
+    private fun doAddSummoner() {
+        getNavigationResult<String>(RESULT_PUUID).observe(this) { puuid -> viewModel.addMySummoner(puuid) }
+        findNavController().navigate(ManageMySummonersFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph(null))
+    }
+
     companion object {
         fun newInstance() = ManageMySummonersFragment()
     }
 
+    //  Classes  //////////////////////////////////////////////////////////////
 
     class MySummonersAdapter : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
@@ -89,5 +95,11 @@ class ManageMySummonersFragment : BaseFragment() {
         }
 
         override fun getItemCount() = summoners.size
+    }
+
+    inner class EventHandler {
+        fun onAddSummonerClick(view: View) {
+            doAddSummoner()
+        }
     }
 }

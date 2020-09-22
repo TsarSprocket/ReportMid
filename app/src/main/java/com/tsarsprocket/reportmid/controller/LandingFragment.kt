@@ -52,7 +52,7 @@ class LandingFragment : Fragment() {
                 }
                 LandingViewModel.STATE.NOT_FOUND -> {
                     if( peekNavigationResult<String>( RESULT_PUUID ) == null && !viewModel.beenThereDoneThat ) {
-                        val action = LandingFragmentDirections.actionLandingFragmentToAddSummonerFragment()
+                        val action = LandingFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph()
                         findNavController().navigate(action)
                         viewModel.beenThereDoneThat = true
                     }
