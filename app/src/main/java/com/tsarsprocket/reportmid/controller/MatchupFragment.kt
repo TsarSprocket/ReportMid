@@ -18,6 +18,7 @@ import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
+import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.MatchupViewModel
 import kotlinx.android.synthetic.main.card_player_preview.view.*

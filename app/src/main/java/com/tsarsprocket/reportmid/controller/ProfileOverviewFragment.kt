@@ -16,11 +16,11 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentProfileOverviewBindingImpl
+import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.ProfileOverviewViewModel
 import com.tsarsprocket.reportmid.viewmodel.TOP_MASTERIES_NUM
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profile_overview.view.*
 import javax.inject.Inject
 

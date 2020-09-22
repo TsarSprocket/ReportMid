@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
+import com.tsarsprocket.reportmid.tools.getNavigationResult
+import com.tsarsprocket.reportmid.tools.peekNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
 

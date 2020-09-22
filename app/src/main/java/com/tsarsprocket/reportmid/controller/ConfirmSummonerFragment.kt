@@ -8,11 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentConfirmSummonerBinding
+import com.tsarsprocket.reportmid.tools.setNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
 import kotlinx.android.synthetic.main.fragment_confirm_summoner.view.*
 import java.lang.IllegalArgumentException

@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
 import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.tools.getNavigationResult
+import com.tsarsprocket.reportmid.tools.setNavigationResult
+import com.tsarsprocket.reportmid.tools.setSoftInputVisibility
 import com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel
 import kotlinx.android.synthetic.main.fragment_add_summoner.view.*
 import java.util.*

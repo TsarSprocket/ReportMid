@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentManageMySummonersBinding
 import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.tools.OneTimeObserver
+import com.tsarsprocket.reportmid.tools.getNavigationResult
+import com.tsarsprocket.reportmid.tools.removeNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.ManageMySummonersViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.card_my_managed_summoner.view.*
@@ -60,7 +64,23 @@ class ManageMySummonersFragment : BaseFragment() {
     }
 
     private fun doAddSummoner() {
-        getNavigationResult<String>(RESULT_PUUID).observe(this) { puuid -> viewModel.addMySummoner(puuid) }
+        object : OneTimeObserver<String>() {
+            override fun onOneTimeChanged(v:String) {
+                removeNavigationResult<String>(RESULT_PUUID)
+                viewModel.addMySummoner(v)
+            }
+        }.observeOn(getNavigationResult<String>(RESULT_PUUID),this)
+
+/*
+        val navigationResultLive = getNavigationResult<String>(RESULT_PUUID)
+        val observer = object : Observer<String> {
+            override fun onChanged(puuid: String) {
+                viewModel.addMySummoner(puuid)
+                navigationResultLive.removeObserver(this)
+            }
+        }
+        navigationResultLive.observe(this, observer)
+*/
         findNavController().navigate(ManageMySummonersFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph(null))
     }
 
