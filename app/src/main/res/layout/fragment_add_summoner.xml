@@ -20,6 +20,7 @@
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:text="@={viewModel.activeSummonerName}"
+            android:inputType="text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,19 +29,34 @@
             app:layout_constraintVertical_weight="0.5"
             />
 
-        <Spinner
-            android:id="@+id/spRegion"
+        <FrameLayout
+            android:id="@+id/frameRegion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edSummonerName"
-            android:entries="@{viewModel.regionTitles}"
-            android:selectedItemPosition="@={viewModel.selectedRegionPosition}"
-            />
+            >
 
-<!--        android:selectedItemPosition="@={viewModel.selectedRegionTag}"-->
+            <Spinner
+                android:id="@+id/spRegion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@{viewModel.regionTitles}"
+                android:selectedItemPosition="@={viewModel.selectedRegionPosition}"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/txtRegion"
+                android:text="@{viewModel.selectedRegionName}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                />
+
+        </FrameLayout>
 
         <Button
             android:id="@+id/idValidate"
@@ -51,7 +67,7 @@
             android:layout_marginTop="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spRegion" />
+            app:layout_constraintTop_toBottomOf="@id/frameRegion" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

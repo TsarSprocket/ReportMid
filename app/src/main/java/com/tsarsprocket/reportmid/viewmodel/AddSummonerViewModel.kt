@@ -21,15 +21,18 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
 
     val selectedRegionPosition = MutableLiveData<Int>()
 
-    var activeSummonerName = MutableLiveData( "" )
+    val activeSummonerName = MutableLiveData( "" )
 
-    var activeSummonerModel = MutableLiveData<SummonerModel>()
+    val activeSummonerModel = MutableLiveData<SummonerModel>()
 
+    val selectedRegionName = selectedRegionPosition.map { pos -> if (pos>=0) allRegions[pos].title else "<not selected>" }
+
+    //  Methods  //////////////////////////////////////////////////////////////
 
     fun checkSummoner() =
         LiveDataReactiveStreams.fromPublisher(
             repository.findSummonerForName( activeSummonerName.value?: "",
-                allRegions[ selectedRegionPosition.value!! ], failOnNotFound = true )
+                    allRegions[ selectedRegionPosition.value!! ], failOnNotFound = true )
                 .observeOn( AndroidSchedulers.mainThread() )
                 .map { summonerModel ->
                     Maybe.just( summonerModel )

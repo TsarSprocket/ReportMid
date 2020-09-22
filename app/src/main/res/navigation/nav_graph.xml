@@ -5,6 +5,8 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/profileOverviewFragment">
 
+    <include app:graph="@navigation/add_summoner_graph" />
+
     <fragment
         android:id="@+id/profileOverviewFragment"
         android:name="com.tsarsprocket.reportmid.controller.ProfileOverviewFragment"
@@ -79,7 +81,11 @@
         android:id="@+id/manageMySummonersFragment"
         android:name="com.tsarsprocket.reportmid.controller.ManageMySummonersFragment"
         android:label="fragment_manage_my_summoners"
-        tools:layout="@layout/fragment_manage_my_summoners" />
+        tools:layout="@layout/fragment_manage_my_summoners" >
+        <action
+            android:id="@+id/action_manageMySummonersFragment_to_add_summoner_graph"
+            app:destination="@id/add_summoner_graph" />
+    </fragment>
     <fragment
         android:id="@+id/drawerFragment2"
         android:name="com.tsarsprocket.reportmid.controller.DrawerFragment"
