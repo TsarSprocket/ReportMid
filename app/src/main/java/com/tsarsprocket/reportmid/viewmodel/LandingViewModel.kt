@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
 import io.reactivex.BackpressureStrategy
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class LandingViewModel @Inject constructor( val repository: Repository ) : ViewModel() {
+class LandingViewModel @Inject constructor(val repository: Repository) : ViewModel() {
 
     enum class STATE { LOADING, FOUND, NOT_FOUND }
 
@@ -19,24 +19,25 @@ class LandingViewModel @Inject constructor( val repository: Repository ) : ViewM
 
     val disposer = CompositeDisposable()
 
-    var beenThereDoneThat = false
-
     init {
-        disposer.add( repository.getActiveSummonerPUUID()
-            .observeOn( AndroidSchedulers.mainThread() )
-            .doOnNext{ puuid ->
-                this.puuid = puuid
-                stateLive.value = STATE.FOUND
+        disposer.add(repository.getActiveSummonerPUUID()
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { puuid ->
+                Pair(STATE.FOUND, puuid)
             }
-            .doOnComplete { if( stateLive.value != STATE.FOUND) stateLive.value = STATE.NOT_FOUND }
-            .subscribe() )
+            .concatWith(Single.just(Pair(STATE.NOT_FOUND, "")))
+            .take(1)
+            .subscribe {
+                puuid = it.second
+                stateLive.value = it.first
+            })
     }
 
-    fun defineMainAccount( puuid: String ) =
+    fun defineMainAccount(puuid: String) =
         LiveDataReactiveStreams.fromPublisher(
-            repository.findSummonerByPuuid( puuid ).flatMap { summonerModel ->
-                repository.getMyAccountAdder( summonerModel, true )
-            }.toFlowable( BackpressureStrategy.LATEST )
+            repository.findSummonerByPuuid(puuid).flatMap { summonerModel ->
+                repository.addMyAccountNotify(summonerModel, true)
+            }.toFlowable(BackpressureStrategy.LATEST)
         )
 
     override fun onCleared() {

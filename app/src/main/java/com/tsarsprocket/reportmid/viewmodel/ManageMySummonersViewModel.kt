@@ -3,7 +3,6 @@ package com.tsarsprocket.reportmid.viewmodel
 import androidx.annotation.MainThread
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +21,7 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
 
     fun addMySummoner(puuid: String) {
         disposer.add(repository.findSummonerByPuuid( puuid ).flatMap { summonerModel ->
-            repository.getMyAccountAdder( summonerModel ) }
+            repository.addMyAccountNotify( summonerModel ) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{ forceUpdate() })
     }

@@ -164,7 +164,7 @@ class Repository @Inject constructor(val context: Context) {
      */
     @SuppressLint("CheckResult")
     @WorkerThread
-    fun getMyAccountAdder(summonerModel: SummonerModel, setCurrent: Boolean = false) =
+    fun addMyAccountNotify(summonerModel: SummonerModel, setCurrent: Boolean = false) =
         initialized.observeOn(Schedulers.io())
             .doOnNext { fInitialized ->
                 when (fInitialized) {

@@ -15,10 +15,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
 import com.tsarsprocket.reportmid.model.RegionModel
-import com.tsarsprocket.reportmid.tools.getNavigationResult
-import com.tsarsprocket.reportmid.tools.setNavigationResult
-import com.tsarsprocket.reportmid.tools.setSoftInputVisibility
+import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.tools.*
 import com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel
+import io.reactivex.Maybe
 import kotlinx.android.synthetic.main.fragment_add_summoner.view.*
 import java.util.*
 import javax.inject.Inject
@@ -59,6 +59,14 @@ class AddSummonerFragment : BaseFragment() {
 
         binding.edSummonerName.requestFocus()
 
+        val confirmed = peekNavigationReturnedValue<Boolean>(RESULT_CONFIRM)
+        if (confirmed != null && confirmed) {
+            setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
+            val summonerModel = viewModel.activeSummonerModel.value!!
+            setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID)
+            findNavController().popBackStack()
+        }
+
         return binding.root
     }
 
@@ -71,22 +79,25 @@ class AddSummonerFragment : BaseFragment() {
     fun onValidateInitial(view: View?) {
         setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
 
-        viewModel.checkSummoner().observe({ lifecycle }) { maybe ->
-            if (maybe.isEmpty.blockingGet()) {
-                viewModel.activeSummonerName.observe( this ) { summonerName ->
-                    Snackbar.make(
-                        binding.root,
-                        Formatter().format(getString(R.string.snack_summoner_not_found), summonerName).toString(),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+        object : OneTimeObserver<Maybe<SummonerModel>>() {
+            override fun onOneTimeChanged(maybe: Maybe<SummonerModel>) {
+                if (maybe.isEmpty.blockingGet()) {
+                    viewModel.activeSummonerName.observe(this@AddSummonerFragment) { summonerName ->
+                        Snackbar.make(
+                            binding.root,
+                            Formatter().format(getString(R.string.snack_summoner_not_found), summonerName).toString(),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment(maybe.blockingGet().puuid)
+                    findNavController().navigate(action)
                 }
-            } else {
-                val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment(maybe.blockingGet().puuid)
-                findNavController().navigate(action)
             }
-        }
+        }.observeOn(viewModel.checkSummoner(), this)
 
-        getNavigationResult<Boolean>(RESULT_CONFIRM)
+/*
+        getNavigationReturnedValue<Boolean>(RESULT_CONFIRM)
             .switchMap { confirmed ->
                 if (confirmed) {
                     viewModel.activeSummonerModel
@@ -97,6 +108,7 @@ class AddSummonerFragment : BaseFragment() {
                 setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID)
                 findNavController().popBackStack()
             }
+*/
     }
 
     companion object {
