@@ -20,5 +20,6 @@ enum class RegionModel(
     companion object {
         val byTag = values().map { it.tag to it }.toMap()
         val byShadowRegion = values().map { it.shadowRegion to it }.toMap()
+        fun getByTag(tag: String) = byTag[tag] ?: throw RuntimeException("No region found for tag $tag")
     }
 }

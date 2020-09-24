@@ -4,12 +4,16 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import io.reactivex.Observable
 
 @Dao
 interface MyAccountDAO {
 
     @Query( "SELECT * FROM my_accounts" )
     fun getAll(): List<MyAccountEntity>
+
+    @Query( "SELECT * FROM my_accounts" )
+    fun getAllObservable(): Observable<List<MyAccountEntity>>
 
     @Query( "SELECT * FROM my_accounts WHERE id = :id" )
     fun getById( id: Long ): MyAccountEntity

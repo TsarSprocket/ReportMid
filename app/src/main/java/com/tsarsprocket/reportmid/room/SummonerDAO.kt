@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import io.reactivex.Observable
 
 @Dao
 interface SummonerDAO {
@@ -20,7 +21,7 @@ interface SummonerDAO {
             JOIN my_accounts ma ON s.id = ma.summoner_id
         WHERE s.region_id = :regionId
     """)
-    fun getMySummonersByRegion(regionId: Long): List<SummonerEntity>
+    fun getMySummonersByRegionObservable(regionId: Long): Observable<List<SummonerEntity>>
 
     @Query("""
         SELECT s.*

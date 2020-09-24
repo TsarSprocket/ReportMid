@@ -81,39 +81,57 @@ class Repository @Inject constructor(val context: Context) {
         }.subscribeOn(Schedulers.io()).subscribe(initialized)
     }
 
-    fun getSelectedAccountSummoner() = ensureInitializedDoOnIO {
+    fun getSelectedAccountSummoner() = ensureInitializedDoOnIOSubject {
         database.globalDAO().getAll()
             .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
             .map { database.summonerDAO().getById(it.accountId) }
             .first()
     }.flatMap { findSummonerByPuuid(it.puuid) }
 
-    fun getSelectedAccountRegion() = ensureInitializedDoOnIO {
+    fun getSelectedAccountRegion() = ensureInitializedDoOnIOSubject {
         database.globalDAO().getAll()
             .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
             .map { database.regionDAO().getById(it.regionId) }
             .first()
-    }.map { RegionModel.byTag[it.tag] }
+    }.map { RegionModel.getByTag(it.tag) }
 
-    fun getCurrentRegions() = ensureInitializedDoOnIO {
-        database.currentAccountDAO().getAll()
-            .map { database.regionDAO().getById(it.regionId) }
-            .map { RegionModel.byTag[it.tag] ?: throw RuntimeException("Region ${it.tag} not found") }
-    }
+    fun getMyRegions(): Observable<List<RegionModel>> = ensureInitializedDoOnIO { Unit }
+        .flatMap { _ -> database.myAccountDAO().getAllObservable() }
+        .map { lstMyAccs ->
+            lstMyAccs.map { myAcc ->
+                val sum = database.summonerDAO().getById(myAcc.summonerId)
+                database.regionDAO().getById(sum.regionId)
+            }
+                .distinct()
+                .map { regEnt -> RegionModel.byTag[regEnt.tag] ?: throw RuntimeException("Region not found for tag ${regEnt.tag}") }
+        }
 
-    fun getMySummonersObservable(): ReplaySubject<List<SummonerModel>> = ensureInitializedDoOnIO {
+    fun getCurrentRegions() = ensureInitializedDoOnIOSubject { Unit }
+        .flatMap { _ ->
+            database.currentAccountDAO().getAllObservable()
+                .map { lstCurAccEnt ->
+                    lstCurAccEnt.map { database.regionDAO().getById(it.regionId) }
+                        .map { RegionModel.byTag[it.tag] ?: throw RuntimeException("Region ${it.tag} not found") }
+                }
+        }
+
+
+    fun getMySummonersObservable(): ReplaySubject<List<SummonerModel>> = ensureInitializedDoOnIOSubject {
         val arrObsSumModel = database.summonerDAO().getMySummoners()
             .map { sumEnt -> findSummonerByPuuid(sumEnt.puuid) }.toTypedArray()
         Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
     }
 
-    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIO {
+    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIOSubject {
         val regEnt = database.regionDAO().getByTag(reg.tag)
         val myCurAccEnt = database.myAccountDAO().getById(database.currentAccountDAO().getByRegion(regEnt.id)!!.accountId)
-        val arrObsSumModel = database.summonerDAO().getMySummonersByRegion(regEnt.id)
-            .map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) }
-            .map { (sumEnt, isSelected) -> findSummonerByPuuid(sumEnt.puuid).map { Pair(it, isSelected) } }.toTypedArray()
-        Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
+        Pair(regEnt, myCurAccEnt)
+    }.flatMap { (regEnt, myCurAccEnt) ->
+        database.summonerDAO().getMySummonersByRegionObservable(regEnt.id)
+            .map { sumEnts -> sumEnts.map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) } }
+            .map { lst ->
+                lst.map { (sumEnt, isSelected) -> findSummonerByPuuid(sumEnt.puuid).map { sum -> Pair(sum, isSelected) }.blockingFirst() }
+            }
     }
 
     private fun loadRawResourceAsText(resId: Int) = InputStreamReader(context.resources.openRawResource(resId)).readText()
@@ -134,7 +152,7 @@ class Repository @Inject constructor(val context: Context) {
     fun findSummonerByPuuid(puuid: String?) =
         getSummonerModel() { Orianna.summonerWithPuuid(puuid).get().also { it.load() } }
 
-    fun findSummonersByPuuids(puuidsList: List<String>) = ensureInitializedDoOnIO {
+    fun findSummonersByPuuids(puuidsList: List<String>) = ensureInitializedDoOnIOSubject {
         puuidsList.map { puuid -> summoners[puuid] ?: SummonerModel(this, Orianna.summonerWithPuuid(puuid).get()) }
     }
 
@@ -202,51 +220,51 @@ class Repository @Inject constructor(val context: Context) {
                 }
             }
 
-    fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIO { ChampionMasteryModel(this, championMastery) }
+    fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIOSubject { ChampionMasteryModel(this, championMastery) }
 
-    fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIO {
+    fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIOSubject {
         val champion = lmdChampion()
         champions[champion.id] ?: ChampionModel(this, champion).also { champions[it.id] = it }
     }
 
-    fun getMatchHistoryModel(matchHistory: MatchHistory) = ensureInitializedDoOnIO { MatchHistoryModel(this, matchHistory) }
+    fun getMatchHistoryModel(matchHistory: MatchHistory) = ensureInitializedDoOnIOSubject { MatchHistoryModel(this, matchHistory) }
 
-    fun getMatchModel(match: Match) = ensureInitializedDoOnIO { MatchModel(this, match) }
+    fun getMatchModel(match: Match) = ensureInitializedDoOnIOSubject { MatchModel(this, match) }
 
-    fun getParticipantModel(teamModel: TeamModel, participant: Participant) = ensureInitializedDoOnIO { ParticipantModel(this, teamModel, participant) }
+    fun getParticipantModel(teamModel: TeamModel, participant: Participant) = ensureInitializedDoOnIOSubject { ParticipantModel(this, teamModel, participant) }
 
-    fun getSummonerModel(failOnNull: Boolean = false, lmdSummoner: () -> Summoner) = ensureInitializedDoOnIO(failOnNull) {
+    fun getSummonerModel(failOnNull: Boolean = false, lmdSummoner: () -> Summoner) = ensureInitializedDoOnIOSubject(failOnNull) {
         val summoner = lmdSummoner()
         if (summoner.puuid != null) {
             summoners[summoner.puuid] ?: SummonerModel(this, summoner).also { summoners[it.puuid] = it }
         } else null
     }
 
-    fun getTeamModel(team: Team) = ensureInitializedDoOnIO { TeamModel(this, team) }
+    fun getTeamModel(team: Team) = ensureInitializedDoOnIOSubject { TeamModel(this, team) }
 
-    fun getItemModel(item: Item) = ensureInitializedDoOnIO { ItemModel(this, item) }
+    fun getItemModel(item: Item) = ensureInitializedDoOnIOSubject { ItemModel(this, item) }
 
-    fun getSummonerSpell(lmdSummonerSpell: () -> SummonerSpell) = ensureInitializedDoOnIO {
+    fun getSummonerSpell(lmdSummonerSpell: () -> SummonerSpell) = ensureInitializedDoOnIOSubject {
         val spell = lmdSummonerSpell()
         summonerSpells[spell.id] ?: SummonerSpellModel(this, spell).also { summonerSpells[spell.id] = it }
     }
 
-    fun getRuneStats(runeStats: RuneStats) = ensureInitializedDoOnIO { RuneStatsModel(this, runeStats) }
+    fun getRuneStats(runeStats: RuneStats) = ensureInitializedDoOnIOSubject { RuneStatsModel(this, runeStats) }
 
-    fun getRune(lmdReforgedRune: () -> ReforgedRune) = ensureInitializedDoOnIO {
+    fun getRune(lmdReforgedRune: () -> ReforgedRune) = ensureInitializedDoOnIOSubject {
         val reforgedRune = lmdReforgedRune()
         runes[reforgedRune.id] ?: RuneModel(this, reforgedRune).also { runes[reforgedRune.id] = it }
     }
 
-    fun getCurrentMatch(lmdCurrentMatch: () -> CurrentMatch) = ensureInitializedDoOnIO { CurrentMatchModel(this, lmdCurrentMatch()) }
+    fun getCurrentMatch(lmdCurrentMatch: () -> CurrentMatch) = ensureInitializedDoOnIOSubject { CurrentMatchModel(this, lmdCurrentMatch()) }
 
-    fun getCurrentMatchTeam(lmdCurrentMatchTeam: () -> CurrentMatchTeam) = ensureInitializedDoOnIO { CurrentMatchTeamModel(this, lmdCurrentMatchTeam()) }
+    fun getCurrentMatchTeam(lmdCurrentMatchTeam: () -> CurrentMatchTeam) = ensureInitializedDoOnIOSubject { CurrentMatchTeamModel(this, lmdCurrentMatchTeam()) }
 
-    fun getPlayer(lmdPlayer: () -> Player) = ensureInitializedDoOnIO { PlayerModel(this, lmdPlayer()) }
+    fun getPlayer(lmdPlayer: () -> Player) = ensureInitializedDoOnIOSubject { PlayerModel(this, lmdPlayer()) }
 
-    fun getPlayerRunes(lmdRunes: () -> Runes) = ensureInitializedDoOnIO { PlayerRunesModel(this, lmdRunes()) }
+    fun getPlayerRunes(lmdRunes: () -> Runes) = ensureInitializedDoOnIOSubject { PlayerRunesModel(this, lmdRunes()) }
 
-    fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIO { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
+    fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
     companion object {
         val allRegions = RegionModel.values()
@@ -314,7 +332,10 @@ class Repository @Inject constructor(val context: Context) {
 
     /*  Tools  ***************************************************************/
 
-    private fun <T> ensureInitializedDoOnIO(failOnNull: Boolean = false, l: () -> T?) = ReplaySubject.createWithSize<T>(1).also { subject ->
+    private fun <T> ensureInitializedDoOnIOSubject(failOnNull: Boolean = false, l: () -> T?): ReplaySubject<T> =
+        ReplaySubject.createWithSize<T>(1).also { subject -> ensureInitializedDoOnIO(failOnNull, l).subscribe(subject) }
+
+    private fun <T> ensureInitializedDoOnIO(failOnNull: Boolean = false, l: () -> T?): Observable<T> =
         initialized.observeOn(Schedulers.io()).flatMap { fInitialized ->
             when (fInitialized) {
                 true -> {
@@ -323,6 +344,5 @@ class Repository @Inject constructor(val context: Context) {
                 }
                 else -> Observable.error(RepositoryNotInitializedException())
             }
-        }.subscribe(subject)
-    }
+        }
 }

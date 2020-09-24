@@ -19,8 +19,13 @@ abstract class OneTimeObserver<T>: Observer<T> {
 
     fun observeOn(ld: LiveData<T>, lifecycleOwner: LifecycleOwner) {
         if(liveData != null) throw RuntimeException("${javaClass.kotlin.simpleName} instance can only be used once")
-
         liveData = ld
         ld.observe(lifecycleOwner,this)
+    }
+
+    fun observeForeverOn(ld: LiveData<T>) {
+        if(liveData != null) throw RuntimeException("${javaClass.kotlin.simpleName} instance can only be used once")
+        liveData = ld
+        ld.observeForever(this)
     }
 }
