@@ -6,3 +6,5 @@ const val ARG_REGION = "ARG_REGION"
 
 const val RESULT_CONFIRM = "RESULT_CONFIRM"
 const val RESULT_PUUID = "RESULT_PUUID"
+
+const val MENU_ITEM_NONE = -1

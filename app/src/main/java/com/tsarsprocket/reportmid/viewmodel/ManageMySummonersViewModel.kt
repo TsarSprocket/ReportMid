@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.viewmodel
 import androidx.annotation.MainThread
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.Repository
+import com.tsarsprocket.reportmid.model.SummonerModel
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -14,6 +15,8 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
 
     val mySummonersLive = forceUpdateCounter.switchMap {
         LiveDataReactiveStreams.fromPublisher(repository.getMySummonersObservable().toFlowable(BackpressureStrategy.BUFFER)) }
+
+    val checkedSummoners = HashSet<SummonerModel>()
 
     private val disposer = CompositeDisposable()
 

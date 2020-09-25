@@ -4,6 +4,8 @@
 
     <item
         android:id="@+id/miMatchupRefresh"
+        android:icon="@drawable/system_icon_refresh"
         android:title="@string/fragment_matchup_menu_refresh"
+        app:showAsAction="always"
         />
 </menu>

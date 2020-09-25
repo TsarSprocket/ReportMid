@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -18,6 +19,7 @@ import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
+import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.ManageMySummonersViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.card_my_managed_summoner.view.*
@@ -29,6 +31,7 @@ class ManageMySummonersFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private val viewModel by viewModels<ManageMySummonersViewModel> { viewModelFactory }
+    private val activityViewModel by activityViewModels<MainActivityViewModel> { viewModelFactory }
 
     lateinit var binding: FragmentManageMySummonersBinding
 
@@ -56,10 +59,46 @@ class ManageMySummonersFragment : BaseFragment() {
                 binding.progressLoading.visibility = View.GONE
                 visibility = View.VISIBLE
                 mySummonersAdapter.summoners = lstSummoners.toTypedArray()
+                val iterator = viewModel.checkedSummoners.iterator()
+                while (iterator.hasNext()) {
+                    val s = iterator.next()
+                    if (!lstSummoners.contains(s)) iterator.remove()
+                }
             }
         }
 
+        activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ) {
+            when(it) {
+                R.id.miManageMyAccountsDelete -> { deleteSelected() }
+            }
+        }
+
+        activityViewModel.menuRefreshed.observe( viewLifecycleOwner ) {
+            baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = viewModel.checkedSummoners.isNotEmpty()
+        }
+
         return binding.root
+    }
+
+    fun resetCheckedSummoners() {
+        viewModel.checkedSummoners.clear()
+        baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = false
+    }
+
+    fun checkSummoner(summoner: SummonerModel) {
+        viewModel.checkedSummoners.add(summoner)
+        baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = true
+    }
+
+    fun uncheckSummoner(summoner: SummonerModel) {
+        viewModel.checkedSummoners.apply {
+            remove(summoner)
+            if (count() == 0) baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = false
+        }
+    }
+
+    private fun deleteSelected() {
+        TODO("Not yet implemented")
     }
 
     private fun doAddSummoner() {
@@ -70,16 +109,6 @@ class ManageMySummonersFragment : BaseFragment() {
             }
         }.observeOn(getNavigationReturnedValue<String>(RESULT_PUUID),this)
 
-/*
-        val navigationResultLive = getNavigationResult<String>(RESULT_PUUID)
-        val observer = object : Observer<String> {
-            override fun onChanged(puuid: String) {
-                viewModel.addMySummoner(puuid)
-                navigationResultLive.removeObserver(this)
-            }
-        }
-        navigationResultLive.observe(this, observer)
-*/
         findNavController().navigate(ManageMySummonersFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph(null))
     }
 
@@ -89,7 +118,7 @@ class ManageMySummonersFragment : BaseFragment() {
 
     //  Classes  //////////////////////////////////////////////////////////////
 
-    class MySummonersAdapter : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
+    inner class MySummonersAdapter : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
         var summoners: Array<SummonerModel> = arrayOf()
             set(v: Array<SummonerModel>) {
@@ -97,16 +126,15 @@ class ManageMySummonersFragment : BaseFragment() {
                 notifyDataSetChanged()
             }
 
-        val checkedItems = HashSet<SummonerModel>()
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolderWithDisposer =
             CardViewHolderWithDisposer(LayoutInflater.from(parent.context).inflate(R.layout.card_my_managed_summoner, parent, false) as CardView)
 
         override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
             holder.disposer.clear()
             val summoner = summoners[position]
             with(holder.cardView) {
-                cbSelected.setOnCheckedChangeListener { _, isChecked -> if (isChecked) checkedItems.add(summoner) else checkedItems.remove(summoner) }
+                cbSelected.isChecked = viewModel.checkedSummoners.contains(summoner)
+                cbSelected.setOnCheckedChangeListener { _, isChecked -> if (isChecked) checkSummoner(summoner) else uncheckSummoner(summoner) }
                 holder.disposer.add(summoner.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { bmp -> imgProfileIcon.setImageBitmap(bmp) })
                 txtSummonerName.text = summoner.name
                 txtRegion.text = summoner.region.tag

@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.controller
 
 import android.os.Bundle
-import android.view.MenuItem
+import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.tsarsprocket.reportmid.BaseActivity
+import com.tsarsprocket.reportmid.MENU_ITEM_NONE
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.databinding.ActivityMainBinding
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
@@ -57,9 +58,31 @@ class MainActivity : BaseActivity() {
 */
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val destination = findNavController(R.id.nav_host_fragment).currentDestination
+        if (menu != null && destination != null) {
+            updateMenuForDestination(menu, destination)
+        }
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val destination = findNavController(R.id.nav_host_fragment).currentDestination
+        val shouldUpdate = destination != null && viewModel.toolbarMenuByDestination[destination.id] != null
+        if (shouldUpdate) viewModel.menuRefreshed.value = true
+        return shouldUpdate
+    }
+
     private fun updateToolbarMenu(destination: NavDestination) {
-        toolbar.menu.clear()
-        viewModel.toolbarMenuByDestination[destination.id]?.let { menuId -> menuInflater.inflate(menuId, toolbar.menu) }
+        updateMenuForDestination(toolbar.menu, destination)
+    }
+
+    private fun updateMenuForDestination(menu: Menu, destination: NavDestination) {
+        menu.clear()
+        viewModel.toolbarMenuByDestination[destination.id]?.let { menuId ->
+            viewModel.selectedMenuItem.value = MENU_ITEM_NONE
+            menuInflater.inflate(menuId, menu)
+        }
     }
 
     override fun closeDrawers() {

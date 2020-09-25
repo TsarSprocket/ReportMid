@@ -7,7 +7,8 @@ import com.tsarsprocket.reportmid.R
 import javax.inject.Inject
 
 val TOOLBAR_MENU_BY_DESTINATION = mapOf(
-    R.id.matchupFragment to R.menu.matchup_toolbar
+    R.id.matchupFragment to R.menu.matchup_toolbar,
+    R.id.manageMySummonersFragment to R.menu.manage_my_summoners_toolbar,
 )
 
 class MainActivityViewModel @Inject constructor() : ViewModel() {
@@ -19,6 +20,7 @@ class MainActivityViewModel @Inject constructor() : ViewModel() {
     val updateToolbarMenuForDestination = MutableLiveData<Int>()
 
     val selectedMenuItem = MutableLiveData<Int>()
+    val menuRefreshed = MutableLiveData(true)
 
     //  Methods  //////////////////////////////////////////////////////////////
 
