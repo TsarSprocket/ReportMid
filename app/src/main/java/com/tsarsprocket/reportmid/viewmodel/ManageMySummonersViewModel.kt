@@ -14,7 +14,7 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
     private val forceUpdateCounter = MutableLiveData(0)
 
     val mySummonersLive = forceUpdateCounter.switchMap {
-        LiveDataReactiveStreams.fromPublisher(repository.getMySummonersObservable().toFlowable(BackpressureStrategy.BUFFER)) }
+        LiveDataReactiveStreams.fromPublisher(repository.getMySummonersSubject().toFlowable(BackpressureStrategy.BUFFER)) }
 
     val checkedSummoners = HashSet<SummonerModel>()
 

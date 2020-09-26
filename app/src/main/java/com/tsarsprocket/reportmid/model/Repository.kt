@@ -116,23 +116,29 @@ class Repository @Inject constructor(val context: Context) {
         }
 
 
-    fun getMySummonersObservable(): ReplaySubject<List<SummonerModel>> = ensureInitializedDoOnIOSubject {
+    fun getMySummonersSubject(): ReplaySubject<List<SummonerModel>> = ensureInitializedDoOnIOSubject {
         val arrObsSumModel = database.summonerDAO().getMySummoners()
             .map { sumEnt -> findSummonerByPuuid(sumEnt.puuid) }.toTypedArray()
         Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
     }
 
-    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIOSubject {
-        val regEnt = database.regionDAO().getByTag(reg.tag)
-        val myCurAccEnt = database.myAccountDAO().getById(database.currentAccountDAO().getByRegion(regEnt.id)!!.accountId)
-        Pair(regEnt, myCurAccEnt)
-    }.flatMap { (regEnt, myCurAccEnt) ->
-        database.summonerDAO().getMySummonersByRegionObservable(regEnt.id)
-            .map { sumEnts -> sumEnts.map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) } }
-            .map { lst ->
-                lst.map { (sumEnt, isSelected) -> findSummonerByPuuid(sumEnt.puuid).map { sum -> Pair(sum, isSelected) }.blockingFirst() }
-            }
+    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIO {
+        database.regionDAO().getByTag(reg.tag)
     }
+        .flatMap { regEnt ->
+            database.currentAccountDAO().getByRegionObservable(regEnt.id)
+                .map { lstCurAcc ->
+                    val firstOne = lstCurAcc.first()
+                    Pair(regEnt, database.myAccountDAO().getById(firstOne.accountId))
+                }
+        }
+        .flatMap { (regEnt, myCurAccEnt) ->
+            database.summonerDAO().getMySummonersByRegionObservable(regEnt.id)
+                .map { sumEnts -> sumEnts.map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) } }
+                .map { lst ->
+                    lst.map { (sumEnt, isSelected) -> findSummonerByPuuid(sumEnt.puuid).map { sum -> Pair(sum, isSelected) }.blockingFirst() }
+                }
+        }
 
     private fun loadRawResourceAsText(resId: Int) = InputStreamReader(context.resources.openRawResource(resId)).readText()
 

@@ -22,6 +22,9 @@ interface CurrentAccountDAO {
     @Query( "SELECT * FROM state_current_accounts WHERE region_id = :regionId" )
     fun getByRegion( regionId: Long ): CurrentAccountEntity?
 
+    @Query( "SELECT * FROM state_current_accounts WHERE region_id = :regionId" )
+    fun getByRegionObservable( regionId: Long ): Observable<List<CurrentAccountEntity>>
+
     @Insert
     fun insert( currentAccountEntity: CurrentAccountEntity ): Long
 
