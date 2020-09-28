@@ -16,6 +16,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import com.tsarsprocket.reportmid.tools.formatPoints
@@ -46,8 +47,8 @@ class MatchupFragment : BaseFragment() {
     private fun reloadMatch(forceReload: Boolean) {
         requireArguments().let {
             if (it.getBoolean(ARG_RELOAD) || forceReload) {
-                viewModel.puuid = it.getString(ARG_PUUID) ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID argument")
-                viewModel.loadForSummoner(puuid = viewModel.puuid)
+                viewModel.puuidAndRegion = it.getParcelable(ARG_PUUID_AND_REG) ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID_AND_REG argument")
+                viewModel.loadForSummoner(viewModel.puuidAndRegion)
                 it.putBoolean(ARG_RELOAD, false)
             }
         }
@@ -115,13 +116,13 @@ class MatchupFragment : BaseFragment() {
         val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.matchupFragment, true ).build()
         return when( item.itemId ) {
             R.id.profileOverviewFragment -> {
-                val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment( viewModel.puuid )
+                val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment( viewModel.puuidAndRegion )
                 findNavController().navigate( action, navOptions )
                 true
             }
             R.id.matchupFragment -> true
             R.id.matchHistoryFragment -> {
-                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment( viewModel.puuid )
+                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment( viewModel.puuidAndRegion )
                 findNavController().navigate( action, navOptions )
                 true
             }
@@ -131,8 +132,8 @@ class MatchupFragment : BaseFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance( puuid: String ) = MatchupFragment().apply {
-            arguments = Bundle( 1 ).apply { putString( ARG_PUUID, puuid ) }
+        fun newInstance( puuidAndRegion: PuuidAndRegion ) = MatchupFragment().apply {
+            arguments = Bundle( 1 ).apply { putParcelable( ARG_PUUID_AND_REG, puuidAndRegion ) }
         }
     }
 }

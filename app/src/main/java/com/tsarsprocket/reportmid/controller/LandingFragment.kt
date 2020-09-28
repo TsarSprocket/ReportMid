@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.*
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
@@ -42,10 +43,10 @@ class LandingFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        if (doesReturnedValueExist(RESULT_PUUID)) {
-            val puuid = removeNavigationReturnedValue<String>(RESULT_PUUID)
-            if (puuid != null) {
-                viewModel.defineMainAccount(puuid).observe({ lifecycle }) { navigateToMainAndFinish(puuid) }
+        if (doesReturnedValueExist(RESULT_PUUID_AND_REG)) {
+            val puuidAndReg = removeNavigationReturnedValue<PuuidAndRegion>(RESULT_PUUID_AND_REG)
+            if (puuidAndReg != null) {
+                viewModel.defineMainAccount(puuidAndReg).observe({ lifecycle }) { navigateToMainAndFinish(puuidAndReg) }
             } else {
                 requireActivity().finish()
             }
@@ -56,7 +57,7 @@ class LandingFragment : Fragment() {
                         navigateToMainAndFinish(viewModel.puuid)
                     }
                     LandingViewModel.STATE.NOT_FOUND -> {
-                        prepareNavigationReturnedValue(null, RESULT_PUUID)
+                        prepareNavigationReturnedValue(null, RESULT_PUUID_AND_REG)
                         val action = LandingFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph()
                         findNavController().navigate(action)
                     }
@@ -68,7 +69,7 @@ class LandingFragment : Fragment() {
         return binding.root
     }
 
-    private fun navigateToMainAndFinish(puuid: String) {
+    private fun navigateToMainAndFinish(puuid: PuuidAndRegion) {
         val action = LandingFragmentDirections.actionLandingFragmentToMainActivity(puuid)
         findNavController().navigate(action)
         requireActivity().finish()

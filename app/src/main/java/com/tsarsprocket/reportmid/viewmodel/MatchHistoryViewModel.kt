@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
@@ -16,8 +17,8 @@ class MatchHistoryViewModel @Inject constructor( private val repository: Reposit
 
     val allDisposables = CompositeDisposable()
 
-    fun initialize( puuid: String ) {
-        allDisposables.add( repository.findSummonerByPuuid( puuid ).subscribe { activeSummonerModel.postValue( it ) } )
+    fun initialize( puuidAndRegion: PuuidAndRegion ) {
+        allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion ).subscribe { activeSummonerModel.postValue( it ) } )
     }
 
     fun fetchMatchPreviewInfo(

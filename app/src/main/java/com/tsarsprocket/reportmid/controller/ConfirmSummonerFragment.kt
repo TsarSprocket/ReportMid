@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentConfirmSummonerBinding
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.setNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
 import kotlinx.android.synthetic.main.fragment_confirm_summoner.view.*
@@ -28,7 +29,7 @@ class ConfirmSummonerFragment : Fragment() {
     private lateinit var binding: FragmentConfirmSummonerBinding
 
     override fun onAttach(context: Context) {
-        (context.applicationContext as ReportMidApp).comp.inject( this )
+        (context.applicationContext as ReportMidApp).comp.inject(this)
         super.onAttach(context)
     }
 
@@ -36,24 +37,27 @@ class ConfirmSummonerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate( inflater, R.layout.fragment_confirm_summoner, container, false )
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_confirm_summoner, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.bitmap.observe( { lifecycle } ) { bitmap -> binding.root.imgSummonerIcon.setImageBitmap( bitmap ) }
-        viewModel.confirm.observe( { lifecycle } ) { confirmed -> setNavigationResult( confirmed, RESULT_CONFIRM ); findNavController().popBackStack() }
+        viewModel.bitmap.observe({ lifecycle }) { bitmap -> binding.root.imgSummonerIcon.setImageBitmap(bitmap) }
+        viewModel.confirm.observe({ lifecycle }) { confirmed -> setNavigationResult(confirmed, RESULT_CONFIRM); findNavController().popBackStack() }
 
-        viewModel.init( arguments?.getString( ARG_PUUID )?: throw IllegalArgumentException( "Fragment ${javaClass.kotlin.simpleName} requires $ARG_PUUID argument" ) )
+        viewModel.init(
+            arguments?.getParcelable(ARG_PUUID_AND_REG)
+                ?: throw IllegalArgumentException("Fragment ${javaClass.kotlin.simpleName} requires $ARG_PUUID_AND_REG argument")
+        )
 
         return binding.root
     }
 
     companion object {
         @JvmStatic
-        fun newInstance( puuid: String ) =
+        fun newInstance(puuidAndRegion: PuuidAndRegion) =
             ConfirmSummonerFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PUUID, puuid)
+                    putParcelable(ARG_PUUID_AND_REG, puuidAndRegion)
                 }
             }
     }

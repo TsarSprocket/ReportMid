@@ -1,7 +1,6 @@
 package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.annotation.MainThread
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -15,7 +14,6 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.logging.LogManager
 import javax.inject.Inject
 
 const val STR_NO_DURATION = "--:--"
@@ -31,7 +29,7 @@ private val DUR_FMT_MS = "%02d:%02d"
 
 class MatchupViewModel @Inject constructor( private val repository: Repository ): ViewModel() {
 
-    lateinit var puuid: String
+    lateinit var puuidAndRegion: PuuidAndRegion
 
     var summoner = MutableLiveData<SummonerModel>()
 
@@ -55,8 +53,8 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
         } )
     }
 
-    fun loadForSummoner( puuid: String ) {
-        allDisposables.add( repository.findSummonerByPuuid( puuid )
+    fun loadForSummoner( puuidAndRegion: PuuidAndRegion ) {
+        allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion )
             .observeOn( AndroidSchedulers.mainThread() )
             .flatMap{ summoner.value = it; it.getCurrentMatch() }
             .observeOn( AndroidSchedulers.mainThread() )

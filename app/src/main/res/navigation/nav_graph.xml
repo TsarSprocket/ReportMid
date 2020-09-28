@@ -14,8 +14,8 @@
         tools:layout="@layout/fragment_profile_overview"
         >
         <argument
-            android:name="ARG_PUUID"
-            app:argType="string"
+            android:name="ARG_PUUID_AND_REG"
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
             />
         <action
             android:id="@+id/action_profileOverviewFragment_to_matchHistoryFragment"
@@ -39,8 +39,8 @@
         tools:layout="@layout/fragment_match_history"
         >
         <argument
-            android:name="ARG_PUUID"
-            app:argType="string" />
+            android:name="ARG_PUUID_AND_REG"
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion" />
         <action
             android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
             app:destination="@id/matchupFragment"
@@ -59,8 +59,8 @@
         tools:layout="@layout/fragment_matchup"
         >
         <argument
-            android:name="ARG_PUUID"
-            app:argType="string" />
+            android:name="ARG_PUUID_AND_REG"
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion" />
         <argument
             android:name="ARG_RELOAD"
             app:argType="boolean"

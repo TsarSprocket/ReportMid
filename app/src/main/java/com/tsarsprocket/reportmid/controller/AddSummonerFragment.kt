@@ -7,13 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.switchMap
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.*
@@ -63,7 +62,7 @@ class AddSummonerFragment : BaseFragment() {
         if (confirmed != null && confirmed) {
             setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
             val summonerModel = viewModel.activeSummonerModel.value!!
-            setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID)
+            setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID_AND_REG)
             findNavController().popBackStack()
         }
 
@@ -90,7 +89,8 @@ class AddSummonerFragment : BaseFragment() {
                         ).show()
                     }
                 } else {
-                    val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment(maybe.blockingGet().puuid)
+                    val sum = maybe.blockingGet()
+                    val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment(PuuidAndRegion(sum.puuid,sum.region))
                     findNavController().navigate(action)
                 }
             }
@@ -113,7 +113,15 @@ class AddSummonerFragment : BaseFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = AddSummonerFragment()
+        fun newInstance(regionTag: String? = null): AddSummonerFragment {
+            return AddSummonerFragment().apply {
+                if (regionTag != null) {
+                    arguments = Bundle().apply {
+                        putString(ARG_REGION, regionTag)
+                    }
+                }
+            }
+        }
     }
 }
 

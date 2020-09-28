@@ -40,6 +40,11 @@
     <!-- Fragment: My Summoners -->
     <string name="fragment_manage_my_summoners_title">My Summoners</string>
     <string name="fragment_manage_my_summoners_menu_delete">Delete</string>
+    <string name="fragment_manage_my_summoners_remove_mine_confirm_message">All according friend records will be removed as well, ok?</string>
+    <string name="fragment_manage_my_summoners_remove_mine_confirm_button_yea">Fine</string>
+    <string name="fragment_manage_my_summoners_remove_mine_confirm_button_nay">NO!</string>
+    <string name="fragment_manage_my_summoners_error_at_least_one_summoner_should_remain">At least one summoner should remain</string>
+    <string name="fragment_manage_my_summoners_error_select_summoner">Select a summoner. Please</string>
 
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>

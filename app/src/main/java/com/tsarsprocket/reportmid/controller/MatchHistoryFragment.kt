@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -16,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
@@ -37,7 +37,7 @@ class MatchHistoryFragment : BaseFragment() {
         (context.applicationContext as ReportMidApp).comp.inject(this)
         super.onAttach(context)
         if (viewModel.activeSummonerModel.value == null) {
-            viewModel.initialize(requireArguments().getString(ARG_PUUID) ?: throw IllegalArgumentException("Missing PUUID argument"))
+            viewModel.initialize(requireArguments().getParcelable(ARG_PUUID_AND_REG) ?: throw IllegalArgumentException("Missing ARG_PUUID_AND_REG argument"))
         }
     }
 
@@ -88,28 +88,30 @@ class MatchHistoryFragment : BaseFragment() {
         return binding.root
     }
 
-    fun navigateToSibling(item: MenuItem): Boolean {
+    private fun navigateToSibling(item: MenuItem): Boolean {
         val navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(R.id.matchHistoryFragment, true).build()
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.profileOverviewFragment -> {
-                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToProfileOverviewFragment(viewModel.activeSummonerModel.value!!.puuid)
+                val sum = viewModel.activeSummonerModel.value!!
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToProfileOverviewFragment(PuuidAndRegion(sum.puuid,sum.region))
                 findNavController().navigate(action, navOptions)
-                return true
+                true
             }
             R.id.matchupFragment -> {
-                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToMatchupFragment(viewModel.activeSummonerModel.value!!.puuid)
+                val sum = viewModel.activeSummonerModel.value!!
+                val action = MatchHistoryFragmentDirections.actionMatchHistoryFragmentToMatchupFragment(PuuidAndRegion(sum.puuid,sum.region))
                 findNavController().navigate(action, navOptions)
-                return true
+                true
             }
-            R.id.matchHistoryFragment -> return true
-            else -> return false
+            R.id.matchHistoryFragment -> true
+            else -> false
         }
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(puuid: String) = MatchHistoryFragment().apply {
-            arguments = Bundle(1).apply { putString(ARG_PUUID, puuid) }
+        fun newInstance(puuidAndRegion: PuuidAndRegion) = MatchHistoryFragment().apply {
+            arguments = Bundle(1).apply { putParcelable(ARG_PUUID_AND_REG, puuidAndRegion) }
         }
     }
 }

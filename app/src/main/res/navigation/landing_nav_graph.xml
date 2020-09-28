@@ -30,8 +30,8 @@
         tools:layout="@layout/activity_main"
         >
         <argument
-            android:name="ARG_PUUID"
-            app:argType="string"
+            android:name="ARG_PUUID_AND_REG"
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
             />
     </activity>
 </navigation>

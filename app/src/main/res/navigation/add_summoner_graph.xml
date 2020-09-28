@@ -10,8 +10,8 @@
         android:label="fragment_confirm_summoner"
         tools:layout="@layout/fragment_confirm_summoner" >
         <argument
-            android:name="ARG_PUUID"
-            app:argType="string" />
+            android:name="ARG_PUUID_AND_REG"
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion" />
     </fragment>
     <fragment
         android:id="@+id/addSummonerFragment"

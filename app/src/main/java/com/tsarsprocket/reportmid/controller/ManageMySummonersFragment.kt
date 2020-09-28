@@ -13,8 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentManageMySummonersBinding
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
@@ -87,29 +90,46 @@ class ManageMySummonersFragment : BaseFragment() {
 
     fun checkSummoner(summoner: SummonerModel) {
         viewModel.checkedSummoners.add(summoner)
-        baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = true
+        baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled =
+            viewModel.checkedSummoners.size < viewModel.mySummonersLive.value?.size ?: 0
     }
 
     fun uncheckSummoner(summoner: SummonerModel) {
         viewModel.checkedSummoners.apply {
             remove(summoner)
-            if (count() == 0) baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = false
+            baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = count() != 0
         }
     }
 
-    private fun deleteSelected() {
-        TODO("Not yet implemented")
-    }
-
     private fun doAddSummoner() {
-        object : OneTimeObserver<String>() {
-            override fun onOneTimeChanged(v:String) {
-                removeNavigationReturnedValue<String>(RESULT_PUUID)
+        object : OneTimeObserver<PuuidAndRegion>() {
+            override fun onOneTimeChanged(v:PuuidAndRegion) {
+                removeNavigationReturnedValue<PuuidAndRegion>(RESULT_PUUID_AND_REG)
                 viewModel.addMySummoner(v)
             }
-        }.observeOn(getNavigationReturnedValue<String>(RESULT_PUUID),this)
+        }.observeOn(getNavigationReturnedValue<PuuidAndRegion>(RESULT_PUUID_AND_REG),this)
 
         findNavController().navigate(ManageMySummonersFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph(null))
+    }
+
+    private fun deleteSelected() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(R.string.fragment_manage_my_summoners_remove_mine_confirm_message)
+            .setPositiveButton(R.string.fragment_manage_my_summoners_remove_mine_confirm_button_yea) { _, _ ->
+                try {
+                    viewModel.deleteSelected()
+                } catch (ex: ManageMySummonersViewModel.CannotDeleteAllSummoners) {
+                    Snackbar.make(
+                        binding.root,
+                        getString(R.string.fragment_manage_my_summoners_error_at_least_one_summoner_should_remain),
+                        Snackbar.LENGTH_SHORT
+                    )
+                } catch (ex: ManageMySummonersViewModel.CannotDeleteNothing) {
+                    Snackbar.make(binding.root, getString(R.string.fragment_manage_my_summoners_error_select_summoner), Snackbar.LENGTH_SHORT)
+                }
+            }
+            .setNegativeButton(R.string.fragment_manage_my_summoners_remove_mine_confirm_button_nay, null)
+            .show()
     }
 
     companion object {

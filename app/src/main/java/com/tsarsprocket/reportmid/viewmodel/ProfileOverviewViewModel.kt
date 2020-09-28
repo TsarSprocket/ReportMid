@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.ChampionMasteryModel
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MasteryLive
@@ -16,11 +17,11 @@ class ProfileOverviewViewModel @Inject constructor( private val repository: Repo
 
     var activeSummonerModel = MutableLiveData<SummonerModel>()
     val masteries = Array( TOP_MASTERIES_NUM ) { MasteryLive() }
-    val allDisposables = CompositeDisposable()
-    val summonerDisposables = CompositeDisposable()
+    private val allDisposables = CompositeDisposable()
+    private val summonerDisposables = CompositeDisposable()
 
-    fun initialize( puuid: String ) {
-        allDisposables.add( repository.findSummonerByPuuid( puuid ).subscribe { activeSummonerModel.postValue( it ) } )
+    fun initialize( puuidAndRegion: PuuidAndRegion ) {
+        allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion ).subscribe { activeSummonerModel.postValue( it ) } )
         observeMasteries()
     }
 
@@ -31,7 +32,7 @@ class ProfileOverviewViewModel @Inject constructor( private val repository: Repo
             summonerDisposables.add( summoner.masteries.flatMapIterable { arrMasteries ->
                 val extraSize = TOP_MASTERIES_NUM - arrMasteries.size
                 val indexed: List<IndexedValue<Maybe<Observable<ChampionMasteryModel>>>> = arrMasteries.take( TOP_MASTERIES_NUM ).withIndex().map { IndexedValue( it.index, Maybe.just( it.value ) ) }
-                if( extraSize > 0 ) indexed + List( extraSize ) { i -> IndexedValue( indexed.size + i, Maybe.empty<Observable<ChampionMasteryModel>>() ) }
+                if( extraSize > 0 ) indexed + List( extraSize ) { i -> IndexedValue( indexed.size + i, Maybe.empty() ) }
                 else indexed
             }
                 .flatMap { indexedObservableMastery ->

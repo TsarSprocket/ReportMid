@@ -3,9 +3,11 @@ package com.tsarsprocket.reportmid.viewmodel
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Single
+import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -14,18 +16,18 @@ class LandingViewModel @Inject constructor(val repository: Repository) : ViewMod
 
     enum class STATE { LOADING, FOUND, NOT_FOUND }
 
-    var puuid = ""
+    var puuid = PuuidAndRegion.NONE
     val stateLive = MutableLiveData(STATE.LOADING)
 
     val disposer = CompositeDisposable()
 
     init {
-        disposer.add(repository.getActiveSummonerPUUID()
+        disposer.add(repository.getActiveSummonerPuuidAndRegion()
             .observeOn(AndroidSchedulers.mainThread())
-            .map { puuid ->
-                Pair(STATE.FOUND, puuid)
+            .map { puuidAndRegion ->
+                Pair(STATE.FOUND, puuidAndRegion)
             }
-            .concatWith(Single.just(Pair(STATE.NOT_FOUND, "")))
+            .concatWith(Single.just(Pair(STATE.NOT_FOUND, PuuidAndRegion.NONE)))
             .take(1)
             .subscribe {
                 puuid = it.second
@@ -33,9 +35,9 @@ class LandingViewModel @Inject constructor(val repository: Repository) : ViewMod
             })
     }
 
-    fun defineMainAccount(puuid: String) =
+    fun defineMainAccount(puuidAndRegion: PuuidAndRegion) =
         LiveDataReactiveStreams.fromPublisher(
-            repository.findSummonerByPuuid(puuid).flatMap { summonerModel ->
+            repository.findSummonerByPuuidAndRegion(puuidAndRegion).flatMap { summonerModel ->
                 repository.addMyAccountNotify(summonerModel, true)
             }.toFlowable(BackpressureStrategy.LATEST)
         )

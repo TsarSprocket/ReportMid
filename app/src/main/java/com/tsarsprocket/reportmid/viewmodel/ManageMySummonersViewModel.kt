@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.*
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
 import io.reactivex.BackpressureStrategy
@@ -22,8 +23,8 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
 
     //  Methods  ///////////////////////////////////////////////////////////////
 
-    fun addMySummoner(puuid: String) {
-        disposer.add(repository.findSummonerByPuuid( puuid ).flatMap { summonerModel ->
+    fun addMySummoner(puuidAndRegion: PuuidAndRegion) {
+        disposer.add(repository.findSummonerByPuuidAndRegion( puuidAndRegion ).flatMap { summonerModel ->
             repository.addMyAccountNotify( summonerModel ) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{ forceUpdate() })
@@ -34,7 +35,19 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
         forceUpdateCounter.value = forceUpdateCounter.value?.plus(1)
     }
 
+    fun deleteSelected() {
+        val selected = checkedSummoners.toList()
+        if (selected.size == (mySummonersLive.value?.size ?: 0)) throw CannotDeleteAllSummoners()
+        if(selected.isEmpty()) throw CannotDeleteNothing()
+        repository.deleteMySummonersSwitchActive(checkedSummoners.toList())
+    }
+
     override fun onCleared() {
         disposer.clear()
     }
+
+    //  Local Exceptions  /////////////////////////////////////////////////////
+
+    class CannotDeleteAllSummoners: RuntimeException()
+    class CannotDeleteNothing: RuntimeException()
 }

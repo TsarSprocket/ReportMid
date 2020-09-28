@@ -16,6 +16,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentProfileOverviewBindingImpl
+import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.ProfileOverviewViewModel
 import com.tsarsprocket.reportmid.viewmodel.TOP_MASTERIES_NUM
@@ -39,7 +40,7 @@ class ProfileOverviewFragment : BaseFragment() {
         (context.applicationContext as ReportMidApp).comp.inject(this)
         super.onAttach(context)
         if( viewModel.activeSummonerModel.value == null ) {
-            viewModel.initialize( requireArguments().getString( ARG_PUUID )?: throw IllegalArgumentException( "Missing PUUID argument" ) )
+            viewModel.initialize( requireArguments().getParcelable( ARG_PUUID_AND_REG )?: throw IllegalArgumentException( "Missing PUUID argument" ) )
         }
     }
 
@@ -108,17 +109,19 @@ class ProfileOverviewFragment : BaseFragment() {
         }
     }
 
-    fun navigateToSibling( item: MenuItem ): Boolean {
+    private fun navigateToSibling(item: MenuItem ): Boolean {
         val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.profileOverviewFragment, true ).build()
         return when( item.itemId ) {
             R.id.profileOverviewFragment -> true
             R.id.matchupFragment -> {
-                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchupFragment(viewModel.activeSummonerModel.value!!.puuid)
+                val sum = viewModel.activeSummonerModel.value!!
+                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchupFragment(PuuidAndRegion(sum.puuid,sum.region))
                 findNavController().navigate( action, navOptions )
                 true
             }
             R.id.matchHistoryFragment -> {
-                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchHistoryFragment(viewModel.activeSummonerModel.value!!.puuid)
+                val sum = viewModel.activeSummonerModel.value!!
+                val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchHistoryFragment(PuuidAndRegion(sum.puuid,sum.region))
                 findNavController().navigate( action, navOptions )
                 true
             }
@@ -134,7 +137,7 @@ class ProfileOverviewFragment : BaseFragment() {
     companion object {
         @JvmStatic
         fun newInstance( puuid: String ) = ProfileOverviewFragment().apply {
-            arguments = Bundle( 1 ).apply { putString( ARG_PUUID, puuid ) }
+            arguments = Bundle( 1 ).apply { putString( ARG_PUUID_AND_REG, puuid ) }
         }
     }
 }
