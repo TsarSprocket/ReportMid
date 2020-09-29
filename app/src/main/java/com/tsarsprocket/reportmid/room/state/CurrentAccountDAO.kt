@@ -1,8 +1,6 @@
 package com.tsarsprocket.reportmid.room.state
 
 import androidx.room.*
-import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Observable
 
 @Dao
@@ -33,5 +31,5 @@ interface CurrentAccountDAO {
     fun update(currentAccountEntity: CurrentAccountEntity)
 
     @Delete
-    fun delete(currentAccountEntity: CurrentAccountEntity): Completable
+    fun delete(currentAccountEntity: CurrentAccountEntity)
 }

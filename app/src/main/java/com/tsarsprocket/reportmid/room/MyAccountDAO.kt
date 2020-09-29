@@ -1,8 +1,9 @@
 package com.tsarsprocket.reportmid.room
 
-import androidx.room.*
-import io.reactivex.Completable
-import io.reactivex.Maybe
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
 import io.reactivex.Observable
 
 @Dao
@@ -35,5 +36,5 @@ interface MyAccountDAO {
     fun insert(myAccountEntity: MyAccountEntity): Long
 
     @Delete
-    fun delete(myAccountEntity: MyAccountEntity): Completable
+    fun delete(myAccountEntity: MyAccountEntity)
 }
