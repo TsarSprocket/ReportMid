@@ -15,7 +15,7 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
     private val forceUpdateCounter = MutableLiveData(0)
 
     val mySummonersLive = forceUpdateCounter.switchMap {
-        LiveDataReactiveStreams.fromPublisher(repository.getMySummonersSubject().toFlowable(BackpressureStrategy.BUFFER)) }
+        LiveDataReactiveStreams.fromPublisher(repository.getMySummonersObservable().toFlowable(BackpressureStrategy.BUFFER)) }
 
     val checkedSummoners = HashSet<SummonerModel>()
 
@@ -27,7 +27,7 @@ class ManageMySummonersViewModel @Inject constructor(private val repository: Rep
         disposer.add(repository.findSummonerByPuuidAndRegion( puuidAndRegion ).flatMap { summonerModel ->
             repository.addMyAccountNotify( summonerModel ) }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe{ forceUpdate() })
+            .subscribe{ /*forceUpdate()*/ })
     }
 
     @MainThread

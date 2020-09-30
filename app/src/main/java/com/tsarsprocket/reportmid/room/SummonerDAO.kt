@@ -15,8 +15,8 @@ interface SummonerDAO {
     @Query("SELECT * FROM summoners WHERE id = :id")
     fun getById(id: Long): SummonerEntity
 
-    @Query("SELECT * FROM summoners WHERE puuid = :puuid")
-    fun getByPuuid(puuid: String): SummonerEntity
+    @Query("SELECT * FROM summoners WHERE puuid = :puuid AND region_id = :regionId")
+    fun getByPuuidAndRegion(puuid: String, regionId: Long): SummonerEntity
 
     @Query("""
         SELECT s.*
@@ -31,7 +31,7 @@ interface SummonerDAO {
         FROM summoners AS s
             JOIN my_accounts ma ON s.id = ma.summoner_id
     """)
-    fun getMySummoners(): List<SummonerEntity>
+    fun getMySummonersLive(): Observable<List<SummonerEntity>>
 
     @Insert
     fun insert(summonerEntity: SummonerEntity): Long

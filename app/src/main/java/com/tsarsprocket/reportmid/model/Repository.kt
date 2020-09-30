@@ -119,14 +119,18 @@ class Repository @Inject constructor(val context: Context) {
         }
 
 
-    fun getMySummonersSubject(): ReplaySubject<List<SummonerModel>> = ensureInitializedDoOnIOSubject {
-        val arrObsSumModel = database.summonerDAO().getMySummoners()
-            .map { sumEnt ->
-                val reg = database.regionDAO().getById(sumEnt.regionId)
-                findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,RegionModel.getByTag(reg.tag)))
-            }.toTypedArray()
-        Observable.mergeArray(*arrObsSumModel).subscribeOn(Schedulers.io()).toList().blockingGet()
-    }
+    fun getMySummonersObservable(): Observable<List<SummonerModel>> = ensureInitializedDoOnIO {}
+        .flatMap {
+            database.summonerDAO().getMySummonersLive()
+                .map { lst ->
+                    val arrObsSumModel = lst.map { sumEnt ->
+                        val reg = database.regionDAO().getById(sumEnt.regionId)
+                        findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid, RegionModel.getByTag(reg.tag)))
+                    }.toTypedArray()
+                    Observable.mergeArray(*arrObsSumModel).toList().blockingGet()
+                }
+        }
+
 
     fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIO {
         database.regionDAO().getByTag(reg.tag)
@@ -291,7 +295,8 @@ class Repository @Inject constructor(val context: Context) {
     fun deleteMySummonersSwitchActive( summoners: List<SummonerModel> ): ReplaySubject<List<String>> = ensureInitializedDoOnIOSubject {
         val newCurrentPuuids: MutableList<String> = MutableList(0) { throw RuntimeException() }
         database.runInTransaction {
-            val myAccs = summoners.map { database.myAccountDAO().getById(database.summonerDAO().getByPuuid(it.puuid).id) }
+            val mySums = summoners.mapNotNull { database.summonerDAO().getByPuuidAndRegion(it.puuid,database.regionDAO().getByTag(it.region.tag).id) }
+            val myAccs = mySums.mapNotNull { database.myAccountDAO().getBySummonerId(it.id) }
 
             if (database.myAccountDAO().count() <= myAccs.size) throw RuntimeException( "At least 1 account should be left" )
 
@@ -308,6 +313,7 @@ class Repository @Inject constructor(val context: Context) {
                 }
             }
             myAccs.forEach { database.myAccountDAO().delete(it) }
+            mySums.forEach { database.summonerDAO().delete(it) }
         }
         newCurrentPuuids
     }

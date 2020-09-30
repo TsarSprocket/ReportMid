@@ -60,9 +60,10 @@ class AddSummonerFragment : BaseFragment() {
 
         val confirmed = peekNavigationReturnedValue<Boolean>(RESULT_CONFIRM)
         if (confirmed != null && confirmed) {
+            binding.root.edSummonerName.requestFocus()
             setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
             val summonerModel = viewModel.activeSummonerModel.value!!
-            setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID_AND_REG)
+            setNavigationResult(result = PuuidAndRegion(summonerModel.puuid,summonerModel.region), key = RESULT_PUUID_AND_REG)
             findNavController().popBackStack()
         }
 

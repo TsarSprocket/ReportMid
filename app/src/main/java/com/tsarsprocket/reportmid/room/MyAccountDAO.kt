@@ -19,7 +19,7 @@ interface MyAccountDAO {
     fun getById(id: Long): MyAccountEntity
 
     @Query("SELECT * FROM my_accounts WHERE summoner_id = :summonerId")
-    fun getBySummonerId(summonerId: Long): MyAccountEntity
+    fun getBySummonerId(summonerId: Long): MyAccountEntity?
 
     @Query("""
         SELECT ma.*
