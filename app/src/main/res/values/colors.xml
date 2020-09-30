@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="text">#E6EE9C</color>
-    <color name="primary">#411a80</color>
-    <color name="primaryDark">#311B92</color>
+    <color name="primary">#411A80</color>
+    <color name="primaryDark">#27104D</color>
     <color name="secondary">#59801a</color>
     <color name="accent">#802d1a</color>
     <color name="bgWin">#3C7339</color> <!-- Material: #004d40 -->
@@ -11,5 +11,7 @@
     <color name="redTeamBG">#880E4F</color>
     <color name="blueTeamBG">#1A237E</color>
     <color name="transparent">#00000000</color>
+    <color name="surface">#004C4D</color>
     <color name="background">#303030</color>
+    <color name="backgroundFloating">#363636</color>
 </resources>
