@@ -3,7 +3,7 @@
     <style name="Theme.ReportMid" parent="Theme.MaterialComponents.NoActionBar"> <!--"ThemeOverlay.MaterialComponents.Dark.ActionBar"-->
 
         <!-- Colors -->
-        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimary">@color/text</item>
         <item name="colorOnPrimary">@color/text</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorSurface">@color/primary</item>
@@ -13,16 +13,14 @@
         <item name="colorSecondary">@color/accent</item>
         <item name="android:textColor">@color/text</item>
         <item name="android:textColorPrimary">@color/text</item>
-        <!--
-            <item name="colorAccent">@color/text</item>
-        -->
+        <item name="colorAccent">@color/text</item>
 
         <!-- Fonts -->
         <item name="fontFamily">@font/friz_quadrata</item>
 
         <!-- Widget Styles -->
         <item name="imageButtonStyle">@style/Widget.ReportMid.ImageButton</item>
-        <item name="radioButtonStyle"
+<!--        <item name="radioButtonStyle">@style/Widget.ReportMid.RadioButton</item>-->
 
     </style>
 
@@ -30,8 +28,15 @@
         <item name="android:background">@color/transparent</item>
     </style>
 
+<!--
     <style name="Widget.ReportMid.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
-        <item name=""
     </style>
+-->
+
+<!--
+    <style name="Widget.ReportMid.Button.TextButton.Dialog" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+
+    </style>
+-->
 
 </resources>
