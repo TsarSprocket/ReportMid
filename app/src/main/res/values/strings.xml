@@ -6,6 +6,8 @@
 
     <!-- Fragment: Add Summoner -->
     <string name="fragment_add_summoner_validate_btn_text">Find</string>
+    <string name="fragment_add_summoner_snack_summoner_not_found">Summoner %s not found</string>
+    <string name="fragment_add_summoner_snack_summoner_is_in_use">Summoner %s is already used</string>
 
     <!-- Fragment: Landing -->
     <string name="loading">Loading…</string>
@@ -55,6 +57,5 @@
     <string name="lorem_ipsum_short">Lorem Ipsum</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="snack_summoner_not_found">Summoner %s not found</string>
 
 </resources>

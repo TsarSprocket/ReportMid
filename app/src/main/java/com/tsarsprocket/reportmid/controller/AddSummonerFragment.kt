@@ -85,14 +85,25 @@ class AddSummonerFragment : BaseFragment() {
                     viewModel.activeSummonerName.observe(this@AddSummonerFragment) { summonerName ->
                         Snackbar.make(
                             binding.root,
-                            Formatter().format(getString(R.string.snack_summoner_not_found), summonerName).toString(),
+                            Formatter().format(getString(R.string.fragment_add_summoner_snack_summoner_not_found), summonerName).toString(),
                             Snackbar.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     val sum = maybe.blockingGet()
-                    val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment(PuuidAndRegion(sum.puuid,sum.region))
-                    findNavController().navigate(action)
+
+                    viewModel.isSummonerInUseLive(sum).observe(viewLifecycleOwner) { isInUse ->
+                        if (isInUse) {
+                            Snackbar.make(
+                                binding.root,
+                                Formatter().format(getString(R.string.fragment_add_summoner_snack_summoner_is_in_use), sum.name).toString(),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            val action = AddSummonerFragmentDirections.actionAddSummonerFragmentToConfirmSummonerFragment(PuuidAndRegion(sum.puuid, sum.region))
+                            findNavController().navigate(action)
+                        }
+                    }
                 }
             }
         }.observeOn(viewModel.checkSummoner(), this)

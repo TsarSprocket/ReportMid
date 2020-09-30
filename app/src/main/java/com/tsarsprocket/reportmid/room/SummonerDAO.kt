@@ -16,7 +16,7 @@ interface SummonerDAO {
     fun getById(id: Long): SummonerEntity
 
     @Query("SELECT * FROM summoners WHERE puuid = :puuid AND region_id = :regionId")
-    fun getByPuuidAndRegion(puuid: String, regionId: Long): SummonerEntity
+    fun getByPuuidAndRegion(puuid: String, regionId: Long): SummonerEntity?
 
     @Query("""
         SELECT s.*

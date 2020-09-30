@@ -1,9 +1,6 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import androidx.lifecycle.LiveDataReactiveStreams
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
+import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.*
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Maybe
@@ -44,4 +41,7 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
             if( !it.isEmpty.blockingGet() ) activeSummonerModel.value = it.blockingGet()
             it
         }
+
+    fun isSummonerInUseLive(sum: SummonerModel): LiveData<Boolean> =
+        LiveDataReactiveStreams.fromPublisher(repository.checkSummonerExistInDB(sum).toFlowable(BackpressureStrategy.LATEST))
 }

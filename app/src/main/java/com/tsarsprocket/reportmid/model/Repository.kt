@@ -400,4 +400,9 @@ class Repository @Inject constructor(val context: Context) {
                 else -> Observable.error(RepositoryNotInitializedException())
             }
         }
+
+    fun checkSummonerExistInDB(summoner: SummonerModel): Observable<Boolean> = ensureInitializedDoOnIO {
+        val sumEnt = database.summonerDAO().getByPuuidAndRegion(summoner.puuid, database.regionDAO().getByTag(summoner.region.tag).id)
+        sumEnt != null
+    }
 }
