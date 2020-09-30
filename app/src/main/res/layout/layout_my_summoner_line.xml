@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
 
-    <CheckBox
+    <RadioButton
         android:id="@+id/cbSelected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

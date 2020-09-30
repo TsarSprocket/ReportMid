@@ -55,59 +55,89 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/labelMySummoners"
-                    android:text="@string/fragment_drawer_my_summoners_label"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/ltMySummonersHeader"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    />
-
-                <Button
-                    android:text="@string/fragment_drawer_edit_my_summoners_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBaseline_toBaselineOf="@id/labelMySummoners"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:onClick="@{eventHandler::manageMySummoners}"
-                    />
+                    >
+
+                    <TextView
+                        android:id="@+id/labelMySummoners"
+                        android:text="@string/fragment_drawer_my_summoners_label"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+
+                    <ImageButton
+                        android:text="@string/fragment_drawer_edit_my_summoners_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{eventHandler::manageMySummoners}"
+                        android:src="@drawable/system_icon_edit_enabled"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:id="@+id/llMySummoners"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintTop_toBottomOf="@id/labelMySummoners"
+                    app:layout_constraintTop_toBottomOf="@id/ltMySummonersHeader"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     />
 
-                <TextView
-                    android:id="@+id/labelMyFriends"
-                    android:text="@string/fragment_drawer_my_friends_label"
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/ltMyFriendsHeader"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/llMySummoners"
                     android:layout_marginTop="20dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    />
-
-                <Button
-                    android:text="@string/fragment_drawer_edit_my_friends_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBaseline_toBaselineOf="@id/labelMyFriends"
                     app:layout_constraintEnd_toEndOf="parent"
-                    />
+                    >
+
+                    <TextView
+                        android:id="@+id/labelMyFriends"
+                        android:text="@string/fragment_drawer_my_friends_label"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+
+                    <ImageButton
+                        android:text="@string/fragment_drawer_edit_my_friends_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/system_icon_edit_enabled"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
                     android:id="@+id/llMyFriends"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintTop_toBottomOf="@id/labelMyFriends"
+                    app:layout_constraintTop_toBottomOf="@id/ltMyFriendsHeader"
                     android:layout_marginTop="10dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
