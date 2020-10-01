@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class DrawerViewModel @Inject constructor(val repository: Repository) : ViewModel() {
 
-    val currentRegions: LiveData<List<RegionModel>> = obtainCurrentRegionsLive()
+    val currentRegions: LiveData<List<RegionModel>> = obtainCurrentRegionsLive().map { lst -> lst.sortedBy { it.title } }
     val regionTitles: LiveData<List<String>> = currentRegions.map { list -> list.map { reg -> reg.title } }
     val selectedRegionPosition = MutableLiveData<Int>()
     val mySummonersInSelectedRegion = selectedRegionPosition.map { currentRegions.value!![it] }.switchMap { reg ->

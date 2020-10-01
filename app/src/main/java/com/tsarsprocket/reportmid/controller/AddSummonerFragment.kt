@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -30,6 +31,8 @@ class AddSummonerFragment : BaseFragment() {
     private val viewModel by viewModels<AddSummonerViewModel> { viewModelFactory }
 
     lateinit var binding: FragmentAddSummonerBinding
+
+    var bringUpKeyboard = true
 
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
@@ -60,8 +63,7 @@ class AddSummonerFragment : BaseFragment() {
 
         val confirmed = peekNavigationReturnedValue<Boolean>(RESULT_CONFIRM)
         if (confirmed != null && confirmed) {
-            binding.root.edSummonerName.requestFocus()
-            setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
+            bringUpKeyboard = false
             val summonerModel = viewModel.activeSummonerModel.value!!
             setNavigationResult(result = PuuidAndRegion(summonerModel.puuid,summonerModel.region), key = RESULT_PUUID_AND_REG)
             findNavController().popBackStack()
@@ -73,7 +75,7 @@ class AddSummonerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setSoftInputVisibility(requireContext(), binding.edSummonerName, true)
+        if (bringUpKeyboard) setSoftInputVisibility(requireContext(), binding.edSummonerName, true)
     }
 
     fun onValidateInitial(view: View?) {
