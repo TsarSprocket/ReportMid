@@ -6,15 +6,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
+import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
 import kotlinx.android.synthetic.main.fragment_drawer.view.*
 import kotlinx.android.synthetic.main.layout_my_summoner_line.view.*
@@ -39,6 +43,8 @@ class DrawerFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.eventHandler = EventHandler()
+
+        binding.regionSelector.adapter = RegionAdapter(viewModel.currentRegions)
 
         viewModel.mySummonersInSelectedRegion.observe(viewLifecycleOwner) { updateMySummoners(it) }
 
@@ -72,8 +78,39 @@ class DrawerFragment : BaseFragment() {
         }
     }
 
+    inner class RegionAdapter(private val regionsLive: LiveData<List<RegionModel>>): BaseAdapter() {
+
+        private var list: List<RegionModel> = listOf()
+
+        init {
+            regionsLive.observe( viewLifecycleOwner ) { setItems(it) }
+        }
+
+        fun setItems(newList: List<RegionModel>) {
+            list = newList
+            notifyDataSetChanged()
+        }
+
+        override fun getCount(): Int = list.size
+
+        override fun getItem(position: Int): Any = list[position]
+
+        override fun getItemId(position: Int): Long = if (position < list.size) list[position].ordinal.toLong() else -1L
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View =
+            ((convertView ?: layoutInflater.inflate(android.R.layout.simple_spinner_item, parent, false)) as TextView)
+                .apply {
+                    text = list[position].title
+                }
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup?): View =
+            ((convertView ?: layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false)) as TextView)
+                .apply {
+                    text = list[position].title
+                }
+    }
+
     companion object {
         fun newInstance() = DrawerFragment()
     }
-
 }

@@ -43,18 +43,8 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
         )
     }
 
-    private fun obtainCurrentRegionsLive(): LiveData<List<RegionModel>> {
-        return LiveDataReactiveStreams.fromPublisher(repository.getMyRegions().map { lstNewRegions ->
-            val curRegs = getCurrentRegionsValue()
-            val curSelPos = selectedRegionPosition.value
-            if (curRegs != null && curSelPos != null) {
-                val oldRegionTag = curRegs[curSelPos]
-                val newPos = lstNewRegions.indexOf(oldRegionTag)
-                if (newPos >= 0) selectedRegionPosition.postValue(newPos)
-            }
-            lstNewRegions
-        }.toFlowable(BackpressureStrategy.BUFFER))
-    }
+    private fun obtainCurrentRegionsLive(): LiveData<List<RegionModel>> =
+        LiveDataReactiveStreams.fromPublisher(repository.getMyRegions().toFlowable(BackpressureStrategy.BUFFER))
 
     private fun getCurrentRegionsValue() = currentRegions.value
 

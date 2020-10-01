@@ -31,7 +31,6 @@
 
         <Spinner
             android:id="@+id/regionSelector"
-            android:entries="@{viewModel.regionTitles}"
             android:selectedItemPosition="@={viewModel.selectedRegionPosition}"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
