@@ -97,5 +97,9 @@
         android:name="com.tsarsprocket.reportmid.controller.DrawerFragment"
         android:label="fragment_drawer"
         tools:layout="@layout/fragment_drawer" />
-    <action android:id="@+id/action_global_manageMySummonersFragment" app:destination="@id/manageMySummonersFragment" />
+    <action
+        android:id="@+id/action_global_manageMySummonersFragment"
+        app:destination="@id/manageMySummonersFragment"
+        app:launchSingleTop="true"
+        />
 </navigation>
