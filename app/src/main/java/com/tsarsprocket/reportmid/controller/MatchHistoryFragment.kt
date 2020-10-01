@@ -53,7 +53,7 @@ class MatchHistoryFragment : BaseFragment() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             val disposable = Observable.create<SummonerModel> { emitter ->
-                viewModel.activeSummonerModel.observe({ lifecycle }) { summonerModel ->
+                viewModel.activeSummonerModel.observe(viewLifecycleOwner) { summonerModel ->
                     emitter.onNext(summonerModel)
                     emitter.onComplete()
                 }
@@ -81,7 +81,7 @@ class MatchHistoryFragment : BaseFragment() {
             selectedItemId = R.id.matchHistoryFragment
         }
 
-        viewModel.activeSummonerModel.observe({ lifecycle }) {
+        viewModel.activeSummonerModel.observe(viewLifecycleOwner) {
             baseActivity.toolbar.title = getString(R.string.fragment_match_history_title_template).format(it.name)
         }
 

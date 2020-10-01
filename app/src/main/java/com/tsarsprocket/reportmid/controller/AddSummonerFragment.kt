@@ -115,7 +115,7 @@ class AddSummonerFragment : BaseFragment() {
                     viewModel.activeSummonerModel
                 } else MutableLiveData()
             }
-            .observe({ lifecycle }) { summonerModel ->
+            .observe(viewLifecycleOwner) { summonerModel ->
                 setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
                 setNavigationResult(result = summonerModel.puuid, key = RESULT_PUUID)
                 findNavController().popBackStack()

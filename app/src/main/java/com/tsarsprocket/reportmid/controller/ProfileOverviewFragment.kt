@@ -64,7 +64,7 @@ class ProfileOverviewFragment : BaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.activeSummonerModel.observe( { lifecycle } ) { summoner ->
+        viewModel.activeSummonerModel.observe(viewLifecycleOwner ) { summoner ->
             disposer.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
                 binding.root.imgSummonerIcon.setImageBitmap( bitmap )
             } )
@@ -73,26 +73,26 @@ class ProfileOverviewFragment : BaseFragment() {
 
         for( i in 0 until TOP_MASTERIES_NUM ) {
             with( viewModel.masteries[ i ] ) {
-                shownLive.observe( { lifecycle } ) { fShow ->
+                shownLive.observe(viewLifecycleOwner ) { fShow ->
                     if( fShow != null ) {
                         binding.root.grpOtherChampMasteries[ i ].visibility = if( fShow ) View.VISIBLE else View.GONE
                     }
                 }
-                bitmapLive.observe( { lifecycle } ) { bitmap ->
+                bitmapLive.observe(viewLifecycleOwner ) { bitmap ->
                     if( bitmap != null ) {
                         binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString(R.string.fragment_profile_overview_tag_champion_icon) )
                             .setImageBitmap( bitmap )
                     }
                 }
 /*
-                champNameLive.observe( { lifecycle } ) { name ->
+                champNameLive.observe(viewLifecycleOwner ) { name ->
                     if( name != null ) {
                         binding.root.grpOtherChampMasteries[i].findViewWithTag<TextView>( resources.getString(R.string.fragment_profile_overview_tag_champion_name) ).text =
                             name
                     }
                 }
 */
-                skillsLive.observe( { lifecycle } ) { skills ->
+                skillsLive.observe(viewLifecycleOwner ) { skills ->
                     if( skills != null ) {
                         with(binding.root.grpOtherChampMasteries[i]) {
                             findViewWithTag<TextView>(resources.getString(R.string.fragment_profile_overview_tag_champion_level)).text = skills.level.toString()

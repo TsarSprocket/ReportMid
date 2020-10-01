@@ -40,7 +40,7 @@ class DrawerFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.eventHandler = EventHandler()
 
-        viewModel.mySummonersInSelectedRegion.observe({ lifecycle }) { updateMySummoners(it) }
+        viewModel.mySummonersInSelectedRegion.observe(viewLifecycleOwner) { updateMySummoners(it) }
 
         return binding.root
     }
@@ -60,7 +60,7 @@ class DrawerFragment : BaseFragment() {
     fun goManageMySummoners() {
         baseActivity.closeDrawers()
         val action = DrawerFragmentDirections.actionGlobalManageMySummonersFragment()
-        findNavController().navigate( action )
+        findNavController().navigate(action)
     }
 
     //  Classes  //////////////////////////////////////////////////////////////

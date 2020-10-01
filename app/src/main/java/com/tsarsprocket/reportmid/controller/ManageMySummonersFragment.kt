@@ -53,12 +53,12 @@ class ManageMySummonersFragment : BaseFragment() {
 
         baseActivity.toolbar.title = getString(R.string.fragment_manage_my_summoners_title)
 
-        val mySummonersAdapter = MySummonersAdapter()
+        val mySummonersAdapter = MySummonersAdapter(SummonerModel.ByNameAndRegionComparator())
         with(binding.recvMySummoners) {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = mySummonersAdapter
-            viewModel.mySummonersLive.observe({ lifecycle }) { lstSummoners ->
+            viewModel.mySummonersLive.observe(viewLifecycleOwner) { lstSummoners ->
                 binding.progressLoading.visibility = View.GONE
                 visibility = View.VISIBLE
                 mySummonersAdapter.summoners = lstSummoners.toTypedArray()
@@ -70,13 +70,13 @@ class ManageMySummonersFragment : BaseFragment() {
             }
         }
 
-        activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ) {
+        activityViewModel.selectedMenuItem.observe(viewLifecycleOwner) {
             when(it) {
                 R.id.miManageMyAccountsDelete -> { deleteSelected() }
             }
         }
 
-        activityViewModel.menuRefreshed.observe( viewLifecycleOwner ) {
+        activityViewModel.menuRefreshed.observe(viewLifecycleOwner) {
             baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = viewModel.checkedSummoners.isNotEmpty()
         }
 
@@ -138,11 +138,11 @@ class ManageMySummonersFragment : BaseFragment() {
 
     //  Classes  //////////////////////////////////////////////////////////////
 
-    inner class MySummonersAdapter : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
+    inner class MySummonersAdapter(private val comparator: Comparator<SummonerModel>) : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
-        var summoners: Array<SummonerModel> = arrayOf()
-            set(v: Array<SummonerModel>) {
-                field = v
+        var summoners: Array<out SummonerModel> = arrayOf()
+            set(v) {
+                field = v.sortedArrayWith(comparator)
                 notifyDataSetChanged()
             }
 

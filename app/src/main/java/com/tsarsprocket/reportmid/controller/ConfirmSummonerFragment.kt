@@ -41,8 +41,8 @@ class ConfirmSummonerFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.bitmap.observe({ lifecycle }) { bitmap -> binding.root.imgSummonerIcon.setImageBitmap(bitmap) }
-        viewModel.confirm.observe({ lifecycle }) { confirmed -> setNavigationResult(confirmed, RESULT_CONFIRM); findNavController().popBackStack() }
+        viewModel.bitmap.observe(viewLifecycleOwner) { bitmap -> binding.root.imgSummonerIcon.setImageBitmap(bitmap) }
+        viewModel.confirm.observe(viewLifecycleOwner) { confirmed -> setNavigationResult(confirmed, RESULT_CONFIRM); findNavController().popBackStack() }
 
         viewModel.init(
             arguments?.getParcelable(ARG_PUUID_AND_REG)

@@ -46,12 +46,12 @@ class LandingFragment : Fragment() {
         if (doesReturnedValueExist(RESULT_PUUID_AND_REG)) {
             val puuidAndReg = removeNavigationReturnedValue<PuuidAndRegion>(RESULT_PUUID_AND_REG)
             if (puuidAndReg != null) {
-                viewModel.defineMainAccount(puuidAndReg).observe({ lifecycle }) { navigateToMainAndFinish(puuidAndReg) }
+                viewModel.defineMainAccount(puuidAndReg).observe(viewLifecycleOwner) { navigateToMainAndFinish(puuidAndReg) }
             } else {
                 requireActivity().finish()
             }
         } else {
-            viewModel.stateLive.observe({ lifecycle }) {
+            viewModel.stateLive.observe(viewLifecycleOwner) {
                 when (it) {
                     LandingViewModel.STATE.FOUND -> {
                         navigateToMainAndFinish(viewModel.puuid)

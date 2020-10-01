@@ -59,20 +59,20 @@ class MatchupFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.matchInProgress.observe( { lifecycle } ) { isInProgress ->
+        viewModel.matchInProgress.observe(viewLifecycleOwner ) { isInProgress ->
             binding.matchGroup.visibility = if( isInProgress ) View.VISIBLE else View.GONE
             binding.matchNotInProgressGroup.visibility = if( !isInProgress ) View.VISIBLE else View.GONE
         }
 
-        viewModel.blueTeamParticipants.observe( { lifecycle } ) { if( it != null ) populateTeam( binding.blueTeam, it, SideModel.BLUE ) }
-        viewModel.redTeamParticipants.observe( { lifecycle } ) { if( it != null ) populateTeam( binding.redTeam, it, SideModel.RED ) }
+        viewModel.blueTeamParticipants.observe(viewLifecycleOwner ) { if( it != null ) populateTeam( binding.blueTeam, it, SideModel.BLUE ) }
+        viewModel.redTeamParticipants.observe( viewLifecycleOwner ) { if( it != null ) populateTeam( binding.redTeam, it, SideModel.RED ) }
 
         with( binding.root.bottomNavigation ) {
             setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
             selectedItemId = R.id.matchupFragment
         }
 
-        activityViewModel.selectedMenuItem.observe( { lifecycle } ){ menuItemId ->
+        activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ){ menuItemId ->
             when (menuItemId) {
                 R.id.miMatchupRefresh -> reloadMatch(true)
             }
@@ -83,7 +83,7 @@ class MatchupFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.summoner.observe( { lifecycle } ) {
+        viewModel.summoner.observe( viewLifecycleOwner ) {
             baseActivity.toolbar.title = getString( R.string.fragment_matchup_title_template ).format( it.name )
         }
     }
@@ -95,16 +95,16 @@ class MatchupFragment : BaseFragment() {
 
             card.txtChampionSkill.text = getString( R.string.fragment_matchup_tmp_calculating )
 
-            playerPresentation.championIconLive.observe( { lifecycle } ) { card.imgChampionIcon.setImageBitmap( it ) }
-            playerPresentation.summonerChampionSkillLive.observe( { lifecycle } ) { card.txtChampionSkill.text = if( it >= 0 ) formatPoints( it ) else "n/a" }
-            playerPresentation.summonerNameLive.observe( { lifecycle } ) { card.txtSummonerName.text = it }
-            playerPresentation.summonerLevelLive.observe( { lifecycle } ) { card.txtSummonerLevel.text = it.toString() }
-            playerPresentation.soloqueueRankLive.observe( { lifecycle } ) { card.txtSummonerSoloQueueRank.text = it }
-            playerPresentation.soloqueueWinrateLive.observe( { lifecycle } ) { card.txtSummonerSoloQueueWinRate.text = ( ( it * 10 ).roundToInt() / 10f ).toString() }
-            playerPresentation.summonerSpellDLive.observe( { lifecycle } ) { card.imgSummonerSpellD.setImageBitmap( it ) }
-            playerPresentation.summonerSpellFLive.observe( { lifecycle } ) { card.imgSummonerSpellF.setImageBitmap( it ) }
-            playerPresentation.primaryRunePathIconResIdLive.observe( { lifecycle } ) { card.imgPrimaryRunePath.setImageResource( it ) }
-            playerPresentation.secondaryRunePathIconResIdLive.observe( { lifecycle } ) { card.imgSecondaryRunePath.setImageResource( it ) }
+            playerPresentation.championIconLive.observe( viewLifecycleOwner ) { card.imgChampionIcon.setImageBitmap( it ) }
+            playerPresentation.summonerChampionSkillLive.observe( viewLifecycleOwner ) { card.txtChampionSkill.text = if( it >= 0 ) formatPoints( it ) else "n/a" }
+            playerPresentation.summonerNameLive.observe( viewLifecycleOwner ) { card.txtSummonerName.text = it }
+            playerPresentation.summonerLevelLive.observe( viewLifecycleOwner ) { card.txtSummonerLevel.text = it.toString() }
+            playerPresentation.soloqueueRankLive.observe( viewLifecycleOwner ) { card.txtSummonerSoloQueueRank.text = it }
+            playerPresentation.soloqueueWinrateLive.observe( viewLifecycleOwner ) { card.txtSummonerSoloQueueWinRate.text = ( ( it * 10 ).roundToInt() / 10f ).toString() }
+            playerPresentation.summonerSpellDLive.observe( viewLifecycleOwner ) { card.imgSummonerSpellD.setImageBitmap( it ) }
+            playerPresentation.summonerSpellFLive.observe( viewLifecycleOwner ) { card.imgSummonerSpellF.setImageBitmap( it ) }
+            playerPresentation.primaryRunePathIconResIdLive.observe( viewLifecycleOwner ) { card.imgPrimaryRunePath.setImageResource( it ) }
+            playerPresentation.secondaryRunePathIconResIdLive.observe( viewLifecycleOwner ) { card.imgSecondaryRunePath.setImageResource( it ) }
 
             card.setCardBackgroundColor( resources.getColor( if( side == SideModel.BLUE ) R.color.blueTeamBG else R.color.redTeamBG) )
 

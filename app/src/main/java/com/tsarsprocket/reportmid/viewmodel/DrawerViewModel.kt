@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.Repository
+import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,9 +17,12 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
     val regionTitles: LiveData<List<String>> = currentRegions.map { list -> list.map { reg -> reg.title } }
     val selectedRegionPosition = MutableLiveData<Int>()
     val mySummonersInSelectedRegion = selectedRegionPosition.map { currentRegions.value!![it] }.switchMap { reg ->
-        LiveDataReactiveStreams.fromPublisher<List<Triple<Bitmap,String,Boolean>>> (
-            repository.getMySummonersObservableForRegion( reg )
-                .map{ lst -> lst.map{ (sum,isSelected) -> Triple( sum.icon.blockingFirst(), sum.name, isSelected ) } }
+        LiveDataReactiveStreams.fromPublisher<List<Triple<Bitmap,String,Boolean>>>(
+            repository.getMySummonersObservableForRegion(reg)
+                .map { lst ->
+                    lst.sortedWith { o1, o2 -> SUMO_COMP.compare(o1.first, o2.first) }
+                        .map { (sum, isSelected) -> Triple(sum.icon.blockingFirst(), sum.name, isSelected) }
+                }
                 .toFlowable(BackpressureStrategy.BUFFER)
         )
     }
@@ -56,5 +60,9 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
 
     override fun onCleared() {
         disposer.clear()
+    }
+
+    companion object {
+        val SUMO_COMP = SummonerModel.ByNameAndRegionComparator()
     }
 }

@@ -41,4 +41,14 @@ data class SummonerModel(
         Observable.fromCallable { MatchHistory.forSummoner( summoner ).get()!! }
             .subscribeOn( Schedulers.io() )
             .flatMap { shadowHistory -> repository.getMatchHistoryModel( shadowHistory ) }
+
+    //  Classes  //////////////////////////////////////////////////////////////
+
+    class ByNameAndRegionComparator: Comparator<SummonerModel> {
+        override fun compare(o1: SummonerModel, o2: SummonerModel): Int {
+            val byName = o1.name.compareTo(o2.name)
+            if( byName != 0 ) return byName
+            return o1.region.compareTo(o2.region)
+        }
+    }
 }

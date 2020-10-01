@@ -4,7 +4,7 @@
 
         <!-- Colors -->
         <item name="colorPrimary">@color/text</item>
-        <item name="colorOnPrimary">@color/text</item>
+        <item name="colorOnPrimary">@color/textOnPrimary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorSurface">@color/primary</item>
         <item name="colorOnSurface">@color/text</item>
