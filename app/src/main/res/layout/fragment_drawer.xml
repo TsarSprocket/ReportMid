@@ -31,13 +31,13 @@
 
         <Spinner
             android:id="@+id/regionSelector"
-            android:selectedItemPosition="@={viewModel.selectedRegionPosition}"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:selectedItemPosition="@={viewModel.selectedRegionPosition}"
+            android:layout_marginTop="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="10dp"
             />
 
         <ScrollView
