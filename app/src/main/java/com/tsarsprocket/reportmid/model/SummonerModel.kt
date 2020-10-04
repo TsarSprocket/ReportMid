@@ -6,10 +6,12 @@ import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.MatchHistory
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
 import com.merakianalytics.orianna.types.core.summoner.Summoner
+import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
-data class SummonerModel(
+class SummonerModel(
     val repository: Repository,
     private val shadowSummoner: Summoner
 ) {
@@ -22,6 +24,7 @@ data class SummonerModel(
     val matchHistory: Observable<MatchHistoryModel> by lazy { getObservableMatchHistoryForSummoner( shadowSummoner ).replay( 1 ).autoConnect() }
     val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
     val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
+    val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner(this) }
 
     fun getMasteryWithChampion( championModel: ChampionModel ): Observable<ChampionMastery> =
         Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( championModel.shadowChampion ).get() }.subscribeOn( Schedulers.io() )

@@ -22,6 +22,7 @@ import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
@@ -29,6 +30,7 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
@@ -248,6 +250,25 @@ class Repository @Inject constructor(val context: Context) {
 
     fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
+    fun getMyAccountById(id: Long): ReplaySubject<MyAccountModel> = ReplaySubject.create<MyAccountModel>(1).also { subj ->
+            Observable.just(MyAccountModel(this,id)).subscribe(subj)
+    }
+
+    fun getMyAccountForSummoner(summoner: SummonerModel): Maybe<MyAccountModel> = ensureInitializedDoOnIO {}.firstElement().flatMap {
+        Maybe.fromCallable {
+            val myAccEnt =
+                database.summonerDAO().getByPuuidAndRegionTag(summoner.puuid, summoner.region.tag)?.let { database.myAccountDAO().getBySummonerId(it.id) }
+                    ?: throw RuntimeException("No My Account for summoner ")
+            MyAccountModel(this, myAccEnt.id)
+        }
+    }.subscribeOn(Schedulers.io()).cache()
+
+    fun getSummonerForMyAccount(myAccount: MyAccountModel): ReplaySubject<SummonerModel> = ReplaySubject.create<SummonerModel>(1).also { subj ->
+        ensureInitializedDoOnIO { database.summonerDAO().getById(database.myAccountDAO().getById(myAccount.id).summonerId) }
+            .flatMap { sumEnt -> findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag)) }
+            .subscribe(subj)
+    }
+
     //  Operations  ///////////////////////////////////////////////////////////
 
     /**
@@ -295,7 +316,7 @@ class Repository @Inject constructor(val context: Context) {
     fun deleteMySummonersSwitchActive( summoners: List<SummonerModel> ): ReplaySubject<List<String>> = ensureInitializedDoOnIOSubject {
         val newCurrentPuuids: MutableList<String> = MutableList(0) { throw RuntimeException() }
         database.runInTransaction {
-            val mySums = summoners.mapNotNull { database.summonerDAO().getByPuuidAndRegion(it.puuid,database.regionDAO().getByTag(it.region.tag).id) }
+            val mySums = summoners.mapNotNull { database.summonerDAO().getByPuuidAndRegionId(it.puuid,database.regionDAO().getByTag(it.region.tag).id) }
             val myAccs = mySums.mapNotNull { database.myAccountDAO().getBySummonerId(it.id) }
 
             if (database.myAccountDAO().count() <= myAccs.size) throw RuntimeException( "At least 1 account should be left" )
@@ -317,7 +338,6 @@ class Repository @Inject constructor(val context: Context) {
         }
         newCurrentPuuids
     }
-
 
     //  Static Methods  ///////////////////////////////////////////////////////
 
@@ -402,7 +422,7 @@ class Repository @Inject constructor(val context: Context) {
         }
 
     fun checkSummonerExistInDB(summoner: SummonerModel): Observable<Boolean> = ensureInitializedDoOnIO {
-        val sumEnt = database.summonerDAO().getByPuuidAndRegion(summoner.puuid, database.regionDAO().getByTag(summoner.region.tag).id)
+        val sumEnt = database.summonerDAO().getByPuuidAndRegionId(summoner.puuid, database.regionDAO().getByTag(summoner.region.tag).id)
         sumEnt != null
     }
 }
