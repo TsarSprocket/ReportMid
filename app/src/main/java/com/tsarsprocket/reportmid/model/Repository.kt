@@ -87,7 +87,7 @@ class Repository @Inject constructor(val context: Context) {
             .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
             .map { database.summonerDAO().getById(it.accountId) }
             .first()
-    }.flatMap { sum ->
+    }.switchMap { sum ->
         val reg = database.regionDAO().getById(sum.regionId)
         findSummonerByPuuidAndRegion(PuuidAndRegion(sum.puuid,RegionModel.getByTag(reg.tag)))
     }
@@ -100,7 +100,7 @@ class Repository @Inject constructor(val context: Context) {
     }.map { RegionModel.getByTag(it.tag) }
 
     fun getMyRegions(): Observable<List<RegionModel>> = ensureInitializedDoOnIO { Unit }
-        .flatMap { _ -> database.myAccountDAO().getAllObservable() }
+        .switchMap { _ -> database.myAccountDAO().getAllObservable() }
         .map { lstMyAccs ->
             lstMyAccs.map { myAcc ->
                 val sum = database.summonerDAO().getById(myAcc.summonerId)
@@ -111,7 +111,7 @@ class Repository @Inject constructor(val context: Context) {
         }
 
     fun getCurrentRegions() = ensureInitializedDoOnIOSubject { Unit }
-        .flatMap { _ ->
+        .switchMap { _ ->
             database.currentAccountDAO().getAllObservable()
                 .map { lstCurAccEnt ->
                     lstCurAccEnt.map { database.regionDAO().getById(it.regionId) }
@@ -121,7 +121,7 @@ class Repository @Inject constructor(val context: Context) {
 
 
     fun getMySummonersObservable(): Observable<List<SummonerModel>> = ensureInitializedDoOnIO {}
-        .flatMap {
+        .switchMap {
             database.summonerDAO().getMySummonersLive()
                 .map { lst ->
                     val arrObsSumModel = lst.map { sumEnt ->
@@ -160,7 +160,7 @@ class Repository @Inject constructor(val context: Context) {
     fun findSummonerForName(summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false): Observable<SummonerModel> {
 
         return initialized.observeOn(Schedulers.io())
-            .flatMap { fInitialized ->
+            .switchMap { fInitialized ->
                 when (fInitialized) {
                     true -> getSummonerModel(failOnNull = failOnNotFound) { Orianna.summonerNamed(summonerName).withRegion(regionModel.shadowRegion).get() }
                     else -> throw RepositoryNotInitializedException()
@@ -182,7 +182,7 @@ class Repository @Inject constructor(val context: Context) {
 
     @WorkerThread
     fun getActiveSummonerPuuidAndRegion(): Observable<PuuidAndRegion> = initialized.observeOn(Schedulers.io())
-        .flatMap { fInitialized ->
+        .switchMap { fInitialized ->
             when (fInitialized) {
                 true -> {
                     val curAccId = database.globalDAO().getAll().first().currentAccountId
@@ -200,7 +200,7 @@ class Repository @Inject constructor(val context: Context) {
         }
 
     @WorkerThread
-    fun getActiveSummoner() = getActiveSummonerPuuidAndRegion().flatMap { puuid -> findSummonerByPuuidAndRegion(puuid) }
+    fun getActiveSummoner() = getActiveSummonerPuuidAndRegion().switchMap { puuid -> findSummonerByPuuidAndRegion(puuid) }
 
     fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIOSubject { ChampionMasteryModel(this, championMastery) }
 
@@ -272,7 +272,7 @@ class Repository @Inject constructor(val context: Context) {
     }
 
     fun getCurrentAccountsPerRegionObservable(reg: RegionModel): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
-        .flatMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
+        .switchMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
         .map { list -> list.map { curAccEnt -> MyAccountModel(this,curAccEnt.accountId) } }
 
     //  Operations  ///////////////////////////////////////////////////////////
@@ -427,7 +427,7 @@ class Repository @Inject constructor(val context: Context) {
         ReplaySubject.createWithSize<T>(1).also { subject -> ensureInitializedDoOnIO(failOnNull, l).subscribe(subject) }
 
     private fun <T> ensureInitializedDoOnIO(failOnNull: Boolean = false, l: () -> T?): Observable<T> =
-        initialized.observeOn(Schedulers.io()).flatMap { fInitialized ->
+        initialized.observeOn(Schedulers.io()).switchMap { fInitialized ->
             when (fInitialized) {
                 true -> {
                     val v = l()

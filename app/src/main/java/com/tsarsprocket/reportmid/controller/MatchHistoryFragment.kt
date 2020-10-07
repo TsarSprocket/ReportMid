@@ -58,7 +58,7 @@ class MatchHistoryFragment : BaseFragment() {
                     emitter.onComplete()
                 }
             }
-                .flatMap { summonerModel -> summonerModel.matchHistory }
+                .switchMap { summonerModel -> summonerModel.matchHistory }
                 .observeOn(AndroidSchedulers.mainThread()).subscribe { matchHistory ->
                     adapter = MatchHistoryAdapter(object : MatchHistoryAdapter.IHistoryDataProvider {
                         override fun getCount(): Int = matchHistory.size

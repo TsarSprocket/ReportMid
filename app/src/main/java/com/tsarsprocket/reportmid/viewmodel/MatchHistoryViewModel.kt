@@ -29,9 +29,9 @@ class MatchHistoryViewModel @Inject constructor( private val repository: Reposit
                     emitter.onNext( summonerModel )
                     emitter.onComplete()
                 } }
-            .flatMap { summonerModel ->
+            .switchMap { summonerModel ->
                 summonerModel.matchHistory
-                    .flatMap { it.getMatch( position) }
+                    .switchMap { it.getMatch( position) }
                     .map { matchModel -> Pair( summonerModel, matchModel ) }
             }
             .observeOn( Schedulers.io() )

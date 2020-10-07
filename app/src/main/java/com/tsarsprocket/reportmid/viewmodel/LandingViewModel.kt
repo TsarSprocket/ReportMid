@@ -37,7 +37,7 @@ class LandingViewModel @Inject constructor(val repository: Repository) : ViewMod
 
     fun defineMainAccount(puuidAndRegion: PuuidAndRegion) =
         LiveDataReactiveStreams.fromPublisher(
-            repository.findSummonerByPuuidAndRegion(puuidAndRegion).flatMap { summonerModel ->
+            repository.findSummonerByPuuidAndRegion(puuidAndRegion).switchMap { summonerModel ->
                 repository.addMyAccountNotify(summonerModel, true)
             }.toFlowable(BackpressureStrategy.LATEST)
         )

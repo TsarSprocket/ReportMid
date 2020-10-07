@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -12,10 +13,7 @@ import javax.inject.Inject
 
 class ManageSummonersViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    private val forceUpdateCounter = MutableLiveData(0)
-
-    val mySummonersLive = forceUpdateCounter.switchMap {
-        LiveDataReactiveStreams.fromPublisher(repository.getMySummonersObservable().toFlowable(BackpressureStrategy.BUFFER)) }
+    val mySummonersLive: LiveData<List<SummonerModel>> = repository.getMySummonersObservable().toLiveData()
 
     val checkedSummoners = HashSet<SummonerModel>()
 
@@ -24,15 +22,10 @@ class ManageSummonersViewModel @Inject constructor(private val repository: Repos
     //  Methods  ///////////////////////////////////////////////////////////////
 
     fun addMySummoner(puuidAndRegion: PuuidAndRegion) {
-        disposer.add(repository.findSummonerByPuuidAndRegion( puuidAndRegion ).flatMap { summonerModel ->
+        disposer.add(repository.findSummonerByPuuidAndRegion( puuidAndRegion ).switchMap { summonerModel ->
             repository.addMyAccountNotify( summonerModel ) }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe{ /*forceUpdate()*/ })
-    }
-
-    @MainThread
-    fun forceUpdate() {
-        forceUpdateCounter.value = forceUpdateCounter.value?.plus(1)
+            .subscribe())
     }
 
     fun deleteSelected() {

@@ -4,6 +4,7 @@ import android.view.View
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
+import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.ReplaySubject
 import javax.inject.Inject
@@ -11,7 +12,7 @@ import javax.inject.Inject
 class ConfirmSummonerViewModel @Inject constructor( val repository: Repository ): ViewModel() {
 
     val puuidSubj = ReplaySubject.create<PuuidAndRegion>( 1 )
-    val summoner = LiveDataReactiveStreams.fromPublisher( puuidSubj.flatMap { puuidAndRegion -> repository.findSummonerByPuuidAndRegion( puuidAndRegion ) }.toFlowable( BackpressureStrategy.LATEST ) )
+    val summoner = puuidSubj.switchMap { puuidAndRegion -> repository.findSummonerByPuuidAndRegion( puuidAndRegion ) }.toLiveData()
     val bitmap = summoner.switchMap { sum -> LiveDataReactiveStreams.fromPublisher( sum.icon.toFlowable( BackpressureStrategy.LATEST ) ) }
     val name = summoner.map { sum -> sum.name }
     val level = summoner.map { sum -> sum.level.toString() }

@@ -56,7 +56,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     fun loadForSummoner( puuidAndRegion: PuuidAndRegion ) {
         allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion )
             .observeOn( AndroidSchedulers.mainThread() )
-            .flatMap{ summoner.value = it; it.getCurrentMatch() }
+            .switchMap{ summoner.value = it; it.getCurrentMatch() }
             .observeOn( AndroidSchedulers.mainThread() )
             .subscribe( { match ->
                 currentMatchLive.value = match
@@ -77,7 +77,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     ) {
         disposer.add(
             obsCurTeamModel
-                .flatMap { matchTeamModel -> matchTeamModel.participants }
+                .switchMap { matchTeamModel -> matchTeamModel.participants }
                 .observeOn( Schedulers.io() )
                 .subscribe { lstObsPlayerModels ->
                     participantsListLive.postValue(
@@ -86,19 +86,19 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
                             .map { playerModel ->
                                 val playerPresentation =  PlayerPresentation()
                                 matchDisposables.addAll(
-                                    playerModel.champion.flatMap { it.bitmap }.subscribe{ playerPresentation.championIconLive.postValue( it ) },
+                                    playerModel.champion.switchMap { it.bitmap }.subscribe{ playerPresentation.championIconLive.postValue( it ) },
                                     Observable.zip( playerModel.champion, playerModel.summoner, BiFunction<ChampionModel,SummonerModel,Observable<Int>> { ch, su -> getSkillForChampion( su, ch ) } )
-                                        .flatMap { it }
+                                        .switchMap { it }
                                         .concatWith( Observable.just( -1 ) )
                                         .take( 1 )
                                         .subscribe { playerPresentation.summonerChampionSkillLive.postValue( it ) },
                                     playerModel.summoner.subscribe { playerPresentation.summonerNameLive.postValue( it.name ); playerPresentation.summonerLevelLive.postValue( it.level ) },
-                                    playerModel.summoner.flatMap { it.soloQueuePosition }.subscribe { soloQueuePosition ->
+                                    playerModel.summoner.switchMap { it.soloQueuePosition }.subscribe { soloQueuePosition ->
                                         playerPresentation.soloqueueRankLive.postValue( soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric )
                                         playerPresentation.soloqueueWinrateLive.postValue( ( soloQueuePosition.wins.toFloat() / ( soloQueuePosition.wins + soloQueuePosition.losses ).toFloat() ).takeUnless { it.isNaN() }?: 0f )
                                     },
-                                    playerModel.summonerSpellD.flatMap { it.icon }.subscribe{ playerPresentation.summonerSpellDLive.postValue( it ) },
-                                    playerModel.summonerSpellF.flatMap { it.icon }.subscribe{ playerPresentation.summonerSpellFLive.postValue( it ) }
+                                    playerModel.summonerSpellD.switchMap { it.icon }.subscribe{ playerPresentation.summonerSpellDLive.postValue( it ) },
+                                    playerModel.summonerSpellF.switchMap { it.icon }.subscribe{ playerPresentation.summonerSpellFLive.postValue( it ) }
                                 )
                                 playerPresentation.primaryRunePathIconResIdLive.postValue( playerModel.primaryRunePath.iconResId )
                                 playerPresentation.secondaryRunePathIconResIdLive.postValue( playerModel.secondaryRunePath.iconResId )

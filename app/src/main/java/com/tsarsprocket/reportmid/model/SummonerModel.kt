@@ -43,7 +43,7 @@ class SummonerModel(
     private fun getObservableMatchHistoryForSummoner( summoner: Summoner ): Observable<MatchHistoryModel> =
         Observable.fromCallable { MatchHistory.forSummoner( summoner ).get()!! }
             .subscribeOn( Schedulers.io() )
-            .flatMap { shadowHistory -> repository.getMatchHistoryModel( shadowHistory ) }
+            .switchMap { shadowHistory -> repository.getMatchHistoryModel( shadowHistory ) }
 
     //  Classes  //////////////////////////////////////////////////////////////
 
