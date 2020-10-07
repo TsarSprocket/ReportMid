@@ -30,7 +30,6 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
@@ -137,14 +136,14 @@ class Repository @Inject constructor(val context: Context) {
     fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIO {
         database.regionDAO().getByTag(reg.tag)
     }
-        .flatMap { regEnt ->
-            database.currentAccountDAO().getByRegionObservable(regEnt.id)
+        .switchMap { regEnt ->
+            database.currentAccountDAO().getByRegionIdObservable(regEnt.id)
                 .map { lstCurAcc ->
                     val firstOne = lstCurAcc.first()
                     Pair(regEnt, database.myAccountDAO().getById(firstOne.accountId))
                 }
         }
-        .flatMap { (regEnt, myCurAccEnt) ->
+        .switchMap { (regEnt, myCurAccEnt) ->
             database.summonerDAO().getMySummonersByRegionObservable(regEnt.id)
                 .map { sumEnts -> sumEnts.map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) } }
                 .map { lst ->
@@ -250,6 +249,10 @@ class Repository @Inject constructor(val context: Context) {
 
     fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
+    fun getMyAccounts(): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO {
+        database.myAccountDAO().getAll()
+    }.map { list -> list.map { MyAccountModel(this,it.id) } }
+
     fun getMyAccountById(id: Long): ReplaySubject<MyAccountModel> = ReplaySubject.create<MyAccountModel>(1).also { subj ->
             Observable.just(MyAccountModel(this,id)).subscribe(subj)
     }
@@ -263,11 +266,14 @@ class Repository @Inject constructor(val context: Context) {
         }
     }.subscribeOn(Schedulers.io()).cache()
 
-    fun getSummonerForMyAccount(myAccount: MyAccountModel): ReplaySubject<SummonerModel> = ReplaySubject.create<SummonerModel>(1).also { subj ->
-        ensureInitializedDoOnIO { database.summonerDAO().getById(database.myAccountDAO().getById(myAccount.id).summonerId) }
-            .flatMap { sumEnt -> findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag)) }
-            .subscribe(subj)
+    fun getSummonerForMyAccount(myAccount: MyAccountModel): Maybe<SummonerModel> = ensureInitializedDoOnIO {}.firstElement().flatMap {
+        val sumEnt = database.summonerDAO().getById(database.myAccountDAO().getById(myAccount.id).summonerId)
+        findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag)).firstElement()
     }
+
+    fun getCurrentAccountsPerRegionObservable(reg: RegionModel): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
+        .flatMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
+        .map { list -> list.map { curAccEnt -> MyAccountModel(this,curAccEnt.accountId) } }
 
     //  Operations  ///////////////////////////////////////////////////////////
 
@@ -290,7 +296,7 @@ class Repository @Inject constructor(val context: Context) {
 
                         val accId = database.myAccountDAO().insert(myAccountEntity)
 
-                        val current = database.currentAccountDAO().getByRegion(regionEntity.id)
+                        val current = database.currentAccountDAO().getByRegionId(regionEntity.id)
 
                         val currentId = if (current != null) {
                             if (current.accountId != accId && setCurrent) {
@@ -321,7 +327,7 @@ class Repository @Inject constructor(val context: Context) {
 
             if (database.myAccountDAO().count() <= myAccs.size) throw RuntimeException( "At least 1 account should be left" )
 
-            val curAccs = myAccs.mapNotNull { database.currentAccountDAO().getByMyAccount(it.id) }
+            val curAccs = myAccs.mapNotNull { database.currentAccountDAO().getByMyAccountId(it.id) }
             curAccs.forEach { curAcc ->
                 val accsInRegion = database.myAccountDAO().getByRegion(curAcc.regionId)
                 val newActiveAcc = accsInRegion.subtract( myAccs ).firstOrNull()
@@ -337,6 +343,16 @@ class Repository @Inject constructor(val context: Context) {
             mySums.forEach { database.summonerDAO().delete(it) }
         }
         newCurrentPuuids
+    }
+
+    fun activateAccount(acc: MyAccountModel) {
+        val myAccEnt = database.myAccountDAO().getById(acc.id)
+        val sumEnt = database.summonerDAO().getById(myAccEnt.summonerId)
+        val curAccEnt = database.currentAccountDAO().getByRegionId(sumEnt.regionId)
+        if(curAccEnt != null && acc.id != curAccEnt?.accountId) {
+            curAccEnt.accountId = acc.id
+            database.currentAccountDAO().update(curAccEnt)
+        }
     }
 
     //  Static Methods  ///////////////////////////////////////////////////////

@@ -16,27 +16,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
-import com.tsarsprocket.reportmid.databinding.FragmentManageMySummonersBinding
+import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
-import com.tsarsprocket.reportmid.viewmodel.ManageMySummonersViewModel
+import com.tsarsprocket.reportmid.viewmodel.ManageSummonersViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.card_my_managed_summoner.view.*
 import javax.inject.Inject
 
-class ManageMySummonersFragment : BaseFragment() {
+class ManageSummonersFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel by viewModels<ManageMySummonersViewModel> { viewModelFactory }
+    private val viewModel by viewModels<ManageSummonersViewModel> { viewModelFactory }
     private val activityViewModel by activityViewModels<MainActivityViewModel> { viewModelFactory }
 
-    lateinit var binding: FragmentManageMySummonersBinding
+    lateinit var binding: FragmentManageSummonersBinding
 
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
@@ -47,7 +47,7 @@ class ManageMySummonersFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_my_summoners, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_manage_summoners, container, false)
         binding.lifecycleOwner = this
         binding.handler = EventHandler()
 
@@ -109,7 +109,7 @@ class ManageMySummonersFragment : BaseFragment() {
             }
         }.observeOn(getNavigationReturnedValue<PuuidAndRegion>(RESULT_PUUID_AND_REG),this)
 
-        findNavController().navigate(ManageMySummonersFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph(null))
+        findNavController().navigate(ManageSummonersFragmentDirections.actionManageMySummonersFragmentToAddSummonerGraph(null))
     }
 
     private fun deleteSelected() {
@@ -118,13 +118,13 @@ class ManageMySummonersFragment : BaseFragment() {
             .setPositiveButton(R.string.fragment_manage_my_summoners_remove_mine_confirm_button_yea) { _, _ ->
                 try {
                     viewModel.deleteSelected()
-                } catch (ex: ManageMySummonersViewModel.CannotDeleteAllSummoners) {
+                } catch (ex: ManageSummonersViewModel.CannotDeleteAllSummoners) {
                     Snackbar.make(
                         binding.root,
                         getString(R.string.fragment_manage_my_summoners_error_at_least_one_summoner_should_remain),
                         Snackbar.LENGTH_SHORT
                     )
-                } catch (ex: ManageMySummonersViewModel.CannotDeleteNothing) {
+                } catch (ex: ManageSummonersViewModel.CannotDeleteNothing) {
                     Snackbar.make(binding.root, getString(R.string.fragment_manage_my_summoners_error_select_summoner), Snackbar.LENGTH_SHORT)
                 }
             }
@@ -133,7 +133,7 @@ class ManageMySummonersFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() = ManageMySummonersFragment()
+        fun newInstance() = ManageSummonersFragment()
     }
 
     //  Classes  //////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class ManageMySummonersViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class ManageSummonersViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val forceUpdateCounter = MutableLiveData(0)
 

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
@@ -19,7 +20,9 @@ import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_drawer.view.*
 import kotlinx.android.synthetic.main.layout_my_summoner_line.view.*
 import javax.inject.Inject
@@ -31,7 +34,7 @@ class DrawerFragment : BaseFragment() {
 
     private val viewModel by viewModels<DrawerViewModel> { viewModelFactory }
 
-    lateinit var binding: FragmentDrawerBinding
+    private lateinit var binding: FragmentDrawerBinding
 
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
@@ -44,21 +47,22 @@ class DrawerFragment : BaseFragment() {
         binding.viewModel = viewModel
         binding.eventHandler = EventHandler()
 
-        binding.regionSelector.adapter = RegionAdapter(viewModel.currentRegions)
+        binding.regionSelector.adapter = RegionAdapter(viewModel.currentRegionsLive)
 
-        viewModel.mySummonersInSelectedRegion.observe(viewLifecycleOwner) { updateMySummoners(it) }
+        viewModel.mySummonersInSelectedRegionLive.observe(viewLifecycleOwner) { updateMySummoners(it) }
 
         return binding.root
     }
 
-    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Bitmap, String, Boolean>>) {
+    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Bitmap,SummonerModel,Boolean>>) {
         val group = binding.root.llMySummoners
         group.removeAllViews()
-        listOfMarkedSummoners.forEach { (icon, name, isSelected) ->
+        listOfMarkedSummoners.forEach { (icon, sum, isSelected) ->
             val view = layoutInflater.inflate(R.layout.layout_my_summoner_line, group, false) as ConstraintLayout
             view.iconSummoner.setImageBitmap(icon)
-            view.txtSummonerName.text = name
+            view.txtSummonerName.text = sum.name
             view.cbSelected.isChecked = isSelected
+            view.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
             group.addView(view)
         }
     }
@@ -69,12 +73,21 @@ class DrawerFragment : BaseFragment() {
         findNavController().navigate(action)
     }
 
+    private fun goManageFriends() {
+        baseActivity.closeDrawers()
+        val action = DrawerFragmentDirections.actionGlobalManageFriendsFragment(TODO())
+    }
+
     //  Classes  //////////////////////////////////////////////////////////////
 
     inner class EventHandler {
 
         fun manageMySummoners(view: View) {
             goManageMySummoners()
+        }
+
+        fun manageFriends(view: View) {
+            goManageFriends()
         }
     }
 

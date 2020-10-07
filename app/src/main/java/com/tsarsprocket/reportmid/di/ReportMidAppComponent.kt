@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.di
 import android.content.Context
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.controller.*
+import com.tsarsprocket.reportmid.viewmodel.ManageFriendsViewModel
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
@@ -23,7 +24,8 @@ import javax.inject.Singleton
         ProfileOverviewViewModelModule::class,
         MatchupViewModelModule::class,
         MatchHistoryViewModelModule::class,
-        ManageMySummonersViewModelModule::class,
+        ManageSummonersViewModelModule::class,
+        ManageFriendsViewModelModule::class,
     ]
 )
 interface ReportMidAppComponent {
@@ -42,7 +44,8 @@ interface ReportMidAppComponent {
     fun profileOverviewViewModelComponentFactory(): ProfileOverviewViewModelComponent.Factory
     fun matchupViewModelComponentFactory(): MatchupViewModelComponent.Factory
     fun matchHistoryViewModelComponentFactory(): MatchHistoryViewModelComponent.Factory
-    fun manageMySummonersViewModelComponentFactory(): ManageMySummonersViewModelComponent.Factory
+    fun manageMySummonersViewModelComponentFactory(): ManageSummonersViewModelComponent.Factory
+    fun manageFriendsViewModelComponentFactory(): ManageFriendsViewModelComponent.Factory
 
     // Fragments
     fun inject(drawerFragment: DrawerFragment)
@@ -52,5 +55,6 @@ interface ReportMidAppComponent {
     fun inject(profileOverviewFragment: ProfileOverviewFragment)
     fun inject(matchHistoryFragment: MatchHistoryFragment)
     fun inject(matchupFragment: MatchupFragment)
-    fun inject(manageMySummonersFragment: ManageMySummonersFragment)
+    fun inject(manageSummonersFragment: ManageSummonersFragment)
+    fun inject(manageFriendsFragment: ManageFriendsFragment)
 }

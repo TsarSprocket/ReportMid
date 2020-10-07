@@ -2,10 +2,10 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".controller.ManageMySummonersFragment">
+    tools:context=".controller.ManageSummonersFragment">
 
     <data>
-        <variable name="handler" type="com.tsarsprocket.reportmid.controller.ManageMySummonersFragment.EventHandler" />
+        <variable name="handler" type="com.tsarsprocket.reportmid.controller.ManageSummonersFragment.EventHandler" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

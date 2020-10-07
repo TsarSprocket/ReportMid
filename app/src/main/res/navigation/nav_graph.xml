@@ -40,17 +40,20 @@
         >
         <argument
             android:name="ARG_PUUID_AND_REG"
-            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion" />
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
+            />
         <action
             android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
             app:destination="@id/matchupFragment"
             app:popUpTo="@id/matchHistoryFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            />
         <action
             android:id="@+id/action_matchHistoryFragment_to_profileOverviewFragment"
             app:destination="@id/profileOverviewFragment"
             app:popUpTo="@id/matchHistoryFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/matchupFragment"
@@ -60,31 +63,37 @@
         >
         <argument
             android:name="ARG_PUUID_AND_REG"
-            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion" />
+            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
+            />
         <argument
             android:name="ARG_RELOAD"
             app:argType="boolean"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            />
         <action
             android:id="@+id/action_matchupFragment_to_matchHistoryFragment"
             app:destination="@id/matchHistoryFragment"
             app:popUpTo="@id/matchupFragment"
-            app:popUpToInclusive="true" >
+            app:popUpToInclusive="true"
+            >
         </action>
         <action
             android:id="@+id/action_matchupFragment_to_profileOverviewFragment"
             app:destination="@id/profileOverviewFragment"
             app:popUpTo="@id/matchupFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/manageMySummonersFragment"
-        android:name="com.tsarsprocket.reportmid.controller.ManageMySummonersFragment"
+        android:name="com.tsarsprocket.reportmid.controller.ManageSummonersFragment"
         android:label="fragment_manage_my_summoners"
-        tools:layout="@layout/fragment_manage_my_summoners" >
+        tools:layout="@layout/fragment_manage_summoners"
+        >
         <action
             android:id="@+id/action_manageMySummonersFragment_to_add_summoner_graph"
-            app:destination="@id/add_summoner_graph" >
+            app:destination="@id/add_summoner_graph"
+            >
             <argument
                 android:name="ARG_REGION"
                 app:argType="string"
@@ -93,13 +102,41 @@
         </action>
     </fragment>
     <fragment
-        android:id="@+id/drawerFragment2"
+        android:id="@+id/drawerFragment"
         android:name="com.tsarsprocket.reportmid.controller.DrawerFragment"
         android:label="fragment_drawer"
-        tools:layout="@layout/fragment_drawer" />
+        tools:layout="@layout/fragment_drawer"
+        />
     <action
         android:id="@+id/action_global_manageMySummonersFragment"
         app:destination="@id/manageMySummonersFragment"
         app:launchSingleTop="true"
         />
+    <fragment
+        android:id="@+id/manageFriendsFragment"
+        android:name="com.tsarsprocket.reportmid.controller.ManageFriendsFragment"
+        android:label="fragment_manage_friends"
+        tools:layout="@layout/fragment_manage_friends"
+        >
+        <action
+            android:id="@+id/action_manageFriendsFragment_to_add_summoner_graph"
+            app:destination="@id/add_summoner_graph"
+            >
+            <argument
+                android:name="ARG_REGION"
+                app:argType="string"
+                app:nullable="true"
+                />
+        </action>
+        <argument
+            android:name="ARG_MY_ACC_ID"
+            app:argType="long"
+            />
+    </fragment>
+    <action
+        android:id="@+id/action_global_manageFriendsFragment"
+        app:destination="@id/manageFriendsFragment"
+        app:launchSingleTop="true"
+        >
+    </action>
 </navigation>

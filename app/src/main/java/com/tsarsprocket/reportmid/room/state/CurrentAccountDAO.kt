@@ -16,13 +16,13 @@ interface CurrentAccountDAO {
     fun getById(id: Long): CurrentAccountEntity
 
     @Query("SELECT * FROM state_current_accounts WHERE region_id = :regionId")
-    fun getByRegion(regionId: Long): CurrentAccountEntity?
+    fun getByRegionId(regionId: Long): CurrentAccountEntity?
 
     @Query("SELECT * FROM state_current_accounts WHERE region_id = :regionId")
-    fun getByRegionObservable(regionId: Long): Observable<List<CurrentAccountEntity>>
+    fun getByRegionIdObservable(regionId: Long): Observable<List<CurrentAccountEntity>>
 
     @Query("SELECT * FROM state_current_accounts WHERE account_id = :myAccId")
-    fun getByMyAccount(myAccId: Long): CurrentAccountEntity?
+    fun getByMyAccountId(myAccId: Long): CurrentAccountEntity?
 
     @Insert
     fun insert(currentAccountEntity: CurrentAccountEntity): Long
