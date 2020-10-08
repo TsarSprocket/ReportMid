@@ -75,10 +75,9 @@
                         />
 
                     <ImageButton
-                        android:text="@string/fragment_drawer_edit_my_summoners_button"
+                        android:onClick="@{eventHandler::manageMySummoners}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:onClick="@{eventHandler::manageMySummoners}"
                         android:src="@drawable/system_icon_edit_enabled"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -120,7 +119,7 @@
                         />
 
                     <ImageButton
-                        android:text="@string/fragment_drawer_edit_my_friends_button"
+                        android:onClick="@{eventHandler::manageFriends}"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/system_icon_edit_enabled"

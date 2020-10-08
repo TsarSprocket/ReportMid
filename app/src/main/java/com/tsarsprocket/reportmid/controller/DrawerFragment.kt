@@ -21,6 +21,8 @@ import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_drawer.view.*
@@ -76,7 +78,14 @@ class DrawerFragment : BaseFragment() {
 
     private fun goManageFriends() {
         baseActivity.closeDrawers()
-        val action = DrawerFragmentDirections.actionGlobalManageFriendsFragment(TODO())
+        object : OneTimeObserver<List<MyAccountModel>>() {
+            override fun onOneTimeChanged(v: List<MyAccountModel>) {
+                v.firstOrNull()?.let { myAccModel ->
+                    val action = DrawerFragmentDirections.actionGlobalManageFriendsFragment(myAccModel.id)
+                    findNavController().navigate(action)
+                }
+            }
+        }.observeOn(viewModel.currentAccountLive,this)
     }
 
     private fun goSeeProfile(sum: SummonerModel) {
