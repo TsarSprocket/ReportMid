@@ -63,6 +63,7 @@ class DrawerFragment : BaseFragment() {
             view.txtSummonerName.text = sum.name
             view.cbSelected.isChecked = isSelected
             view.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
+            view.setOnClickListener { goSeeProfile(sum) }
             group.addView(view)
         }
     }
@@ -76,6 +77,12 @@ class DrawerFragment : BaseFragment() {
     private fun goManageFriends() {
         baseActivity.closeDrawers()
         val action = DrawerFragmentDirections.actionGlobalManageFriendsFragment(TODO())
+    }
+
+    private fun goSeeProfile(sum: SummonerModel) {
+        baseActivity.closeDrawers()
+        val action = DrawerFragmentDirections.actionGlobalProfileOverviewFragment(sum.puuidAndRegion)
+        findNavController().navigate(action)
     }
 
     //  Classes  //////////////////////////////////////////////////////////////

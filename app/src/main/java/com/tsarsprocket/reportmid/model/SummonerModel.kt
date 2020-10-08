@@ -25,6 +25,7 @@ class SummonerModel(
     val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
     val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
     val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner(this) }
+    val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid,region) }
 
     fun getMasteryWithChampion( championModel: ChampionModel ): Observable<ChampionMastery> =
         Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( championModel.shadowChampion ).get() }.subscribeOn( Schedulers.io() )

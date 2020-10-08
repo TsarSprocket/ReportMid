@@ -138,5 +138,5 @@
         app:destination="@id/manageFriendsFragment"
         app:launchSingleTop="true"
         >
-    </action>
+    </action><action android:id="@+id/action_global_profileOverviewFragment" app:destination="@id/profileOverviewFragment"/>
 </navigation>
