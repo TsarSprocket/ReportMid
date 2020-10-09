@@ -26,6 +26,7 @@ import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
+import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
@@ -440,5 +441,14 @@ class Repository @Inject constructor(val context: Context) {
     fun checkSummonerExistInDB(summoner: SummonerModel): Observable<Boolean> = ensureInitializedDoOnIO {
         val sumEnt = database.summonerDAO().getByPuuidAndRegionId(summoner.puuid, database.regionDAO().getByTag(summoner.region.tag).id)
         sumEnt != null
+    }
+
+    fun createFriend(friend: PuuidAndRegion, mine: PuuidAndRegion) = ensureInitializedDoOnIOSubject {
+        with(database) {
+            val friendsSumId = summonerDAO().insert(SummonerEntity(friend.puuid, database.regionDAO().getByTag(friend.region.tag).id))
+            val mySumEnt = summonerDAO().getByPuuidAndRegionId(mine.puuid, database.regionDAO().getByTag(mine.region.tag).id)!!
+            val myAcc = myAccountDAO().getBySummonerId(mySumEnt.id)!!
+            myFriendDAO().insert(MyFriendEntity(myAcc.id,friendsSumId))
+        }
     }
 }
