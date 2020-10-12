@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import io.reactivex.Observable
 
 @Dao
 interface MyFriendDAO {
@@ -16,6 +17,9 @@ interface MyFriendDAO {
 
     @Query( "SELECT * FROM my_friends WHERE my_account_id = :accId" )
     fun getByAccountId( accId: Long ): List<MyFriendEntity>
+
+    @Query( "SELECT * FROM my_friends WHERE my_account_id = :accId" )
+    fun getByAccountIdObservable( accId: Long ): Observable<List<MyFriendEntity>>
 
     @Query( """
         SELECT s.*

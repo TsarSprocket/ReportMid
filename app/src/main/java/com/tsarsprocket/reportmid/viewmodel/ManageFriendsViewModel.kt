@@ -8,11 +8,14 @@ import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import com.tsarsprocket.reportmid.model.state.MyFriendModel
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.ReplaySubject
 import javax.inject.Inject
 
 class ManageFriendsViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
@@ -24,6 +27,7 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
     //  Rx  ///////////////////////////////////////////////////////////////////
 
     val selectedAccPositionObservable: Observable<Int> = selectedAccPositionLive.toObservable()
+
     private val myAccsAndSumsObservable: Observable<List<Triple<MyAccountModel, SummonerModel, Bitmap>>> = repository.getMyAccounts()
         .map { lst ->
             lst.mapNotNull { myAcc ->
@@ -33,18 +37,39 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
             }
         }
 
-    private val selectedSummonerObservable: Observable<SummonerModel> =
-        Observable.combineLatest(selectedAccPositionObservable,myAccsAndSumsObservable) { pos, tri ->
-            if(pos < tri.size) Maybe.just(tri[pos].second)
-            else Maybe.empty()
+    private val selectedAccAndSum: ReplaySubject<Triple<MyAccountModel, SummonerModel, Bitmap>> =
+        ReplaySubject.create<Triple<MyAccountModel, SummonerModel, Bitmap>>(1).also { subj ->
+            Observable.combineLatest(selectedAccPositionObservable,myAccsAndSumsObservable) { pos, tri ->
+                if(pos < tri.size) Maybe.just(tri[pos])
+                else Maybe.empty()
+            }
+                .filter { maybe -> !maybe.isEmpty.blockingGet() }
+                .map { maybe -> maybe.blockingGet() }
+                .subscribe(subj)
         }
-            .filter { !it.isEmpty.blockingGet() }
-            .map { it.blockingGet() }
+
+    private val selectedSummonerObservable: Observable<SummonerModel> = selectedAccAndSum
+        .map {
+            it.second
+        }
+
+    private val friendSummonersObservable: Observable<List<FriendListItem>> = selectedAccAndSum
+        .switchMap { it.first.friends }
+        .map { lst -> lst.map { friend -> friend to friend.summoner.toObservable() } }
+        .switchMap { lst -> Observable.zip(lst.map { pair -> pair.second.map { sum -> Triple(pair.first,sum,sum.icon) } }) {
+            it.toList() as List<Triple<MyFriendModel,SummonerModel,Observable<Bitmap>>> }
+        }
+        .switchMap { lst -> Observable.zip(lst.map { (friend,sum,obsIcon) ->
+            obsIcon.map { icon -> Triple(friend,sum,icon) } }) {
+                (it.toList() as List<Triple<MyFriendModel,SummonerModel,Bitmap>>).map { triple -> FriendListItem(triple.first, triple.second, triple.third) }
+            }
+        }
 
     //  Output  ///////////////////////////////////////////////////////////////
 
     val myAccsAndSumsLive: LiveData<List<Triple<MyAccountModel,SummonerModel,Bitmap>>> = myAccsAndSumsObservable.toLiveData()
     val selectedSummonerLive: LiveData<SummonerModel> = selectedSummonerObservable.toLiveData()
+    val friendSummonersLive: LiveData<List<FriendListItem>> = friendSummonersObservable.toLiveData()
 
     //  Helper  ///////////////////////////////////////////////////////////////
 
@@ -59,4 +84,13 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
     fun createFriend(friendsPuuidAndRegion: PuuidAndRegion, mySumPuuidAndRegion: PuuidAndRegion) {
         repository.createFriend(friendsPuuidAndRegion, mySumPuuidAndRegion)
     }
+
+    //  Classes  //////////////////////////////////////////////////////////////
+
+    data class FriendListItem(
+        val friend: MyFriendModel,
+        val sum: SummonerModel,
+        val icon: Bitmap,
+        var isChecked: Boolean = false
+    )
 }

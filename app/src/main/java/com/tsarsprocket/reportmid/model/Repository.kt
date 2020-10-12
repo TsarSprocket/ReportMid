@@ -22,6 +22,7 @@ import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.model.state.MyFriendModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import com.tsarsprocket.reportmid.room.MainStorage
@@ -31,6 +32,7 @@ import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
@@ -275,6 +277,22 @@ class Repository @Inject constructor(val context: Context) {
     fun getCurrentAccountsPerRegionObservable(reg: RegionModel): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
         .switchMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
         .map { list -> list.map { curAccEnt -> MyAccountModel(this,curAccEnt.accountId) } }
+
+    fun getFriendsForAcc(myAcc: MyAccountModel): ReplaySubject<List<MyFriendModel>> = ReplaySubject.create<List<MyFriendModel>>().also {
+        ensureInitializedDoOnIO {}
+            .switchMap {
+                database.myFriendDAO().getByAccountIdObservable(myAcc.id).map { lst -> lst.map{ MyFriendModel(this, it.id) } }
+            }
+    }
+
+    fun getSummonerForFriend(myFriend: MyFriendModel): Single<SummonerModel> = ensureInitializedDoOnIO {
+        val friendEnt = database.myFriendDAO().getById(myFriend.id)
+        val sumEnt = database.summonerDAO().getById(friendEnt.summonerId)
+        val regEnt = database.regionDAO().getById(sumEnt.regionId)
+        Pair(sumEnt,regEnt)
+    }
+        .switchMap { (sumEnt, regEnt) -> findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,regEnt.tag)) }
+        .firstOrError()
 
     //  Operations  ///////////////////////////////////////////////////////////
 
