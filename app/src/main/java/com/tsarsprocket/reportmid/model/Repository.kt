@@ -278,11 +278,11 @@ class Repository @Inject constructor(val context: Context) {
         .switchMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
         .map { list -> list.map { curAccEnt -> MyAccountModel(this,curAccEnt.accountId) } }
 
-    fun getFriendsForAcc(myAcc: MyAccountModel): ReplaySubject<List<MyFriendModel>> = ReplaySubject.create<List<MyFriendModel>>().also {
+    fun getFriendsForAcc(myAcc: MyAccountModel): ReplaySubject<List<MyFriendModel>> = ReplaySubject.create<List<MyFriendModel>>().also { subj ->
         ensureInitializedDoOnIO {}
             .switchMap {
                 database.myFriendDAO().getByAccountIdObservable(myAcc.id).map { lst -> lst.map{ MyFriendModel(this, it.id) } }
-            }
+            }.subscribe(subj)
     }
 
     fun getSummonerForFriend(myFriend: MyFriendModel): Single<SummonerModel> = ensureInitializedDoOnIO {

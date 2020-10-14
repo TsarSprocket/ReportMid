@@ -119,6 +119,9 @@ class ManageFriendsFragment : Fragment() {
         fun addFriend(view: View) { goAddFriend() }
     }
 
+    /**************************************************************************
+     * Adapter class for my summoner spinner
+     */
     inner class AccountSelectorAdapter: BaseAdapter() {
 
         var accList: List<Triple<MyAccountModel,SummonerModel,Bitmap>> = listOf()
@@ -154,6 +157,9 @@ class ManageFriendsFragment : Fragment() {
         }
     }
 
+    /**************************************************************************
+     * Adapter class for the list of friends
+     */
     inner class FriendsAdapter: RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
         var lst: List<ManageFriendsViewModel.FriendListItem> = listOf()

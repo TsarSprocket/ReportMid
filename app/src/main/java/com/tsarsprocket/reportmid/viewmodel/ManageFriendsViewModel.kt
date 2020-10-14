@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.viewmodel
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,7 +45,9 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
                 else Maybe.empty()
             }
                 .filter { maybe -> !maybe.isEmpty.blockingGet() }
-                .map { maybe -> maybe.blockingGet() }
+                .map {
+                    maybe -> maybe.blockingGet()
+                }
                 .subscribe(subj)
         }
 
@@ -54,13 +57,18 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
         }
 
     private val friendSummonersObservable: Observable<List<FriendListItem>> = selectedAccAndSum
-        .switchMap { it.first.friends }
+        .switchMap {
+            it.first.friends
+        }
         .map { lst -> lst.map { friend -> friend to friend.summoner.toObservable() } }
         .switchMap { lst -> Observable.zip(lst.map { pair -> pair.second.map { sum -> Triple(pair.first,sum,sum.icon) } }) {
-            it.toList() as List<Triple<MyFriendModel,SummonerModel,Observable<Bitmap>>> }
+                Log.d(ManageFriendsViewModel::class.simpleName, "Zipping (MyFriendModel,SummonerModel,Observable<Bitmap>): $it")
+                it.toList() as List<Triple<MyFriendModel,SummonerModel,Observable<Bitmap>>>
+            }
         }
         .switchMap { lst -> Observable.zip(lst.map { (friend,sum,obsIcon) ->
             obsIcon.map { icon -> Triple(friend,sum,icon) } }) {
+                Log.d(ManageFriendsViewModel::class.simpleName, "Zipping FriendListItems: $it")
                 (it.toList() as List<Triple<MyFriendModel,SummonerModel,Bitmap>>).map { triple -> FriendListItem(triple.first, triple.second, triple.third) }
             }
         }
