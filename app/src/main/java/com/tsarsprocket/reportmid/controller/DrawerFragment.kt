@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
@@ -24,7 +23,6 @@ import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_drawer.view.*
 import kotlinx.android.synthetic.main.layout_my_summoner_line.view.*
 import javax.inject.Inject
@@ -53,6 +51,8 @@ class DrawerFragment : BaseFragment() {
 
         viewModel.mySummonersInSelectedRegionLive.observe(viewLifecycleOwner) { updateMySummoners(it) }
 
+        viewModel.myFriendsLive.observe(viewLifecycleOwner) { updateMyFriends(it) }
+
         return binding.root
     }
 
@@ -67,6 +67,20 @@ class DrawerFragment : BaseFragment() {
             view.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
             view.setOnClickListener { goSeeProfile(sum) }
             group.addView(view)
+        }
+    }
+
+    private fun updateMyFriends(listOfMyFriendData: List<DrawerViewModel.MyFriendData>) {
+        val group = binding.root.llMyFriends
+
+        ensureChildren(group,listOfMyFriendData.size) { layoutInflater.inflate(R.layout.layout_my_friend_line, group, false) }
+
+        listOfMyFriendData.withIndex().forEach { indexedValue ->
+            val view = group.getChildAt(indexedValue.index) as ConstraintLayout
+            val data = indexedValue.value
+            view.iconSummoner.setImageBitmap(data.icon)
+            view.txtSummonerName.text = data.name
+            view.setOnClickListener { goSeeProfile(data.sum) }
         }
     }
 
@@ -141,5 +155,12 @@ class DrawerFragment : BaseFragment() {
 
     companion object {
         fun newInstance() = DrawerFragment()
+    }
+
+    //  Util  /////////////////////////////////////////////////////////////////
+
+    fun ensureChildren(grp: ViewGroup, n: Int, viewCreator: () -> View) {
+        if (grp.childCount > n) repeat(grp.childCount - n) { grp.removeViewAt(grp.childCount - 1) }
+        else if (grp.childCount < n ) repeat(n - grp.childCount) { grp.addView(viewCreator()) }
     }
 }
