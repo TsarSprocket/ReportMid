@@ -45,8 +45,8 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
     private val myFriendsRx: Observable<List<MyFriendData>> = currentAccountObservable
         .filter { lst -> lst.isNotEmpty() }
         .switchMap { repository.getFriendsForAcc(it.first()) }
-        .switchMap { lst -> Observable.zip(lst.map { friend -> friend.summoner.toObservable().map { sum -> friend to sum } }) { arr -> arr.toList() as List<Pair<MyFriendModel,SummonerModel>> } }
-        .switchMap { lst -> Observable.zip(lst.map { (friend, sum) -> sum.icon.map { bmp -> MyFriendData(friend, sum, bmp, sum.name) } }) { arr -> arr.toList() as List<MyFriendData> } }
+        .map { lst -> lst.map { fr -> fr to fr.summoner.blockingGet() } } // Observable.zip(lst.map { friend -> friend.summoner.toObservable().map { sum -> friend to sum } }) { arr -> arr.toList() as List<Pair<MyFriendModel,SummonerModel>> }
+        .map { lst -> lst.map { pair -> MyFriendData(pair.first, pair.second, pair.second.icon.blockingFirst(), pair.second.name) } } // Observable.zip(lst.map { (friend, sum) -> sum.icon.map { bmp -> MyFriendData(friend, sum, bmp, sum.name) } }) { arr -> arr.toList() as List<MyFriendData> }
 
     //  LiveData Output  //////////////////////////////////////////////////////
 
