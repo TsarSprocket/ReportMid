@@ -141,7 +141,7 @@ class ManageFriendsFragment : Fragment() {
             val view = (convertView?: layoutInflater.inflate(R.layout.view_summoner_selector_round_icon,parent,false)) as ImageView
 
             return view.apply {
-                setImageBitmap(getRoundedCroppedBitmap(item.third, 6))
+                setImageBitmap(getRoundedCroppedBitmap(item.third))
             }
         }
 

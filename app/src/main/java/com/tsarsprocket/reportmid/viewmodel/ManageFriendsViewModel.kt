@@ -27,7 +27,7 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
 
     //  Rx  ///////////////////////////////////////////////////////////////////
 
-    val selectedAccPositionObservable: Observable<Int> = selectedAccPositionLive.toObservable()
+    private val selectedAccPositionObservable: Observable<Int> = selectedAccPositionLive.toObservable()
 
     private val myAccsAndSumsObservable: Observable<List<Triple<MyAccountModel, SummonerModel, Bitmap>>> = repository.getMyAccounts()
         .map { lst ->
