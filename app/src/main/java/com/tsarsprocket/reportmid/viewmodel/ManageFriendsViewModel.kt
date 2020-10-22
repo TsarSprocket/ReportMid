@@ -24,6 +24,7 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
     //  Input  ////////////////////////////////////////////////////////////////
 
     val selectedAccPositionLive = MutableLiveData<Int>()
+    val checkedItemsLive = MutableLiveData<Set<IndexedValue<FriendListItem>>>(setOf())
 
     //  Rx  ///////////////////////////////////////////////////////////////////
 

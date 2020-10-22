@@ -9,6 +9,7 @@ import javax.inject.Inject
 val TOOLBAR_MENU_BY_DESTINATION = mapOf(
     R.id.matchupFragment to R.menu.matchup_toolbar,
     R.id.manageMySummonersFragment to R.menu.manage_my_summoners_toolbar,
+    R.id.manageFriendsFragment to R.menu.manage_my_friends_toolbar,
 )
 
 class MainActivityViewModel @Inject constructor() : ViewModel() {

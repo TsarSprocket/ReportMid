@@ -50,6 +50,7 @@
 
     <!-- Fragment: My Friends -->
     <string name="fragment_manage_my_friends_title">%s\&apos;s Friends</string>
+    <string name="fragment_manage_my_friends_menu_delete">Delete</string>
 
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>

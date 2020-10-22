@@ -3,7 +3,6 @@ package com.tsarsprocket.reportmid.controller
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -25,6 +25,7 @@ import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.tools.*
+import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.ManageFriendsViewModel
 import java.security.InvalidParameterException
 import javax.inject.Inject
@@ -37,6 +38,8 @@ class ManageFriendsFragment : BaseFragment() {
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private val viewModel by viewModels<ManageFriendsViewModel> { viewModelFactory }
+
+    private val activityViewModel by activityViewModels<MainActivityViewModel> { viewModelFactory }
 
     private lateinit var bindings: FragmentManageFriendsBinding
 
@@ -81,6 +84,20 @@ class ManageFriendsFragment : BaseFragment() {
             baseActivity.toolbar.title = getString(R.string.fragment_manage_my_friends_title).format(sum.name)
         }
 
+        activityViewModel.selectedMenuItem.observe(viewLifecycleOwner) { itemId ->
+            when(itemId) {
+                R.id.miManageMyFriendsDelete -> { deleteSelectedFriends() }
+            }
+        }
+
+        activityViewModel.menuRefreshed.observe(viewLifecycleOwner) {
+            baseActivity.toolbar.menu.findItem(R.id.miManageMyFriendsDelete).isEnabled = viewModel.checkedItemsLive.value?.isNotEmpty() ?: false
+        }
+
+        viewModel.checkedItemsLive.observe(viewLifecycleOwner) { checkedSet ->
+            baseActivity.toolbar.menu.findItem(R.id.miManageMyFriendsDelete).isEnabled = checkedSet.isNotEmpty()
+        }
+
         createFriendIfNeeded()
 
         return bindings.root
@@ -102,6 +119,10 @@ class ManageFriendsFragment : BaseFragment() {
         if (puuidAndRegion != null) {
             viewModel.createFriend(puuidAndRegion, removePermVar(VAR_SELECTED_SUMMONER_PUUID_AND_REGION)!!)
         }
+    }
+
+    private fun deleteSelectedFriends() {
+        TODO()
     }
 
     //  Static  ///////////////////////////////////////////////////////////////
@@ -168,6 +189,7 @@ class ManageFriendsFragment : BaseFragment() {
                 adjustCheckedSummoners(field,v)
                 field = v
                 notifyDataSetChanged()
+                updateCheckedLive()
             }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolderWithDisposer =
@@ -183,7 +205,10 @@ class ManageFriendsFragment : BaseFragment() {
                 findViewById<TextView>(R.id.txtRegion).text = item?.sum?.region?.tag ?: "N/A"
                 with(findViewById<CheckBox>(R.id.cbSelected)) {
                     isChecked = item?.isChecked ?: false
-                    setOnCheckedChangeListener{ _, isChckd -> item?. apply { isChecked = isChckd } }
+                    setOnCheckedChangeListener{ _, isChckd ->
+                        item?.apply { isChecked = isChckd }
+                        updateCheckedLive()
+                    }
                 }
             }
         }
@@ -193,6 +218,10 @@ class ManageFriendsFragment : BaseFragment() {
                 val hm = new.map { it.sum to it }.toMap()
                 old.forEach { hm[ it.sum ]?.isChecked = it.isChecked }
             }
+        }
+
+        private fun updateCheckedLive() {
+            viewModel.checkedItemsLive.value = lst.withIndex().filter { item -> item.value.isChecked }.toSet()
         }
     }
 }
