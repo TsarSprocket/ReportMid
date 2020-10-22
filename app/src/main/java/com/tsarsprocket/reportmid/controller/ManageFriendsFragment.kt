@@ -122,7 +122,7 @@ class ManageFriendsFragment : BaseFragment() {
     }
 
     private fun deleteSelectedFriends() {
-        TODO()
+        viewModel.deleteSelectedFriends()
     }
 
     //  Static  ///////////////////////////////////////////////////////////////

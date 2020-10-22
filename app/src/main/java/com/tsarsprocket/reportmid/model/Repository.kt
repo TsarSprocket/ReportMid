@@ -374,6 +374,43 @@ class Repository @Inject constructor(val context: Context) {
         }
     }
 
+    fun checkSummonerExistInDB(summoner: SummonerModel): Observable<Boolean> = ensureInitializedDoOnIO {
+        val sumEnt = database.summonerDAO().getByPuuidAndRegionId(summoner.puuid, database.regionDAO().getByTag(summoner.region.tag).id)
+        sumEnt != null
+    }
+
+    fun createFriend(friend: PuuidAndRegion, mine: PuuidAndRegion) = ensureInitializedDoOnIOSubject {
+        try {
+            database.runInTransaction {
+                with(database) {
+                    val friendsSumId = summonerDAO().insert(SummonerEntity(friend.puuid, regionDAO().getByTag(friend.region.tag).id))
+                    val mySumEnt = summonerDAO().getByPuuidAndRegionId(mine.puuid, regionDAO().getByTag(mine.region.tag).id)!!
+                    val myAcc = myAccountDAO().getBySummonerId(mySumEnt.id)!!
+                    myFriendDAO().insert(MyFriendEntity(myAcc.id, friendsSumId))
+                }
+            }
+
+            true
+        } catch (ex: Exception) { false }
+    }
+
+    fun deleteFriendsAndSummoners(friends: List<MyFriendModel>) = ensureInitializedDoOnIOSubject {
+        try {
+            database.runInTransaction {
+                with(database) {
+                    friends.forEach {
+                        val friendEnt = myFriendDAO().getById(it.id)
+                        val sumEnt = summonerDAO().getById(friendEnt.summonerId)
+                        myFriendDAO().delete(friendEnt)
+                        summonerDAO().delete(sumEnt)
+                    }
+                }
+            }
+
+            true
+        } catch(ex: Exception) { false }
+    }
+
     //  Static Methods  ///////////////////////////////////////////////////////
 
     companion object {
@@ -455,18 +492,4 @@ class Repository @Inject constructor(val context: Context) {
                 else -> Observable.error(RepositoryNotInitializedException())
             }
         }
-
-    fun checkSummonerExistInDB(summoner: SummonerModel): Observable<Boolean> = ensureInitializedDoOnIO {
-        val sumEnt = database.summonerDAO().getByPuuidAndRegionId(summoner.puuid, database.regionDAO().getByTag(summoner.region.tag).id)
-        sumEnt != null
-    }
-
-    fun createFriend(friend: PuuidAndRegion, mine: PuuidAndRegion) = ensureInitializedDoOnIOSubject {
-        with(database) {
-            val friendsSumId = summonerDAO().insert(SummonerEntity(friend.puuid, database.regionDAO().getByTag(friend.region.tag).id))
-            val mySumEnt = summonerDAO().getByPuuidAndRegionId(mine.puuid, database.regionDAO().getByTag(mine.region.tag).id)!!
-            val myAcc = myAccountDAO().getBySummonerId(mySumEnt.id)!!
-            myFriendDAO().insert(MyFriendEntity(myAcc.id,friendsSumId))
-        }
-    }
 }

@@ -88,6 +88,12 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
         repository.createFriend(friendsPuuidAndRegion, mySumPuuidAndRegion)
     }
 
+    fun deleteSelectedFriends() {
+        checkedItemsLive.value?.let { set ->
+            repository.deleteFriendsAndSummoners(set.map { idxVal -> idxVal.value.friend })
+        }
+    }
+
     //  Classes  //////////////////////////////////////////////////////////////
 
     data class FriendListItem(
