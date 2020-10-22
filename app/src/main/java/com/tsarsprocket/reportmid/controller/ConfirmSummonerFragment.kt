@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_confirm_summoner.view.*
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
-class ConfirmSummonerFragment : Fragment() {
+class ConfirmSummonerFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory

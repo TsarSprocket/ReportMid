@@ -48,6 +48,9 @@
     <string name="fragment_manage_my_summoners_error_at_least_one_summoner_should_remain">At least one summoner should remain</string>
     <string name="fragment_manage_my_summoners_error_select_summoner">Select a summoner. Please</string>
 
+    <!-- Fragment: My Friends -->
+    <string name="fragment_manage_my_friends_title">%s\&apos;s Friends</string>
+
     <!-- Menu: Summoner navigation -->
     <string name="summoner_navigation_menu_item_overview">Overview</string>
     <string name="summoner_navigation_menu_item_matchup">Matchup</string>

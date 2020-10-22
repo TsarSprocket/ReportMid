@@ -19,10 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.tsarsprocket.reportmid.ARG_MY_ACC_ID
-import com.tsarsprocket.reportmid.R
-import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
-import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentManageFriendsBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SummonerModel
@@ -34,7 +31,7 @@ import javax.inject.Inject
 
 const val VAR_SELECTED_SUMMONER_PUUID_AND_REGION = "VAR_SELECTED_SUMMONER_PUUID_AND_REGION"
 
-class ManageFriendsFragment : Fragment() {
+class ManageFriendsFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -78,6 +75,10 @@ class ManageFriendsFragment : Fragment() {
 
         viewModel.friendSummonersLive.observe(viewLifecycleOwner) {
             friendsAdapter.lst = it
+        }
+
+        viewModel.selectedSummonerLive.observe(viewLifecycleOwner) { sum ->
+            baseActivity.toolbar.title = getString(R.string.fragment_manage_my_friends_title).format(sum.name)
         }
 
         createFriendIfNeeded()

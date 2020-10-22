@@ -17,7 +17,7 @@ import com.tsarsprocket.reportmid.tools.*
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
 
-class LandingFragment : Fragment() {
+class LandingFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
