@@ -187,7 +187,7 @@ class ManageFriendsFragment : BaseFragment() {
         var lst: List<ManageFriendsViewModel.FriendListItem> = listOf()
             set(v) {
                 adjustCheckedSummoners(field,v)
-                field = v
+                field = v.sortedWith { a, b -> a.sum.name.compareTo(b.sum.name) }
                 notifyDataSetChanged()
                 updateCheckedLive()
             }
