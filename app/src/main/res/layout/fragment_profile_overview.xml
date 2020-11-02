@@ -79,6 +79,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             app:menu="@menu/summoner_navigation"
+            app:labelVisibilityMode="unlabeled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
