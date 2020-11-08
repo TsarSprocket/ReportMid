@@ -7,9 +7,9 @@
     <color name="primaryDark">#27104D</color>
     <color name="secondary">#59801a</color>
     <color name="accent">#802d1a</color>
-    <color name="bgWin">#3C7339</color> <!-- Material: #004d40 -->
-    <color name="bgDefeat">#832B21</color> <!-- Material: #7f0000 -->
-    <color name="bgRemake">#565656</color>
+    <color name="bgWin">#279B27</color> <!-- Material: #004d40 -->
+    <color name="bgDefeat">#CD3333</color> <!-- Material: #7f0000 -->
+    <color name="bgRemake">#575757</color>
     <color name="redTeamBG">#D32F2F</color>
     <color name="blueTeamBG">#303F9F</color>
     <color name="transparent">#00000000</color>

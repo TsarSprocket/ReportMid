@@ -13,6 +13,7 @@ import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.card_match_history.view.*
 
 class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
@@ -34,11 +35,14 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
 
         with( holder.cardView ) {
 
+            colourStripe.visibility = View.INVISIBLE
+/*
             if( cardBGColour == null ) {
                 cardBGColour = cardBackgroundColor
             } else {
                 setCardBackgroundColor( cardBGColour )
             }
+*/
 
             findViewById<ImageView>(R.id.imgChampionIcon).setImageResource(
                 R.drawable.champion_icon_placegolder
@@ -70,7 +74,9 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { data ->
                 with( holder.cardView ) {
-                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.bgRemake else if( data.hasWon ) R.color.bgWin else R.color.bgDefeat) )
+//                    this.setCardBackgroundColor( resources.getColor( if( data.remake ) R.color.bgRemake else if( data.hasWon ) R.color.bgWin else R.color.bgDefeat) )
+                    colourStripe.setBackgroundColor(resources.getColor( if( data.remake ) R.color.bgRemake else if( data.hasWon ) R.color.bgWin else R.color.bgDefeat))
+                    colourStripe.visibility = View.VISIBLE
 
                     findViewById<ImageView>(R.id.imgChampionIcon).setImageBitmap( data.mainChampionBitmap )
 
