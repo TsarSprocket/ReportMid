@@ -21,6 +21,8 @@
     <string name="fragment_profile_overview_title_template">Summoner: %s</string>
 
     <!-- Fragment: Matchup -->
+    <string name="fragment_matchup_skill_na">n/a</string>
+    <string name="fragment_matchup_level_label">Level:</string>
     <string name="fragment_matchup_player_solo_rank_na">n/a</string>
     <string name="fragment_matchup_player_solo_winrate_0">0</string>
     <string name="fragment_matchup_title_template">%s in Game</string>

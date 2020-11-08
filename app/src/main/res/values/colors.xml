@@ -10,8 +10,8 @@
     <color name="bgWin">#3C7339</color> <!-- Material: #004d40 -->
     <color name="bgDefeat">#832B21</color> <!-- Material: #7f0000 -->
     <color name="bgRemake">#565656</color>
-    <color name="redTeamBG">#880E4F</color>
-    <color name="blueTeamBG">#1A237E</color>
+    <color name="redTeamBG">#D32F2F</color>
+    <color name="blueTeamBG">#303F9F</color>
     <color name="transparent">#00000000</color>
     <color name="surface">#004C4D</color>
     <color name="background">#303030</color>

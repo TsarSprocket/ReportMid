@@ -14,6 +14,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
@@ -38,41 +40,52 @@ class MatchupFragment : BaseFragment() {
 
     private lateinit var binding: FragmentMatchupBinding
 
-    override fun onAttach( context: Context ) {
-        ( context.applicationContext as ReportMidApp).comp.inject( this )
-        super.onAttach( context )
+    private val teamsAdapter = TeamsAdapter()
+
+    //  Methods  //////////////////////////////////////////////////////////////
+
+    override fun onAttach(context: Context) {
+        (context.applicationContext as ReportMidApp).comp.inject(this)
+        super.onAttach(context)
         reloadMatch(false)
     }
 
     private fun reloadMatch(forceReload: Boolean) {
         requireArguments().let {
             if (it.getBoolean(ARG_RELOAD) || forceReload) {
-                viewModel.puuidAndRegion = it.getParcelable(ARG_PUUID_AND_REG) ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID_AND_REG argument")
+                viewModel.puuidAndRegion = it.getParcelable(ARG_PUUID_AND_REG)
+                    ?: throw RuntimeException("Fragment ${this.javaClass.kotlin.simpleName} requires $ARG_PUUID_AND_REG argument")
                 viewModel.loadForSummoner(viewModel.puuidAndRegion)
                 it.putBoolean(ARG_RELOAD, false)
             }
         }
     }
 
-    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
-        binding = DataBindingUtil.inflate( inflater, R.layout.fragment_matchup, container, false )
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_matchup, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.matchInProgress.observe(viewLifecycleOwner ) { isInProgress ->
-            binding.matchGroup.visibility = if( isInProgress ) View.VISIBLE else View.GONE
-            binding.matchNotInProgressGroup.visibility = if( !isInProgress ) View.VISIBLE else View.GONE
+        viewModel.matchInProgress.observe(viewLifecycleOwner) { isInProgress ->
+            binding.matchGroup.visibility = if (isInProgress) View.VISIBLE else View.GONE
+            binding.matchNotInProgressGroup.visibility = if (!isInProgress) View.VISIBLE else View.GONE
         }
 
-        viewModel.blueTeamParticipants.observe(viewLifecycleOwner ) { if( it != null ) populateTeam( binding.blueTeam, it, SideModel.BLUE ) }
-        viewModel.redTeamParticipants.observe( viewLifecycleOwner ) { if( it != null ) populateTeam( binding.redTeam, it, SideModel.RED ) }
+        with (binding.teamsRecycleView) {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = teamsAdapter
+        }
 
-        with( binding.root.bottomNavigation ) {
-            setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+        viewModel.blueTeamParticipants.observe(viewLifecycleOwner) { teamsAdapter.blueTeam = it }
+        viewModel.redTeamParticipants.observe(viewLifecycleOwner) { teamsAdapter.redTeam = it }
+
+        with(binding.root.bottomNavigation) {
+            setOnNavigationItemSelectedListener { menuItem -> navigateToSibling(menuItem) }
             selectedItemId = R.id.matchupFragment
         }
 
-        activityViewModel.selectedMenuItem.observe( viewLifecycleOwner ){ menuItemId ->
+        activityViewModel.selectedMenuItem.observe(viewLifecycleOwner) { menuItemId ->
             when (menuItemId) {
                 R.id.miMatchupRefresh -> reloadMatch(true)
             }
@@ -83,58 +96,86 @@ class MatchupFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.summoner.observe( viewLifecycleOwner ) {
-            baseActivity.toolbar.title = getString( R.string.fragment_matchup_title_template ).format( it.name )
+        viewModel.summoner.observe(viewLifecycleOwner) {
+            baseActivity.toolbar.title = getString(R.string.fragment_matchup_title_template).format(it.name)
         }
     }
 
-    private fun populateTeam(teamLayout: LinearLayout, playerPresentations: List<PlayerPresentation>, side: SideModel ) {
-        teamLayout.removeAllViews()
-        playerPresentations.forEach { playerPresentation ->
-            val card = layoutInflater.inflate(R.layout.card_player_preview, teamLayout, false ) as CardView
-
-            card.txtChampionSkill.text = getString( R.string.fragment_matchup_tmp_calculating )
-
-            playerPresentation.championIconLive.observe( viewLifecycleOwner ) { card.imgChampionIcon.setImageBitmap( it ) }
-            playerPresentation.summonerChampionSkillLive.observe( viewLifecycleOwner ) { card.txtChampionSkill.text = if( it >= 0 ) formatPoints( it ) else "n/a" }
-            playerPresentation.summonerNameLive.observe( viewLifecycleOwner ) { card.txtSummonerName.text = it }
-            playerPresentation.summonerLevelLive.observe( viewLifecycleOwner ) { card.txtSummonerLevel.text = it.toString() }
-            playerPresentation.soloqueueRankLive.observe( viewLifecycleOwner ) { card.txtSummonerSoloQueueRank.text = it }
-            playerPresentation.soloqueueWinrateLive.observe( viewLifecycleOwner ) { card.txtSummonerSoloQueueWinRate.text = ( ( it * 10 ).roundToInt() / 10f ).toString() }
-            playerPresentation.summonerSpellDLive.observe( viewLifecycleOwner ) { card.imgSummonerSpellD.setImageBitmap( it ) }
-            playerPresentation.summonerSpellFLive.observe( viewLifecycleOwner ) { card.imgSummonerSpellF.setImageBitmap( it ) }
-            playerPresentation.primaryRunePathIconResIdLive.observe( viewLifecycleOwner ) { card.imgPrimaryRunePath.setImageResource( it ) }
-            playerPresentation.secondaryRunePathIconResIdLive.observe( viewLifecycleOwner ) { card.imgSecondaryRunePath.setImageResource( it ) }
-
-            card.setCardBackgroundColor( resources.getColor( if( side == SideModel.BLUE ) R.color.blueTeamBG else R.color.redTeamBG) )
-
-            teamLayout.addView( card )
-        }
-    }
-
-    fun navigateToSibling( item: MenuItem): Boolean {
-        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.matchupFragment, true ).build()
-        return when( item.itemId ) {
+    fun navigateToSibling(item: MenuItem): Boolean {
+        val navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(R.id.matchupFragment, true).build()
+        return when (item.itemId) {
             R.id.profileOverviewFragment -> {
-                val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment( viewModel.puuidAndRegion )
-                findNavController().navigate( action, navOptions )
+                val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment(viewModel.puuidAndRegion)
+                findNavController().navigate(action, navOptions)
                 true
             }
             R.id.matchupFragment -> true
             R.id.matchHistoryFragment -> {
-                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment( viewModel.puuidAndRegion )
-                findNavController().navigate( action, navOptions )
+                val action = MatchupFragmentDirections.actionMatchupFragmentToMatchHistoryFragment(viewModel.puuidAndRegion)
+                findNavController().navigate(action, navOptions)
                 true
             }
             else -> false
         }
     }
 
+    //  Static  ///////////////////////////////////////////////////////////////
+
     companion object {
         @JvmStatic
-        fun newInstance( puuidAndRegion: PuuidAndRegion ) = MatchupFragment().apply {
-            arguments = Bundle( 1 ).apply { putParcelable( ARG_PUUID_AND_REG, puuidAndRegion ) }
+        fun newInstance(puuidAndRegion: PuuidAndRegion) = MatchupFragment().apply {
+            arguments = Bundle(1).apply { putParcelable(ARG_PUUID_AND_REG, puuidAndRegion) }
         }
     }
+
+    //  Classes  //////////////////////////////////////////////////////////////
+
+    class ColoredCardViewHolder(cardView: CardView, var color: Int) : CardViewHolderWithDisposer(cardView)
+
+    inner class TeamsAdapter : RecyclerView.Adapter<ColoredCardViewHolder>() {
+
+        var blueTeam: List<PlayerPresentation> = listOf()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
+        var redTeam: List<PlayerPresentation> = listOf()
+            set(value) {
+                field = value
+                notifyDataSetChanged()
+            }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ColoredCardViewHolder {
+            val card = LayoutInflater.from(parent.context).inflate(R.layout.card_player_preview, parent, false) as CardView
+            return ColoredCardViewHolder(card,0)
+        }
+
+        override fun onBindViewHolder(holder: ColoredCardViewHolder, position: Int) {
+            if (position !in 0 .. blueTeam.size + redTeam.size) return
+
+            val side = if (position < blueTeam.size) SideModel.BLUE else SideModel.RED
+            val item = if (side == SideModel.BLUE) blueTeam[position] else redTeam[position - blueTeam.size]
+            val card = holder.cardView
+
+            card.txtChampionSkill.text = getString(R.string.fragment_matchup_tmp_calculating)
+
+            item.championIconLive.observe(viewLifecycleOwner) { card.imgChampionIcon.setImageBitmap(it) }
+            item.summonerChampionSkillLive.observe(viewLifecycleOwner) { card.txtChampionSkill.text = if (it >= 0) formatPoints(it) else getString(R.string.fragment_matchup_skill_na) }
+            item.summonerNameLive.observe(viewLifecycleOwner) { card.txtSummonerName.text = it }
+            item.summonerLevelLive.observe(viewLifecycleOwner) { card.txtSummonerLevel.text = it.toString() }
+            item.soloqueueRankLive.observe(viewLifecycleOwner) { card.txtSummonerSoloQueueRank.text = it }
+            item.soloqueueWinrateLive.observe(viewLifecycleOwner) { card.txtSummonerSoloQueueWinRate.text = ((it * 10).roundToInt() / 10f).toString() }
+            item.summonerSpellDLive.observe(viewLifecycleOwner) { card.imgSummonerSpellD.setImageBitmap(it) }
+            item.summonerSpellFLive.observe(viewLifecycleOwner) { card.imgSummonerSpellF.setImageBitmap(it) }
+            item.primaryRunePathIconResIdLive.observe(viewLifecycleOwner) { card.imgPrimaryRunePath.setImageResource(it) }
+            item.secondaryRunePathIconResIdLive.observe(viewLifecycleOwner) { card.imgSecondaryRunePath.setImageResource(it) }
+
+            card.colourStripe.setBackgroundColor(resources.getColor(if (side == SideModel.BLUE) R.color.blueTeamBG else R.color.redTeamBG))
+        }
+
+        override fun getItemCount(): Int = blueTeam.size + redTeam.size
+    }
+
 }
 
