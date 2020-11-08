@@ -71,11 +71,13 @@ class DrawerFragment : BaseFragment() {
     }
 
     private fun updateMyFriends(listOfMyFriendData: List<DrawerViewModel.MyFriendData>) {
+        val sortedListOfMyFriendData = listOfMyFriendData.sortedWith { a, b -> a.name.compareTo(b.name, true) }
+
         val group = binding.root.llMyFriends
 
         ensureChildren(group,listOfMyFriendData.size) { layoutInflater.inflate(R.layout.layout_my_friend_line, group, false) }
 
-        listOfMyFriendData.withIndex().forEach { indexedValue ->
+        sortedListOfMyFriendData.withIndex().forEach { indexedValue ->
             val view = group.getChildAt(indexedValue.index) as ConstraintLayout
             val data = indexedValue.value
             view.iconSummoner.setImageBitmap(data.icon)
