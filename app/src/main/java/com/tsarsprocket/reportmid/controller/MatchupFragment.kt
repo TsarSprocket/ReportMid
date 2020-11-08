@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
@@ -20,6 +19,7 @@ import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SideModel
+import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
@@ -172,9 +172,16 @@ class MatchupFragment : BaseFragment() {
             item.secondaryRunePathIconResIdLive.observe(viewLifecycleOwner) { card.imgSecondaryRunePath.setImageResource(it) }
 
             card.colourStripe.setBackgroundColor(resources.getColor(if (side == SideModel.BLUE) R.color.blueTeamBG else R.color.redTeamBG))
+
+            card.setOnClickListener { item.summoner.observe(viewLifecycleOwner) { goToChampion( it ) } }
         }
 
         override fun getItemCount(): Int = blueTeam.size + redTeam.size
+    }
+
+    private fun goToChampion(summoner: SummonerModel) {
+        val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment(summoner.puuidAndRegion)
+        findNavController().navigate(action)
     }
 
 }

@@ -86,6 +86,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
                             .map { playerModel ->
                                 val playerPresentation =  PlayerPresentation()
                                 matchDisposables.addAll(
+                                    playerModel.summoner.subscribe { playerPresentation.summoner.postValue(it) },
                                     playerModel.champion.switchMap { it.bitmap }.subscribe{ playerPresentation.championIconLive.postValue( it ) },
                                     Observable.zip( playerModel.champion, playerModel.summoner, BiFunction<ChampionModel,SummonerModel,Observable<Int>> { ch, su -> getSkillForChampion( su, ch ) } )
                                         .switchMap { it }
