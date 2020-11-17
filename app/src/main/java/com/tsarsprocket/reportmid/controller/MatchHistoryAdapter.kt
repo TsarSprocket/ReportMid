@@ -109,7 +109,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
                     for( i in vlItems.indices ) {
                         val imageView = vlItems[ i ]
                         if( i < data.itemIcons.size - 1 ) {
-                            imageView.setImageBitmap( data.itemIcons[ i ] )/*.also { visibility = View.VISIBLE }*/
+                            imageView.setImageDrawable( data.itemIcons[ i ] )/*.also { visibility = View.VISIBLE }*/
                         } else {
                             imageView.setImageResource(R.drawable.item_empty) // imageView.visibility = View.INVISIBLE
                         }
@@ -117,7 +117,7 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
                     }
 
                     if( data.itemIcons.isNotEmpty() ) {
-                        iconWard.setImageBitmap( data.itemIcons.last() ).also { visibility = View.VISIBLE }
+                        iconWard.setImageDrawable( data.itemIcons.last() ).also { visibility = View.VISIBLE }
                     } else {
                         iconWard.setImageResource(R.drawable.item_empty) // iconWard.visibility = View.INVISIBLE
                     }

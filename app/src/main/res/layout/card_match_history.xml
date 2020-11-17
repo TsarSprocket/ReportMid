@@ -156,8 +156,9 @@
 
         <ImageView
             android:id="@+id/imageItem0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideItems"
             app:layout_constraintBottom_toTopOf="@id/imageItem3"
@@ -167,8 +168,9 @@
 
         <ImageView
             android:id="@+id/imageItem1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="@id/imageItem0"
             app:layout_constraintStart_toEndOf="@id/imageItem0"
             app:layout_constraintBottom_toBottomOf="@id/imageItem0"
@@ -177,8 +179,9 @@
 
         <ImageView
             android:id="@+id/imageItem2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="@id/imageItem1"
             app:layout_constraintStart_toEndOf="@id/imageItem1"
             app:layout_constraintBottom_toBottomOf="@id/imageItem1"
@@ -187,8 +190,9 @@
 
         <ImageView
             android:id="@+id/imageItem3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toBottomOf="@id/imageItem0"
             app:layout_constraintStart_toEndOf="@id/guideItems"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -197,8 +201,9 @@
 
         <ImageView
             android:id="@+id/imageItem4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="@id/imageItem3"
             app:layout_constraintStart_toEndOf="@id/imageItem3"
             app:layout_constraintBottom_toBottomOf="@id/imageItem3"
@@ -207,8 +212,9 @@
 
         <ImageView
             android:id="@+id/imageItem5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="@id/imageItem4"
             app:layout_constraintStart_toEndOf="@id/imageItem4"
             app:layout_constraintBottom_toBottomOf="@id/imageItem4"
@@ -217,8 +223,9 @@
 
         <ImageView
             android:id="@+id/imageWard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/item_icon_size"
+            android:layout_height="@dimen/item_icon_size"
+            android:scaleType="fitXY"
             app:layout_constraintTop_toTopOf="@id/imageItem2"
             app:layout_constraintStart_toEndOf="@id/imageItem2"
             app:layout_constraintBottom_toBottomOf="@id/imageItem5"

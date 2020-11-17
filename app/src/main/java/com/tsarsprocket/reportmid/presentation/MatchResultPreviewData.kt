@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.presentation
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 
 data class MatchResultPreviewData (
     val mainChampionBitmap: Bitmap,
@@ -15,5 +16,5 @@ data class MatchResultPreviewData (
     val secondaryRunePathIconResId: Int?,
     val bmSummonerSpellD: Bitmap,
     val bmSummonerSpellF: Bitmap,
-    val itemIcons: Array<Bitmap>
+    val itemIcons: Array<Drawable>
 )

@@ -2,19 +2,18 @@ package com.tsarsprocket.reportmid.model
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.util.Log
 import com.merakianalytics.orianna.types.core.staticdata.Item
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.internal.operators.observable.ObservableFromCallable
 import io.reactivex.schedulers.Schedulers
 
 const val RES_NAME_PREFIX_ITEM = "item_"
 
 class ItemModel( val repository: Repository, private val shadowItem: Item ) {
-    val bitmap by lazy { loadBitmap().replay( 1 ).autoConnect() }
+    val icon by lazy { loadBitmap().subscribeOn(Schedulers.io()).cache() }
 
-    private fun loadBitmap(): Observable<Bitmap> = ObservableFromCallable {
-            val resId = repository.context.resources.getIdentifier( RES_NAME_PREFIX_ITEM + shadowItem.id,"drawable", repository.context.packageName )
-            ( BitmapFactory.decodeResource( repository.context.resources, resId )?: shadowItem.image.get().also { Log.i( ItemModel::class.simpleName, "Image for item ${shadowItem.name} not found. Have loaded from RIOT instead" ) } )!!
-        }.subscribeOn( Schedulers.io() )
+    private fun loadBitmap(): Single<Drawable> = repository.iconProvider.getItemImage(shadowItem.id)
 }

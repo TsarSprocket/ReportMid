@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.model
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
@@ -22,6 +23,7 @@ import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.model.state.MyFriendModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
@@ -43,7 +45,7 @@ import javax.inject.Singleton
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
 @Singleton
-class Repository @Inject constructor(val context: Context) {
+class Repository @Inject constructor(val context: Context, val iconProvider: RIOTIconProvider) {
 
     val initialized = ReplaySubject.createWithSize<Boolean>(1)
 
@@ -451,9 +453,9 @@ class Repository @Inject constructor(val context: Context) {
         }
 
         @WorkerThread
-        fun getItemIcons(participant: ParticipantModel): Array<Bitmap> {
+        fun getItemIcons(participant: ParticipantModel): Array<Drawable> {
             val items = participant.items.blockingSingle()
-            return Array(items.size) { i -> items[i].blockingSingle().bitmap.blockingSingle() }
+            return Array(items.size) { i -> items[i].blockingSingle().icon.blockingGet() }
         }
 
         @WorkerThread
