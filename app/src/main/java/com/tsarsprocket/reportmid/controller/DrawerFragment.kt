@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -56,12 +57,12 @@ class DrawerFragment : BaseFragment() {
         return binding.root
     }
 
-    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Bitmap,SummonerModel,Boolean>>) {
+    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Drawable,SummonerModel,Boolean>>) {
         val group = binding.root.llMySummoners
         group.removeAllViews()
         listOfMarkedSummoners.forEach { (icon, sum, isSelected) ->
             val view = layoutInflater.inflate(R.layout.layout_my_summoner_line, group, false) as ConstraintLayout
-            view.iconSummoner.setImageBitmap(icon)
+            view.iconSummoner.setImageDrawable(icon)
             view.txtSummonerName.text = sum.name
             view.cbSelected.isChecked = isSelected
             view.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
@@ -80,7 +81,7 @@ class DrawerFragment : BaseFragment() {
         sortedListOfMyFriendData.withIndex().forEach { indexedValue ->
             val view = group.getChildAt(indexedValue.index) as ConstraintLayout
             val data = indexedValue.value
-            view.iconSummoner.setImageBitmap(data.icon)
+            view.iconSummoner.setImageDrawable(data.icon)
             view.txtSummonerName.text = data.name
             view.setOnClickListener { goSeeProfile(data.sum) }
         }

@@ -10,15 +10,20 @@ import java.io.InputStreamReader
 import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.Exception
 
-const val STR_ITEM_ICON_RES_PATH = "img/item"
+const val STR_ITEM_ICON_ASSET_PATH = "img/item/%d.png"
+const val STR_PROFILE_ICON_ASSET_PATH = "img/profileicon/%d.png"
 
 const val STR_URL_DATA_DRAGON = "https://ddragon.leagueoflegends.com"
 const val STR_URL_VERSIONS = "$STR_URL_DATA_DRAGON/api/versions.json"
-const val STR_URL_CHAMPION_ICONS = "$STR_URL_DATA_DRAGON/cdn/%s/img/champion/%s.png" // version, champion name
-const val STR_URL_ITEM_ICON = "$STR_URL_DATA_DRAGON/cdn/%s/img/item/%d.png" // version, item id
+const val STR_URL_IMAGE_BASE = "$STR_URL_DATA_DRAGON/cdn/%s/img/%s" // version, path
+const val STR_PATH_PROFILE_ICONS = "profileicon/%d.png" // profile icon id
+const val STR_PATH_CHAMPION_ICONS = "champion/%s.png" // champion name
+const val STR_PATH_ITEM_ICON = "item/%d.png" // item id
 
+@Singleton
 class RIOTIconProvider @Inject constructor(val context: Context) {
 
     //  Properties  ///////////////////////////////////////////////////////////
@@ -26,25 +31,33 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
     val versions by lazy { loadVersions() }
     val currentVersion by lazy { versions.map { it[0] }.cache() }
 
-    val itemCache = ConcurrentHashMap<Int,Drawable>()
+    val itemIconCache = ConcurrentHashMap<Int,Drawable>()
+    val profileIconCache = ConcurrentHashMap<Int,Drawable>()
 
     //  Methods  //////////////////////////////////////////////////////////////
 
-    fun getItemImage(itemId: Int): Single<Drawable> = Single.fromCallable {
+    fun getItemIcon(itemId: Int): Single<Drawable> =
+        getDrawableInThreeStages(itemId, itemIconCache, STR_ITEM_ICON_ASSET_PATH.format(itemId),
+            STR_PATH_ITEM_ICON.format(itemId), R.drawable.item_icon_placegolder)
+
+    fun getProfileIcon(profileIconId: Int) =
+        getDrawableInThreeStages(profileIconId, profileIconCache, STR_PROFILE_ICON_ASSET_PATH.format(profileIconId),
+            STR_PATH_PROFILE_ICONS.format(profileIconId),R.drawable.champion_icon_placegolder)
+
+    //  Private Methods  //////////////////////////////////////////////////////
+
+    private fun<T> getDrawableInThreeStages(id: T, cache: MutableMap<T,Drawable>, assetPath: String, webPath: String, resId: Int): Single<Drawable> = Single.fromCallable {
         try {
-            Drawable.createFromStream(context.assets.open("$STR_ITEM_ICON_RES_PATH/$itemId.png"), null)
+            Drawable.createFromStream(context.assets.open(assetPath), null)
         } catch (ex: Exception) {
             try {
-                itemCache[itemId] ?:
-                    Drawable.createFromStream(URL(STR_URL_ITEM_ICON.format(currentVersion.blockingGet(), itemId)).openStream(), null)
-                        .also { itemCache[itemId] = it }
+                cache[id] ?: Drawable.createFromStream(URL(STR_URL_IMAGE_BASE.format(currentVersion.blockingGet(), webPath)).openStream(), null)
+                    .also { cache[id] = it }
             } catch (ex: Exception) {
-                ResourcesCompat.getDrawable(context.resources, R.drawable.item_icon_placegolder, null)!!
+                ResourcesCompat.getDrawable(context.resources, resId, null)!!
             }
         }
     }.subscribeOn(Schedulers.io()).cache()
-
-    //  Private Methods  //////////////////////////////////////////////////////
 
     private fun loadVersions(): Single<Array<String>> = Single.fromCallable {
         val jsonText = InputStreamReader(URL(STR_URL_VERSIONS).openStream()).readText()

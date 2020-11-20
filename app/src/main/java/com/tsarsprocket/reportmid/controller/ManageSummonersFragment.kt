@@ -155,7 +155,7 @@ class ManageSummonersFragment : BaseFragment() {
             with(holder.cardView) {
                 cbSelected.isChecked = viewModel.checkedSummoners.contains(summoner)
                 cbSelected.setOnCheckedChangeListener { _, isChecked -> if (isChecked) checkSummoner(summoner) else uncheckSummoner(summoner) }
-                holder.disposer.add(summoner.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { bmp -> imgProfileIcon.setImageBitmap(bmp) })
+                holder.disposer.add(summoner.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { icon -> imgProfileIcon.setImageDrawable(icon) })
                 txtSummonerName.text = summoner.name
                 txtRegion.text = summoner.region.tag
             }

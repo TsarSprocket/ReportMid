@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.viewmodel
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.LinearLayout
 import androidx.lifecycle.*
@@ -30,12 +31,12 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
 
     private val currentRegionsObservable: Observable<List<RegionModel>> = repository.getMyRegions().map { lst -> lst.sortedBy { it.title } }
 
-    private val mySummonersInSelectedRegionObservable: Observable<List<Triple<Bitmap,SummonerModel,Boolean>>> =
+    private val mySummonersInSelectedRegionObservable: Observable<List<Triple<Drawable,SummonerModel,Boolean>>> =
         Observable.combineLatest( selectedRegionPositionObservable, currentRegionsObservable ) { pos, lst -> lst[pos] }
             .switchMap { reg -> repository.getMySummonersObservableForRegion(reg) }
             .map { lst ->
                 lst.sortedWith { o1, o2 -> SUMO_COMP.compare(o1.first, o2.first) }
-                    .map { (sum, isSelected) -> Triple(sum.icon.blockingFirst(), sum, isSelected) }
+                    .map { (sum, isSelected) -> Triple(sum.icon.blockingGet(), sum, isSelected) }
             }
 
     private val currentAccountObservable: Observable<List<MyAccountModel>> =
@@ -46,12 +47,12 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
         .filter { lst -> lst.isNotEmpty() }
         .switchMap { repository.getFriendsForAcc(it.first()) }
         .map { lst -> lst.map { fr -> fr to fr.summoner.blockingGet() } } // Observable.zip(lst.map { friend -> friend.summoner.toObservable().map { sum -> friend to sum } }) { arr -> arr.toList() as List<Pair<MyFriendModel,SummonerModel>> }
-        .map { lst -> lst.map { pair -> MyFriendData(pair.first, pair.second, pair.second.icon.blockingFirst(), pair.second.name) } } // Observable.zip(lst.map { (friend, sum) -> sum.icon.map { bmp -> MyFriendData(friend, sum, bmp, sum.name) } }) { arr -> arr.toList() as List<MyFriendData> }
+        .map { lst -> lst.map { pair -> MyFriendData(pair.first, pair.second, pair.second.icon.blockingGet(), pair.second.name) } } // Observable.zip(lst.map { (friend, sum) -> sum.icon.map { bmp -> MyFriendData(friend, sum, bmp, sum.name) } }) { arr -> arr.toList() as List<MyFriendData> }
 
     //  LiveData Output  //////////////////////////////////////////////////////
 
     val currentRegionsLive: LiveData<List<RegionModel>> = currentRegionsObservable.toLiveData()
-    val mySummonersInSelectedRegionLive: LiveData<List<Triple<Bitmap,SummonerModel,Boolean>>> = mySummonersInSelectedRegionObservable.toLiveData()
+    val mySummonersInSelectedRegionLive: LiveData<List<Triple<Drawable,SummonerModel,Boolean>>> = mySummonersInSelectedRegionObservable.toLiveData()
     val currentAccountLive: LiveData<List<MyAccountModel>> = currentAccountObservable.toLiveData()
     val myFriendsLive: LiveData<List<MyFriendData>> = myFriendsRx.toLiveData()
 
@@ -103,7 +104,7 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
     data class MyFriendData(
         val friend: MyFriendModel,
         val sum: SummonerModel,
-        val icon: Bitmap,
+        val icon: Drawable,
         val name: String,
     )
 }

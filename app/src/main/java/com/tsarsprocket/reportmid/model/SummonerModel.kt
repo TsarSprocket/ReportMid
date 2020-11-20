@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.model
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.MatchHistory
@@ -9,6 +10,7 @@ import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class SummonerModel(
@@ -17,7 +19,7 @@ class SummonerModel(
 ) {
 
     val name: String = shadowSummoner.name
-    val icon: Observable<Bitmap> by lazy { Observable.fromCallable { shadowSummoner.profileIcon.image.get()!! }.subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect() }
+    val icon: Single<Drawable> by lazy { Single.fromCallable { shadowSummoner.profileIcon.id }.subscribeOn(Schedulers.io()).flatMap { repository.iconProvider.getProfileIcon(it) }  }
     val puuid: String = shadowSummoner.puuid
     val level: Int = shadowSummoner.level
     val masteries: Observable<List<Observable<ChampionMasteryModel>>> by lazy { getObservableMasteryList().replay( 1 ).autoConnect() }

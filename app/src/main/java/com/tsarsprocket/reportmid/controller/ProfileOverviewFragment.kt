@@ -65,8 +65,8 @@ class ProfileOverviewFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.activeSummonerModel.observe(viewLifecycleOwner ) { summoner ->
-            disposer.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { bitmap ->
-                binding.root.imgSummonerIcon.setImageBitmap( bitmap )
+            disposer.add( summoner.icon.observeOn( AndroidSchedulers.mainThread() ).subscribe { icon ->
+                binding.root.imgSummonerIcon.setImageDrawable( icon )
             } )
             baseActivity.toolbar.title = summoner.name
         }

@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -146,7 +146,7 @@ class ManageFriendsFragment : BaseFragment() {
      */
     inner class AccountSelectorAdapter: BaseAdapter() {
 
-        var accList: List<Triple<MyAccountModel,SummonerModel,Bitmap>> = listOf()
+        var accList: List<Triple<MyAccountModel,SummonerModel,Drawable>> = listOf()
             set(lst) {
                 field = lst
                 notifyDataSetChanged()
@@ -154,7 +154,7 @@ class ManageFriendsFragment : BaseFragment() {
 
         override fun getCount(): Int = accList.size
 
-        override fun getItem(position: Int): Triple<MyAccountModel,SummonerModel,Bitmap> = accList[position]
+        override fun getItem(position: Int): Triple<MyAccountModel,SummonerModel,Drawable> = accList[position]
 
         override fun getItemId(position: Int): Long = if (position<accList.size) accList[position].first.id else -1
 
@@ -163,7 +163,7 @@ class ManageFriendsFragment : BaseFragment() {
             val view = (convertView?: layoutInflater.inflate(R.layout.view_summoner_selector_round_icon,parent,false)) as ImageView
 
             return view.apply {
-                setImageBitmap(getRoundedCroppedBitmap(item.third))
+                setImageDrawable(getRoundedCroppedDrawable(item.third))
             }
         }
 
@@ -172,7 +172,7 @@ class ManageFriendsFragment : BaseFragment() {
             val view = (convertView?: layoutInflater.inflate(R.layout.list_item_summoner,parent,false)) as ConstraintLayout
 
             return view.apply {
-                findViewById<ImageView>(R.id.imgProfileIcon).setImageBitmap(item.third)
+                findViewById<ImageView>(R.id.imgProfileIcon).setImageDrawable(item.third)
                 findViewById<TextView>(R.id.txtSummonerName).text = item.second.name
                 findViewById<TextView>(R.id.txtRegion).text = item.second.region.tag
             }
@@ -200,7 +200,7 @@ class ManageFriendsFragment : BaseFragment() {
         override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
             val item = if (position in lst.indices) lst[position] else null
             with(holder.cardView) {
-                findViewById<ImageView>(R.id.imgProfileIcon).apply { if (item != null) setImageBitmap(item.icon) else setImageResource(R.drawable.champion_icon_placegolder) }
+                findViewById<ImageView>(R.id.imgProfileIcon).apply { if (item != null) setImageDrawable(item.icon) else setImageResource(R.drawable.champion_icon_placegolder) }
                 findViewById<TextView>(R.id.txtSummonerName).text = item?.sum?.name ?: "N/A"
                 findViewById<TextView>(R.id.txtRegion).text = item?.sum?.region?.tag ?: "N/A"
                 with(findViewById<CheckBox>(R.id.cbSelected)) {
