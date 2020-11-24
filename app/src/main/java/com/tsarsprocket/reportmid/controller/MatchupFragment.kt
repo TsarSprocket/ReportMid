@@ -160,7 +160,7 @@ class MatchupFragment : BaseFragment() {
 
             card.txtChampionSkill.text = getString(R.string.fragment_matchup_tmp_calculating)
 
-            item.championIconLive.observe(viewLifecycleOwner) { card.imgChampionIcon.setImageBitmap(it) }
+            item.championIconLive.observe(viewLifecycleOwner) { card.imgChampionIcon.setImageDrawable(it) }
             item.summonerChampionSkillLive.observe(viewLifecycleOwner) { card.txtChampionSkill.text = if (it >= 0) formatPoints(it) else getString(R.string.fragment_matchup_skill_na) }
             item.summonerNameLive.observe(viewLifecycleOwner) { card.txtSummonerName.text = it }
             item.summonerLevelLive.observe(viewLifecycleOwner) { card.txtSummonerLevel.text = it.toString() }

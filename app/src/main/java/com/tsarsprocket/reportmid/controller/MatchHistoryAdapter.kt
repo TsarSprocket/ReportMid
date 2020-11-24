@@ -12,7 +12,6 @@ import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.card_match_history.view.*
 
 class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView.Adapter<CardViewHolderWithDisposer>() {
@@ -78,10 +77,10 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
                     colourStripe.setBackgroundColor(resources.getColor( if( data.remake ) R.color.bgRemake else if( data.hasWon ) R.color.bgWin else R.color.bgDefeat))
                     colourStripe.visibility = View.VISIBLE
 
-                    findViewById<ImageView>(R.id.imgChampionIcon).setImageBitmap( data.mainChampionBitmap )
+                    imgChampionIcon.setImageDrawable( data.mainChampionIcon )
 
                     if( data.primaryRuneIconResId != null ) {
-                        with( findViewById<ImageView>(R.id.iconPrimaryRune) ) { setImageResource(data.primaryRuneIconResId); visibility =
+                        with( iconPrimaryRune ) { setImageResource(data.primaryRuneIconResId); visibility =
                             View.VISIBLE
                         }
                     }
@@ -92,9 +91,9 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
                         }
                     }
 
-                    findViewById<TextView>(R.id.txtGameMode).text = resources.getString( data.gameModeNameResId )
-                    findViewById<TextView>(R.id.txtMainKDA).text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
-                    findViewById<TextView>(R.id.txtCS).text = "CS: ${data.creepScore.toString()}"
+                    txtGameMode.text = resources.getString( data.gameModeNameResId )
+                    txtMainKDA.text = "${data.mainKills}/${data.mainDeaths}/${data.mainAssists}"
+                    txtCS.text = "CS: ${data.creepScore.toString()}"
 
                     with( findViewById<ImageView>(R.id.iconSummonerSpellD) ){ setImageBitmap( data.bmSummonerSpellD ); visibility =
                         View.VISIBLE

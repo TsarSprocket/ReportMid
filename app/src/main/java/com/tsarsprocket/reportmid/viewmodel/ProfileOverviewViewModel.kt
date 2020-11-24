@@ -51,9 +51,9 @@ class ProfileOverviewViewModel @Inject constructor( private val repository: Repo
                 }
                 .subscribe { indexedChamp ->
                     if( indexedChamp.second.isEmpty.blockingGet() ) masteries[ indexedChamp.first ].shownLive.postValue( false )
-                    else indexedChamp.second.blockingGet().bitmap.subscribe{ bitmap ->
+                    else indexedChamp.second.blockingGet().icon.subscribe{ icon ->
                         with( masteries[ indexedChamp.first ] ) {
-                            bitmapLive.postValue( bitmap )
+                            iconLive.postValue( icon )
                             shownLive.postValue( true )
                         }
                     }

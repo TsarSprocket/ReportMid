@@ -44,7 +44,7 @@ class MatchHistoryViewModel @Inject constructor( private val repository: Reposit
                 val maybeSecondaryPath = asParticipant.secondaryRunePath.blockingSingle()
 
                 MatchResultPreviewData(
-                    asChampion.bitmap.blockingSingle(),
+                    asChampion.icon.blockingGet(),
                     asParticipant.kills,
                     asParticipant.deaths,
                     asParticipant.assists,

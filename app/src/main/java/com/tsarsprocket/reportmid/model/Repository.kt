@@ -459,12 +459,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         }
 
         @WorkerThread
-        fun getTeamIcons(team: TeamModel, resizeMatrix: Matrix) = Array(team.participants.size) { i ->
-            val bm = team.participants[i].blockingSingle().champion.blockingSingle().bitmap.blockingSingle()
-            Bitmap.createBitmap(bm, 0, 0, bm.width, bm.height, resizeMatrix, false)
-        }
-
-        @WorkerThread
         fun calculateTeamKDA(asParticipant: ParticipantModel): Triple<Int, Int, Int> {
             var teamKills = 0
             var teamDeaths = 0

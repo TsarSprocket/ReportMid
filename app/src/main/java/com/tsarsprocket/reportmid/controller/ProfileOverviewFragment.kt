@@ -78,10 +78,9 @@ class ProfileOverviewFragment : BaseFragment() {
                         binding.root.grpOtherChampMasteries[ i ].visibility = if( fShow ) View.VISIBLE else View.GONE
                     }
                 }
-                bitmapLive.observe(viewLifecycleOwner ) { bitmap ->
-                    if( bitmap != null ) {
-                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString(R.string.fragment_profile_overview_tag_champion_icon) )
-                            .setImageBitmap( bitmap )
+                iconLive.observe(viewLifecycleOwner ) { icon ->
+                    if( icon != null ) {
+                        binding.root.grpOtherChampMasteries[i].findViewWithTag<ImageView>( resources.getString(R.string.fragment_profile_overview_tag_champion_icon) ).setImageDrawable( icon )
                     }
                 }
 /*

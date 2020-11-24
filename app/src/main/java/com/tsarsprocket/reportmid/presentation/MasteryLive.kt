@@ -1,11 +1,12 @@
 package com.tsarsprocket.reportmid.presentation
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
 
 class MasteryLive {
     val shownLive = MutableLiveData( false )
-    val bitmapLive = MutableLiveData<Bitmap>( null )
+    val iconLive = MutableLiveData<Drawable>( null )
 //    val champNameLive = MutableLiveData<String>( null )
     val skillsLive = MutableLiveData<Skills>( null )
 

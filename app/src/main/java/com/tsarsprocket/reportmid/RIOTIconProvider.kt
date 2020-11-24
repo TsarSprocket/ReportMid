@@ -15,6 +15,7 @@ import kotlin.Exception
 
 const val STR_ITEM_ICON_ASSET_PATH = "img/item/%d.png"
 const val STR_PROFILE_ICON_ASSET_PATH = "img/profileicon/%d.png"
+const val STR_CHAMPION_ICON_ASSET_PATH = "img/champion/%s.png"
 
 const val STR_URL_DATA_DRAGON = "https://ddragon.leagueoflegends.com"
 const val STR_URL_VERSIONS = "$STR_URL_DATA_DRAGON/api/versions.json"
@@ -33,6 +34,7 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
 
     val itemIconCache = ConcurrentHashMap<Int,Drawable>()
     val profileIconCache = ConcurrentHashMap<Int,Drawable>()
+    val championIconCache = ConcurrentHashMap<String,Drawable>()
 
     //  Methods  //////////////////////////////////////////////////////////////
 
@@ -42,7 +44,11 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
 
     fun getProfileIcon(profileIconId: Int) =
         getDrawableInThreeStages(profileIconId, profileIconCache, STR_PROFILE_ICON_ASSET_PATH.format(profileIconId),
-            STR_PATH_PROFILE_ICONS.format(profileIconId),R.drawable.champion_icon_placegolder)
+            STR_PATH_PROFILE_ICONS.format(profileIconId), R.drawable.champion_icon_placegolder)
+
+    fun getChampionIcon(championKey: String) =
+        getDrawableInThreeStages(championKey, championIconCache, STR_CHAMPION_ICON_ASSET_PATH.format(championKey),
+            STR_PATH_CHAMPION_ICONS.format(championKey), R.drawable.champion_icon_placegolder)
 
     //  Private Methods  //////////////////////////////////////////////////////
 

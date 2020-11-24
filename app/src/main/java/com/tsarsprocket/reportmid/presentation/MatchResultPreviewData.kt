@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 
 data class MatchResultPreviewData (
-    val mainChampionBitmap: Bitmap,
+    val mainChampionIcon: Drawable,
     val mainKills: Int,
     val mainDeaths: Int,
     val mainAssists: Int,
