@@ -19,6 +19,7 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:scaleType="fitXY"
+        android:adjustViewBounds="true"
         android:layout_margin="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
