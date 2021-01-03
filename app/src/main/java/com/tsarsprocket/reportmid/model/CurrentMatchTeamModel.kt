@@ -1,12 +1,10 @@
 package com.tsarsprocket.reportmid.model
 
-import com.merakianalytics.orianna.types.core.spectator.CurrentMatchTeam
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
+import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
+import com.tsarsprocket.reportmid.riotapi.spectatorV4.Team
 
-class CurrentMatchTeamModel( private val repository: Repository, shadowCurrentMatchTeam : CurrentMatchTeam ) {
-    val participants by lazy { ReplaySubject.createWithSize<List<ReplaySubject<PlayerModel>>>( 1 ).also { Observable.fromCallable { shadowCurrentMatchTeam.participants }
-        .observeOn( Schedulers.io() )
-        .map { list -> List( list.size ) { i -> repository.getPlayer { list[ i ] } } }.subscribe( it ) } }
+class CurrentMatchTeamModel(repo: Repository, col: Team, participants: List<CurrentGameParticipant>, region: RegionModel) {
+    private val repository = repo
+    val color = col
+    val participants: List<PlayerModel> = participants.map{ PlayerModel(repo, it, region) }
 }

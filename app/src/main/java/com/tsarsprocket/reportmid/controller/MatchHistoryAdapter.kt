@@ -79,15 +79,15 @@ class MatchHistoryAdapter( val dataProvider: IHistoryDataProvider): RecyclerView
 
                     imgChampionIcon.setImageDrawable( data.mainChampionIcon )
 
-                    if( data.primaryRuneIconResId != null ) {
-                        with( iconPrimaryRune ) { setImageResource(data.primaryRuneIconResId); visibility =
+                    if( data.primaryRuneIcon != null ) {
+                        with( iconPrimaryRune ) { setImageDrawable(data.primaryRuneIcon); visibility =
                             View.VISIBLE
                         }
                     }
 
-                    if( data.secondaryRunePathIconResId != null ) {
+                    if( data.secondaryRunePathIcon != null ) {
                         with( findViewById<ImageView>(R.id.iconSecondaryRunePath) ) {
-                            setImageResource(data.secondaryRunePathIconResId); visibility = View.VISIBLE
+                            setImageDrawable(data.secondaryRunePathIcon); visibility = View.VISIBLE
                         }
                     }
 

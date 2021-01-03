@@ -16,6 +16,6 @@ class PlayerPresentation() {
     val soloqueueWinrateLive = MutableLiveData<Float>()
     val summonerSpellDLive = MutableLiveData<Bitmap>()
     val summonerSpellFLive = MutableLiveData<Bitmap>()
-    val primaryRunePathIconResIdLive = MutableLiveData<Int>()
-    val secondaryRunePathIconResIdLive = MutableLiveData<Int>()
+    val primaryRuneIconLive = MutableLiveData<Drawable>()
+    val secondaryRunePathIconLive = MutableLiveData<Drawable>()
 }

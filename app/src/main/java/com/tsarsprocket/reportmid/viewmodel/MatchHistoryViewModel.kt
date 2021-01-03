@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
+import com.tsarsprocket.reportmid.model.RuneModel
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import io.reactivex.Observable
@@ -52,8 +53,8 @@ class MatchHistoryViewModel @Inject constructor( private val repository: Reposit
                     pair.second.remake,
                     asParticipant.creepScore,
                     pair.second.gameType.titleResId,
-                    runeModels.find { it.slot == 0 }?.iconResId,
-                    if( maybeSecondaryPath.isEmpty.blockingGet() ) null else maybeSecondaryPath.blockingGet().iconResId,
+                    runeModels.find { if (it is RuneModel) it.slotNo == 0 else false }?.icon?.blockingGet(),
+                    if( maybeSecondaryPath.isEmpty.blockingGet() ) null else maybeSecondaryPath.blockingGet().icon.blockingGet(),
                     asParticipant.summonerSpellD.blockingSingle().icon.blockingSingle(),
                     asParticipant.summonerSpellF.blockingSingle().icon.blockingSingle(),
                     Repository.getItemIcons( asParticipant )

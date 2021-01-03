@@ -1,8 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.WorkerThread
@@ -13,19 +11,15 @@ import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.match.*
-import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
-import com.merakianalytics.orianna.types.core.spectator.CurrentMatchTeam
-import com.merakianalytics.orianna.types.core.spectator.Player
-import com.merakianalytics.orianna.types.core.spectator.Runes
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.merakianalytics.orianna.types.core.staticdata.Item
-import com.merakianalytics.orianna.types.core.staticdata.ReforgedRune
 import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.model.state.MyFriendModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
@@ -45,7 +39,7 @@ import javax.inject.Singleton
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
 @Singleton
-class Repository @Inject constructor(val context: Context, val iconProvider: RIOTIconProvider) {
+class Repository @Inject constructor(val context: Context, val iconProvider: RIOTIconProvider, val retrofitServiceProvider: RetrofitServiceProvider) {
 
     val initialized = ReplaySubject.createWithSize<Boolean>(1)
 
@@ -55,6 +49,7 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     val champions = ConcurrentHashMap<Int, ChampionModel>()
     val summonerSpells = ConcurrentHashMap<Int, SummonerSpellModel>()
     val runes = ConcurrentHashMap<Int, RuneModel>()
+    lateinit var dataDragon: DataDragon
 
     init {
 
@@ -73,7 +68,8 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
                     database.globalDAO().insert(GlobalEntity(accs.firstOrNull()?.id))
                 }
 
-//                  Orianna.loadConfiguration( CharSource.wrap( loadOriannaConfigToString() ) )
+                dataDragon = DataDragon(database, iconProvider)
+
                 Orianna.setRiotAPIKey(loadRawResourceAsText(R.raw.riot_api_key))
                 Orianna.setDefaultRegion(Region.RUSSIA)
 
@@ -214,11 +210,15 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         champions[champion.id] ?: ChampionModel(this, champion).also { champions[it.id] = it }
     }
 
+    fun getChampionById(region: RegionModel, id: Long) =
+        ensureInitializedDoOnIO { ChampionModel(this, Champion.withId(id.toInt()).withRegion(region.shadowRegion).get()) }.firstOrError()
+
     fun getMatchHistoryModel(matchHistory: MatchHistory) = ensureInitializedDoOnIOSubject { MatchHistoryModel(this, matchHistory) }
 
     fun getMatchModel(match: Match) = ensureInitializedDoOnIOSubject { MatchModel(this, match) }
 
-    fun getParticipantModel(teamModel: TeamModel, participant: Participant) = ensureInitializedDoOnIOSubject { ParticipantModel(this, teamModel, participant) }
+    fun getParticipantModel(teamModel: TeamModel, participant: Participant) =
+        ensureInitializedDoOnIOSubject { ParticipantModel(this, teamModel, participant) }
 
     fun getSummonerModel(failOnNull: Boolean = false, lmdSummoner: () -> Summoner) = ensureInitializedDoOnIOSubject(failOnNull) {
         val summoner = lmdSummoner()
@@ -227,6 +227,9 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
                 SummonerModel(this, summoner).also { summoners[PuuidAndRegion(it.puuid,it.region)] = it }
         } else null
     }
+
+    fun getSummonerById(region: RegionModel, id: String) =
+        ensureInitializedDoOnIO { SummonerModel(this, Summoner.withId(id).withRegion(region.shadowRegion).get()) }.firstOrError()
 
     fun getTeamModel(team: Team) = ensureInitializedDoOnIOSubject { TeamModel(this, team) }
 
@@ -239,18 +242,22 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
 
     fun getRuneStats(runeStats: RuneStats) = ensureInitializedDoOnIOSubject { RuneStatsModel(this, runeStats) }
 
-    fun getRune(lmdReforgedRune: () -> ReforgedRune) = ensureInitializedDoOnIOSubject {
-        val reforgedRune = lmdReforgedRune()
-        runes[reforgedRune.id] ?: RuneModel(this, reforgedRune).also { runes[reforgedRune.id] = it }
+    fun getRunePath(pathId: Maybe<Int>) = if (pathId.isEmpty.blockingGet()) Maybe.empty() else Maybe.just(
+        dataDragon.tailSubject.value!!.getRunePathById(pathId.blockingGet())
+    )
+
+    fun getRune(runeId: Int) = ensureInitializedDoOnIOSubject {
+        dataDragon.tailSubject.value!!.getPerkById(runeId)
     }
 
-    fun getCurrentMatch(lmdCurrentMatch: () -> CurrentMatch) = ensureInitializedDoOnIOSubject { CurrentMatchModel(this, lmdCurrentMatch()) }
+    fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { CurrentMatchModel(this, summoner) }
 
-    fun getCurrentMatchTeam(lmdCurrentMatchTeam: () -> CurrentMatchTeam) = ensureInitializedDoOnIOSubject { CurrentMatchTeamModel(this, lmdCurrentMatchTeam()) }
+    fun getCurrentMatchForSummoner(summoner: SummonerModel): CurrentMatchModel? =
+        try { CurrentMatchModel(this, summoner) } catch (ex: Exception) { null }
 
-    fun getPlayer(lmdPlayer: () -> Player) = ensureInitializedDoOnIOSubject { PlayerModel(this, lmdPlayer()) }
-
-    fun getPlayerRunes(lmdRunes: () -> Runes) = ensureInitializedDoOnIOSubject { PlayerRunesModel(this, lmdRunes()) }
+    fun getCurrentMatchForSummonerMB(summoner: SummonerModel): Maybe<CurrentMatchModel> =
+        Maybe.create<CurrentMatchModel> { emitter -> getCurrentMatchForSummoner(summoner)?.also { emitter.onSuccess(it) } ?: emitter.onComplete() }
+            .subscribeOn(Schedulers.io())
 
     fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
@@ -418,9 +425,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     companion object {
         val allRegions = RegionModel.values()
         fun getRegion(region: Region) = RegionModel.byShadowRegion[region] ?: throw RuntimeException("No such region: ${region.tag}")
-        fun getRunePath(pathId: Maybe<Int>) = if (pathId.isEmpty.blockingGet()) Maybe.empty() else Maybe.just(
-            RunePathModel.byId[pathId.blockingGet()] ?: throw IncorrectRunePathIdException(pathId.blockingGet())
-        )
 
         fun getGameType(gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null) =
             GameTypeModel.by(gameType, queue, gameMode, gameMap)

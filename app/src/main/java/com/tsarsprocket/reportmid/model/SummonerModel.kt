@@ -1,13 +1,14 @@
 package com.tsarsprocket.reportmid.model
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.util.Log
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.MatchHistory
 import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import com.tsarsprocket.reportmid.riotapi.spectatorV4.SpectatorV4Service
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -17,7 +18,7 @@ class SummonerModel(
     val repository: Repository,
     private val shadowSummoner: Summoner
 ) {
-
+    val id: String = shadowSummoner.id
     val name: String = shadowSummoner.name
     val icon: Single<Drawable> by lazy { Single.fromCallable { shadowSummoner.profileIcon.id }.subscribeOn(Schedulers.io()).flatMap { repository.iconProvider.getProfileIcon(it) }  }
     val puuid: String = shadowSummoner.puuid
@@ -32,10 +33,7 @@ class SummonerModel(
     fun getMasteryWithChampion( championModel: ChampionModel ): Observable<ChampionMastery> =
         Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( championModel.shadowChampion ).get() }.subscribeOn( Schedulers.io() )
 
-    fun getCurrentMatch() = repository.getCurrentMatch{
-        val currentMatch = CurrentMatch.forSummoner( shadowSummoner ).get()
-        if( currentMatch.exists() ) currentMatch else throw MatchIsNotInProgressException()
-    }
+    fun getCurrentMatch() = repository.getCurrentMatch(this)
 
     private fun getObservableMasteryList() = Observable.fromCallable {
         List( shadowSummoner.championMasteries.size ) { i ->

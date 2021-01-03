@@ -1,17 +1,29 @@
 package com.tsarsprocket.reportmid.model
 
-import com.merakianalytics.orianna.types.common.RunePath
-import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RIOTIconProvider
 
-enum class RunePathModel( val pathId: Int, val iconResId: Int ) {
-    DOMINATION( 8100, R.drawable.runepath_domination ),
-    INSPIRATION( 8300, R.drawable.runepath_inspiration ),
-    PRECISION( 8000, R.drawable.runepath_precision ),
-    RESOLVE( 8400, R.drawable.runepath_resolve ),
-    SORCERY( 8200, R.drawable.runepath_sorcery );
+class RunePathModel(
+    val id: Int,
+    val key: String,
+    val name: String,
+    iconPath: String,
+    private val iconProvider: RIOTIconProvider,
+    ) {
 
-    companion object {
-        val byId = values().map{ it.pathId to it }.toMap()
+    private val myRunes = ArrayList<RuneModel>()
+    val runes = myRunes.toList()
+    val icon by lazy { iconProvider.getRunePathIcon(iconPath) }
+
+    fun createRune(id: Int, key: String, name: String, slotNo: Int, iconPath: String, iconProvider: RIOTIconProvider): RuneModel =
+        RuneModelImpl(id, key, name,slotNo, iconPath, iconProvider)
+            .also { myRunes.add(it) }
+
+    private inner class RuneModelImpl(id: Int, key: String, name: String, slotNo: Int, iconPath: String, iconProvider: RIOTIconProvider) :
+        RuneModel(id, key, name, slotNo, iconPath, iconProvider, ) {
+
+        override val runePath: RunePathModel = this@RunePathModel
     }
+
+    override fun equals(other: Any?): Boolean = if (other is RunePathModel) id == other.id else false
 }
 

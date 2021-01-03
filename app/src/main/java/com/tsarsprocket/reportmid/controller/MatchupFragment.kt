@@ -168,8 +168,8 @@ class MatchupFragment : BaseFragment() {
             item.soloqueueWinrateLive.observe(viewLifecycleOwner) { card.txtSummonerSoloQueueWinRate.text = ((it * 10).roundToInt() / 10f).toString() }
             item.summonerSpellDLive.observe(viewLifecycleOwner) { card.imgSummonerSpellD.setImageBitmap(it) }
             item.summonerSpellFLive.observe(viewLifecycleOwner) { card.imgSummonerSpellF.setImageBitmap(it) }
-            item.primaryRunePathIconResIdLive.observe(viewLifecycleOwner) { card.imgPrimaryRunePath.setImageResource(it) }
-            item.secondaryRunePathIconResIdLive.observe(viewLifecycleOwner) { card.imgSecondaryRunePath.setImageResource(it) }
+            item.primaryRuneIconLive.observe(viewLifecycleOwner) { card.imgPrimaryRune.setImageDrawable(it) }
+            item.secondaryRunePathIconLive.observe(viewLifecycleOwner) { card.imgSecondaryRunePath.setImageDrawable(it) }
 
             card.colourStripe.setBackgroundColor(resources.getColor(if (side == SideModel.BLUE) R.color.blueTeamBG else R.color.redTeamBG))
 

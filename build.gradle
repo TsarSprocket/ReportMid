@@ -3,8 +3,8 @@
 buildscript {
 
     ext.gradle_version = '4.1.1'
-    ext.kotlin_version = '1.4.10'
-    ext.nav_version = "2.3.1"
+    ext.kotlin_version = '1.4.20'
+    ext.nav_version = "2.3.2"
 
     repositories {
         google()
@@ -35,7 +35,7 @@ task clean(type: Delete) {
 }
 
 project.ext{
-    dagger_version = '2.26'
+    dagger_version = '2.30.1'
     multidex_version = '2.0.1'
     room_version = '2.2.5'
 }

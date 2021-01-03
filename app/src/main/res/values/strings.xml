@@ -23,7 +23,9 @@
     <!-- Fragment: Matchup -->
     <string name="fragment_matchup_skill_na">n/a</string>
     <string name="fragment_matchup_level_label">Level:</string>
+    <string name="fragment_matchup_player_solo_rank_label">Rank:</string>
     <string name="fragment_matchup_player_solo_rank_na">n/a</string>
+    <string name="fragment_matchup_player_solo_winrate_label">winrate:</string>
     <string name="fragment_matchup_player_solo_winrate_0">0</string>
     <string name="fragment_matchup_title_template">%s in Game</string>
     <string name="fragment_matchup_tmp_calculating">calculating…</string>

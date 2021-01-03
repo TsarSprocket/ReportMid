@@ -1,21 +1,19 @@
 package com.tsarsprocket.reportmid.model
 
-import android.graphics.Bitmap
-import com.merakianalytics.orianna.types.core.spectator.Player
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
+import android.graphics.drawable.Drawable
+import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
+import io.reactivex.Single
 
-class PlayerModel( val repository: Repository, private val shadowPlayer: Player ) {
-    val champion by lazy { repository.getChampionModel{ shadowPlayer.champion } }
-    val summoner by lazy { repository.getSummonerModel{ shadowPlayer.summoner } }
-    val profileIcon by lazy { ReplaySubject.createWithSize<Bitmap>( 1 ).also { subject ->
-        Observable.fromCallable{ shadowPlayer.profileIcon.image.get() }.observeOn( Schedulers.io() ).subscribe( subject ) }
-    }
-    val summonerSpellD by lazy { repository.getSummonerSpell { shadowPlayer.summonerSpellD } }
-    val summonerSpellF by lazy { repository.getSummonerSpell { shadowPlayer.summonerSpellF } }
-    val isBot = shadowPlayer.isBot
-    val runes by lazy { repository.getPlayerRunes { shadowPlayer.runes } }
-    val primaryRunePath by lazy { runes.blockingSingle().primaryPath }
-    val secondaryRunePath by lazy { runes.blockingSingle().secondaryPath }
+class PlayerModel(private val repository: Repository, info: CurrentGameParticipant, region: RegionModel) {
+    val champion: Single<ChampionModel> = repository.getChampionById(region, info.championId).cache()
+    val summoner: Single<SummonerModel> = repository.getSummonerById(region, info.summonerId)
+    val profileIcon: Single<Drawable> = repository.iconProvider.getProfileIcon(info.profileIconId.toInt())
+    val summonerSpellD: SummonerSpellModel? = SummonerSpellModel(repository, info.spell1Id.toInt())
+    val summonerSpellF: SummonerSpellModel? = SummonerSpellModel(repository, info.spell2Id.toInt())
+    val isBot = info.bot
+    val allPerks: List<PerkModel> = info.perks.perkIds.mapNotNull { try { repository.dataDragon.tailSubject.value?.getPerkById(it.toInt()) } catch (ex: Exception) { null } }
+    val runes: List<RuneModel> = allPerks.mapNotNull { it as? RuneModel }
+    val primaryRune: RuneModel? = runes.find { it.slotNo == 0 }
+    val primaryRunePath: RunePathModel? = primaryRune?.runePath
+    val secondaryRunePath: RunePathModel? = runes.firstOrNull() { it.runePath != primaryRunePath }?.runePath
 }

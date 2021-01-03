@@ -1,17 +1,18 @@
 package com.tsarsprocket.reportmid.viewmodel
 
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.model.*
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.ReplaySubject
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -37,7 +38,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
 
     val currentMatchLive = MutableLiveData<CurrentMatchModel>()
 
-    val gameTypeTextLive = Transformations.map( currentMatchLive ) { match -> match.gameType.name }
+    val gameTypeTextLive = Transformations.map( currentMatchLive ) { match -> repository.context.getString(match.gameType.titleResId) }
 // Temporary removed:
 //    val durationTextLive = MutableLiveData<String>( STR_NO_DURATION )
 
@@ -71,48 +72,56 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     }
 
     private fun obtainTeamParticipants(
-        obsCurTeamModel: ReplaySubject<CurrentMatchTeamModel>,
+        curTeamModel: CurrentMatchTeamModel,
         participantsListLive: MutableLiveData<List<PlayerPresentation>>,
         disposer: CompositeDisposable
     ) {
-        disposer.add(
-            obsCurTeamModel
-                .switchMap { matchTeamModel -> matchTeamModel.participants }
-                .observeOn( Schedulers.io() )
-                .subscribe { lstObsPlayerModels ->
-                    participantsListLive.postValue(
-                        lstObsPlayerModels
-                            .map { subject -> subject.blockingSingle() }
-                            .map { playerModel ->
-                                val playerPresentation =  PlayerPresentation()
-                                matchDisposables.addAll(
-                                    playerModel.summoner.subscribe { playerPresentation.summoner.postValue(it) },
-                                    playerModel.champion.switchMap { it.icon.toObservable() }.subscribe{ playerPresentation.championIconLive.postValue( it ) },
-                                    Observable.zip( playerModel.champion, playerModel.summoner, BiFunction<ChampionModel,SummonerModel,Observable<Int>> { ch, su -> getSkillForChampion( su, ch ) } )
-                                        .switchMap { it }
-                                        .concatWith( Observable.just( -1 ) )
-                                        .take( 1 )
-                                        .subscribe { playerPresentation.summonerChampionSkillLive.postValue( it ) },
-                                    playerModel.summoner.subscribe { playerPresentation.summonerNameLive.postValue( it.name ); playerPresentation.summonerLevelLive.postValue( it.level ) },
-                                    playerModel.summoner.switchMap { it.soloQueuePosition }.subscribe { soloQueuePosition ->
-                                        playerPresentation.soloqueueRankLive.postValue( soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric )
-                                        playerPresentation.soloqueueWinrateLive.postValue( ( soloQueuePosition.wins.toFloat() / ( soloQueuePosition.wins + soloQueuePosition.losses ).toFloat() ).takeUnless { it.isNaN() }?: 0f )
-                                    },
-                                    playerModel.summonerSpellD.switchMap { it.icon }.subscribe{ playerPresentation.summonerSpellDLive.postValue( it ) },
-                                    playerModel.summonerSpellF.switchMap { it.icon }.subscribe{ playerPresentation.summonerSpellFLive.postValue( it ) }
-                                )
-                                playerPresentation.primaryRunePathIconResIdLive.postValue( playerModel.primaryRunePath.iconResId )
-                                playerPresentation.secondaryRunePathIconResIdLive.postValue( playerModel.secondaryRunePath.iconResId )
-
-                                playerPresentation
-                            }
+        participantsListLive.postValue(
+            curTeamModel.participants
+                .map { playerModel ->
+                    val playerPresentation = PlayerPresentation()
+                    disposer.addAll(
+                        playerModel.summoner.subscribe({ sum -> playerPresentation.summoner.postValue(sum) },
+                            { ex -> this.logError("Can't obtain icon for summoner", ex) }),
+                        playerModel.champion.flatMap { it.icon }.subscribe({ drawable -> playerPresentation.championIconLive.postValue(drawable) },
+                            { ex -> this.logError("Can't obtain icon for champion", ex) }),
+                        Single.zip(
+                            playerModel.champion,
+                            playerModel.summoner,
+                            BiFunction<ChampionModel, SummonerModel, Single<Int>> { ch, su -> getSkillForChampion(su, ch) })
+                            .flatMap { it }
+                            .concatWith(Single.just(-1))
+                            .take(1)
+                            .subscribe({ playerPresentation.summonerChampionSkillLive.postValue(it) },
+                                { ex -> this.logError("Cannot calculate champion skill", ex) }),
+                        playerModel.summoner.subscribe(
+                            { sum -> playerPresentation.summonerNameLive.postValue(sum.name); playerPresentation.summonerLevelLive.postValue(sum.level) },
+                            { ex -> this.logError("Can't get summoner", ex) }),
+                        playerModel.summoner.flatMap { it.soloQueuePosition.firstOrError() }.subscribe({ soloQueuePosition ->
+                            playerPresentation.soloqueueRankLive.postValue(soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric)
+                            playerPresentation.soloqueueWinrateLive.postValue((soloQueuePosition.wins.toFloat() / (soloQueuePosition.wins + soloQueuePosition.losses).toFloat()).takeUnless { it.isNaN() }
+                                ?: 0f)
+                        },
+                            { ex -> this.logError("Can't obtain soloqueue position", ex) }),
+                        playerModel.summonerSpellD?.icon?.subscribe { playerPresentation.summonerSpellDLive.postValue(it) },
+                        playerModel.summonerSpellF?.icon?.subscribe { playerPresentation.summonerSpellFLive.postValue(it) },
+                        playerModel.primaryRune?.let { runeModel ->
+                            runeModel.icon.subscribe( { drawable -> playerPresentation.primaryRuneIconLive.postValue(drawable) },
+                                { ex -> this.logError("Error getting primary rune path", ex) } )
+                        },
+                        playerModel.secondaryRunePath?.let { runePathModel ->
+                            runePathModel.icon.subscribe( { drawable -> playerPresentation.secondaryRunePathIconLive.postValue(drawable) },
+                                { ex -> logError("Error getting secondary rune path", ex) } )
+                       },
                     )
+
+                    playerPresentation
                 }
         )
     }
 
     private fun getSkillForChampion( summoner: SummonerModel, champion: ChampionModel ) =
-        summoner.getMasteryWithChampion( champion ).map { it.points }
+        summoner.getMasteryWithChampion( champion ).map { it.points }.first(0)
 
     @MainThread
     private fun updateDuration() {

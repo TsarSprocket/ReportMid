@@ -62,6 +62,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideChampion"
             app:layout_constraintEnd_toEndOf="@id/guideChampion"
@@ -101,7 +102,7 @@
 
         <TextView
             android:id="@+id/txtLevelLabel"
-            android:text="level"
+            android:text="@string/fragment_matchup_level_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/guideH2Line1"
@@ -118,14 +119,23 @@
             android:layout_marginLeft="4dp"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
             android:text="@string/lorem_ipsum_short"
-            />
+            android:layout_marginStart="4dp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideSummonerRank"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="240dp" />
+            app:layout_constraintGuide_end="100dp" />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line0"
+            app:layout_constraintEnd_toStartOf="@id/guideSummonerRank"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
+            android:text="@string/fragment_matchup_player_solo_rank_label"
+            />
 
         <TextView
             android:id="@+id/txtSummonerSoloQueueRank"
@@ -137,20 +147,30 @@
             android:text="@string/fragment_matchup_player_solo_rank_na" />
 
         <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/guideH2Line1"
+            app:layout_constraintEnd_toStartOf="@id/guideSummonerRank"
+            app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
+            android:text="@string/fragment_matchup_player_solo_winrate_label"
+            />
+
+        <TextView
             android:id="@+id/txtSummonerSoloQueueWinRate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/guideH2Line1"
             app:layout_constraintStart_toStartOf="@id/guideSummonerRank"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
-            android:text="@string/fragment_matchup_player_solo_winrate_0" />
+            android:text="@string/fragment_matchup_player_solo_winrate_0"
+            />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideSummonerSpells"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="270dp" />
+            app:layout_constraintGuide_end="70dp" />
 
         <ImageView
             android:id="@+id/imgSummonerSpellD"
@@ -175,25 +195,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="300dp" />
+            app:layout_constraintGuide_end="40dp" />
 
         <ImageView
-            android:id="@+id/imgPrimaryRunePath"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/imgPrimaryRune"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             android:src="@drawable/runepath_sorcery"
-            app:layout_constraintTop_toTopOf="@id/guideH2Line0"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideSummonerRunes"
-            app:layout_constraintBottom_toBottomOf="@id/guideH2Line0" />
+            app:layout_constraintBottom_toTopOf="@id/imgSecondaryRunePath"
+            app:layout_constraintVertical_chainStyle="spread_inside"
+            />
 
         <ImageView
             android:id="@+id/imgSecondaryRunePath"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             android:src="@drawable/runepath_domination"
-            app:layout_constraintTop_toTopOf="@id/guideH2Line1"
-            app:layout_constraintStart_toEndOf="@id/guideSummonerRunes"
-            app:layout_constraintBottom_toBottomOf="@id/guideH2Line1" />
+            app:layout_constraintTop_toBottomOf="@id/imgPrimaryRune"
+            app:layout_constraintStart_toStartOf="@id/imgPrimaryRune"
+            app:layout_constraintEnd_toEndOf="@id/imgPrimaryRune"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

@@ -29,14 +29,12 @@ class ParticipantModel( private val repository: Repository, val team: TeamModel,
         List( shadowParticipant.items.size ) { i ->
             repository.getItemModel( shadowParticipant.items[ i ] ).replay( 1 ).autoConnect()
         }
-    }.observeOn( Schedulers.io() )
+    }.observeOn(Schedulers.io())
 
-    private fun getMaybePath( runePath: RunePath? ): Observable<Maybe<RunePathModel>> {
-        return Observable.fromCallable {
-            val path = runePath
-            if (path != null) Maybe.just(path) else Maybe.empty()
+    private fun getMaybePath(runePath: RunePath?): Observable<Maybe<RunePathModel>> =
+        Observable.fromCallable {
+            if (runePath != null) Maybe.just(runePath) else Maybe.empty()
         }.subscribeOn(Schedulers.io()).map { path ->
-            Repository.getRunePath(if (path.isEmpty.blockingGet()) Maybe.empty() else Maybe.just(path.blockingGet().id))
+            repository.getRunePath(path.map { it.id })
         }
-    }
 }
