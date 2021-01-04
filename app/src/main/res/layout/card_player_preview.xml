@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/guideH2Line0"
             app:layout_constraintStart_toEndOf="@id/guideSummonerInfo"
-            app:layout_constraintEnd_toEndOf="@id/guideSummonerRank"
+            app:layout_constraintEnd_toStartOf="@id/txtRankLabel"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
             android:layout_marginEnd="6dp"
             android:layout_marginRight="6dp"
@@ -129,10 +129,13 @@
             app:layout_constraintGuide_end="100dp" />
 
         <TextView
+            android:id="@+id/txtRankLabel"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             app:layout_constraintTop_toTopOf="@id/guideH2Line0"
             app:layout_constraintEnd_toStartOf="@id/guideSummonerRank"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line0"
             android:text="@string/fragment_matchup_player_solo_rank_label"
             />
@@ -147,10 +150,13 @@
             android:text="@string/fragment_matchup_player_solo_rank_na" />
 
         <TextView
+            android:id="@+id/txtWinRateLabel"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             app:layout_constraintTop_toTopOf="@id/guideH2Line1"
             app:layout_constraintEnd_toStartOf="@id/guideSummonerRank"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toBottomOf="@id/guideH2Line1"
             android:text="@string/fragment_matchup_player_solo_winrate_label"
             />
