@@ -39,8 +39,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     val currentMatchLive = MutableLiveData<CurrentMatchModel>()
 
     val gameTypeTextLive = Transformations.map( currentMatchLive ) { match -> repository.context.getString(match.gameType.titleResId) }
-// Temporary removed:
-//    val durationTextLive = MutableLiveData<String>( STR_NO_DURATION )
+    val durationTextLive = MutableLiveData<String>( STR_NO_DURATION )
 
     val blueTeamParticipants = MutableLiveData<List<PlayerPresentation>>()
     val redTeamParticipants = MutableLiveData<List<PlayerPresentation>>()
@@ -131,8 +130,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
             val hours = durMillis / MILLIS_IN_HOUR
             val minutes = durMillis / MILLIS_IN_MINUTE - hours * MINUTES_IN_HOUR
             val seconds = durMillis / MILLIS_IN_SECOND - ( hours * MINUTES_IN_HOUR + minutes ) * SECONDS_IN_MINUTE
-// Temporary removed:
-//            durationTextLive.value = if( hours > 0 ) Formatter().format( DUR_FMT_HMS, hours, minutes, seconds ).toString() else Formatter().format( DUR_FMT_MS, minutes, seconds ).toString()
+            durationTextLive.value = if( hours > 0 ) Formatter().format( DUR_FMT_HMS, hours, minutes, seconds ).toString() else Formatter().format( DUR_FMT_MS, minutes, seconds ).toString()
         }
     }
 
