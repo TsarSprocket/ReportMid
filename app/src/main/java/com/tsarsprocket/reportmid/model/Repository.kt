@@ -429,10 +429,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         fun getGameType(gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null) =
             GameTypeModel.by(gameType, queue, gameMode, gameMap)
 
-        fun getSide(side: Side) = SideModel.fromExternal(side)
-        fun getQueue(queue: Queue) =
-            QueueModel.values().find { it.shadowQueue.id == queue.id } ?: throw RuntimeException("Queue $queue is not defined in the model")
-
         fun getTier(tier: Tier) = TierModel.values().find { it.shadowTier == tier } ?: throw RuntimeException("Tier $tier is not mapped")
         fun getDivision(division: Division) =
             DivisionModel.values().find { it.shadowDivision == division } ?: throw RuntimeException("Division $division is not mapped")
