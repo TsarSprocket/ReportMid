@@ -3,7 +3,7 @@ package com.tsarsprocket.reportmid.riotapi.spectatorV4
 import com.google.gson.annotations.SerializedName
 
 data class CurrentGameParticipant(
-    @SerializedName("championId")               val championId:                 Long,
+    @SerializedName("championId")               val championId:                 Int,
     @SerializedName("perks")                    val perks:                      Perks,
     @SerializedName("profileIconId")            val profileIconId:              Long,
     @SerializedName("bot")                      val bot:                        Boolean,

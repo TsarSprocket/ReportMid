@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
 import io.reactivex.Single
 
 class PlayerModel(private val repository: Repository, info: CurrentGameParticipant, region: RegionModel) {
-    val champion: Single<ChampionModel> = repository.getChampionById(region, info.championId).cache()
+    val champion: Single<ChampionModel> = repository.getChampionById(info.championId).cache()
     val summoner: Single<SummonerModel> = repository.getSummonerById(region, info.summonerId)
     val profileIcon: Single<Drawable> = repository.iconProvider.getProfileIcon(info.profileIconId.toInt())
     val summonerSpellD: SummonerSpellModel? = SummonerSpellModel(repository, info.spell1Id.toInt())

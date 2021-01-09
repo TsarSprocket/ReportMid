@@ -46,7 +46,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     lateinit var database: MainStorage
 
     val summoners = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
-    val champions = ConcurrentHashMap<Int, ChampionModel>()
     val summonerSpells = ConcurrentHashMap<Int, SummonerSpellModel>()
     val runes = ConcurrentHashMap<Int, RuneModel>()
     lateinit var dataDragon: DataDragon
@@ -205,13 +204,10 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
 
     fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIOSubject { ChampionMasteryModel(this, championMastery) }
 
-    fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIOSubject {
-        val champion = lmdChampion()
-        champions[champion.id] ?: ChampionModel(this, champion).also { champions[it.id] = it }
-    }
+    fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIOSubject { getChampionById(lmdChampion().id).blockingGet() }
 
-    fun getChampionById(region: RegionModel, id: Long) =
-        ensureInitializedDoOnIO { ChampionModel(this, Champion.withId(id.toInt()).withRegion(region.shadowRegion).get()) }.firstOrError()
+    fun getChampionById(id: Int): Single<ChampionModel> =
+        ensureInitializedDoOnIO { dataDragon.tailSubject.value!!.getChampionById(id) }.firstOrError()
 
     fun getMatchHistoryModel(matchHistory: MatchHistory) = ensureInitializedDoOnIOSubject { MatchHistoryModel(this, matchHistory) }
 

@@ -15,7 +15,7 @@ import kotlin.Exception
 
 const val STR_ITEM_ICON_ASSET_PATH = "img/item/%d.png"
 const val STR_PROFILE_ICON_ASSET_PATH = "img/profileicon/%d.png"
-const val STR_CHAMPION_ICON_ASSET_PATH = "img/champion/%s.png"
+const val STR_CHAMPION_ICON_ASSET_PATH = "img/champion/%s"
 const val STR_SUMMONER_SPELL_ICON_ASSET_PATH = "img/spell/%s.png"
 const val STR_RUNE_ICON_ASSET_PATH = "img/%s"
 
@@ -24,7 +24,7 @@ const val STR_URL_VERSIONS = "$STR_URL_DATA_DRAGON/api/versions.json"
 const val STR_URL_IMAGE_BASE = "$STR_URL_DATA_DRAGON/cdn/%s/img/%s" // version, path
 const val STR_URL_UNVERSIONED_IMAGE_BASE = "$STR_URL_DATA_DRAGON/cdn/img/%s" // path
 const val STR_PATH_PROFILE_ICONS = "profileicon/%d.png" // profile icon id
-const val STR_PATH_CHAMPION_ICONS = "champion/%s.png" // champion name
+const val STR_PATH_CHAMPION_ICONS = "champion/%s" // champion name
 const val STR_PATH_ITEM_ICONS = "item/%d.png" // item id
 const val STR_PATH_SUMMONER_SPELL_ICONS = "spell/%s.png" // summoner spell key
 const val STR_PATH_RUNE_ICONS = "%s" // rune/rune path icon path

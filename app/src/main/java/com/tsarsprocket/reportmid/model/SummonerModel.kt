@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.model
 
 import android.graphics.drawable.Drawable
 import android.util.Log
+import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.match.MatchHistory
@@ -31,7 +32,7 @@ class SummonerModel(
     val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid,region) }
 
     fun getMasteryWithChampion( championModel: ChampionModel ): Observable<ChampionMastery> =
-        Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( championModel.shadowChampion ).get() }.subscribeOn( Schedulers.io() )
+        Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( Orianna.championWithId(championModel.id).get() ).get() }.subscribeOn( Schedulers.io() )
 
     fun getCurrentMatch() = repository.getCurrentMatch(this)
 

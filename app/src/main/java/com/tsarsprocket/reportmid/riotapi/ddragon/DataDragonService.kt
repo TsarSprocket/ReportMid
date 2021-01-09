@@ -13,4 +13,7 @@ interface DataDragonService {
 
     @GET("cdn/{version}/data/{lang}/runesReforged.json")
     fun runesReforged(@Path("version")version: String, @Path("lang") lang: String): Observable<List<RunePath>>
+
+    @GET("cdn/{version}/data/{lang}/champion.json")
+    fun champions(@Path("version")version: String, @Path("lang")lang: String): Observable<Champions>
 }
