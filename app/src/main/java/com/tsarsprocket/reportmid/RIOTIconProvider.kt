@@ -74,8 +74,10 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
             Drawable.createFromStream(context.assets.open(assetPath), null)
         } catch (ex: Exception) {
             try {
-                cache[id] ?: Drawable.createFromStream(URL(STR_URL_IMAGE_BASE.format(currentVersion.blockingGet(), webPath)).openStream(), null)
-                    .also { cache[id] = it }
+                URL(STR_URL_IMAGE_BASE.format(currentVersion.blockingGet(), webPath)).openStream().use { stream ->
+                    cache[id] ?: Drawable.createFromStream(stream, null)
+                        .also { cache[id] = it }
+                }
             } catch (ex: Exception) {
                 ResourcesCompat.getDrawable(context.resources, resId, null)!!
             }
@@ -87,8 +89,10 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
             Drawable.createFromStream(context.assets.open(assetPath), null)
         } catch (ex: Exception) {
             try {
-                cache[id] ?: Drawable.createFromStream(URL(STR_URL_IMAGE_BASE.format(webPath)).openStream(), null)
-                    .also { cache[id] = it }
+                URL(STR_URL_IMAGE_BASE.format(webPath)).openStream().use { stream ->
+                    cache[id] ?: Drawable.createFromStream(stream, null)
+                        .also { cache[id] = it }
+                }
             } catch (ex: Exception) {
                 ResourcesCompat.getDrawable(context.resources, resId, null)!!
             }
