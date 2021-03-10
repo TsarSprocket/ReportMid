@@ -9,8 +9,8 @@ data class ParticipantDto(
     @SerializedName("stats") val stats: ParticipantStatsDto,
     @SerializedName("teamId") val teamId: Int, // 100 - blue, 200 - red
     @SerializedName("timeline") val timeline: ParticipantTimelineDto,
-    @SerializedName("spell1Id") val spell1Id: Int,
-    @SerializedName("spell2Id") val spell2Id: Int,
+    @SerializedName("spell1Id") val spell1Id: Long,
+    @SerializedName("spell2Id") val spell2Id: Long,
     @SerializedName("highestAchievedSeasonTier") val highestAchievedSeasonTier: String,
     @SerializedName("masteries") val masteries: List<MasteryDto>
 )

@@ -22,6 +22,8 @@ import com.tsarsprocket.reportmid.room.state.GlobalEntity
         RunePathEntity::class,
         RuneEntity::class,
         ChampionEntity::class,
+        SummonerSpellEntity::class,
+        ItemEntity::class,
     ], version = 1 )
 abstract class MainStorage: RoomDatabase() {
 
@@ -47,4 +49,8 @@ abstract class MainStorage: RoomDatabase() {
     abstract fun runeDao(): RuneDao
 
     abstract fun championDao(): ChampionDao
+
+    abstract fun summonerSpellDao(): SummonerSpellDao
+
+    abstract fun itemDao(): ItemDao
 }

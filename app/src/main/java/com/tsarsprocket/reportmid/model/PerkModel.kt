@@ -8,7 +8,7 @@ open class PerkModel(
     iconPath: String,
     iconProvider: RIOTIconProvider
 ) {
-    val icon by lazy { iconProvider.getRuneIcon(iconPath) }
+    val icon by lazy { iconProvider.getRuneIcon(iconPath).cache() }
 
     override fun equals(other: Any?): Boolean = if (other is RuneModel) id == other.id else false
 

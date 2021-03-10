@@ -102,8 +102,8 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
                                 ?: 0f)
                         },
                             { ex -> this.logError("Can't obtain soloqueue position", ex) }),
-                        playerModel.summonerSpellD?.icon?.subscribe { playerPresentation.summonerSpellDLive.postValue(it) },
-                        playerModel.summonerSpellF?.icon?.subscribe { playerPresentation.summonerSpellFLive.postValue(it) },
+                        playerModel.summonerSpellD?.icon?.subscribe { drawable -> playerPresentation.summonerSpellDLive.postValue(drawable) },
+                        playerModel.summonerSpellF?.icon?.subscribe { drawable -> playerPresentation.summonerSpellFLive.postValue(drawable) },
                         playerModel.primaryRune?.let { runeModel ->
                             runeModel.icon.subscribe( { drawable -> playerPresentation.primaryRuneIconLive.postValue(drawable) },
                                 { ex -> this.logError("Error getting primary rune path", ex) } )

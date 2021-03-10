@@ -2,14 +2,17 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.rxjava2.cachedIn
+import androidx.paging.rxjava2.flowable
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.RuneModel
 import com.tsarsprocket.reportmid.model.SummonerModel
-import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
-import io.reactivex.Observable
+import com.tsarsprocket.reportmid.tools.toFlowable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 class MatchHistoryViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
@@ -22,45 +25,9 @@ class MatchHistoryViewModel @Inject constructor( private val repository: Reposit
         allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion ).subscribe { activeSummonerModel.postValue( it ) } )
     }
 
-    fun fetchMatchPreviewInfo(
-        position: Int
-    ): Observable<MatchResultPreviewData> {
-        return Observable.create<SummonerModel> { emitter ->
-                activeSummonerModel.observeForever { summonerModel ->
-                    emitter.onNext( summonerModel )
-                    emitter.onComplete()
-                } }
-            .switchMap { summonerModel ->
-                summonerModel.matchHistory
-                    .switchMap { it.getMatch( position) }
-                    .map { matchModel -> Pair( summonerModel, matchModel ) }
-            }
-            .observeOn( Schedulers.io() )
-            .map { pair ->
-                val asParticipant = Repository.findParticipant( pair.second, pair.first )
-                val asChampion = asParticipant.champion.blockingSingle()
-
-                val runeModels = asParticipant.runeStats.blockingSingle().map { o -> o.blockingSingle().rune.blockingSingle() }
-
-                val maybeSecondaryPath = asParticipant.secondaryRunePath.blockingSingle()
-
-                MatchResultPreviewData(
-                    asChampion.icon.blockingGet(),
-                    asParticipant.kills,
-                    asParticipant.deaths,
-                    asParticipant.assists,
-                    asParticipant.isWinner,
-                    pair.second.remake,
-                    asParticipant.creepScore,
-                    pair.second.gameType.titleResId,
-                    runeModels.find { if (it is RuneModel) it.slotNo == 0 else false }?.icon?.blockingGet(),
-                    if( maybeSecondaryPath.isEmpty.blockingGet() ) null else maybeSecondaryPath.blockingGet().icon.blockingGet(),
-                    asParticipant.summonerSpellD.blockingSingle().icon.blockingSingle(),
-                    asParticipant.summonerSpellF.blockingSingle().icon.blockingSingle(),
-                    Repository.getItemIcons( asParticipant )
-                )
-            }
-    }
+    @ExperimentalCoroutinesApi
+    val flowableMatches = activeSummonerModel.toFlowable()
+        .switchMap { (Pager(PagingConfig(pageSize = 8, prefetchDistance = 24)) { it.getMatchHistory() }).flowable.cachedIn(viewModelScope) }
 
     override fun onCleared() {
         allDisposables.clear()

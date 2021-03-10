@@ -25,27 +25,24 @@ class SummonerModel(
     val puuid: String = shadowSummoner.puuid
     val level: Int = shadowSummoner.level
     val masteries: Observable<List<Observable<ChampionMasteryModel>>> by lazy { getObservableMasteryList().replay( 1 ).autoConnect() }
-    val matchHistory: Observable<MatchHistoryModel> by lazy { getObservableMatchHistoryForSummoner( shadowSummoner ).replay( 1 ).autoConnect() }
     val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
     val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
     val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner(this) }
     val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid,region) }
+    val riotAccountId: String = shadowSummoner.accountId
 
     fun getMasteryWithChampion( championModel: ChampionModel ): Observable<ChampionMastery> =
         Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( Orianna.championWithId(championModel.id).get() ).get() }.subscribeOn( Schedulers.io() )
 
     fun getCurrentMatch() = repository.getCurrentMatch(this)
 
+    fun getMatchHistory() = repository.getMatchHistoryModel(region, this)
+
     private fun getObservableMasteryList() = Observable.fromCallable {
         List( shadowSummoner.championMasteries.size ) { i ->
             repository.getChampionMasteryModel( shadowSummoner.championMasteries[ i ] ).subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect()
         }
     }.subscribeOn( Schedulers.io() )
-
-    private fun getObservableMatchHistoryForSummoner( summoner: Summoner ): Observable<MatchHistoryModel> =
-        Observable.fromCallable { MatchHistory.forSummoner( summoner ).get()!! }
-            .subscribeOn( Schedulers.io() )
-            .switchMap { shadowHistory -> repository.getMatchHistoryModel( shadowHistory ) }
 
     //  Classes  //////////////////////////////////////////////////////////////
 

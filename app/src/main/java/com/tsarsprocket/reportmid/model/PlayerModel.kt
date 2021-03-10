@@ -8,10 +8,10 @@ class PlayerModel(private val repository: Repository, info: CurrentGameParticipa
     val champion: Single<ChampionModel> = repository.getChampionById(info.championId).cache()
     val summoner: Single<SummonerModel> = repository.getSummonerById(region, info.summonerId)
     val profileIcon: Single<Drawable> = repository.iconProvider.getProfileIcon(info.profileIconId.toInt())
-    val summonerSpellD: SummonerSpellModel? = SummonerSpellModel(repository, info.spell1Id.toInt())
-    val summonerSpellF: SummonerSpellModel? = SummonerSpellModel(repository, info.spell2Id.toInt())
+    val summonerSpellD: SummonerSpellModel? = repository.dataDragon.tail.getSummonerSpellById(info.spell1Id)
+    val summonerSpellF: SummonerSpellModel? = repository.dataDragon.tail.getSummonerSpellById(info.spell2Id)
     val isBot = info.bot
-    val allPerks: List<PerkModel> = info.perks.perkIds.mapNotNull { try { repository.dataDragon.tailSubject.value?.getPerkById(it.toInt()) } catch (ex: Exception) { null } }
+    val allPerks: List<PerkModel> = info.perks.perkIds.mapNotNull { try { repository.dataDragon.tail.getPerkById(it.toInt()) } catch (ex: Exception) { null } }
     val runes: List<RuneModel> = allPerks.mapNotNull { it as? RuneModel }
     val primaryRune: RuneModel? = runes.find { it.slotNo == 0 }
     val primaryRunePath: RunePathModel? = primaryRune?.runePath

@@ -14,8 +14,8 @@ class PlayerPresentation() {
     val summonerLevelLive = MutableLiveData<Int>()
     val soloqueueRankLive = MutableLiveData<String>()
     val soloqueueWinrateLive = MutableLiveData<Float>()
-    val summonerSpellDLive = MutableLiveData<Bitmap>()
-    val summonerSpellFLive = MutableLiveData<Bitmap>()
+    val summonerSpellDLive = MutableLiveData<Drawable>()
+    val summonerSpellFLive = MutableLiveData<Drawable>()
     val primaryRuneIconLive = MutableLiveData<Drawable>()
     val secondaryRunePathIconLive = MutableLiveData<Drawable>()
 }

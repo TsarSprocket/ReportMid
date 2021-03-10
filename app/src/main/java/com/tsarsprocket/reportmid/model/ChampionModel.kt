@@ -11,5 +11,5 @@ class ChampionModel(
     iconName: String,
     iconProvider: RIOTIconProvider,
 ) {
-    val icon: Single<Drawable> by lazy { iconProvider.getChampionIcon(iconName) }
+    val icon: Single<Drawable> by lazy { iconProvider.getChampionIcon(iconName).cache() }
 }

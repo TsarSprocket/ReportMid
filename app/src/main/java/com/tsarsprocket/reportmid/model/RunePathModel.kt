@@ -12,7 +12,7 @@ class RunePathModel(
 
     private val myRunes = ArrayList<RuneModel>()
     val runes = myRunes.toList()
-    val icon by lazy { iconProvider.getRunePathIcon(iconPath) }
+    val icon by lazy { iconProvider.getRunePathIcon(iconPath).cache() }
 
     fun createRune(id: Int, key: String, name: String, slotNo: Int, iconPath: String, iconProvider: RIOTIconProvider): RuneModel =
         RuneModelImpl(id, key, name,slotNo, iconPath, iconProvider)

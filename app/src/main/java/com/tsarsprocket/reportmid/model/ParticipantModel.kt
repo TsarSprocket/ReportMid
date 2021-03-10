@@ -1,40 +1,35 @@
 package com.tsarsprocket.reportmid.model
 
+import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.RunePath
-import com.merakianalytics.orianna.types.core.match.Participant
+import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantDto
+import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantIdentityDto
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
-class ParticipantModel( private val repository: Repository, val team: TeamModel, private val shadowParticipant: Participant ) {
-    val summoner by lazy { repository.getSummonerModel{ shadowParticipant.summoner } }
-    val champion by lazy { repository.getChampionModel{ shadowParticipant.champion } }
-    val kills = shadowParticipant.stats.kills
-    val deaths = shadowParticipant.stats.deaths
-    val assists = shadowParticipant.stats.assists
-    val isWinner = shadowParticipant.stats.isWinner
-    val creepScore = shadowParticipant.stats.creepScore
-    val summonerSpellD by lazy { repository.getSummonerSpell { shadowParticipant.summonerSpellD!! } }
-    val summonerSpellF by lazy { repository.getSummonerSpell { shadowParticipant.summonerSpellF!! } }
-    val items by lazy{ getObservableItemsList().replay( 1 ).autoConnect() }
-    val primaryRunePath by lazy { getMaybePath( shadowParticipant.primaryRunePath ).replay( 1 ).autoConnect() }
-    val secondaryRunePath by lazy { getMaybePath( shadowParticipant.secondaryRunePath ).replay( 1 ).autoConnect() }
-    val runeStats by lazy { getObservableRuneStatsList().replay( 1 ).autoConnect() }
-
-    private fun getObservableRuneStatsList() = Observable.fromCallable {
-        List( shadowParticipant.runeStats.size ) { i -> repository.getRuneStats( shadowParticipant.runeStats[ i ] ).replay().autoConnect() }
-    }.subscribeOn( Schedulers.io() )
-
-    private fun getObservableItemsList(): Observable<List<Observable<ItemModel>>> = Observable.fromCallable {
-        List( shadowParticipant.items.size ) { i ->
-            repository.getItemModel( shadowParticipant.items[ i ] ).replay( 1 ).autoConnect()
-        }
-    }.observeOn(Schedulers.io())
-
-    private fun getMaybePath(runePath: RunePath?): Observable<Maybe<RunePathModel>> =
-        Observable.fromCallable {
-            if (runePath != null) Maybe.just(runePath) else Maybe.empty()
-        }.subscribeOn(Schedulers.io()).map { path ->
-            repository.getRunePath(path.map { it.id })
-        }
+class ParticipantModel(
+    val repository: Repository,
+    val team: TeamModel,
+    dto: ParticipantDto,
+    identityDto: ParticipantIdentityDto,
+    region: RegionModel,
+//    private val shadowParticipant: Participant
+) {
+    val accountId = identityDto.player.accountId
+    val summoner by lazy { repository.getSummonerModel{ Orianna.summonerWithAccountId(accountId).withRegion(region.shadowRegion).get() } }
+    val champion = repository.dataDragon.tail.getChampionById(dto.championId)
+    val kills = dto.stats.kills
+    val deaths = dto.stats.deaths
+    val assists = dto.stats.assists
+    val isWinner = dto.stats.win
+    val creepScore = dto.stats.totalMinionsKilled
+    val summonerSpellD by lazy { repository.dataDragon.tail.getSummonerSpellById(dto.spell1Id) }
+    val summonerSpellF by lazy { repository.dataDragon.tail.getSummonerSpellById(dto.spell2Id) }
+    val items = listOf( dto.stats.item0, dto.stats.item1, dto.stats.item2, dto.stats.item3, dto.stats.item4, dto.stats.item5, dto.stats.item6 )
+        .map { if (it != 0L) repository.dataDragon.tail.getItemById(it) else null }
+    val perks = with(dto.stats) {  listOf( perk0, perk1, perk2, perk3, perk4, perk5, statPerk0, statPerk1, statPerk2 ) }.map { repository.dataDragon.tail.getPerkById(it) }
+    val runes = perks.mapNotNull { it as? RuneModel }
+    val primaryRune = perks.find { it is RuneModel && it.slotNo == 0 } as RuneModel
+    val secondaryRunePath = ( perks.find { it is RuneModel && it.runePath.id != primaryRune.runePath.id } as RuneModel ).runePath
 }

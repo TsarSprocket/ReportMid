@@ -3,10 +3,10 @@ package com.tsarsprocket.reportmid.riotapi.matchV4
 import com.google.gson.annotations.SerializedName
 
 data class ParticipantStatsDto(
-    @SerializedName("item0") val item0: Int,
-    @SerializedName("item2") val item2: Int,
+    @SerializedName("item0") val item0: Long,
+    @SerializedName("item2") val item2: Long,
     @SerializedName("totalUnitsHealed") val totalUnitsHealed: Int,
-    @SerializedName("item1") val item1: Int,
+    @SerializedName("item1") val item1: Long,
     @SerializedName("largestMultiKill") val largestMultiKill: Int,
     @SerializedName("goldEarned") val goldEarned: Int,
     @SerializedName("firstInhibitorKill") val firstInhibitorKill: Boolean,
@@ -71,10 +71,10 @@ data class ParticipantStatsDto(
     @SerializedName("doubleKills") val doubleKills: Int,
     @SerializedName("trueDamageDealt") val trueDamageDealt: Long,
     @SerializedName("quadraKills") val quadraKills: Int,
-    @SerializedName("item4") val item4: Int,
-    @SerializedName("item3") val item3: Int,
-    @SerializedName("item6") val item6: Int,
-    @SerializedName("item5") val item5: Int,
+    @SerializedName("item4") val item4: Long,
+    @SerializedName("item3") val item3: Long,
+    @SerializedName("item6") val item6: Long,
+    @SerializedName("item5") val item5: Long,
     @SerializedName("playerScore0") val playerScore0: Int,
     @SerializedName("playerScore1") val playerScore1: Int,
     @SerializedName("playerScore2") val playerScore2: Int,

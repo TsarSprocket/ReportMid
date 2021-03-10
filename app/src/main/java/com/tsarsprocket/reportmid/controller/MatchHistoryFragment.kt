@@ -1,26 +1,33 @@
 package com.tsarsprocket.reportmid.controller
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.cardview.widget.CardView
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.ARG_PUUID_AND_REG
+import com.tsarsprocket.reportmid.BaseFragment
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
+import com.tsarsprocket.reportmid.model.MatchHistoryModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.SummonerModel
-import com.tsarsprocket.reportmid.presentation.MatchResultPreviewData
 import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.card_match_history.view.*
 import kotlinx.android.synthetic.main.fragment_match_history.view.*
 import javax.inject.Inject
 
@@ -28,10 +35,13 @@ class MatchHistoryFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-
     private val viewModel by viewModels<MatchHistoryViewModel> { viewModelFactory }
 
     private lateinit var binding: FragmentMatchHistoryBinding
+
+    private val disposer = CompositeDisposable()
+
+    private val matchHistoryAdapter = MatchHistoryPagingAdapter(MatchComparator())
 
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
@@ -52,25 +62,7 @@ class MatchHistoryFragment : BaseFragment() {
         with(binding.matchHistoryView) {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            val disposable = Observable.create<SummonerModel> { emitter ->
-                viewModel.activeSummonerModel.observe(viewLifecycleOwner) { summonerModel ->
-                    emitter.onNext(summonerModel)
-                    emitter.onComplete()
-                }
-            }
-                .switchMap { summonerModel -> summonerModel.matchHistory }
-                .observeOn(AndroidSchedulers.mainThread()).subscribe { matchHistory ->
-                    adapter = MatchHistoryAdapter(object : MatchHistoryAdapter.IHistoryDataProvider {
-                        override fun getCount(): Int = matchHistory.size
-                        override fun getMatchData(i: Int): Observable<MatchResultPreviewData> {
-                            return viewModel.fetchMatchPreviewInfo(i)
-                        }
-                    })
-
-                    binding.matchHistoryView.visibility = View.VISIBLE
-                    binding.progressLoading.visibility = View.GONE
-                }
-            if (disposable != null) viewModel.allDisposables.add(disposable)
+            adapter = matchHistoryAdapter
         }
 
         with(binding.root.bottomNavigation.menu) {
@@ -86,6 +78,29 @@ class MatchHistoryFragment : BaseFragment() {
         }
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        disposer.clear()
+        disposer.add(
+            viewModel.flowableMatches
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    matchHistoryAdapter.submitData( viewLifecycleOwner.lifecycle, it )
+                    binding.matchHistoryView.visibility = View.VISIBLE
+                    binding.progressLoading.visibility = View.GONE
+                })
+    }
+
+    override fun onStop() {
+        disposer.clear()
+
+        binding.matchHistoryView.visibility = View.GONE
+        binding.progressLoading.visibility = View.VISIBLE
+
+        super.onStop()
     }
 
     private fun navigateToSibling(item: MenuItem): Boolean {
@@ -106,6 +121,74 @@ class MatchHistoryFragment : BaseFragment() {
             R.id.matchHistoryFragment -> true
             else -> false
         }
+    }
+
+    class MatchHistoryPagingAdapter(diffCallback: DiffUtil.ItemCallback<MatchHistoryModel.MyMatch>)
+            : PagingDataAdapter<MatchHistoryModel.MyMatch,CardViewHolderWithDisposer>(diffCallback) {
+
+        @SuppressLint("SetTextI18n")
+        override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
+            holder.disposer.clear()
+
+            with(holder) {
+                with( cardView ) {
+                    val itemViews = arrayOf(imageItem0, imageItem1, imageItem2, imageItem3, imageItem4, imageItem5, imageWard)
+
+                    colourStripe.visibility = View.INVISIBLE
+                    imgChampionIcon.setImageResource(R.drawable.champion_icon_placegolder)
+                    iconPrimaryRune.setImageResource(R.drawable.item_icon_placegolder)
+                    iconSecondaryRunePath.setImageResource(R.drawable.item_icon_placegolder)
+                    iconSummonerSpellD.setImageResource(R.drawable.item_icon_placegolder)
+                    iconSummonerSpellF.setImageResource(R.drawable.item_icon_placegolder)
+                    txtGameMode.text = "???"
+                    txtMainKDA.text = "?/?/?"
+                    txtCS.text = "CS: ?"
+                    itemViews.forEach { it.setImageResource(R.drawable.item_icon_placegolder) }
+
+                    getItem(position)?.also { (summoner, match) ->
+                        match.blueTeam.participants.plus(match.redTeam.participants)
+                            .find { it.accountId == summoner.riotAccountId }
+                            ?.let { myParticipant ->
+                                colourStripe.setBackgroundColor(resources.getColor(
+                                    if( match.remake ) R.color.bgRemake else if( myParticipant.isWinner ) R.color.bgWin else R.color.bgDefeat))
+                                colourStripe.visibility = View.VISIBLE
+
+                                holder.disposer.addAll(
+                                    myParticipant.champion.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imgChampionIcon.setImageDrawable(drawable) },
+                                    myParticipant.primaryRune.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconPrimaryRune.setImageDrawable(drawable) },
+                                    myParticipant.secondaryRunePath.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSecondaryRunePath.setImageDrawable(drawable) },
+                                    myParticipant.summonerSpellD.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellD.setImageDrawable(drawable) },
+                                    myParticipant.summonerSpellF.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellF.setImageDrawable(drawable) },
+                                )
+
+                                txtGameMode.text = resources.getString(match.gameType.titleResId)
+                                txtMainKDA.text = "${myParticipant.kills}/${myParticipant.deaths}/${myParticipant.assists}"
+                                txtCS.text = "CS: ${myParticipant.creepScore}"
+
+                                myParticipant.items.zip(itemViews).forEach { (item, imageView) ->
+                                    if (item != null) {
+                                        holder.disposer.add(item.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imageView.setImageDrawable(drawable) })
+                                    } else {
+                                        imageView.setImageResource(R.drawable.item_empty)
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolderWithDisposer = CardViewHolderWithDisposer(
+            LayoutInflater.from(parent.context).inflate(R.layout.card_match_history, parent, false ) as CardView
+        )
+    }
+
+    class MatchComparator: DiffUtil.ItemCallback<MatchHistoryModel.MyMatch>() {
+        override fun areItemsTheSame(oldItem: MatchHistoryModel.MyMatch, newItem: MatchHistoryModel.MyMatch): Boolean =
+            oldItem.match.id == newItem.match.id && oldItem.summoner.id == newItem.summoner.id
+
+        override fun areContentsTheSame(oldItem: MatchHistoryModel.MyMatch, newItem: MatchHistoryModel.MyMatch): Boolean =
+            oldItem.match.id == newItem.match.id && oldItem.summoner.id == newItem.summoner.id // Sufficient assumption: same IDs always represent same data sets
     }
 
     companion object {

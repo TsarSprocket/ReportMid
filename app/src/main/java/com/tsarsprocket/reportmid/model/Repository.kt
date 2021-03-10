@@ -1,31 +1,27 @@
 package com.tsarsprocket.reportmid.model
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.*
-import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.match.*
 import com.merakianalytics.orianna.types.core.staticdata.Champion
-import com.merakianalytics.orianna.types.core.staticdata.Item
-import com.merakianalytics.orianna.types.core.staticdata.SummonerSpell
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.model.state.MyFriendModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import com.tsarsprocket.reportmid.model.state.MyFriendModel
 import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
-import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
+import com.tsarsprocket.reportmid.room.state.GlobalEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -46,8 +42,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     lateinit var database: MainStorage
 
     val summoners = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
-    val summonerSpells = ConcurrentHashMap<Int, SummonerSpellModel>()
-    val runes = ConcurrentHashMap<Int, RuneModel>()
     lateinit var dataDragon: DataDragon
 
     init {
@@ -118,7 +112,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
                         .map { RegionModel.byTag[it.tag] ?: throw RuntimeException("Region ${it.tag} not found") }
                 }
         }
-
 
     fun getMySummonersObservable(): Observable<List<SummonerModel>> = ensureInitializedDoOnIO {}
         .switchMap {
@@ -207,14 +200,9 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIOSubject { getChampionById(lmdChampion().id).blockingGet() }
 
     fun getChampionById(id: Int): Single<ChampionModel> =
-        ensureInitializedDoOnIO { dataDragon.tailSubject.value!!.getChampionById(id) }.firstOrError()
+        ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
 
-    fun getMatchHistoryModel(matchHistory: MatchHistory) = ensureInitializedDoOnIOSubject { MatchHistoryModel(this, matchHistory) }
-
-    fun getMatchModel(match: Match) = ensureInitializedDoOnIOSubject { MatchModel(this, match) }
-
-    fun getParticipantModel(teamModel: TeamModel, participant: Participant) =
-        ensureInitializedDoOnIOSubject { ParticipantModel(this, teamModel, participant) }
+    fun getMatchHistoryModel(region: RegionModel, summoner: SummonerModel) = MatchHistoryModel(this, region, summoner)
 
     fun getSummonerModel(failOnNull: Boolean = false, lmdSummoner: () -> Summoner) = ensureInitializedDoOnIOSubject(failOnNull) {
         val summoner = lmdSummoner()
@@ -227,33 +215,10 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     fun getSummonerById(region: RegionModel, id: String) =
         ensureInitializedDoOnIO { SummonerModel(this, Summoner.withId(id).withRegion(region.shadowRegion).get()) }.firstOrError()
 
-    fun getTeamModel(team: Team) = ensureInitializedDoOnIOSubject { TeamModel(this, team) }
-
-    fun getItemModel(item: Item) = ensureInitializedDoOnIOSubject { ItemModel(this, item) }
-
-    fun getSummonerSpell(lmdSummonerSpell: () -> SummonerSpell) = ensureInitializedDoOnIOSubject {
-        val spell = lmdSummonerSpell()
-        summonerSpells[spell.id] ?: SummonerSpellModel(this, spell).also { summonerSpells[spell.id] = it }
-    }
-
-    fun getRuneStats(runeStats: RuneStats) = ensureInitializedDoOnIOSubject { RuneStatsModel(this, runeStats) }
-
-    fun getRunePath(pathId: Maybe<Int>) = if (pathId.isEmpty.blockingGet()) Maybe.empty() else Maybe.just(
-        dataDragon.tailSubject.value!!.getRunePathById(pathId.blockingGet())
-    )
-
-    fun getRune(runeId: Int) = ensureInitializedDoOnIOSubject {
-        dataDragon.tailSubject.value!!.getPerkById(runeId)
-    }
-
     fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { CurrentMatchModel(this, summoner) }
 
     fun getCurrentMatchForSummoner(summoner: SummonerModel): CurrentMatchModel? =
         try { CurrentMatchModel(this, summoner) } catch (ex: Exception) { null }
-
-    fun getCurrentMatchForSummonerMB(summoner: SummonerModel): Maybe<CurrentMatchModel> =
-        Maybe.create<CurrentMatchModel> { emitter -> getCurrentMatchForSummoner(summoner)?.also { emitter.onSuccess(it) } ?: emitter.onComplete() }
-            .subscribeOn(Schedulers.io())
 
     fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
@@ -428,45 +393,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         fun getTier(tier: Tier) = TierModel.values().find { it.shadowTier == tier } ?: throw RuntimeException("Tier $tier is not mapped")
         fun getDivision(division: Division) =
             DivisionModel.values().find { it.shadowDivision == division } ?: throw RuntimeException("Division $division is not mapped")
-
-        @WorkerThread
-        fun findParticipant(match: MatchModel, summoner: SummonerModel): ParticipantModel {
-            val blueTeam = match.blueTeam.blockingSingle()
-            val redTeam = match.redTeam.blockingSingle()
-
-            val firstInBlue = blueTeam.participants.first().blockingSingle()
-            if (firstInBlue.summoner.blockingSingle().puuid == summoner.puuid) return firstInBlue
-
-            val firstInRed = redTeam.participants.first().blockingSingle()
-            if (firstInRed.summoner.blockingSingle().puuid == summoner.puuid) return firstInRed
-
-            return (
-                    blueTeam.participants.subList(1, blueTeam.participants.size)
-                        .union(redTeam.participants.subList(1, redTeam.participants.size))
-                        .find { it.blockingSingle().summoner.blockingSingle().puuid == summoner.puuid }
-                        ?: throw RuntimeException("Summoner ${summoner.name} is not found in match ${match.id}")
-                    ).blockingSingle()
-        }
-
-        @WorkerThread
-        fun getItemIcons(participant: ParticipantModel): Array<Drawable> {
-            val items = participant.items.blockingSingle()
-            return Array(items.size) { i -> items[i].blockingSingle().icon.blockingGet() }
-        }
-
-        @WorkerThread
-        fun calculateTeamKDA(asParticipant: ParticipantModel): Triple<Int, Int, Int> {
-            var teamKills = 0
-            var teamDeaths = 0
-            var teamAssists = 0
-            asParticipant.team.participants.forEach {
-                val participant = it.blockingSingle()
-                teamKills += participant.kills
-                teamDeaths += participant.deaths
-                teamAssists += participant.assists
-            }
-            return Triple(teamKills, teamDeaths, teamAssists)
-        }
     }
 
     /*  Tools  ***************************************************************/

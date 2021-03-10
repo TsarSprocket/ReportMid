@@ -43,8 +43,8 @@
 
         <ImageView
             android:id="@+id/imgChampionIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/champion_icon_size"
+            android:layout_height="@dimen/champion_icon_size"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             app:layout_constraintStart_toStartOf="@id/guideIcon"
@@ -65,8 +65,10 @@
 
         <ImageView
             android:id="@+id/iconPrimaryRune"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/primary_rune_icon_size"
+            android:layout_height="@dimen/primary_rune_icon_size"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideRunes"
             app:layout_constraintBottom_toTopOf="@id/iconSecondaryRunePath"
@@ -76,8 +78,10 @@
 
         <ImageView
             android:id="@+id/iconSecondaryRunePath"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/secondary_runepath_icon_size"
+            android:layout_height="@dimen/secondary_runepath_icon_size"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             app:layout_constraintTop_toBottomOf="@id/iconPrimaryRune"
             app:layout_constraintStart_toStartOf="@id/iconPrimaryRune"
             app:layout_constraintEnd_toEndOf="@id/iconPrimaryRune"
@@ -130,8 +134,10 @@
 
         <ImageView
             android:id="@+id/iconSummonerSpellD"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/summoner_spell_icon_size"
+            android:layout_height="@dimen/summoner_spell_icon_size"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideSummonerSpells"
@@ -141,8 +147,10 @@
 
         <ImageView
             android:id="@+id/iconSummonerSpellF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/summoner_spell_icon_size"
+            android:layout_height="@dimen/summoner_spell_icon_size"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
             app:layout_constraintTop_toBottomOf="@id/iconSummonerSpellD"
             app:layout_constraintStart_toStartOf="@id/iconSummonerSpellD"
             app:layout_constraintBottom_toBottomOf="parent"
