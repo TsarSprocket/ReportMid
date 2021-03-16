@@ -130,51 +130,57 @@ class MatchHistoryFragment : BaseFragment() {
         override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
             holder.disposer.clear()
 
-            with(holder) {
-                with( cardView ) {
-                    val itemViews = arrayOf(imageItem0, imageItem1, imageItem2, imageItem3, imageItem4, imageItem5, imageWard)
+            getItem(position)?.also { (summoner,gameId,matchSingle) ->
+                matchSingle
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .retry(3)
+                    .subscribe { match ->
+                        with(holder) {
+                            with( cardView ) {
+                                val itemViews = arrayOf(imageItem0, imageItem1, imageItem2, imageItem3, imageItem4, imageItem5, imageWard)
 
-                    colourStripe.visibility = View.INVISIBLE
-                    imgChampionIcon.setImageResource(R.drawable.champion_icon_placegolder)
-                    iconPrimaryRune.setImageResource(R.drawable.item_icon_placegolder)
-                    iconSecondaryRunePath.setImageResource(R.drawable.item_icon_placegolder)
-                    iconSummonerSpellD.setImageResource(R.drawable.item_icon_placegolder)
-                    iconSummonerSpellF.setImageResource(R.drawable.item_icon_placegolder)
-                    txtGameMode.text = "???"
-                    txtMainKDA.text = "?/?/?"
-                    txtCS.text = "CS: ?"
-                    itemViews.forEach { it.setImageResource(R.drawable.item_icon_placegolder) }
+                                colourStripe.visibility = View.INVISIBLE
+                                imgChampionIcon.setImageResource(R.drawable.champion_icon_placegolder)
+                                iconPrimaryRune.setImageResource(R.drawable.item_icon_placegolder)
+                                iconSecondaryRunePath.setImageResource(R.drawable.item_icon_placegolder)
+                                iconSummonerSpellD.setImageResource(R.drawable.item_icon_placegolder)
+                                iconSummonerSpellF.setImageResource(R.drawable.item_icon_placegolder)
+                                txtGameMode.text = "???"
+                                txtMainKDA.text = "?/?/?"
+                                txtCS.text = "CS: ?"
+                                itemViews.forEach { it.setImageResource(R.drawable.item_icon_placegolder) }
 
-                    getItem(position)?.also { (summoner, match) ->
-                        match.blueTeam.participants.plus(match.redTeam.participants)
-                            .find { it.accountId == summoner.riotAccountId }
-                            ?.let { myParticipant ->
-                                colourStripe.setBackgroundColor(resources.getColor(
-                                    if( match.remake ) R.color.bgRemake else if( myParticipant.isWinner ) R.color.bgWin else R.color.bgDefeat))
-                                colourStripe.visibility = View.VISIBLE
+                                match.blueTeam.participants.plus(match.redTeam.participants)
+                                    .find { it.accountId == summoner.riotAccountId }
+                                    ?.let { myParticipant ->
+                                        colourStripe.setBackgroundColor(resources.getColor(
+                                            if( match.remake ) R.color.bgRemake else if( myParticipant.isWinner ) R.color.bgWin else R.color.bgDefeat))
+                                        colourStripe.visibility = View.VISIBLE
 
-                                holder.disposer.addAll(
-                                    myParticipant.champion.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imgChampionIcon.setImageDrawable(drawable) },
-                                    myParticipant.primaryRune.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconPrimaryRune.setImageDrawable(drawable) },
-                                    myParticipant.secondaryRunePath.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSecondaryRunePath.setImageDrawable(drawable) },
-                                    myParticipant.summonerSpellD.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellD.setImageDrawable(drawable) },
-                                    myParticipant.summonerSpellF.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellF.setImageDrawable(drawable) },
-                                )
+                                        holder.disposer.addAll(
+                                            myParticipant.champion.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imgChampionIcon.setImageDrawable(drawable) },
+                                            myParticipant.primaryRune.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconPrimaryRune.setImageDrawable(drawable) },
+                                            myParticipant.secondaryRunePath.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSecondaryRunePath.setImageDrawable(drawable) },
+                                            myParticipant.summonerSpellD.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellD.setImageDrawable(drawable) },
+                                            myParticipant.summonerSpellF.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellF.setImageDrawable(drawable) },
+                                        )
 
-                                txtGameMode.text = resources.getString(match.gameType.titleResId)
-                                txtMainKDA.text = "${myParticipant.kills}/${myParticipant.deaths}/${myParticipant.assists}"
-                                txtCS.text = "CS: ${myParticipant.creepScore}"
+                                        txtGameMode.text = resources.getString(match.gameType.titleResId)
+                                        txtMainKDA.text = "${myParticipant.kills}/${myParticipant.deaths}/${myParticipant.assists}"
+                                        txtCS.text = "CS: ${myParticipant.creepScore}"
 
-                                myParticipant.items.zip(itemViews).forEach { (item, imageView) ->
-                                    if (item != null) {
-                                        holder.disposer.add(item.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imageView.setImageDrawable(drawable) })
-                                    } else {
-                                        imageView.setImageResource(R.drawable.item_empty)
+                                        myParticipant.items.zip(itemViews).forEach { (item, imageView) ->
+                                            if (item != null) {
+                                                holder.disposer.add(item.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imageView.setImageDrawable(drawable) })
+                                            } else {
+                                                imageView.setImageResource(R.drawable.item_empty)
+                                            }
+                                        }
                                     }
-                                }
                             }
+                        }
                     }
-                }
+                    .also { holder.disposer.add(it) }
             }
         }
 
@@ -185,10 +191,10 @@ class MatchHistoryFragment : BaseFragment() {
 
     class MatchComparator: DiffUtil.ItemCallback<MatchHistoryModel.MyMatch>() {
         override fun areItemsTheSame(oldItem: MatchHistoryModel.MyMatch, newItem: MatchHistoryModel.MyMatch): Boolean =
-            oldItem.match.id == newItem.match.id && oldItem.summoner.id == newItem.summoner.id
+            oldItem.gameId == newItem.gameId && oldItem.summoner.id == newItem.summoner.id
 
         override fun areContentsTheSame(oldItem: MatchHistoryModel.MyMatch, newItem: MatchHistoryModel.MyMatch): Boolean =
-            oldItem.match.id == newItem.match.id && oldItem.summoner.id == newItem.summoner.id // Sufficient assumption: same IDs always represent same data sets
+            oldItem.gameId == newItem.gameId && oldItem.summoner.id == newItem.summoner.id // Sufficient assumption: same IDs always represent same data sets
     }
 
     companion object {

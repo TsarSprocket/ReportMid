@@ -29,14 +29,16 @@ class MatchHistoryModel(
             matchV4Service.matchList(summoner.riotAccountId, beginIndex = gameNo, endIndex = gameNo + params.loadSize)
                 .subscribeOn(Schedulers.io())
                 .firstOrError()
-                .flatMap { matchList ->
-                    Observable.merge(matchList.matches.map { match -> matchV4Service.match(match.gameId).firstOrError().toObservable() }).toList()
-                }
-                .map { lstMatchDtos ->
+                .map { matchList ->
                     LoadResult.Page(
-                        lstMatchDtos.mapNotNull { matchDto -> MyMatch(summoner, MatchModel(repository, matchDto, region)) },
+                        matchList.matches.map { matchReferenceDto ->
+                            MyMatch(summoner,
+                                matchReferenceDto.gameId,
+                                matchV4Service.match(matchReferenceDto.gameId).firstOrError().map { matchDto -> MatchModel(repository, matchDto, region) }
+                                    .subscribeOn(Schedulers.io())
+                            ) },
                         prevKey = if (gameNo > 0) if (gameNo - params.loadSize < 0) 0 else gameNo - params.loadSize else null,
-                        nextKey = if( lstMatchDtos.size > 0) gameNo + lstMatchDtos.size else null
+                        nextKey = if(matchList.matches.isNotEmpty()) gameNo + matchList.matches.size else null
                     ) as LoadResult<Int,MyMatch>
                 }
                 .onErrorReturn { LoadResult.Error(it) }
@@ -53,6 +55,7 @@ class MatchHistoryModel(
 
     data class MyMatch(
         val summoner: SummonerModel,
-        val match: MatchModel,
+        val gameId: Long,
+        val match: Single<MatchModel>,
     )
 }
