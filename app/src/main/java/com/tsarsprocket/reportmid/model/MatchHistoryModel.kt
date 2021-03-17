@@ -35,7 +35,7 @@ class MatchHistoryModel(
                             MyMatch(summoner,
                                 matchReferenceDto.gameId,
                                 matchV4Service.match(matchReferenceDto.gameId).firstOrError().map { matchDto -> MatchModel(repository, matchDto, region) }
-                                    .subscribeOn(Schedulers.io())
+                                    .subscribeOn(Schedulers.io()).retry(3).cache()
                             ) },
                         prevKey = if (gameNo > 0) if (gameNo - params.loadSize < 0) 0 else gameNo - params.loadSize else null,
                         nextKey = if(matchList.matches.isNotEmpty()) gameNo + matchList.matches.size else null

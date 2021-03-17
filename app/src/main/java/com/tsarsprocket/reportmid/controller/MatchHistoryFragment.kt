@@ -133,7 +133,6 @@ class MatchHistoryFragment : BaseFragment() {
             getItem(position)?.also { (summoner,gameId,matchSingle) ->
                 matchSingle
                     .observeOn(AndroidSchedulers.mainThread())
-                    .retry(3)
                     .subscribe { match ->
                         with(holder) {
                             with( cardView ) {
