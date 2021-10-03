@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import com.tsarsprocket.reportmid.databinding.FragmentConfirmSummonerBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.setNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
-import kotlinx.android.synthetic.main.fragment_confirm_summoner.view.*
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
@@ -41,7 +39,7 @@ class ConfirmSummonerFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        viewModel.bitmap.observe(viewLifecycleOwner) { icon -> binding.root.imgSummonerIcon.setImageDrawable(icon) }
+        viewModel.bitmap.observe(viewLifecycleOwner) { icon -> binding.imgSummonerIcon.setImageDrawable(icon) }
         viewModel.confirm.observe(viewLifecycleOwner) { confirmed -> setNavigationResult(confirmed, RESULT_CONFIRM); findNavController().popBackStack() }
 
         viewModel.init(

@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.databinding.CardPlayerPreviewBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SideModel
@@ -24,8 +25,6 @@ import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.MatchupViewModel
-import kotlinx.android.synthetic.main.card_player_preview.view.*
-import kotlinx.android.synthetic.main.fragment_matchup.view.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -61,7 +60,7 @@ class MatchupFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_matchup, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -80,7 +79,7 @@ class MatchupFragment : BaseFragment() {
         viewModel.blueTeamParticipants.observe(viewLifecycleOwner) { teamsAdapter.blueTeam = it }
         viewModel.redTeamParticipants.observe(viewLifecycleOwner) { teamsAdapter.redTeam = it }
 
-        with(binding.root.bottomNavigation) {
+        with(binding.bottomNavigation) {
             setOnNavigationItemSelectedListener { menuItem -> navigateToSibling(menuItem) }
             selectedItemId = R.id.matchupFragment
         }
@@ -122,7 +121,6 @@ class MatchupFragment : BaseFragment() {
     //  Static  ///////////////////////////////////////////////////////////////
 
     companion object {
-        @JvmStatic
         fun newInstance(puuidAndRegion: PuuidAndRegion) = MatchupFragment().apply {
             arguments = Bundle(1).apply { putParcelable(ARG_PUUID_AND_REG, puuidAndRegion) }
         }
@@ -156,24 +154,24 @@ class MatchupFragment : BaseFragment() {
 
             val side = if (position < blueTeam.size) SideModel.BLUE else SideModel.RED
             val item = if (side == SideModel.BLUE) blueTeam[position] else redTeam[position - blueTeam.size]
-            val card = holder.cardView
+            val cardBinding = CardPlayerPreviewBinding.bind(holder.cardView)
 
-            card.txtChampionSkill.text = getString(R.string.fragment_matchup_tmp_calculating)
+            cardBinding.txtChampionSkill.text = getString(R.string.fragment_matchup_tmp_calculating)
 
-            item.championIconLive.observe(viewLifecycleOwner) { card.imgChampionIcon.setImageDrawable(it) }
-            item.summonerChampionSkillLive.observe(viewLifecycleOwner) { card.txtChampionSkill.text = if (it >= 0) formatPoints(it) else getString(R.string.fragment_matchup_skill_na) }
-            item.summonerNameLive.observe(viewLifecycleOwner) { card.txtSummonerName.text = it }
-            item.summonerLevelLive.observe(viewLifecycleOwner) { card.txtSummonerLevel.text = it.toString() }
-            item.soloqueueRankLive.observe(viewLifecycleOwner) { card.txtSummonerSoloQueueRank.text = it }
-            item.soloqueueWinrateLive.observe(viewLifecycleOwner) { card.txtSummonerSoloQueueWinRate.text = ((it * 10).roundToInt() / 10f).toString() }
-            item.summonerSpellDLive.observe(viewLifecycleOwner) { card.imgSummonerSpellD.setImageDrawable(it) }
-            item.summonerSpellFLive.observe(viewLifecycleOwner) { card.imgSummonerSpellF.setImageDrawable(it) }
-            item.primaryRuneIconLive.observe(viewLifecycleOwner) { card.imgPrimaryRune.setImageDrawable(it) }
-            item.secondaryRunePathIconLive.observe(viewLifecycleOwner) { card.imgSecondaryRunePath.setImageDrawable(it) }
+            item.championIconLive.observe(viewLifecycleOwner) { cardBinding.imgChampionIcon.setImageDrawable(it) }
+            item.summonerChampionSkillLive.observe(viewLifecycleOwner) { cardBinding.txtChampionSkill.text = if (it >= 0) formatPoints(it) else getString(R.string.fragment_matchup_skill_na) }
+            item.summonerNameLive.observe(viewLifecycleOwner) { cardBinding.txtSummonerName.text = it }
+            item.summonerLevelLive.observe(viewLifecycleOwner) { cardBinding.txtSummonerLevel.text = it.toString() }
+            item.soloqueueRankLive.observe(viewLifecycleOwner) { cardBinding.txtSummonerSoloQueueRank.text = it }
+            item.soloqueueWinrateLive.observe(viewLifecycleOwner) { cardBinding.txtSummonerSoloQueueWinRate.text = ((it * 10).roundToInt() / 10f).toString() }
+            item.summonerSpellDLive.observe(viewLifecycleOwner) { cardBinding.imgSummonerSpellD.setImageDrawable(it) }
+            item.summonerSpellFLive.observe(viewLifecycleOwner) { cardBinding.imgSummonerSpellF.setImageDrawable(it) }
+            item.primaryRuneIconLive.observe(viewLifecycleOwner) { cardBinding.imgPrimaryRune.setImageDrawable(it) }
+            item.secondaryRunePathIconLive.observe(viewLifecycleOwner) { cardBinding.imgSecondaryRunePath.setImageDrawable(it) }
 
-            card.colourStripe.setBackgroundColor(resources.getColor(if (side == SideModel.BLUE) R.color.blueTeamBG else R.color.redTeamBG))
+            cardBinding.colourStripe.setBackgroundColor(resources.getColor(if (side == SideModel.BLUE) R.color.blueTeamBG else R.color.redTeamBG))
 
-            card.setOnClickListener { item.summoner.observe(viewLifecycleOwner) { goToChampion( it ) } }
+            cardBinding.root.setOnClickListener { item.summoner.observe(viewLifecycleOwner) { goToChampion( it ) } }
         }
 
         override fun getItemCount(): Int = blueTeam.size + redTeam.size

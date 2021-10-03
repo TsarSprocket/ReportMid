@@ -1,7 +1,6 @@
 package com.tsarsprocket.reportmid.controller
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
@@ -19,13 +17,13 @@ import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
+import com.tsarsprocket.reportmid.databinding.LayoutMyFriendLineBinding
+import com.tsarsprocket.reportmid.databinding.LayoutMySummonerLineBinding
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.model.state.MyAccountModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
-import kotlinx.android.synthetic.main.fragment_drawer.view.*
-import kotlinx.android.synthetic.main.layout_my_summoner_line.view.*
 import javax.inject.Inject
 
 class DrawerFragment : BaseFragment() {
@@ -58,32 +56,32 @@ class DrawerFragment : BaseFragment() {
     }
 
     fun updateMySummoners(listOfMarkedSummoners: List<Triple<Drawable,SummonerModel,Boolean>>) {
-        val group = binding.root.llMySummoners
+        val group = binding.llMySummoners
         group.removeAllViews()
         listOfMarkedSummoners.forEach { (icon, sum, isSelected) ->
-            val view = layoutInflater.inflate(R.layout.layout_my_summoner_line, group, false) as ConstraintLayout
-            view.iconSummoner.setImageDrawable(icon)
-            view.txtSummonerName.text = sum.name
-            view.cbSelected.isChecked = isSelected
-            view.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
-            view.setOnClickListener { goSeeProfile(sum) }
-            group.addView(view)
+            val binding = LayoutMySummonerLineBinding.inflate(layoutInflater, group, false)
+            binding.iconSummoner.setImageDrawable(icon)
+            binding.txtSummonerName.text = sum.name
+            binding.cbSelected.isChecked = isSelected
+            binding.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
+            binding.root.setOnClickListener { goSeeProfile(sum) }
+            group.addView(binding.root)
         }
     }
 
     private fun updateMyFriends(listOfMyFriendData: List<DrawerViewModel.MyFriendData>) {
         val sortedListOfMyFriendData = listOfMyFriendData.sortedWith { a, b -> a.name.compareTo(b.name, true) }
 
-        val group = binding.root.llMyFriends
+        val group = binding.llMyFriends
 
         ensureChildren(group,listOfMyFriendData.size) { layoutInflater.inflate(R.layout.layout_my_friend_line, group, false) }
 
         sortedListOfMyFriendData.withIndex().forEach { indexedValue ->
-            val view = group.getChildAt(indexedValue.index) as ConstraintLayout
+            val binding = LayoutMyFriendLineBinding.bind(group.getChildAt(indexedValue.index))
             val data = indexedValue.value
-            view.iconSummoner.setImageDrawable(data.icon)
-            view.txtSummonerName.text = data.name
-            view.setOnClickListener { goSeeProfile(data.sum) }
+            binding.iconSummoner.setImageDrawable(data.icon)
+            binding.txtSummonerName.text = data.name
+            binding.root.setOnClickListener { goSeeProfile(data.sum) }
         }
     }
 
@@ -115,11 +113,11 @@ class DrawerFragment : BaseFragment() {
 
     inner class EventHandler {
 
-        fun manageMySummoners(view: View) {
+        fun manageMySummoners(@Suppress("UNUSED_PARAMETER") view: View) {
             goManageMySummoners()
         }
 
-        fun manageFriends(view: View) {
+        fun manageFriends(@Suppress("UNUSED_PARAMETER") view: View) {
             goManageFriends()
         }
     }

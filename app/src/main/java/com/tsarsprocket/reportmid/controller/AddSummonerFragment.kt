@@ -19,7 +19,6 @@ import com.tsarsprocket.reportmid.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.*
 import com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel
 import io.reactivex.Maybe
-import kotlinx.android.synthetic.main.fragment_add_summoner.view.*
 import java.util.*
 import javax.inject.Inject
 
@@ -79,7 +78,7 @@ class AddSummonerFragment : BaseFragment() {
     }
 
     fun onValidateInitial(view: View?) {
-        setSoftInputVisibility(requireContext(), binding.root.edSummonerName, false)
+        setSoftInputVisibility(requireContext(), binding.edSummonerName, false)
 
         object : OneTimeObserver<Maybe<SummonerModel>>() {
             override fun onOneTimeChanged(maybe: Maybe<SummonerModel>) {

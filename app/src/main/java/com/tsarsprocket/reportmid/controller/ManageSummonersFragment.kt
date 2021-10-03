@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SummonerModel
@@ -25,7 +26,6 @@ import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.ManageSummonersViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.card_my_managed_summoner.view.*
 import javax.inject.Inject
 
 class ManageSummonersFragment : BaseFragment() {
@@ -152,7 +152,8 @@ class ManageSummonersFragment : BaseFragment() {
         override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
             holder.disposer.clear()
             val summoner = summoners[position]
-            with(holder.cardView) {
+            val binding = CardMyManagedSummonerBinding.bind(holder.cardView)
+            with(binding) {
                 cbSelected.isChecked = viewModel.checkedSummoners.contains(summoner)
                 cbSelected.setOnCheckedChangeListener { _, isChecked -> if (isChecked) checkSummoner(summoner) else uncheckSummoner(summoner) }
                 holder.disposer.add(summoner.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { icon -> imgProfileIcon.setImageDrawable(icon) })

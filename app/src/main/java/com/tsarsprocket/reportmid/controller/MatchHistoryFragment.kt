@@ -21,14 +21,13 @@ import com.tsarsprocket.reportmid.ARG_PUUID_AND_REG
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.databinding.CardMatchHistoryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.model.MatchHistoryModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.card_match_history.view.*
-import kotlinx.android.synthetic.main.fragment_match_history.view.*
 import javax.inject.Inject
 
 class MatchHistoryFragment : BaseFragment() {
@@ -54,7 +53,7 @@ class MatchHistoryFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_match_history, container, false)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -65,10 +64,10 @@ class MatchHistoryFragment : BaseFragment() {
             adapter = matchHistoryAdapter
         }
 
-        with(binding.root.bottomNavigation.menu) {
+        with(binding.bottomNavigation.menu) {
             for (i in 0 until size()) with(get(i)) { if (id != R.id.matchHistoryFragment) isEnabled = true }
         }
-        with(binding.root.bottomNavigation) {
+        with(binding.bottomNavigation) {
             setOnNavigationItemSelectedListener { menuItem -> navigateToSibling(menuItem) }
             selectedItemId = R.id.matchHistoryFragment
         }
@@ -126,7 +125,6 @@ class MatchHistoryFragment : BaseFragment() {
     class MatchHistoryPagingAdapter(diffCallback: DiffUtil.ItemCallback<MatchHistoryModel.MyMatch>)
             : PagingDataAdapter<MatchHistoryModel.MyMatch,CardViewHolderWithDisposer>(diffCallback) {
 
-        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: CardViewHolderWithDisposer, position: Int) {
             holder.disposer.clear()
 
@@ -135,7 +133,7 @@ class MatchHistoryFragment : BaseFragment() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { match ->
                         with(holder) {
-                            with( cardView ) {
+                            with( CardMatchHistoryBinding.bind(cardView) ) {
                                 val itemViews = arrayOf(imageItem0, imageItem1, imageItem2, imageItem3, imageItem4, imageItem5, imageWard)
 
                                 colourStripe.visibility = View.INVISIBLE
@@ -152,7 +150,7 @@ class MatchHistoryFragment : BaseFragment() {
                                 match.blueTeam.participants.plus(match.redTeam.participants)
                                     .find { it.accountId == summoner.riotAccountId }
                                     ?.let { myParticipant ->
-                                        colourStripe.setBackgroundColor(resources.getColor(
+                                        colourStripe.setBackgroundColor(cardView.resources.getColor(
                                             if( match.remake ) R.color.bgRemake else if( myParticipant.isWinner ) R.color.bgWin else R.color.bgDefeat))
                                         colourStripe.visibility = View.VISIBLE
 
@@ -164,7 +162,7 @@ class MatchHistoryFragment : BaseFragment() {
                                             myParticipant.summonerSpellF.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellF.setImageDrawable(drawable) },
                                         )
 
-                                        txtGameMode.text = resources.getString(match.gameType.titleResId)
+                                        txtGameMode.text = cardView.resources.getString(match.gameType.titleResId)
                                         txtMainKDA.text = "${myParticipant.kills}/${myParticipant.deaths}/${myParticipant.assists}"
                                         txtCS.text = "CS: ${myParticipant.creepScore}"
 
