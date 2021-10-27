@@ -1,23 +1,23 @@
 package com.tsarsprocket.reportmid.model
 
-import com.merakianalytics.orianna.Orianna
-import com.merakianalytics.orianna.types.common.RunePath
 import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantDto
 import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantIdentityDto
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import io.reactivex.Single
 
-class ParticipantModel(
+class ParticipantModel @AssistedInject constructor(
+    @Assisted val team: TeamModel,
+    @Assisted dto: ParticipantDto,
+    @Assisted identityDto: ParticipantIdentityDto,
+    @Assisted region: RegionModel,
     val repository: Repository,
-    val team: TeamModel,
-    dto: ParticipantDto,
-    identityDto: ParticipantIdentityDto,
-    region: RegionModel,
-//    private val shadowParticipant: Participant
+    summonerRepository: SummonerRepository,
 ) {
     val accountId = identityDto.player.accountId
-    val summoner by lazy { repository.getSummonerModel{ Orianna.summonerWithAccountId(accountId).withRegion(region.shadowRegion).get() } }
+    val summoner: Single<SummonerModel> by lazy { summonerRepository.getByAccountId( accountId, region ).cache() }
     val champion = repository.dataDragon.tail.getChampionById(dto.championId)
     val kills = dto.stats.kills
     val deaths = dto.stats.deaths

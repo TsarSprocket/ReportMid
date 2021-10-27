@@ -1,22 +1,19 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
-import com.tsarsprocket.reportmid.model.state.MyAccountModel
-import com.tsarsprocket.reportmid.model.state.MyFriendModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
+import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.ReplaySubject
 import javax.inject.Inject
 
@@ -32,13 +29,7 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
     private val selectedAccPositionObservable: Observable<Int> = selectedAccPositionLive.toObservable()
 
     private val myAccsAndSumsObservable: Observable<List<Triple<MyAccountModel, SummonerModel, Drawable>>> = repository.getMyAccounts()
-        .map { lst ->
-            lst.mapNotNull { myAcc ->
-                if (!myAcc.summoner.isEmpty.blockingGet()) {
-                    myAcc.summoner.blockingGet().let { Triple(myAcc, it, it.icon.blockingGet()) }
-                } else null
-            }
-        }
+        .map { lst -> lst.map { myAcc -> myAcc.summoner.blockingGet().let { Triple(myAcc, it, it.icon.blockingGet()) } } }
 
     private val selectedAccAndSum: ReplaySubject<Triple<MyAccountModel, SummonerModel, Drawable>> =
         ReplaySubject.create<Triple<MyAccountModel, SummonerModel, Drawable>>(1).also { subj ->
@@ -71,7 +62,7 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
 
     //  Output  ///////////////////////////////////////////////////////////////
 
-    val myAccsAndSumsLive: LiveData<List<Triple<MyAccountModel,SummonerModel,Drawable>>> = myAccsAndSumsObservable.toLiveData()
+    val myAccsAndSumsLive: LiveData<List<Triple<MyAccountModel, SummonerModel,Drawable>>> = myAccsAndSumsObservable.toLiveData()
     val selectedSummonerLive: LiveData<SummonerModel> = selectedSummonerObservable.toLiveData()
     val friendSummonersLive: LiveData<List<FriendListItem>> = friendSummonersObservable.toLiveData()
 

@@ -1,19 +1,21 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import androidx.annotation.MainThread
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.toLiveData
-import io.reactivex.BackpressureStrategy
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class ManageSummonersViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class ManageSummonersViewModel @Inject constructor(
+    private val repository: Repository,
+    private val summonerRepository: SummonerRepository,
+) : ViewModel() {
 
-    val mySummonersLive: LiveData<List<SummonerModel>> = repository.getMySummonersObservable().toLiveData()
+    val mySummonersLive: LiveData<List<SummonerModel>> = summonerRepository.getMine().toLiveData()
 
     val checkedSummoners = HashSet<SummonerModel>()
 
@@ -22,8 +24,9 @@ class ManageSummonersViewModel @Inject constructor(private val repository: Repos
     //  Methods  ///////////////////////////////////////////////////////////////
 
     fun addMySummoner(puuidAndRegion: PuuidAndRegion) {
-        disposer.add(repository.findSummonerByPuuidAndRegion( puuidAndRegion ).switchMap { summonerModel ->
-            repository.addMyAccountNotify( summonerModel ) }
+        disposer.add(summonerRepository.getByPuuidAndRegion( puuidAndRegion )
+            .toObservable()
+            .switchMap { summonerModel -> repository.addMyAccountNotify( summonerModel ) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe())
     }

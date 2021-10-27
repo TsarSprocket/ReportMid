@@ -39,7 +39,7 @@ interface SummonerDAO {
         FROM summoners AS s
             JOIN my_accounts ma ON s.id = ma.summoner_id
     """)
-    fun getMySummonersLive(): Observable<List<SummonerEntity>>
+    fun getMySummoners(): Observable<List<SummonerEntity>>
 
     @Insert
     fun insert(summonerEntity: SummonerEntity): Long

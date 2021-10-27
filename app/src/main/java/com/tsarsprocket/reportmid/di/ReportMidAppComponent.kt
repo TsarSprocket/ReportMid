@@ -3,6 +3,8 @@ package com.tsarsprocket.reportmid.di
 import android.content.Context
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.controller.*
+import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
+import com.tsarsprocket.reportmid.summoner.di.SummonerModule
 import com.tsarsprocket.reportmid.viewmodel.ManageFriendsViewModel
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -26,6 +28,8 @@ import javax.inject.Singleton
         MatchHistoryViewModelModule::class,
         ManageSummonersViewModelModule::class,
         ManageFriendsViewModelModule::class,
+        SummonerModule::class,
+        RequestManagerModule::class,
     ]
 )
 interface ReportMidAppComponent {

@@ -1,13 +1,14 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -28,7 +29,10 @@ private const val MILLIS_IN_HOUR = MILLIS_IN_MINUTE * MINUTES_IN_HOUR
 private val DUR_FMT_HMS = "%02d:%02d:%02d"
 private val DUR_FMT_MS = "%02d:%02d"
 
-class MatchupViewModel @Inject constructor( private val repository: Repository ): ViewModel() {
+class MatchupViewModel @Inject constructor(
+    private val repository: Repository,
+    private val summonerRepository: SummonerRepository,
+): ViewModel() {
 
     lateinit var puuidAndRegion: PuuidAndRegion
 
@@ -54,8 +58,8 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
     }
 
     fun loadForSummoner( puuidAndRegion: PuuidAndRegion ) {
-        allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion )
-            .observeOn( AndroidSchedulers.mainThread() )
+        allDisposables.add( summonerRepository.getByPuuidAndRegion( puuidAndRegion )
+            .toObservable()
             .switchMap{ summoner.value = it; it.getCurrentMatch() }
             .observeOn( AndroidSchedulers.mainThread() )
             .subscribe( { match ->
@@ -119,7 +123,7 @@ class MatchupViewModel @Inject constructor( private val repository: Repository )
         )
     }
 
-    private fun getSkillForChampion( summoner: SummonerModel, champion: ChampionModel ) =
+    private fun getSkillForChampion(summoner: SummonerModel, champion: ChampionModel ) =
         summoner.getMasteryWithChampion( champion ).map { it.points }.first(0)
 
     @MainThread

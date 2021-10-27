@@ -2,10 +2,10 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 const val TOP_MASTERIES_NUM = 5

@@ -6,14 +6,17 @@ import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.ChampionMasteryModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.MasteryLive
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class ProfileOverviewViewModel @Inject constructor( private val repository: Repository ): ViewModel() {
+class ProfileOverviewViewModel @Inject constructor(
+    private val summonerRepository: SummonerRepository,
+): ViewModel() {
 
     var activeSummonerModel = MutableLiveData<SummonerModel>()
     val masteries = Array( TOP_MASTERIES_NUM ) { MasteryLive() }
@@ -21,7 +24,7 @@ class ProfileOverviewViewModel @Inject constructor( private val repository: Repo
     private val summonerDisposables = CompositeDisposable()
 
     fun initialize( puuidAndRegion: PuuidAndRegion ) {
-        allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion ).subscribe { activeSummonerModel.postValue( it ) } )
+        allDisposables.add( summonerRepository.getByPuuidAndRegion( puuidAndRegion ).subscribe { summonerModel -> activeSummonerModel.postValue( summonerModel ) } )
         observeMasteries()
     }
 

@@ -2,16 +2,19 @@ package com.tsarsprocket.reportmid.model
 
 import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
+import com.tsarsprocket.reportmid.di.assisted.MatchModelFactory
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.riotapi.matchV4.MatchV4Service
-import io.reactivex.Observable
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import io.reactivex.Single
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class MatchHistoryModel(
+class MatchHistoryModel @AssistedInject constructor(
+    @Assisted val region: RegionModel,
+    @Assisted val summoner: SummonerModel,
     val repository: Repository,
-    val region: RegionModel,
-    val summoner: SummonerModel,
+    private val matchModelFactory: MatchModelFactory,
 ): RxPagingSource<Int, MatchHistoryModel.MyMatch>() {
 
     private val matchV4Service = repository.retrofitServiceProvider.getService(region, MatchV4Service::class.java)
@@ -34,7 +37,7 @@ class MatchHistoryModel(
                         matchList.matches.map { matchReferenceDto ->
                             MyMatch(summoner,
                                 matchReferenceDto.gameId,
-                                matchV4Service.match(matchReferenceDto.gameId).firstOrError().map { matchDto -> MatchModel(repository, matchDto, region) }
+                                matchV4Service.match(matchReferenceDto.gameId).firstOrError().map { matchDto -> matchModelFactory.create( matchDto, region ) }
                                     .subscribeOn(Schedulers.io()).retry(3).cache()
                             ) },
                         prevKey = if (gameNo > 0) if (gameNo - params.loadSize < 0) 0 else gameNo - params.loadSize else null,

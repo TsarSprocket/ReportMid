@@ -5,15 +5,18 @@ import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.match.Match
+import com.tsarsprocket.reportmid.di.assisted.TeamModelFactory
 import com.tsarsprocket.reportmid.riotapi.matchV4.MatchDto
 import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantDto
 import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantIdentityDto
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import java.lang.IllegalArgumentException
 
-class MatchModel(
-    val repository: Repository,
-    matchDto: MatchDto,
-    region: RegionModel,
+class MatchModel @AssistedInject constructor(
+    @Assisted matchDto: MatchDto,
+    @Assisted region: RegionModel,
+    private val teamModelFactory: TeamModelFactory,
 ) {
     val id = matchDto.gameId
     val blueTeam: TeamModel // by lazy { repository.getTeamModel( shadowMatch.blueTeam ).replay( 1 ).autoConnect() }
@@ -24,8 +27,8 @@ class MatchModel(
 
     init {
         val mapIdentities = matchDto.participantIdentities.map { it.participantId to it }.toMap()
-        blueTeam = TeamModel(repository, this, filterTemDtos(TeamModel.TeamColor.BLUE, matchDto.participants, mapIdentities), region)
-        redTeam = TeamModel(repository, this, filterTemDtos(TeamModel.TeamColor.RED, matchDto.participants, mapIdentities), region)
+        blueTeam = teamModelFactory.create( this, filterTemDtos(TeamModel.TeamColor.BLUE, matchDto.participants, mapIdentities), region)
+        redTeam = teamModelFactory.create( this, filterTemDtos(TeamModel.TeamColor.RED, matchDto.participants, mapIdentities), region)
         teams = arrayOf( blueTeam, redTeam )
     }
 

@@ -9,20 +9,24 @@ import androidx.paging.rxjava2.cachedIn
 import androidx.paging.rxjava2.flowable
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.toFlowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-class MatchHistoryViewModel @Inject constructor( private val repository: Repository ) : ViewModel() {
+class MatchHistoryViewModel @Inject constructor(
+    private val repository: Repository,
+    private val summonerRepository: SummonerRepository,
+) : ViewModel() {
 
     val activeSummonerModel = MutableLiveData<SummonerModel>()
 
     val allDisposables = CompositeDisposable()
 
     fun initialize( puuidAndRegion: PuuidAndRegion ) {
-        allDisposables.add( repository.findSummonerByPuuidAndRegion( puuidAndRegion ).subscribe { activeSummonerModel.postValue( it ) } )
+        allDisposables.add( summonerRepository.getByPuuidAndRegion( puuidAndRegion ).toObservable().subscribe { activeSummonerModel.postValue( it ) } )
     }
 
     @ExperimentalCoroutinesApi

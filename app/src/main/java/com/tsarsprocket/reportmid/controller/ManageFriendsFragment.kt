@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.FragmentManageFriendsBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.SummonerModel
-import com.tsarsprocket.reportmid.model.state.MyAccountModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.tools.*
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.ManageFriendsViewModel
@@ -146,7 +146,7 @@ class ManageFriendsFragment : BaseFragment() {
      */
     inner class AccountSelectorAdapter: BaseAdapter() {
 
-        var accList: List<Triple<MyAccountModel,SummonerModel,Drawable>> = listOf()
+        var accList: List<Triple<MyAccountModel, SummonerModel,Drawable>> = listOf()
             set(lst) {
                 field = lst
                 notifyDataSetChanged()
@@ -154,7 +154,7 @@ class ManageFriendsFragment : BaseFragment() {
 
         override fun getCount(): Int = accList.size
 
-        override fun getItem(position: Int): Triple<MyAccountModel,SummonerModel,Drawable> = accList[position]
+        override fun getItem(position: Int): Triple<MyAccountModel, SummonerModel,Drawable> = accList[position]
 
         override fun getItemId(position: Int): Long = if (position<accList.size) accList[position].first.id else -1
 

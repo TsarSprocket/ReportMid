@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Single
 import io.reactivex.SingleSource
@@ -12,7 +13,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class LandingViewModel @Inject constructor(val repository: Repository) : ViewModel() {
+class LandingViewModel @Inject constructor(
+    val repository: Repository,
+    private val summonerRepository: SummonerRepository,
+) : ViewModel() {
 
     enum class STATE { LOADING, FOUND, NOT_FOUND }
 
@@ -37,7 +41,7 @@ class LandingViewModel @Inject constructor(val repository: Repository) : ViewMod
 
     fun defineMainAccount(puuidAndRegion: PuuidAndRegion) =
         LiveDataReactiveStreams.fromPublisher(
-            repository.findSummonerByPuuidAndRegion(puuidAndRegion).switchMap { summonerModel ->
+            summonerRepository.getByPuuidAndRegion(puuidAndRegion).flatMapObservable { summonerModel ->
                 repository.addMyAccountNotify(summonerModel, true)
             }.toFlowable(BackpressureStrategy.LATEST)
         )

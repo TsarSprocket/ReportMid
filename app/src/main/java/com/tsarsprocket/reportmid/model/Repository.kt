@@ -13,8 +13,11 @@ import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.model.state.MyAccountModel
-import com.tsarsprocket.reportmid.model.state.MyFriendModel
+import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
+import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
+import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
+import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
@@ -22,6 +25,7 @@ import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -35,7 +39,14 @@ import javax.inject.Singleton
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
 @Singleton
-class Repository @Inject constructor(val context: Context, val iconProvider: RIOTIconProvider, val retrofitServiceProvider: RetrofitServiceProvider) {
+class Repository @Inject constructor(
+    val context: Context,
+    val iconProvider: RIOTIconProvider,
+    val retrofitServiceProvider: RetrofitServiceProvider,
+    private val summonerRepository: SummonerRepository,
+    private val currentMatchModelFactory: CurrentMatchModelFactory,
+    private val matchHistoryModelFactory: MatchHistoryModelFactory,
+) {
 
     val initialized = ReplaySubject.createWithSize<Boolean>(1)
 
@@ -76,16 +87,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         }.subscribeOn(Schedulers.io()).subscribe(initialized)
     }
 
-    fun getSelectedAccountSummoner() = ensureInitializedDoOnIOSubject {
-        database.globalDAO().getAll()
-            .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
-            .map { database.summonerDAO().getById(it.accountId) }
-            .first()
-    }.switchMap { sum ->
-        val reg = database.regionDAO().getById(sum.regionId)
-        findSummonerByPuuidAndRegion(PuuidAndRegion(sum.puuid,RegionModel.getByTag(reg.tag)))
-    }
-
     fun getSelectedAccountRegion() = ensureInitializedDoOnIOSubject {
         database.globalDAO().getAll()
             .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
@@ -104,79 +105,24 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
                 .map { regEnt -> RegionModel.byTag[regEnt.tag] ?: throw RuntimeException("Region not found for tag ${regEnt.tag}") }
         }
 
-    fun getCurrentRegions() = ensureInitializedDoOnIOSubject { Unit }
-        .switchMap { _ ->
-            database.currentAccountDAO().getAllObservable()
-                .map { lstCurAccEnt ->
-                    lstCurAccEnt.map { database.regionDAO().getById(it.regionId) }
-                        .map { RegionModel.byTag[it.tag] ?: throw RuntimeException("Region ${it.tag} not found") }
-                }
-        }
-
-    fun getMySummonersObservable(): Observable<List<SummonerModel>> = ensureInitializedDoOnIO {}
-        .switchMap {
-            database.summonerDAO().getMySummonersLive()
-                .map { lst ->
-                    val arrObsSumModel = lst.map { sumEnt ->
-                        val reg = database.regionDAO().getById(sumEnt.regionId)
-                        findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid, RegionModel.getByTag(reg.tag)))
-                    }.toTypedArray()
-                    Observable.mergeArray(*arrObsSumModel).toList().blockingGet()
-                }
-        }
-
-
-    fun getMySummonersObservableForRegion(reg: RegionModel): Observable<List<Pair<SummonerModel, Boolean>>> = ensureInitializedDoOnIO {
-        database.regionDAO().getByTag(reg.tag)
-    }
-        .switchMap { regEnt ->
-            database.currentAccountDAO().getByRegionIdObservable(regEnt.id)
-                .map { lstCurAcc ->
-                    val firstOne = lstCurAcc.first()
-                    Pair(regEnt, database.myAccountDAO().getById(firstOne.accountId))
-                }
-        }
-        .switchMap { (regEnt, myCurAccEnt) ->
-            database.summonerDAO().getMySummonersByRegionObservable(regEnt.id)
-                .map { sumEnts -> sumEnts.map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) } }
-                .map { lst ->
-                    lst.map { (sumEnt, isSelected) ->
-                        findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,RegionModel.getByTag(regEnt.tag)))
-                            .map { sum -> Pair(sum, isSelected) }.blockingFirst()
-                    }
-                }
-        }
-
     private fun loadRawResourceAsText(resId: Int) = InputStreamReader(context.resources.openRawResource(resId)).readText()
 
     @WorkerThread
-    fun findSummonerForName(summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false): Observable<SummonerModel> {
+    fun findSummonerForName( summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false ): Observable<SummonerModel> {
 
-        return initialized.observeOn(Schedulers.io())
-            .switchMap { fInitialized ->
-                when (fInitialized) {
-                    true -> getSummonerModel(failOnNull = failOnNotFound) { Orianna.summonerNamed(summonerName).withRegion(regionModel.shadowRegion).get() }
+        return initialized.observeOn( Schedulers.io() )
+            .switchMapSingle { fInitialized ->
+                when( fInitialized ) {
+                    true -> summonerRepository.getBySummonerName( summonerName, regionModel )
                     else -> throw RepositoryNotInitializedException()
                 }
             }
     }
 
     @WorkerThread
-    fun findSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): ReplaySubject<SummonerModel> {
-        val cached = summoners[puuidAndRegion]
-        return if (cached != null) ReplaySubject.create<SummonerModel>(1).apply { Observable.just(cached).subscribe(this) }
-        else getSummonerModel { Orianna.summonerWithPuuid(puuidAndRegion.puuid).withRegion(puuidAndRegion.region.shadowRegion).get().also { it.load() } }
-    }
-
-    fun findSummonersByPuuidAndRegions(puuidAndRegionsList: List<PuuidAndRegion>) = ensureInitializedDoOnIOSubject {
-        puuidAndRegionsList.map { puuidAndRegion -> summoners[puuidAndRegion] ?:
-            SummonerModel(this, Orianna.summonerWithPuuid(puuidAndRegion.puuid).withRegion(puuidAndRegion.region.shadowRegion).get()) }
-    }
-
-    @WorkerThread
     fun getActiveSummonerPuuidAndRegion(): Observable<PuuidAndRegion> = initialized.observeOn(Schedulers.io())
         .switchMap { fInitialized ->
-            when (fInitialized) {
+            when( fInitialized ) {
                 true -> {
                     val curAccId = database.globalDAO().getAll().first().currentAccountId
 
@@ -192,9 +138,6 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
             }
         }
 
-    @WorkerThread
-    fun getActiveSummoner() = getActiveSummonerPuuidAndRegion().switchMap { puuid -> findSummonerByPuuidAndRegion(puuid) }
-
     fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIOSubject { ChampionMasteryModel(this, championMastery) }
 
     fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIOSubject { getChampionById(lmdChampion().id).blockingGet() }
@@ -202,23 +145,12 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
     fun getChampionById(id: Int): Single<ChampionModel> =
         ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
 
-    fun getMatchHistoryModel(region: RegionModel, summoner: SummonerModel) = MatchHistoryModel(this, region, summoner)
+    fun getMatchHistoryModel(region: RegionModel, summoner: SummonerModel) = matchHistoryModelFactory.create( region, summoner )
 
-    fun getSummonerModel(failOnNull: Boolean = false, lmdSummoner: () -> Summoner) = ensureInitializedDoOnIOSubject(failOnNull) {
-        val summoner = lmdSummoner()
-        if (summoner.puuid != null) {
-            summoners[PuuidAndRegion(summoner.puuid,RegionModel.getByTag(summoner.region.tag))] ?:
-                SummonerModel(this, summoner).also { summoners[PuuidAndRegion(it.puuid,it.region)] = it }
-        } else null
-    }
-
-    fun getSummonerById(region: RegionModel, id: String) =
-        ensureInitializedDoOnIO { SummonerModel(this, Summoner.withId(id).withRegion(region.shadowRegion).get()) }.firstOrError()
-
-    fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { CurrentMatchModel(this, summoner) }
+    fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { currentMatchModelFactory.create( summoner ) }
 
     fun getCurrentMatchForSummoner(summoner: SummonerModel): CurrentMatchModel? =
-        try { CurrentMatchModel(this, summoner) } catch (ex: Exception) { null }
+        try { currentMatchModelFactory.create( summoner ) } catch (ex: Exception) { null }
 
     fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
 
@@ -239,10 +171,10 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         }
     }.subscribeOn(Schedulers.io()).cache()
 
-    fun getSummonerForMyAccount(myAccount: MyAccountModel): Maybe<SummonerModel> = ensureInitializedDoOnIO {}.firstElement().flatMap {
+    fun getSummonerForMyAccount(myAccount: MyAccountModel): Single<SummonerModel> = ensureInitializedDoOnIO {}.flatMapSingle {
         val sumEnt = database.summonerDAO().getById(database.myAccountDAO().getById(myAccount.id).summonerId)
-        findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag)).firstElement()
-    }
+        summonerRepository.getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag))
+    }.firstOrError()
 
     fun getCurrentAccountsPerRegionObservable(reg: RegionModel): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
         .switchMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
@@ -261,7 +193,7 @@ class Repository @Inject constructor(val context: Context, val iconProvider: RIO
         val regEnt = database.regionDAO().getById(sumEnt.regionId)
         Pair(sumEnt,regEnt)
     }
-        .switchMap { (sumEnt, regEnt) -> findSummonerByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,regEnt.tag)) }
+        .switchMapSingle { (sumEnt, regEnt) -> summonerRepository.getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,regEnt.tag)) }
         .firstOrError()
 
     //  Operations  ///////////////////////////////////////////////////////////

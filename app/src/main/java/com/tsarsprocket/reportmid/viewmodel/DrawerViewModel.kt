@@ -1,15 +1,15 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.LinearLayout
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.RegionModel
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.SummonerModel
-import com.tsarsprocket.reportmid.model.state.MyAccountModel
-import com.tsarsprocket.reportmid.model.state.MyFriendModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
+import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
@@ -19,7 +19,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class DrawerViewModel @Inject constructor(val repository: Repository) : ViewModel() {
+class DrawerViewModel @Inject constructor(
+    val repository: Repository,
+    private val summonerRepository: SummonerRepository,
+) : ViewModel() {
 
     //  LiveData Input  ///////////////////////////////////////////////////////
 
@@ -31,9 +34,9 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
 
     private val currentRegionsObservable: Observable<List<RegionModel>> = repository.getMyRegions().map { lst -> lst.sortedBy { it.title } }
 
-    private val mySummonersInSelectedRegionObservable: Observable<List<Triple<Drawable,SummonerModel,Boolean>>> =
+    private val mySummonersInSelectedRegionObservable: Observable<List<Triple<Drawable, SummonerModel,Boolean>>> =
         Observable.combineLatest( selectedRegionPositionObservable, currentRegionsObservable ) { pos, lst -> lst[pos] }
-            .switchMap { reg -> repository.getMySummonersObservableForRegion(reg) }
+            .switchMap { reg -> summonerRepository.getMineForRegionSelected(reg) }
             .map { lst ->
                 lst.sortedWith { o1, o2 -> SUMO_COMP.compare(o1.first, o2.first) }
                     .map { (sum, isSelected) -> Triple(sum.icon.blockingGet(), sum, isSelected) }
@@ -52,7 +55,7 @@ class DrawerViewModel @Inject constructor(val repository: Repository) : ViewMode
     //  LiveData Output  //////////////////////////////////////////////////////
 
     val currentRegionsLive: LiveData<List<RegionModel>> = currentRegionsObservable.toLiveData()
-    val mySummonersInSelectedRegionLive: LiveData<List<Triple<Drawable,SummonerModel,Boolean>>> = mySummonersInSelectedRegionObservable.toLiveData()
+    val mySummonersInSelectedRegionLive: LiveData<List<Triple<Drawable, SummonerModel,Boolean>>> = mySummonersInSelectedRegionObservable.toLiveData()
     val currentAccountLive: LiveData<List<MyAccountModel>> = currentAccountObservable.toLiveData()
     val myFriendsLive: LiveData<List<MyFriendData>> = myFriendsRx.toLiveData()
 

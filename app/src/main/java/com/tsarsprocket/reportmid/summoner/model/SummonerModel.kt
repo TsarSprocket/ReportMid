@@ -1,15 +1,12 @@
-package com.tsarsprocket.reportmid.model
+package com.tsarsprocket.reportmid.summoner.model
 
 import android.graphics.drawable.Drawable
-import android.util.Log
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
-import com.merakianalytics.orianna.types.core.match.MatchHistory
-import com.merakianalytics.orianna.types.core.spectator.CurrentMatch
-import com.merakianalytics.orianna.types.core.summoner.Summoner
-import com.tsarsprocket.reportmid.model.state.MyAccountModel
-import com.tsarsprocket.reportmid.riotapi.spectatorV4.SpectatorV4Service
+import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
+import com.tsarsprocket.reportmid.riotapi.summoner.Summoner
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -17,30 +14,31 @@ import io.reactivex.schedulers.Schedulers
 
 class SummonerModel(
     val repository: Repository,
-    private val shadowSummoner: Summoner
+    private val shadowSummoner: Summoner,
+    val region: RegionModel,
 ) {
     val id: String = shadowSummoner.id
     val name: String = shadowSummoner.name
-    val icon: Single<Drawable> by lazy { Single.fromCallable { shadowSummoner.profileIcon.id }.subscribeOn(Schedulers.io()).flatMap { repository.iconProvider.getProfileIcon(it) }  }
+    val icon: Single<Drawable> by lazy { Single.fromCallable { shadowSummoner.profileIconId }.subscribeOn( Schedulers.io() ).flatMap { repository.iconProvider.getProfileIcon(it) }  }
     val puuid: String = shadowSummoner.puuid
-    val level: Int = shadowSummoner.level
+    val level: Long = shadowSummoner.summonerLevel
     val masteries: Observable<List<Observable<ChampionMasteryModel>>> by lazy { getObservableMasteryList().replay( 1 ).autoConnect() }
-    val soloQueuePosition by lazy{ repository.getLeaguePosition { shadowSummoner.getLeaguePosition( Queue.RANKED_SOLO ) } }
-    val region by lazy{ Repository.getRegion( shadowSummoner.region ) }
-    val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner(this) }
+    val soloQueuePosition by lazy{ repository.getLeaguePosition { Orianna.leaguePositionsForSummoner( Orianna.summonerWithId( id ).get()).get().find { it?.queue == Queue.RANKED_SOLO }  } }
+    val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner( this ) }
     val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid,region) }
     val riotAccountId: String = shadowSummoner.accountId
 
-    fun getMasteryWithChampion( championModel: ChampionModel ): Observable<ChampionMastery> =
-        Observable.fromCallable { ChampionMastery.forSummoner( shadowSummoner ).withChampion( Orianna.championWithId(championModel.id).get() ).get() }.subscribeOn( Schedulers.io() )
+    fun getMasteryWithChampion( championModel: ChampionModel): Observable<ChampionMastery> =
+        Observable.fromCallable { ChampionMastery.forSummoner( Orianna.summonerWithId( id ).get() ).withChampion( Orianna.championWithId(championModel.id).get() ).get() }.subscribeOn( Schedulers.io() )
 
     fun getCurrentMatch() = repository.getCurrentMatch(this)
 
     fun getMatchHistory() = repository.getMatchHistoryModel(region, this)
 
     private fun getObservableMasteryList() = Observable.fromCallable {
-        List( shadowSummoner.championMasteries.size ) { i ->
-            repository.getChampionMasteryModel( shadowSummoner.championMasteries[ i ] ).subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect()
+        val masteries = Orianna.championMasteriesForSummoner( Orianna.summonerWithId( id ).get() ).get()
+        List( masteries.size ) { i ->
+            repository.getChampionMasteryModel( masteries[ i ] ).subscribeOn( Schedulers.io() ).replay( 1 ).autoConnect()
         }
     }.subscribeOn( Schedulers.io() )
 

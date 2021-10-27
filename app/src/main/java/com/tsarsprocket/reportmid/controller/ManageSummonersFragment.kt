@@ -19,7 +19,7 @@ import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue

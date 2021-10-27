@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import io.reactivex.Observable
 
 @Dao
 interface RegionDAO {
@@ -16,6 +17,9 @@ interface RegionDAO {
 
     @Query( "SELECT * FROM regions WHERE tag = :tag" )
     fun getByTag( tag: String ): RegionEntity
+
+    @Query( "SELECT * FROM regions WHERE tag = :tag" )
+    fun getByTagObservable( tag: String ): Observable<RegionEntity>
 
     @Insert
     fun insert( regionEntity: RegionEntity ): Long
