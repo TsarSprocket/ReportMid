@@ -3,6 +3,8 @@
     <string name="app_name">Report Mid</string>
     <string name="general_yes">Yes</string>
     <string name="general_no">no</string>
+    <string name="question_mark">\?</string>
+    <string name="three_question_marks">\???</string>
 
     <!-- Fragment: Add Summoner -->
     <string name="fragment_add_summoner_validate_btn_text">Find</string>

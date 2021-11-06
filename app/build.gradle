@@ -117,4 +117,7 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
     testImplementation "androidx.paging:paging-common-ktx:$paging_version" // alternatively - without Android dependencies for tests
     implementation "androidx.paging:paging-rxjava2-ktx:$paging_version" // optional - RxJava2 support
+
+    // Flow
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$kotlin_coroutines_version"
 }

@@ -7,15 +7,16 @@
     android:gravity="center"
     android:paddingStart="5dp"
     android:paddingEnd="5dp"
-    android:visibility="gone"
     >
 
     <ImageView
+        android:id="@+id/iconChampion"
         android:tag="@string/fragment_profile_overview_tag_champion_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
+        android:src="@drawable/champion_icon_placegolder"
         />
 
 <!--
@@ -33,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:text="@string/question_mark"
         />
 
     <TextView
@@ -41,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
+        android:text="@string/three_question_marks"
         />
 
 </LinearLayout>

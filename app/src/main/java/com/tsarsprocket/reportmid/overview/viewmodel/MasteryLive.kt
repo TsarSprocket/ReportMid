@@ -1,6 +1,5 @@
-package com.tsarsprocket.reportmid.presentation
+package com.tsarsprocket.reportmid.overview.viewmodel
 
-import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
 

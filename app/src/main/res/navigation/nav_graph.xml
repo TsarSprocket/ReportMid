@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/profileOverviewFragment"
-        android:name="com.tsarsprocket.reportmid.controller.ProfileOverviewFragment"
+        android:name="com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment"
         android:label="Summoner's Page'"
         tools:layout="@layout/fragment_profile_overview"
         >

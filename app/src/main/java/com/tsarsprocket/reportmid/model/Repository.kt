@@ -10,7 +10,6 @@ import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.match.*
 import com.merakianalytics.orianna.types.core.staticdata.Champion
-import com.merakianalytics.orianna.types.core.summoner.Summoner
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
@@ -25,6 +24,7 @@ import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
+import com.tsarsprocket.reportmid.summoner.model.ChampionMasteryModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -137,8 +137,6 @@ class Repository @Inject constructor(
                 else -> throw RepositoryNotInitializedException()
             }
         }
-
-    fun getChampionMasteryModel(championMastery: ChampionMastery) = ensureInitializedDoOnIOSubject { ChampionMasteryModel(this, championMastery) }
 
     fun getChampionModel(lmdChampion: () -> Champion) = ensureInitializedDoOnIOSubject { getChampionById(lmdChampion().id).blockingGet() }
 

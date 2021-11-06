@@ -1,15 +1,18 @@
 package com.tsarsprocket.reportmid.summoner.model
 
+import com.tsarsprocket.reportmid.summoner.di.ChampionMasteryModelFactory
+import com.tsarsprocket.reportmid.summoner.di.SummonerModelFactory
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.RegionModel
-import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.request_manager.model.Request
 import com.tsarsprocket.reportmid.request_manager.model.RequestKey
 import com.tsarsprocket.reportmid.request_manager.model.RequestManager
 import com.tsarsprocket.reportmid.request_manager.model.RequestResult
 import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
-import com.tsarsprocket.reportmid.riotapi.summoner.Summoner
+import com.tsarsprocket.reportmid.riotapi.championMastery.ChampionMasteryDto
+import com.tsarsprocket.reportmid.riotapi.championMastery.ChampionMasteryV4
+import com.tsarsprocket.reportmid.riotapi.summoner.SummonerDto
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerV4Service
 import com.tsarsprocket.reportmid.room.MainStorage
 import io.reactivex.Observable
@@ -17,19 +20,18 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
 class SummonerRepositoryImpl @Inject constructor(
+    private val championMasteryModelFactory: ChampionMasteryModelFactory,
+    private val summonerModelFactory: SummonerModelFactory,
     private val retrofitServiceProvider: RetrofitServiceProvider,
     private val requestManager: RequestManager,
     private val database: MainStorage,
     @IoScheduler private val ioScheduler: Scheduler,
-    repositoryProvider: Provider<Repository>,
 ) : SummonerRepository {
 
-    private val repository: Repository by lazy { repositoryProvider.get() }
     private val summonerCacheByAccountId = ConcurrentHashMap<AccountIdKey, SummonerModel>()
     private val summonerCacheByPuuid = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
     private val summonerCacheBySummonerId = ConcurrentHashMap<SummonerIdKey, SummonerModel>()
@@ -118,21 +120,29 @@ class SummonerRepositoryImpl @Inject constructor(
             }
     }
 
+    private fun fetchChampionMasteriesBySummonerId( key: SummonerIdKey ): Single<List<ChampionMasteryModel>> =
+        requestManager.addRequest( ChampionMasteriesBySummonerId( key ) )
+            .map { requestResult -> requestResult.championMasteryDtos.map { championMasteryModelFactory.create( it ) } }
+
     private fun fetchSummonerByAccountId( key: AccountIdKey ): Single<SummonerModel> =
         requestManager.addRequest( SummonerRequestByAccountId( key ) )
-            .map { requestResult -> SummonerModel( repository, requestResult.summoner, key.region ) }
+            .map { requestResult -> summonerModelFactory.create( key.region, requestResult.summonerDto,
+                fetchChampionMasteriesBySummonerId( SummonerIdKey( requestResult.summonerDto.id, key.region ) ) ) }
 
     private fun fetchSummonerByPuuid(puuidAndRegion: PuuidAndRegion): Single<SummonerModel> =
         requestManager.addRequest( SummonerRequestByPuuid( PuuidKey( puuidAndRegion ) ) )
-            .map { requestResult -> SummonerModel( repository, requestResult.summoner, puuidAndRegion.region ) }
+            .map { requestResult -> summonerModelFactory.create( puuidAndRegion.region, requestResult.summonerDto,
+                fetchChampionMasteriesBySummonerId( SummonerIdKey( requestResult.summonerDto.id, puuidAndRegion.region ) ) ) }
 
     private fun fetchSummonerBySummonerId( key: SummonerIdKey ): Single<SummonerModel> =
         requestManager.addRequest( SummonerRequestBySummonerId( key ) )
-            .map { requestResult -> SummonerModel( repository, requestResult.summoner, key.region ) }
+            .map { requestResult -> summonerModelFactory.create( key.region, requestResult.summonerDto,
+                fetchChampionMasteriesBySummonerId( SummonerIdKey( requestResult.summonerDto.id, key.region ) ) ) }
 
     private fun fetchSummonerBySummonerName( key: SummonerNameKey ): Single<SummonerModel> =
         requestManager.addRequest( SummonerRequestBySummonerName( key ) )
-            .map { requestResult -> SummonerModel( repository, requestResult.summoner, key.region ) }
+            .map { requestResult -> summonerModelFactory.create( key.region, requestResult.summonerDto,
+                fetchChampionMasteriesBySummonerId( SummonerIdKey( requestResult.summonerDto.id, key.region ) ) ) }
 
     // Classes
 
@@ -155,8 +165,23 @@ class SummonerRepositoryImpl @Inject constructor(
         val region: RegionModel,
     ) : RequestKey
 
+    private inner class ChampionMasteriesBySummonerId( key: SummonerIdKey ) :
+            Request<SummonerIdKey,ChampionMasteriesRequestResult>( key ) {
+
+        override fun invoke(): ChampionMasteriesRequestResult {
+            return retrofitServiceProvider.getService( key.region, ChampionMasteryV4::class.java ).getBySummonerId( key.summonerId )
+                .map { masteryList -> ChampionMasteriesRequestResult( masteryList ) }
+                .blockingGet()
+        }
+    }
+
+    private data class ChampionMasteriesRequestResult(
+        val championMasteryDtos: List<ChampionMasteryDto>
+    ) : RequestResult
+
     private inner class SummonerRequestByAccountId( key: AccountIdKey ) :
-            Request<AccountIdKey, SummonerRequestResult>( key ) {
+            Request<AccountIdKey,SummonerRequestResult>( key ) {
+
         override fun invoke(): SummonerRequestResult {
             return retrofitServiceProvider.getService( key.region, SummonerV4Service::class.java ).getByAccountId( key.accountId )
                 .map { summoner -> SummonerRequestResult( summoner ) }
@@ -166,6 +191,7 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private inner class SummonerRequestByPuuid( key: PuuidKey ) :
             Request<PuuidKey,SummonerRequestResult>( key ) {
+
         override fun invoke(): SummonerRequestResult {
             return retrofitServiceProvider.getService( key.puuidAndRegion.region, SummonerV4Service::class.java ).getByPuuid( key.puuidAndRegion.puuid )
                 .map { summoner -> SummonerRequestResult( summoner ) }
@@ -175,6 +201,7 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private inner class SummonerRequestBySummonerId( key: SummonerIdKey ) :
             Request<SummonerIdKey,SummonerRequestResult>( key ) {
+
         override fun invoke(): SummonerRequestResult {
             return retrofitServiceProvider.getService( key.region, SummonerV4Service::class.java ).getBySummonerId( key.summonerId )
                 .map { summoner -> SummonerRequestResult( summoner ) }
@@ -184,6 +211,7 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private inner class SummonerRequestBySummonerName( key: SummonerNameKey ) :
             Request<SummonerNameKey,SummonerRequestResult>( key ) {
+
         override fun invoke(): SummonerRequestResult {
             return retrofitServiceProvider.getService( key.region, SummonerV4Service::class.java ).getBySummonerName( key.summonerName )
                 .map { summoner -> SummonerRequestResult( summoner ) }
@@ -192,6 +220,6 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     private data class SummonerRequestResult(
-        val summoner: Summoner,
+        val summonerDto: SummonerDto,
     ) : RequestResult
 }
