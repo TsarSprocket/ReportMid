@@ -31,22 +31,35 @@ class RetrofitServiceProvider @Inject constructor(val context: Context) {
         .build()
     private val adapterFactory = RxJava2CallAdapterFactory.create()
     private val converterFactory = GsonConverterFactory.create()
-    private val retroCache = Collections.synchronizedMap(HashMap<ServerModel, RetroWithServices>())
+    private val retroCache = Collections.synchronizedMap(HashMap<String, RetroWithServices>())
 
-    fun getServiceUnchecked(region: RegionModel, clazz: Class<*>): Any =
-        with(retroCache[region.server] ?: RetroWithServices(
+    fun getServiceUnchecked( region: RegionModel, clazz: Class<*> ): Any {
+        val url = getUrl(clazz, region)
+        return with(retroCache[ url ] ?: RetroWithServices(
             Retrofit.Builder()
-                .client(okClient)
-                .baseUrl("https://${region.server}.api.riotgames.com")
-                .addCallAdapterFactory(adapterFactory)
-                .addConverterFactory(converterFactory)
+                .client( okClient )
+                .baseUrl( url )
+                .addCallAdapterFactory( adapterFactory )
+                .addConverterFactory( converterFactory )
                 .build()
-        ).also { retroCache[region.server] = it }
+        ).also { retroCache[ url ] = it }
         ) {
-            serviceMap[clazz] ?: retrofit.create(clazz).also { serviceMap[clazz] = it }
+            serviceMap[ clazz ] ?: retrofit.create( clazz ).also { serviceMap[ clazz ] = it }
         }
+    }
 
-    inline fun <reified T> getService(region: RegionModel, clazz: Class<T>): T = getServiceUnchecked(region, clazz) as T
+    inline fun <reified T> getService( region: RegionModel, clazz: Class<T> ): T = getServiceUnchecked( region, clazz ) as T
+
+    private fun getUrl( clazz: Class<*>, region: RegionModel ): String {
+        val serverInfo = clazz.getAnnotation(ServerInfo::class.java)
+        val serverPrefix = when ( serverInfo?.callBy ) {
+            CallByType.SUPER_REGION -> "${region.superServer.value}."
+            CallByType.GLOBAL -> ""
+            CallByType.REGION -> "${region.server.value}."
+            else -> "${region.server.value}."
+        }
+        return "https://$serverPrefix${( serverInfo?.baseServer ?: RiotServers.RIOT_API ).value}"
+    }
 
     private class RetroWithServices(val retrofit: Retrofit) {
         val serviceMap: HashMap<Class<*>, Any> = HashMap()

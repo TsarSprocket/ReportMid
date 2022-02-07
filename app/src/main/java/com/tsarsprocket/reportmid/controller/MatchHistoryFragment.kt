@@ -1,6 +1,5 @@
 package com.tsarsprocket.reportmid.controller
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -148,19 +147,26 @@ class MatchHistoryFragment : BaseFragment() {
                                 itemViews.forEach { it.setImageResource(R.drawable.item_icon_placegolder) }
 
                                 match.blueTeam.participants.plus(match.redTeam.participants)
-                                    .find { it.accountId == summoner.riotAccountId }
+                                    .find { it.puuid == summoner.puuid }
                                     ?.let { myParticipant ->
                                         colourStripe.setBackgroundColor(cardView.resources.getColor(
                                             if( match.remake ) R.color.bgRemake else if( myParticipant.isWinner ) R.color.bgWin else R.color.bgDefeat))
                                         colourStripe.visibility = View.VISIBLE
 
-                                        holder.disposer.addAll(
-                                            myParticipant.champion.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> imgChampionIcon.setImageDrawable(drawable) },
-                                            myParticipant.primaryRune.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconPrimaryRune.setImageDrawable(drawable) },
-                                            myParticipant.secondaryRunePath.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSecondaryRunePath.setImageDrawable(drawable) },
-                                            myParticipant.summonerSpellD.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellD.setImageDrawable(drawable) },
-                                            myParticipant.summonerSpellF.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { drawable -> iconSummonerSpellF.setImageDrawable(drawable) },
-                                        )
+                                        with( holder ) {
+                                            disposer.addAll(
+                                                myParticipant.champion.icon.observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe { drawable -> imgChampionIcon.setImageDrawable(drawable) },
+                                                myParticipant.summonerSpellD.icon.observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe { drawable -> iconSummonerSpellD.setImageDrawable(drawable) },
+                                                myParticipant.summonerSpellF.icon.observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe { drawable -> iconSummonerSpellF.setImageDrawable(drawable) },
+                                            )
+                                            myParticipant.primaryRune?.icon?.observeOn(AndroidSchedulers.mainThread())
+                                                ?.subscribe { drawable -> iconPrimaryRune.setImageDrawable(drawable) }?.let { disposer.add(it) }
+                                            myParticipant.secondaryRunePath?.icon?.observeOn(AndroidSchedulers.mainThread())
+                                                ?.subscribe { drawable -> iconSecondaryRunePath.setImageDrawable(drawable) }?.let { disposer.addAll() }
+                                        }
 
                                         txtGameMode.text = cardView.resources.getString(match.gameType.titleResId)
                                         txtMainKDA.text = "${myParticipant.kills}/${myParticipant.deaths}/${myParticipant.assists}"
@@ -188,10 +194,10 @@ class MatchHistoryFragment : BaseFragment() {
 
     class MatchComparator: DiffUtil.ItemCallback<MatchHistoryModel.MyMatch>() {
         override fun areItemsTheSame(oldItem: MatchHistoryModel.MyMatch, newItem: MatchHistoryModel.MyMatch): Boolean =
-            oldItem.gameId == newItem.gameId && oldItem.summoner.id == newItem.summoner.id
+            oldItem.matchId == newItem.matchId && oldItem.summoner.id == newItem.summoner.id
 
         override fun areContentsTheSame(oldItem: MatchHistoryModel.MyMatch, newItem: MatchHistoryModel.MyMatch): Boolean =
-            oldItem.gameId == newItem.gameId && oldItem.summoner.id == newItem.summoner.id // Sufficient assumption: same IDs always represent same data sets
+            oldItem.matchId == newItem.matchId && oldItem.summoner.id == newItem.summoner.id // Sufficient assumption: same IDs always represent same data sets
     }
 
     companion object {

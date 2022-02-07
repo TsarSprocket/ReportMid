@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 )
 data class ItemEntity(
     @ColumnInfo(name = "language_id", index = true) var language_id: Long,
-    @ColumnInfo(name = "riotId") var riotId: Long,
+    @ColumnInfo(name = "riotId") var riotId: Int,
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "imageName") var imageName: String,
 ) {

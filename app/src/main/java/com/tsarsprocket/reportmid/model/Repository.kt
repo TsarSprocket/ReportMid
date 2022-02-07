@@ -6,12 +6,11 @@ import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.*
-import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.merakianalytics.orianna.types.core.league.LeagueEntry
-import com.merakianalytics.orianna.types.core.match.*
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
+import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
@@ -24,7 +23,6 @@ import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
-import com.tsarsprocket.reportmid.summoner.model.ChampionMasteryModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -53,7 +51,7 @@ class Repository @Inject constructor(
     lateinit var database: MainStorage
 
     val summoners = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
-    lateinit var dataDragon: DataDragon
+    lateinit var dataDragon: DataDragonImpl
 
     init {
 
@@ -72,7 +70,7 @@ class Repository @Inject constructor(
                     database.globalDAO().insert(GlobalEntity(accs.firstOrNull()?.id))
                 }
 
-                dataDragon = DataDragon(database, iconProvider)
+                dataDragon = DataDragonImpl(database, iconProvider)
 
                 Orianna.setRiotAPIKey(loadRawResourceAsText(R.raw.riot_api_key))
                 Orianna.setDefaultRegion(Region.RUSSIA)
@@ -143,7 +141,7 @@ class Repository @Inject constructor(
     fun getChampionById(id: Int): Single<ChampionModel> =
         ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
 
-    fun getMatchHistoryModel(region: RegionModel, summoner: SummonerModel) = matchHistoryModelFactory.create( region, summoner )
+    fun getMatchHistoryModel(region: RegionModel, summoner: SummonerModel): MatchHistoryModel = matchHistoryModelFactory.create( region, summoner )
 
     fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { currentMatchModelFactory.create( summoner ) }
 
@@ -315,7 +313,6 @@ class Repository @Inject constructor(
 
     companion object {
         val allRegions = RegionModel.values()
-        fun getRegion(region: Region) = RegionModel.byShadowRegion[region] ?: throw RuntimeException("No such region: ${region.tag}")
 
         fun getGameType(gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null) =
             GameTypeModel.by(gameType, queue, gameMode, gameMap)

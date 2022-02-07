@@ -1,14 +1,11 @@
 package com.tsarsprocket.reportmid.model
 
-import android.util.SparseArray
 import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
-import com.merakianalytics.orianna.types.core.match.Match
 import com.tsarsprocket.reportmid.di.assisted.TeamModelFactory
-import com.tsarsprocket.reportmid.riotapi.matchV4.MatchDto
-import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantDto
-import com.tsarsprocket.reportmid.riotapi.matchV4.ParticipantIdentityDto
+import com.tsarsprocket.reportmid.riotapi.matchV5.MatchDto
+import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.lang.IllegalArgumentException
@@ -18,20 +15,20 @@ class MatchModel @AssistedInject constructor(
     @Assisted region: RegionModel,
     private val teamModelFactory: TeamModelFactory,
 ) {
-    val id = matchDto.gameId
+    val id = matchDto.metadata.matchId
     val blueTeam: TeamModel // by lazy { repository.getTeamModel( shadowMatch.blueTeam ).replay( 1 ).autoConnect() }
     val redTeam: TeamModel // by lazy { repository.getTeamModel( shadowMatch.redTeam ).replay( 1 ).autoConnect() }
     val teams: Array<TeamModel>
-    val gameType = try{ Repository.getGameType( GameType.valueOf(matchDto.gameType), Queue.withId(matchDto.queueId), GameMode.valueOf(matchDto.gameMode), GameMap.withId(matchDto.mapId) ) } catch (ex: IllegalArgumentException ) { GameTypeModel.UNKNOWN }
-    val remake = matchDto.gameDuration < 10 * 60 // i.e. game duration < 10 min
+    val gameType = try{ Repository.getGameType( GameType.valueOf(matchDto.info.gameType), Queue.withId(matchDto.info.queueId),
+        GameMode.valueOf(matchDto.info.gameMode), GameMap.withId(matchDto.info.mapId) ) } catch (ex: IllegalArgumentException ) { GameTypeModel.UNKNOWN }
+    val remake = matchDto.info.gameDuration < 10 * 60 // i.e. game duration < 10 min
 
     init {
-        val mapIdentities = matchDto.participantIdentities.map { it.participantId to it }.toMap()
-        blueTeam = teamModelFactory.create( this, filterTemDtos(TeamModel.TeamColor.BLUE, matchDto.participants, mapIdentities), region)
-        redTeam = teamModelFactory.create( this, filterTemDtos(TeamModel.TeamColor.RED, matchDto.participants, mapIdentities), region)
+        blueTeam = teamModelFactory.create( this, filterTemDtos(TeamModel.TeamColor.BLUE, matchDto.info.participants), region)
+        redTeam = teamModelFactory.create( this, filterTemDtos(TeamModel.TeamColor.RED, matchDto.info.participants), region)
         teams = arrayOf( blueTeam, redTeam )
     }
 
-    private fun filterTemDtos(teamColor: TeamModel.TeamColor, allParticipants: List<ParticipantDto>, mapIdentities: Map<Int,ParticipantIdentityDto>): List<Pair<ParticipantDto,ParticipantIdentityDto>> =
-        allParticipants.filter { it.teamId == teamColor.colorCode }.map { it to mapIdentities[ it.participantId ]!! }
+    private fun filterTemDtos(teamColor: TeamModel.TeamColor, allParticipants: List<ParticipantDto>): List<ParticipantDto> =
+        allParticipants.filter { it.teamId == teamColor.colorCode }
 }

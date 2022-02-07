@@ -50,7 +50,7 @@ android {
 }
 
 repositories {
-    mavenCentral() // for Orianna API
+    mavenCentral() // for Orianna API`
 }
 
 dependencies {
