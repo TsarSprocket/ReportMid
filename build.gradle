@@ -2,9 +2,9 @@
 
 buildscript {
 
-    ext.gradle_version = '7.1.3'
-    ext.kotlin_version = '1.5.31'
-    ext.nav_version = '2.4.1'
+    ext.gradle_version = '7.4.2'
+    ext.kotlin_version = '1.8.10'
+    ext.nav_version = '2.5.3'
 
     repositories {
         google()
@@ -34,10 +34,10 @@ task clean(type: Delete) {
 }
 
 project.ext{
-    dagger_version = '2.35.1'
+    dagger_version = '2.45'
     multidex_version = '2.0.1'
-    room_version = '2.3.0'
+    room_version = '2.5.1'
     retrofit_version = '2.9.0'
-    paging_version = '3.1.0-beta01'
+    paging_version = '3.2.0-alpha04'
     kotlin_coroutines_version = '1.5.2'
 }

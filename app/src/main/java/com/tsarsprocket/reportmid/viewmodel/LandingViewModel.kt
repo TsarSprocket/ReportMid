@@ -1,14 +1,13 @@
 package com.tsarsprocket.reportmid.viewmodel
 
-import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Single
-import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -39,12 +38,9 @@ class LandingViewModel @Inject constructor(
             })
     }
 
-    fun defineMainAccount(puuidAndRegion: PuuidAndRegion) =
-        LiveDataReactiveStreams.fromPublisher(
-            summonerRepository.getByPuuidAndRegion(puuidAndRegion).flatMapObservable { summonerModel ->
-                repository.addMyAccountNotify(summonerModel, true)
-            }.toFlowable(BackpressureStrategy.LATEST)
-        )
+    fun defineMainAccount(puuidAndRegion: PuuidAndRegion) = summonerRepository.getByPuuidAndRegion(puuidAndRegion).flatMapObservable { summonerModel ->
+        repository.addMyAccountNotify(summonerModel, true)
+    }.toLiveData()
 
     override fun onCleared() {
         disposer.clear()

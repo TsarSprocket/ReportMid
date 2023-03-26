@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.viewmodel
 import androidx.lifecycle.*
 import com.tsarsprocket.reportmid.model.*
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -10,7 +11,7 @@ import javax.inject.Inject
 
 const val TOP_MASTERIES_NUM = 5
 
-class AddSummonerViewModel @Inject constructor(private val repository: Repository ) : ViewModel() {
+class AddSummonerViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     val allRegions = Repository.allRegions
     val regionTitles
@@ -18,30 +19,29 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
 
     val selectedRegionPosition = MutableLiveData<Int>()
 
-    val activeSummonerName = MutableLiveData( "" )
+    val activeSummonerName = MutableLiveData("")
 
     val activeSummonerModel = MutableLiveData<SummonerModel>()
 
-    val selectedRegionName = selectedRegionPosition.map { pos -> if (pos>=0) allRegions[pos].title else "<not selected>" }
+    val selectedRegionName = selectedRegionPosition.map { pos -> if (pos >= 0) allRegions[pos].title else "<not selected>" }
 
     //  Methods  //////////////////////////////////////////////////////////////
 
-    fun checkSummoner() =
-        LiveDataReactiveStreams.fromPublisher(
-            repository.findSummonerForName( activeSummonerName.value?: "",
-                    allRegions[ selectedRegionPosition.value!! ], failOnNotFound = true )
-                .observeOn( AndroidSchedulers.mainThread() )
-                .map { summonerModel ->
-                    Maybe.just( summonerModel )
-                }.onErrorReturn {
-                    Maybe.empty()
-                }
-                .toFlowable( BackpressureStrategy.LATEST )
-        ).map {
-            if( !it.isEmpty.blockingGet() ) activeSummonerModel.value = it.blockingGet()
+    fun checkSummoner() = repository.findSummonerForName(
+        activeSummonerName.value ?: "",
+        allRegions[selectedRegionPosition.value!!], failOnNotFound = true
+    )
+        .observeOn(AndroidSchedulers.mainThread())
+        .map { summonerModel ->
+            Maybe.just(summonerModel)
+        }.onErrorReturn {
+            Maybe.empty()
+        }
+        .toLiveData()
+        .map {
+            if (!it.isEmpty.blockingGet()) activeSummonerModel.value = it.blockingGet()
             it
         }
 
-    fun isSummonerInUseLive(sum: SummonerModel): LiveData<Boolean> =
-        LiveDataReactiveStreams.fromPublisher(repository.checkSummonerExistInDB(sum).toFlowable(BackpressureStrategy.LATEST))
+    fun isSummonerInUseLive(sum: SummonerModel): LiveData<Boolean> = repository.checkSummonerExistInDB(sum).toLiveData()
 }

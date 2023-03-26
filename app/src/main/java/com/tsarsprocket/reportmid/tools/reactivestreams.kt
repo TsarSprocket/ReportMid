@@ -5,8 +5,7 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 
-fun <T> Observable<T>.toLiveData(): LiveData<T> =
-    LiveDataReactiveStreams.fromPublisher(this.toFlowable(BackpressureStrategy.BUFFER))
+fun <T> Observable<T>.toLiveData(): LiveData<T> = this.toFlowable(BackpressureStrategy.BUFFER).toLiveData()
 
 fun <T> LiveData<T>.toObservable(): Observable<T> = Observable.create { emitter -> this.observeForever { item -> item?.let { emitter.onNext(it) } } }
 

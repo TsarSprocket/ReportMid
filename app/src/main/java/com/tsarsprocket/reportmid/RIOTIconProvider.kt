@@ -71,11 +71,11 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
 
     private fun<T> getVersionedDrawableInThreeStages(id: T, cache: MutableMap<T,Drawable>, assetPath: String, webPath: String, resId: Int): Single<Drawable> = Single.fromCallable {
         try {
-            context.assets.open(assetPath).use { stream -> Drawable.createFromStream(stream, null) }
+            context.assets.open(assetPath).use { stream -> Drawable.createFromStream(stream, null) }!!
         } catch (ex: Exception) {
             try {
                 URL(STR_URL_IMAGE_BASE.format(currentVersion.blockingGet(), webPath)).openStream().use { stream ->
-                    cache[id] ?: Drawable.createFromStream(stream, null)
+                    cache[id] ?: Drawable.createFromStream(stream, null)!!
                         .also { cache[id] = it }
                 }
             } catch (ex: Exception) {
@@ -86,11 +86,11 @@ class RIOTIconProvider @Inject constructor(val context: Context) {
 
     private fun<T> getUnversionedDrawableInThreeStages(id: T, cache: MutableMap<T,Drawable>, assetPath: String, webPath: String, resId: Int): Single<Drawable> = Single.fromCallable {
         try {
-            context.assets.open(assetPath).use { stream -> Drawable.createFromStream(stream, null) }
+            context.assets.open(assetPath).use { stream -> Drawable.createFromStream(stream, null) }!!
         } catch (ex: Exception) {
             try {
                 URL(STR_URL_IMAGE_BASE.format(webPath)).openStream().use { stream ->
-                    cache[id] ?: Drawable.createFromStream(stream, null)
+                    cache[id] ?: Drawable.createFromStream(stream, null)!!
                         .also { cache[id] = it }
                 }
             } catch (ex: Exception) {

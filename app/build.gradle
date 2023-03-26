@@ -3,14 +3,18 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+project.ext {
+    viewmodel_version = "2.6.1"
+}
+
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
 
     defaultConfig {
         applicationId "com.tsarsprocket.reportmid"
         minSdkVersion 14
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -47,10 +51,11 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    namespace 'com.tsarsprocket.reportmid'
 }
 
 repositories {
-    mavenCentral() // for Orianna API`
+    mavenCentral() // for Orianna API
 }
 
 dependencies {
@@ -61,6 +66,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"
     implementation project(path: ':resourcelib')
@@ -70,19 +77,19 @@ dependencies {
 
     // AndroidX
     implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.activity:activity-ktx:1.3.1'
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation "androidx.drawerlayout:drawerlayout:1.1.1"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.activity:activity-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.drawerlayout:drawerlayout:1.2.0"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
-    implementation 'androidx.preference:preference-ktx:1.1.1'
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_version"
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
@@ -103,10 +110,10 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
 
     // Material
-    implementation "com.google.android.material:material:1.4.0"
+    implementation "com.google.android.material:material:1.8.0"
 
     // GSON
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.9.0'
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"

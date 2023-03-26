@@ -17,7 +17,7 @@ class ConfirmSummonerViewModel @Inject constructor(
 
     val puuidSubj = ReplaySubject.create<PuuidAndRegion>( 1 )
     val summoner = puuidSubj.switchMapSingle { puuidAndRegion -> summonerRepository.getByPuuidAndRegion( puuidAndRegion ) }.toLiveData()
-    val bitmap = summoner.switchMap { sum -> LiveDataReactiveStreams.fromPublisher( sum.icon.toFlowable() ) }
+    val bitmap = summoner.switchMap { sum -> sum.icon.toObservable().toLiveData() }
     val name = summoner.map { sum -> sum.name }
     val level = summoner.map { sum -> sum.level.toString() }
     val confirm = MutableLiveData<Boolean>()

@@ -2,8 +2,8 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.model.*
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
@@ -42,7 +42,7 @@ class MatchupViewModel @Inject constructor(
 
     val currentMatchLive = MutableLiveData<CurrentMatchModel>()
 
-    val gameTypeTextLive = Transformations.map( currentMatchLive ) { match -> repository.context.getString(match.gameType.titleResId) }
+    val gameTypeTextLive = currentMatchLive.map { match -> repository.context.getString(match.gameType.titleResId) }
     val durationTextLive = MutableLiveData<String>( STR_NO_DURATION )
 
     val blueTeamParticipants = MutableLiveData<List<PlayerPresentation>>()
