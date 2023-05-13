@@ -3,20 +3,18 @@ package com.tsarsprocket.reportmid.riotapi
 import android.content.Context
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOT_APY_KEY_HEADER
+import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.model.RegionModel
-import com.tsarsprocket.reportmid.model.ServerModel
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStreamReader
-import java.util.*
+import java.util.Collections
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.collections.HashMap
 
-@Singleton
+@AppScope
 class RetrofitServiceProvider @Inject constructor(val context: Context) {
     private val okClient = OkHttpClient.Builder()
         .addInterceptor(RequestRatePolicy(20, 1, TimeUnit.SECONDS))

@@ -8,17 +8,16 @@ import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
 import com.tsarsprocket.reportmid.summoner.di.SummonerModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
-import javax.inject.Singleton
 
-@Singleton
+@AppScope
 @Component(
     modules = [
+        ViewModelFactoryModule::class,
         AndroidInjectionModule::class,
         ReportMidAppModule::class,
         LandingActivityModule::class,
         MainActivityModule::class,
         MainActivityViewModelModule::class,
-        ViewModelFactoryBinder::class,
         DrawerViewModelModule::class,
         LandingViewModelModule::class,
         AddSummonerViewModelModule::class,

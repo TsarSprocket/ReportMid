@@ -2,8 +2,8 @@
 
 buildscript {
 
-    ext.gradle_version = '7.4.2'
-    ext.kotlin_version = '1.8.10'
+    ext.gradle_version = '8.0.1'
+    ext.kotlin_version = '1.8.20'
     ext.nav_version = '2.5.3'
 
     repositories {
@@ -33,11 +33,4 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-project.ext{
-    dagger_version = '2.45'
-    multidex_version = '2.0.1'
-    room_version = '2.5.1'
-    retrofit_version = '2.9.0'
-    paging_version = '3.2.0-alpha04'
-    kotlin_coroutines_version = '1.5.2'
-}
+apply from: 'versions.gradle'

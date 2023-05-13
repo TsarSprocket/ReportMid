@@ -5,7 +5,7 @@ android {
     compileSdkVersion 33
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -18,15 +18,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_18
+        targetCompatibility JavaVersion.VERSION_18
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_18.toString()
+    }
     namespace 'com.tsarsprocket.resourcelib'
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-//    implementation 'androidx.core:core-ktx:1.9.0'
-//    implementation 'androidx.appcompat:appcompat:1.6.1'
-//    testImplementation 'junit:junit:4.13.2'
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+//    implementation "androidx.core:core-ktx:$androidx_core_version"
+//    implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
+//    testImplementation "junit:junit:$junit_version"
+//    androidTestImplementation "androidx.test.ext:junit:$androidx_junit_version"
+//    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
 }

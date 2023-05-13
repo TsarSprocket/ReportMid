@@ -11,7 +11,6 @@ import dagger.Provides
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Singleton
 
 @Module
 class ReportMidAppModule( val context: Context ) {
@@ -32,7 +31,7 @@ class ReportMidAppModule( val context: Context ) {
     fun provideComputationScheduler(): Scheduler = Schedulers.computation()
 
     @Provides
-    @Singleton
+    @AppScope
     fun provideMainStorage(): MainStorage {
         return Room.databaseBuilder(context.applicationContext, MainStorage::class.java, "database")
             .createFromAsset("database/init.db")

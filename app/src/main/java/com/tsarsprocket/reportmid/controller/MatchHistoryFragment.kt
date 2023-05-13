@@ -20,6 +20,7 @@ import com.tsarsprocket.reportmid.ARG_PUUID_AND_REG
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMatchHistoryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.model.MatchHistoryModel
@@ -32,7 +33,7 @@ import javax.inject.Inject
 class MatchHistoryFragment : BaseFragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
     private val viewModel by viewModels<MatchHistoryViewModel> { viewModelFactory }
 
     private lateinit var binding: FragmentMatchHistoryBinding

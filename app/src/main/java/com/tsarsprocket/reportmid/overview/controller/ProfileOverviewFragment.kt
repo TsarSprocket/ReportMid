@@ -15,6 +15,7 @@ import com.tsarsprocket.reportmid.ARG_PUUID_AND_REG
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.ChampionMasteryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentProfileOverviewBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
@@ -30,7 +31,7 @@ import javax.inject.Inject
 class ProfileOverviewFragment : BaseFragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by viewModels<ProfileOverviewViewModel> { viewModelFactory }
 

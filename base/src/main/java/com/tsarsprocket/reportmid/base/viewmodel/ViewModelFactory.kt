@@ -1,15 +1,12 @@
-package com.tsarsprocket.reportmid.viewmodel
+package com.tsarsprocket.reportmid.base.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.lang.Exception
 import java.lang.RuntimeException
-import javax.inject.Inject
 import javax.inject.Provider
-import javax.inject.Singleton
 
-@Singleton
-class ViewModelFactory @Inject constructor(
+class ViewModelFactory constructor(
     private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
 
@@ -21,7 +18,7 @@ class ViewModelFactory @Inject constructor(
             for( (key,value) in creators ) {
                 if( modelClass.isAssignableFrom( key ) ) {
                     creator = value
-                    break;
+                    break
                 }
             }
         }

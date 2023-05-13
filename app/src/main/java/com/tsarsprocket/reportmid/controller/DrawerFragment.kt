@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMyFriendLineBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMySummonerLineBinding
@@ -29,7 +30,7 @@ import javax.inject.Inject
 class DrawerFragment : BaseFragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by viewModels<DrawerViewModel> { viewModelFactory }
 

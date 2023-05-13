@@ -1,14 +1,13 @@
 package com.tsarsprocket.reportmid.request_manager.model
 
+import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
 import io.reactivex.Scheduler
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@AppScope
 class RequestManagerImpl @Inject constructor(
      @IoScheduler override val ioScheduler: Scheduler,
 ) : RequestManager {

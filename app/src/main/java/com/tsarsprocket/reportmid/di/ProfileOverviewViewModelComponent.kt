@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.overview.viewmodel.ProfileOverviewViewModel
-import com.tsarsprocket.reportmid.viewmodel.ViewModelKey
+import com.tsarsprocket.reportmid.base.di.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
@@ -11,7 +11,7 @@ import dagger.multibindings.IntoMap
 @ViewModelScope
 @Subcomponent
 interface ProfileOverviewViewModelComponent {
-    fun inject( profileOverviewViewModel: ProfileOverviewViewModel)
+    fun inject(profileOverviewViewModel: ProfileOverviewViewModel)
 
     @Subcomponent.Factory
     interface Factory {
@@ -19,11 +19,11 @@ interface ProfileOverviewViewModelComponent {
     }
 }
 
-@Module( subcomponents = [ ProfileOverviewViewModelComponent::class ] )
+@Module(subcomponents = [ProfileOverviewViewModelComponent::class])
 abstract class ProfileOverviewViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey( ProfileOverviewViewModel::class )
-    abstract fun bindViewModel( profileOverviewViewModel: ProfileOverviewViewModel): ViewModel
+    @ViewModelKey(ProfileOverviewViewModel::class)
+    abstract fun bindViewModel(profileOverviewViewModel: ProfileOverviewViewModel): ViewModel
 }

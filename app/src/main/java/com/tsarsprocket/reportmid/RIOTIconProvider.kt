@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
+import com.tsarsprocket.reportmid.di.AppScope
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray
@@ -10,8 +11,6 @@ import java.io.InputStreamReader
 import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.Exception
 
 const val STR_ITEM_ICON_ASSET_PATH = "img/item/%s"
 const val STR_PROFILE_ICON_ASSET_PATH = "img/profileicon/%d.png"
@@ -29,7 +28,7 @@ const val STR_PATH_ITEM_ICONS = "item/%s" // item image name
 const val STR_PATH_SUMMONER_SPELL_ICONS = "spell/%s" // summoner spell key
 const val STR_PATH_RUNE_ICONS = "%s" // rune/rune path icon path
 
-@Singleton
+@AppScope
 class RIOTIconProvider @Inject constructor(val context: Context) {
 
     //  Properties  ///////////////////////////////////////////////////////////

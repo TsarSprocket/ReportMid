@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
-import com.tsarsprocket.reportmid.viewmodel.ViewModelKey
+import com.tsarsprocket.reportmid.base.di.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
@@ -12,7 +12,7 @@ import dagger.multibindings.IntoMap
 @Subcomponent
 interface MainActivityViewModelComponent {
 
-    fun inject( mainActivityViewModel: MainActivityViewModel )
+    fun inject(mainActivityViewModel: MainActivityViewModel)
 
     @Subcomponent.Factory
     interface Factory {
@@ -20,11 +20,11 @@ interface MainActivityViewModelComponent {
     }
 }
 
-@Module( subcomponents = [ MainActivityViewModelComponent::class ] )
+@Module(subcomponents = [MainActivityViewModelComponent::class])
 abstract class MainActivityViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey( MainActivityViewModel::class )
-    abstract fun bindViewModel( mainActivityViewModel: MainActivityViewModel ): ViewModel
+    @ViewModelKey(MainActivityViewModel::class)
+    abstract fun bindViewModel(mainActivityViewModel: MainActivityViewModel): ViewModel
 }

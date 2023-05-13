@@ -1,3 +1,6 @@
 include ':resourcelib'
 rootProject.name='Report Mid'
 include ':app'
+include ':landing'
+include ':base'
+include ':utils'

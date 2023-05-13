@@ -1,0 +1,16 @@
+project.ext {
+    androidx_appcompat_version = '1.6.1'
+    androidx_core_version = '1.10.0'
+    androidx_junit_version = '1.1.5'
+    composeCompilerVersion = '1.4.6'
+    dagger_version = '2.45'
+    espresso_version = '3.5.1'
+    junit_version = '4.13.2'
+    kotlin_coroutines_version = '1.6.4'
+    material_design_version = '1.8.0'
+    multidex_version = '2.0.1'
+    paging_version = '3.2.0-alpha04'
+    retrofit_version = '2.9.0'
+    room_version = '2.5.1'
+    viewmodel_version = '2.6.1'
+}

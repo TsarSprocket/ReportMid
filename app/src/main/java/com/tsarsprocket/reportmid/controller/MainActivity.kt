@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import com.tsarsprocket.reportmid.BaseActivity
 import com.tsarsprocket.reportmid.MENU_ITEM_NONE
 import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.ActivityMainBinding
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import javax.inject.Inject
@@ -19,7 +20,7 @@ import javax.inject.Inject
 class MainActivity : BaseActivity() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by viewModels<MainActivityViewModel> { viewModelFactory }
 

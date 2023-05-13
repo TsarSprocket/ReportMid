@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentManageFriendsBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
@@ -35,7 +36,7 @@ const val VAR_SELECTED_SUMMONER_PUUID_AND_REGION = "VAR_SELECTED_SUMMONER_PUUID_
 class ManageFriendsFragment : BaseFragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by viewModels<ManageFriendsViewModel> { viewModelFactory }
 

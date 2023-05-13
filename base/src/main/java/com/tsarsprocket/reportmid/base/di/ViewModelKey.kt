@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.viewmodel
+package com.tsarsprocket.reportmid.base.di
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

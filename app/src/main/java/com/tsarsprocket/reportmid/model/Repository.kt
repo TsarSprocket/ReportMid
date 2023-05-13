@@ -5,17 +5,22 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
-import com.merakianalytics.orianna.types.common.*
+import com.merakianalytics.orianna.types.common.Division
+import com.merakianalytics.orianna.types.common.GameMode
+import com.merakianalytics.orianna.types.common.GameType
+import com.merakianalytics.orianna.types.common.Queue
+import com.merakianalytics.orianna.types.common.Region
+import com.merakianalytics.orianna.types.common.Tier
 import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
+import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
@@ -23,6 +28,7 @@ import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -32,11 +38,10 @@ import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import javax.inject.Singleton
 
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
-@Singleton
+@AppScope
 class Repository @Inject constructor(
     val context: Context,
     val iconProvider: RIOTIconProvider,

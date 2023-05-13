@@ -1,7 +1,6 @@
 package com.tsarsprocket.reportmid.summoner.model
 
-import com.tsarsprocket.reportmid.summoner.di.ChampionMasteryModelFactory
-import com.tsarsprocket.reportmid.summoner.di.SummonerModelFactory
+import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.RegionModel
@@ -15,14 +14,15 @@ import com.tsarsprocket.reportmid.riotapi.championMastery.ChampionMasteryV4
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerDto
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerV4Service
 import com.tsarsprocket.reportmid.room.MainStorage
+import com.tsarsprocket.reportmid.summoner.di.ChampionMasteryModelFactory
+import com.tsarsprocket.reportmid.summoner.di.SummonerModelFactory
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@AppScope
 class SummonerRepositoryImpl @Inject constructor(
     private val championMasteryModelFactory: ChampionMasteryModelFactory,
     private val summonerModelFactory: SummonerModelFactory,

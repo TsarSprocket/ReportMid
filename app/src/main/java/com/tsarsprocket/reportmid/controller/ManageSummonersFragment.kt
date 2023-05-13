@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.model.PuuidAndRegion
@@ -31,7 +32,7 @@ import javax.inject.Inject
 class ManageSummonersFragment : BaseFragment() {
 
     @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
 
     private val viewModel by viewModels<ManageSummonersViewModel> { viewModelFactory }
     private val activityViewModel by activityViewModels<MainActivityViewModel> { viewModelFactory }

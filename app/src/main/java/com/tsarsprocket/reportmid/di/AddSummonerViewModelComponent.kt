@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel
-import com.tsarsprocket.reportmid.viewmodel.ViewModelKey
+import com.tsarsprocket.reportmid.base.di.ViewModelKey
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent
@@ -21,11 +21,11 @@ interface AddSummonerViewModelComponent {
     }
 }
 
-@Module( subcomponents = [ AddSummonerViewModelComponent::class ] )
+@Module(subcomponents = [AddSummonerViewModelComponent::class])
 abstract class AddSummonerViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey( AddSummonerViewModel::class )
-    abstract fun bindViewModel( viewModel: AddSummonerViewModel): ViewModel
+    @ViewModelKey(AddSummonerViewModel::class)
+    abstract fun bindViewModel(viewModel: AddSummonerViewModel): ViewModel
 }
