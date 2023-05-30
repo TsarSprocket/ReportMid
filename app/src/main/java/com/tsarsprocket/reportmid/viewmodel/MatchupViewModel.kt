@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.logError
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.*
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
@@ -57,7 +58,7 @@ class MatchupViewModel @Inject constructor(
         } )
     }
 
-    fun loadForSummoner( puuidAndRegion: PuuidAndRegion ) {
+    fun loadForSummoner( puuidAndRegion: PuuidAndRegion) {
         allDisposables.add( summonerRepository.getByPuuidAndRegion( puuidAndRegion )
             .toObservable()
             .switchMap{ summoner.value = it; it.getCurrentMatch() }

@@ -2,11 +2,10 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import android.view.View
 import androidx.lifecycle.*
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.toLiveData
-import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.ReplaySubject
 import javax.inject.Inject
 
@@ -22,7 +21,7 @@ class ConfirmSummonerViewModel @Inject constructor(
     val level = summoner.map { sum -> sum.level.toString() }
     val confirm = MutableLiveData<Boolean>()
 
-    fun init( puuidAndRegion: PuuidAndRegion ) {
+    fun init( puuidAndRegion: PuuidAndRegion) {
         if( puuidSubj.value != puuidAndRegion ) puuidSubj.onNext( puuidAndRegion )
     }
 

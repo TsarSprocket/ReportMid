@@ -1,6 +1,8 @@
 package com.tsarsprocket.reportmid.model
 
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
 import com.tsarsprocket.reportmid.riotapi.matchV5.PerkStyleDto
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
@@ -12,7 +14,7 @@ import io.reactivex.Single
 class ParticipantModel @AssistedInject constructor(
     @Assisted val team: TeamModel,
     @Assisted participantDto: ParticipantDto,
-    @Assisted val region: RegionModel,
+    @Assisted val region: Region,
     private val dataDragon: DataDragonImpl,
     val repository: Repository,
     summonerRepository: SummonerRepository,

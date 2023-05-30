@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel

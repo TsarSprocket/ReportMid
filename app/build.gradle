@@ -71,8 +71,9 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
     implementation project(path: ':resourcelib')
-    implementation project(path: ':base')
     implementation project(path: ':landing')
+    implementation project(path: ':lol')
+    implementation project(path: ':base')
 
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"

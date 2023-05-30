@@ -1,13 +1,13 @@
-package com.tsarsprocket.reportmid.model
+package com.tsarsprocket.reportmid.lol.model
 
-import com.tsarsprocket.reportmid.model.ServerModel.*
-import com.tsarsprocket.reportmid.model.SuperServerModel.*
+import com.tsarsprocket.reportmid.lol.model.Server.*
+import com.tsarsprocket.reportmid.lol.model.SuperServer.*
 
-enum class RegionModel(
+enum class Region(
     val tag: String,
     val title: String,
-    val server: ServerModel,
-    val superServer: SuperServerModel,
+    val server: Server,
+    val superServer: SuperServer,
 ) {
     BRAZIL(com.merakianalytics.orianna.types.common.Region.BRAZIL.tag, "Brazil", BR1, AMERICAS),
     EUROPE_NORTH_EAST(com.merakianalytics.orianna.types.common.Region.EUROPE_NORTH_EAST.tag, "Europe North East", EUN1, EUROPE),

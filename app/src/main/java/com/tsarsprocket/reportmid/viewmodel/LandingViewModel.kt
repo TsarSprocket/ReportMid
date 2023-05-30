@@ -2,11 +2,10 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.toLiveData
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

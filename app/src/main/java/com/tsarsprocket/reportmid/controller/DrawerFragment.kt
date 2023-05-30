@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
@@ -20,7 +19,7 @@ import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMyFriendLineBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMySummonerLineBinding
-import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
@@ -123,15 +122,15 @@ class DrawerFragment : BaseFragment() {
         }
     }
 
-    inner class RegionAdapter(private val regionsLive: LiveData<List<RegionModel>>): BaseAdapter() {
+    inner class RegionAdapter(private val regionsLive: LiveData<List<Region>>): BaseAdapter() {
 
-        private var list: List<RegionModel> = listOf()
+        private var list: List<Region> = listOf()
 
         init {
             regionsLive.observe( viewLifecycleOwner ) { setItems(it) }
         }
 
-        fun setItems(newList: List<RegionModel>) {
+        fun setItems(newList: List<Region>) {
             list = newList
             notifyDataSetChanged()
         }

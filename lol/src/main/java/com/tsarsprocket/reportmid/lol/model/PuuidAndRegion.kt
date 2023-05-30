@@ -1,13 +1,13 @@
-package com.tsarsprocket.reportmid.model
+package com.tsarsprocket.reportmid.lol.model
 
 import android.os.Parcel
 import android.os.Parcelable
 
-data class PuuidAndRegion(val puuid: String, val region: RegionModel): Parcelable{
+data class PuuidAndRegion(val puuid: String, val region: Region): Parcelable{
 
-    constructor(puuid: String, regionTag: String): this(puuid,RegionModel.getByTag(regionTag))
+    constructor(puuid: String, regionTag: String): this(puuid, Region.getByTag(regionTag))
 
-    constructor(parcel: Parcel) : this(parcel.readString()!!,RegionModel.getByTag(parcel.readString()!!))
+    constructor(parcel: Parcel) : this(parcel.readString()!!, Region.getByTag(parcel.readString()!!))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(puuid)
@@ -27,6 +27,6 @@ data class PuuidAndRegion(val puuid: String, val region: RegionModel): Parcelabl
             return arrayOfNulls(size)
         }
 
-        val NONE = PuuidAndRegion("", RegionModel.RUSSIA)
+        val NONE = PuuidAndRegion("", Region.RUSSIA)
     }
 }

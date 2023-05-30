@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.*
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerDto
@@ -15,7 +17,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class SummonerModel @AssistedInject constructor(
-    @Assisted val region: RegionModel,
+    @Assisted val region: Region,
     @Assisted summonerDto: SummonerDto,
     @Assisted val masteries: Single<List<ChampionMasteryModel>>,
     private val repository: Repository,

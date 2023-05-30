@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.*
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository

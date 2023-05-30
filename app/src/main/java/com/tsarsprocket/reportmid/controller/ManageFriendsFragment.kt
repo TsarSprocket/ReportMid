@@ -15,14 +15,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentManageFriendsBinding
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.tools.*

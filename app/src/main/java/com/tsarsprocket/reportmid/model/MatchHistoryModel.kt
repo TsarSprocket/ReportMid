@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.model
 import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
 import com.tsarsprocket.reportmid.di.assisted.MatchModelFactory
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.riotapi.matchV5.MatchV5Service
 import dagger.assisted.Assisted
@@ -11,7 +12,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class MatchHistoryModel @AssistedInject constructor(
-    @Assisted val region: RegionModel,
+    @Assisted val region: Region,
     @Assisted val summoner: SummonerModel,
     val repository: Repository,
     private val matchModelFactory: MatchModelFactory,

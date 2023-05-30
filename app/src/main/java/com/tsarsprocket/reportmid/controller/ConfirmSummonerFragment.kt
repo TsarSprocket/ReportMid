@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentConfirmSummonerBinding
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.setNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
 import java.lang.IllegalArgumentException

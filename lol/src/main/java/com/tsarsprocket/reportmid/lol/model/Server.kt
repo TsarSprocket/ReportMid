@@ -1,6 +1,6 @@
-package com.tsarsprocket.reportmid.model
+package com.tsarsprocket.reportmid.lol.model
 
-enum class ServerModel(val value: String) {
+enum class Server(val value: String) {
     BR1("br1"),
     EUN1("eun1"),
     EUW1("euw1"),

@@ -10,7 +10,6 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +18,7 @@ import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardPlayerPreviewBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation

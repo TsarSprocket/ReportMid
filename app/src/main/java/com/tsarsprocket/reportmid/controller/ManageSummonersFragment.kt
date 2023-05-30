@@ -9,7 +9,6 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +18,7 @@ import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
@@ -104,7 +103,7 @@ class ManageSummonersFragment : BaseFragment() {
 
     private fun doAddSummoner() {
         object : OneTimeObserver<PuuidAndRegion>() {
-            override fun onOneTimeChanged(v:PuuidAndRegion) {
+            override fun onOneTimeChanged(v: PuuidAndRegion) {
                 removeNavigationReturnedValue<PuuidAndRegion>(RESULT_PUUID_AND_REG)
                 viewModel.addMySummoner(v)
             }

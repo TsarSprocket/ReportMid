@@ -10,7 +10,6 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagingDataAdapter
@@ -24,7 +23,7 @@ import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMatchHistoryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.model.MatchHistoryModel
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

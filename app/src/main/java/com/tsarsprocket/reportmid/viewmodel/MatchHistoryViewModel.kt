@@ -7,7 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.rxjava2.cachedIn
 import androidx.paging.rxjava2.flowable
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
@@ -25,7 +25,7 @@ class MatchHistoryViewModel @Inject constructor(
 
     val allDisposables = CompositeDisposable()
 
-    fun initialize( puuidAndRegion: PuuidAndRegion ) {
+    fun initialize( puuidAndRegion: PuuidAndRegion) {
         allDisposables.add( summonerRepository.getByPuuidAndRegion( puuidAndRegion ).toObservable().subscribe { activeSummonerModel.postValue( it ) } )
     }
 

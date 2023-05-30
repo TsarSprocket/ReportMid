@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.LinearLayout
 import androidx.lifecycle.*
-import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
@@ -32,7 +32,7 @@ class DrawerViewModel @Inject constructor(
 
     private val selectedRegionPositionObservable: Observable<Int> = selectedRegionPositionLive.toObservable()
 
-    private val currentRegionsObservable: Observable<List<RegionModel>> = repository.getMyRegions().map { lst -> lst.sortedBy { it.title } }
+    private val currentRegionsObservable: Observable<List<Region>> = repository.getMyRegions().map { lst -> lst.sortedBy { it.title } }
 
     private val mySummonersInSelectedRegionObservable: Observable<List<Triple<Drawable, SummonerModel,Boolean>>> =
         Observable.combineLatest( selectedRegionPositionObservable, currentRegionsObservable ) { pos, lst -> lst[pos] }
@@ -54,7 +54,7 @@ class DrawerViewModel @Inject constructor(
 
     //  LiveData Output  //////////////////////////////////////////////////////
 
-    val currentRegionsLive: LiveData<List<RegionModel>> = currentRegionsObservable.toLiveData()
+    val currentRegionsLive: LiveData<List<Region>> = currentRegionsObservable.toLiveData()
     val mySummonersInSelectedRegionLive: LiveData<List<Triple<Drawable, SummonerModel,Boolean>>> = mySummonersInSelectedRegionObservable.toLiveData()
     val currentAccountLive: LiveData<List<MyAccountModel>> = currentAccountObservable.toLiveData()
     val myFriendsLive: LiveData<List<MyFriendData>> = myFriendsRx.toLiveData()
@@ -71,8 +71,8 @@ class DrawerViewModel @Inject constructor(
             repository.getSelectedAccountRegion()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { selReg ->
-                    object : OneTimeObserver<List<RegionModel>>(){
-                        override fun onOneTimeChanged(lstRegs: List<RegionModel>) {
+                    object : OneTimeObserver<List<Region>>(){
+                        override fun onOneTimeChanged(lstRegs: List<Region>) {
                             selectedRegionPositionLive.value = lstRegs.indexOf(selReg)
                         }
                     }.observeForeverOn(currentRegionsLive)

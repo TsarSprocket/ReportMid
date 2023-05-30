@@ -2,8 +2,8 @@ package com.tsarsprocket.reportmid.summoner.model
 
 import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.request_manager.model.Request
 import com.tsarsprocket.reportmid.request_manager.model.RequestKey
 import com.tsarsprocket.reportmid.request_manager.model.RequestManager
@@ -37,7 +37,7 @@ class SummonerRepositoryImpl @Inject constructor(
     private val summonerCacheBySummonerId = ConcurrentHashMap<SummonerIdKey, SummonerModel>()
     private val summonerCacheBySummonerName = ConcurrentHashMap<SummonerNameKey, SummonerModel>()
 
-    override fun getByAccountId(accountId: String, region: RegionModel): Single<SummonerModel> {
+    override fun getByAccountId(accountId: String, region: Region): Single<SummonerModel> {
         val key = AccountIdKey( accountId, region )
         return summonerCacheByAccountId[ key ]?.let { summonerModel -> Single.just( summonerModel ) } ?:
             fetchSummonerByAccountId( key )
@@ -50,7 +50,7 @@ class SummonerRepositoryImpl @Inject constructor(
                 }
     }
 
-    override fun getByPuuidAndRegion( puuidAndRegion: PuuidAndRegion ): Single<SummonerModel> {
+    override fun getByPuuidAndRegion( puuidAndRegion: PuuidAndRegion): Single<SummonerModel> {
         return summonerCacheByPuuid[ puuidAndRegion ]?.let { summonerModel -> Single.just( summonerModel ) } ?:
             fetchSummonerByPuuid( puuidAndRegion )
                 .subscribeOn( ioScheduler )
@@ -62,7 +62,7 @@ class SummonerRepositoryImpl @Inject constructor(
                 }
     }
 
-    override fun getBySummonerId(summonerId: String, region: RegionModel): Single<SummonerModel> {
+    override fun getBySummonerId(summonerId: String, region: Region): Single<SummonerModel> {
         val key = SummonerIdKey( summonerId, region )
         return summonerCacheBySummonerId[ key ]?.let { summonerModel -> Single.just( summonerModel ) } ?:
             fetchSummonerBySummonerId( key )
@@ -75,7 +75,7 @@ class SummonerRepositoryImpl @Inject constructor(
                 }
     }
 
-    override fun getBySummonerName(summonerName: String, region: RegionModel): Single<SummonerModel> {
+    override fun getBySummonerName(summonerName: String, region: Region): Single<SummonerModel> {
         val key = SummonerNameKey( summonerName, region )
         return summonerCacheBySummonerName[ key ]?.let { summonerModel -> Single.just( summonerModel ) } ?:
             fetchSummonerBySummonerName( key )
@@ -94,12 +94,12 @@ class SummonerRepositoryImpl @Inject constructor(
                 Observable.combineLatest(
                 lst.map { sumEnt ->
                     val reg = database.regionDAO().getById(sumEnt.regionId)
-                    getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid, RegionModel.getByTag(reg.tag))).toObservable()
+                    getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid, Region.getByTag(reg.tag))).toObservable()
                 }, fun(arr: Array<Any>): List<SummonerModel> = arr.asList().map { it as SummonerModel } )
             }
     }
 
-    override fun getMineForRegionSelected(reg: RegionModel): Observable<List<Pair<SummonerModel,Boolean>>> {
+    override fun getMineForRegionSelected(reg: Region): Observable<List<Pair<SummonerModel,Boolean>>> {
         return database.regionDAO().getByTagObservable(reg.tag)
             .switchMap { regEnt ->
                 database.currentAccountDAO().getByRegionIdObservable(regEnt.id)
@@ -113,7 +113,7 @@ class SummonerRepositoryImpl @Inject constructor(
                     .map { sumEntities -> sumEntities.map { sumEnt -> Pair(sumEnt, sumEnt.id == myCurAccEnt.summonerId) } }
                     .map { lst ->
                         lst.map { (sumEnt, isSelected) ->
-                            getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,RegionModel.getByTag(regEnt.tag)))
+                            getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid, Region.getByTag(regEnt.tag)))
                                 .map { sum -> Pair(sum, isSelected) }.blockingGet()
                         }
                     }
@@ -148,7 +148,7 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private data class AccountIdKey(
         val accountId: String,
-        val region: RegionModel,
+        val region: Region,
     ): RequestKey
 
     private data class PuuidKey(
@@ -157,12 +157,12 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private data class SummonerNameKey(
         val summonerName: String,
-        val region: RegionModel,
+        val region: Region,
     ) : RequestKey
 
     private data class SummonerIdKey(
         val summonerId: String,
-        val region: RegionModel,
+        val region: Region,
     ) : RequestKey
 
     private inner class ChampionMasteriesBySummonerId( key: SummonerIdKey ) :

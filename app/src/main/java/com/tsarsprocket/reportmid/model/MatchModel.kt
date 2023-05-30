@@ -4,6 +4,7 @@ import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.di.assisted.TeamModelFactory
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.riotapi.matchV5.MatchDto
 import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
 import dagger.assisted.Assisted
@@ -12,7 +13,7 @@ import java.lang.IllegalArgumentException
 
 class MatchModel @AssistedInject constructor(
     @Assisted matchDto: MatchDto,
-    @Assisted region: RegionModel,
+    @Assisted region: Region,
     private val teamModelFactory: TeamModelFactory,
 ) {
     val id = matchDto.metadata.matchId

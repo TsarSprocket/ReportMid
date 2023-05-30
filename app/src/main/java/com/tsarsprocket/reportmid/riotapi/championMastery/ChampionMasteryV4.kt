@@ -1,6 +1,5 @@
 package com.tsarsprocket.reportmid.riotapi.championMastery
 
-import com.tsarsprocket.reportmid.model.RegionModel
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

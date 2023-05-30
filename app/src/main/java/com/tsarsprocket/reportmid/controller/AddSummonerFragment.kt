@@ -7,14 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.*
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
-import com.tsarsprocket.reportmid.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.RegionModel
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.*
 import com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel
@@ -49,7 +48,7 @@ class AddSummonerFragment : BaseFragment() {
 
         val forceRegTag = arguments?.getString(ARG_REGION)
         if (forceRegTag != null) {
-            val reg = RegionModel.byTag[forceRegTag] ?: throw RuntimeException("Illegal region tag: $forceRegTag")
+            val reg = Region.byTag[forceRegTag] ?: throw RuntimeException("Illegal region tag: $forceRegTag")
             viewModel.selectedRegionPosition.value = viewModel.allRegions.indexOf(reg)
             binding.spRegion.visibility = View.GONE
             binding.txtRegion.visibility = View.VISIBLE

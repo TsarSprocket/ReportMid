@@ -19,6 +19,8 @@ import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
 import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
+import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
 import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
@@ -95,9 +97,9 @@ class Repository @Inject constructor(
             .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
             .map { database.regionDAO().getById(it.regionId) }
             .first()
-    }.map { RegionModel.getByTag(it.tag) }
+    }.map { Region.getByTag(it.tag) }
 
-    fun getMyRegions(): Observable<List<RegionModel>> = ensureInitializedDoOnIO { Unit }
+    fun getMyRegions(): Observable<List<com.tsarsprocket.reportmid.lol.model.Region>> = ensureInitializedDoOnIO { Unit }
         .switchMap { _ -> database.myAccountDAO().getAllObservable() }
         .map { lstMyAccs ->
             lstMyAccs.map { myAcc ->
@@ -105,13 +107,13 @@ class Repository @Inject constructor(
                 database.regionDAO().getById(sum.regionId)
             }
                 .distinct()
-                .map { regEnt -> RegionModel.byTag[regEnt.tag] ?: throw RuntimeException("Region not found for tag ${regEnt.tag}") }
+                .map { regEnt -> Region.byTag[regEnt.tag] ?: throw RuntimeException("Region not found for tag ${regEnt.tag}") }
         }
 
     private fun loadRawResourceAsText(resId: Int) = InputStreamReader(context.resources.openRawResource(resId)).readText()
 
     @WorkerThread
-    fun findSummonerForName( summonerName: String, regionModel: RegionModel, failOnNotFound: Boolean = false ): Observable<SummonerModel> {
+    fun findSummonerForName(summonerName: String, regionModel: com.tsarsprocket.reportmid.lol.model.Region, failOnNotFound: Boolean = false ): Observable<SummonerModel> {
 
         return initialized.observeOn( Schedulers.io() )
             .switchMapSingle { fInitialized ->
@@ -134,7 +136,7 @@ class Repository @Inject constructor(
                         val curSummonerId = database.myAccountDAO().getById(accId).summonerId
                         val sum = database.summonerDAO().getById(curSummonerId)
                         val regEnt =database.regionDAO().getById(sum.regionId)
-                        Observable.just(PuuidAndRegion(sum.puuid,RegionModel.getByTag(regEnt.tag)))
+                        Observable.just(PuuidAndRegion(sum.puuid, Region.getByTag(regEnt.tag)))
                     } else Observable.empty()
                 }
                 else -> throw RepositoryNotInitializedException()
@@ -146,7 +148,7 @@ class Repository @Inject constructor(
     fun getChampionById(id: Int): Single<ChampionModel> =
         ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
 
-    fun getMatchHistoryModel(region: RegionModel, summoner: SummonerModel): MatchHistoryModel = matchHistoryModelFactory.create( region, summoner )
+    fun getMatchHistoryModel(region: com.tsarsprocket.reportmid.lol.model.Region, summoner: SummonerModel): MatchHistoryModel = matchHistoryModelFactory.create( region, summoner )
 
     fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { currentMatchModelFactory.create( summoner ) }
 
@@ -177,7 +179,7 @@ class Repository @Inject constructor(
         summonerRepository.getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag))
     }.firstOrError()
 
-    fun getCurrentAccountsPerRegionObservable(reg: RegionModel): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
+    fun getCurrentAccountsPerRegionObservable(reg: com.tsarsprocket.reportmid.lol.model.Region): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
         .switchMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
         .map { list -> list.map { curAccEnt -> MyAccountModel(this,curAccEnt.accountId) } }
 
@@ -317,7 +319,7 @@ class Repository @Inject constructor(
     //  Static Methods  ///////////////////////////////////////////////////////
 
     companion object {
-        val allRegions = RegionModel.values()
+        val allRegions = Region.values()
 
         fun getGameType(gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null) =
             GameTypeModel.by(gameType, queue, gameMode, gameMap)
