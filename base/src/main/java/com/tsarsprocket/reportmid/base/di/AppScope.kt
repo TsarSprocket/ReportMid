@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.di
+package com.tsarsprocket.reportmid.base.di
 
 import javax.inject.Scope
 

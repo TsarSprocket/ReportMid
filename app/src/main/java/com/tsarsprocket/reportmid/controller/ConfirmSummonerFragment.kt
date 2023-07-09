@@ -8,13 +8,16 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.ARG_PUUID_AND_REG
+import com.tsarsprocket.reportmid.BaseFragment
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RESULT_CONFIRM
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentConfirmSummonerBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.setNavigationResult
 import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class ConfirmSummonerFragment : BaseFragment() {

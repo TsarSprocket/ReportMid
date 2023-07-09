@@ -15,7 +15,7 @@
         >
         <argument
             android:name="ARG_PUUID_AND_REG"
-            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
+            app:argType="com.tsarsprocket.reportmid.lol.model.PuuidAndRegion"
             />
         <action
             android:id="@+id/action_profileOverviewFragment_to_matchHistoryFragment"
@@ -40,7 +40,7 @@
         >
         <argument
             android:name="ARG_PUUID_AND_REG"
-            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
+            app:argType="com.tsarsprocket.reportmid.lol.model.PuuidAndRegion"
             />
         <action
             android:id="@+id/action_matchHistoryFragment_to_matchupFragment"
@@ -63,7 +63,7 @@
         >
         <argument
             android:name="ARG_PUUID_AND_REG"
-            app:argType="com.tsarsprocket.reportmid.model.PuuidAndRegion"
+            app:argType="com.tsarsprocket.reportmid.lol.model.PuuidAndRegion"
             />
         <argument
             android:name="ARG_RELOAD"

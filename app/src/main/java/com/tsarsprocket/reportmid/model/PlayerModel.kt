@@ -2,8 +2,8 @@ package com.tsarsprocket.reportmid.model
 
 import android.graphics.drawable.Drawable
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

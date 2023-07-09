@@ -3,15 +3,17 @@ package com.tsarsprocket.reportmid.model
 import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchTeamModelFactory
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.merakianalytics.orianna.types.common.Map as OriannaMap
-import com.merakianalytics.orianna.types.common.Queue as OriannaQueue
+import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.SpectatorV4Service
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.Team
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.util.*
+import java.util.Calendar
+import java.util.LinkedList
+import com.merakianalytics.orianna.types.common.Map as OriannaMap
+import com.merakianalytics.orianna.types.common.Queue as OriannaQueue
 
 class CurrentMatchModel @AssistedInject constructor(
     @Assisted summoner: SummonerModel,
@@ -25,7 +27,7 @@ class CurrentMatchModel @AssistedInject constructor(
     val gameType: GameTypeModel
 
     init {
-        val info = repository.retrofitServiceProvider.getService(summoner.region, SpectatorV4Service::class.java).spectatorV4(summoner.id).blockingFirst()
+        val info = repository.serviceFactory.getService<SpectatorV4Service>(summoner.region).spectatorV4(summoner.id).blockingFirst()
         val blue = LinkedList<CurrentGameParticipant>()
         val red = LinkedList<CurrentGameParticipant>()
         info.participants.forEach { (if (it.teamId == Team.Blue.teamId.toLong()) blue else red).add(it) }

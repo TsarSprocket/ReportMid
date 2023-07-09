@@ -1,5 +1,7 @@
 package com.tsarsprocket.reportmid.landing.usecase
 
-class LandingUseCaseImpl : LandingUseCase {
+import javax.inject.Inject
+
+class LandingUseCaseImpl @Inject constructor() : LandingUseCase {
 
 }

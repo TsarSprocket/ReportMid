@@ -1,11 +1,9 @@
 package com.tsarsprocket.reportmid.room.state
 
-import androidx.annotation.Nullable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.tsarsprocket.reportmid.room.RegionEntity
 
 @Entity(
     tableName = "state_global",

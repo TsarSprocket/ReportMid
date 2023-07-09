@@ -7,7 +7,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.internal.Preconditions
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 abstract class BasePreferenceFragment : PreferenceFragmentCompat(), HasAndroidInjector {

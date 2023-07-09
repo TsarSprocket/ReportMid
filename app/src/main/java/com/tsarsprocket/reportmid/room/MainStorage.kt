@@ -2,7 +2,20 @@ package com.tsarsprocket.reportmid.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.tsarsprocket.reportmid.room.ddragon.*
+import com.tsarsprocket.reportmid.room.ddragon.ChampionDao
+import com.tsarsprocket.reportmid.room.ddragon.ChampionEntity
+import com.tsarsprocket.reportmid.room.ddragon.ItemDao
+import com.tsarsprocket.reportmid.room.ddragon.ItemEntity
+import com.tsarsprocket.reportmid.room.ddragon.LanguageDao
+import com.tsarsprocket.reportmid.room.ddragon.LanguageEntity
+import com.tsarsprocket.reportmid.room.ddragon.RuneDao
+import com.tsarsprocket.reportmid.room.ddragon.RuneEntity
+import com.tsarsprocket.reportmid.room.ddragon.RunePathDao
+import com.tsarsprocket.reportmid.room.ddragon.RunePathEntity
+import com.tsarsprocket.reportmid.room.ddragon.SummonerSpellDao
+import com.tsarsprocket.reportmid.room.ddragon.SummonerSpellEntity
+import com.tsarsprocket.reportmid.room.ddragon.VersionDao
+import com.tsarsprocket.reportmid.room.ddragon.VersionEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountDAO
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import com.tsarsprocket.reportmid.room.state.GlobalDAO
@@ -24,7 +37,10 @@ import com.tsarsprocket.reportmid.room.state.GlobalEntity
         ChampionEntity::class,
         SummonerSpellEntity::class,
         ItemEntity::class,
-    ], version = 1 )
+    ],
+    version = 1,
+    exportSchema = false,
+)
 abstract class MainStorage: RoomDatabase() {
 
     abstract fun globalDAO(): GlobalDAO

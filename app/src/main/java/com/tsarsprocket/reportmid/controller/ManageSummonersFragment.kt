@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.BaseFragment
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding

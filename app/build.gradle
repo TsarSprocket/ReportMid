@@ -1,7 +1,9 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: "androidx.navigation.safeargs.kotlin"
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+}
 
 android {
     compileSdkVersion 33
@@ -17,6 +19,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+/*
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
@@ -25,6 +28,7 @@ android {
                         "room.expandProjection": "true"]
             }
         }
+*/
     }
 
     buildTypes {
@@ -63,17 +67,19 @@ repositories {
 dependencies {
 
     implementation "androidx.multidex:multidex:$multidex_version"
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation "com.android.support:multidex:$multidex_support_version"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
+    implementation project(path: ':app-api')
     implementation project(path: ':resourcelib')
     implementation project(path: ':landing')
     implementation project(path: ':lol')
     implementation project(path: ':base')
+    implementation project(path: ':lol-services-impl')
 
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"

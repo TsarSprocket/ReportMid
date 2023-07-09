@@ -4,8 +4,9 @@ import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
 import com.tsarsprocket.reportmid.di.assisted.MatchModelFactory
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
 import com.tsarsprocket.reportmid.riotapi.matchV5.MatchV5Service
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single
@@ -18,7 +19,7 @@ class MatchHistoryModel @AssistedInject constructor(
     private val matchModelFactory: MatchModelFactory,
 ): RxPagingSource<Int, MatchHistoryModel.MyMatch>() {
 
-    private val matchV5Service = repository.retrofitServiceProvider.getService(region, MatchV5Service::class.java)
+    private val matchV5Service: MatchV5Service = repository.serviceFactory.getService(region)
     private var lastGameId: Long? = null
 
     override fun getRefreshKey(state: PagingState<Int, MyMatch>): Int? = state.anchorPosition?.let { anchorPos ->

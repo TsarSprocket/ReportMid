@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.common.collect.ImmutableMap
 import com.tsarsprocket.reportmid.R
 import javax.inject.Inject
 

@@ -1,7 +1,6 @@
 package com.tsarsprocket.reportmid.summoner.model
 
 import com.merakianalytics.orianna.Orianna
-import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.tsarsprocket.reportmid.model.ChampionModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.riotapi.championMastery.ChampionMasteryDto

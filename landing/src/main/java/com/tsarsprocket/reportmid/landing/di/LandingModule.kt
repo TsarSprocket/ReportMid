@@ -9,6 +9,7 @@ import com.tsarsprocket.reportmid.landing.usecase.LandingUseCaseImpl
 import com.tsarsprocket.reportmid.landing.viewmodel.LandingViewModel
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.multibindings.IntoMap
 import javax.inject.Provider
 
@@ -25,6 +26,7 @@ interface LandingModule {
 
     companion object {
 
+        @Provides
         @PerCapability
         fun provideViewModelFactory(creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>): ViewModelFactory {
             return ViewModelFactory(creators)

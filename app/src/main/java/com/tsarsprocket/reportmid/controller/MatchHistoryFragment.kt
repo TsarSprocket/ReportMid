@@ -22,8 +22,8 @@ import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMatchHistoryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
-import com.tsarsprocket.reportmid.model.MatchHistoryModel
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.model.MatchHistoryModel
 import com.tsarsprocket.reportmid.viewmodel.MatchHistoryViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

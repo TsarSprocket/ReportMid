@@ -1,7 +1,11 @@
 package com.tsarsprocket.reportmid.room.state
 
 import androidx.annotation.NonNull
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.RegionEntity
 

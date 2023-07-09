@@ -1,6 +1,10 @@
 package com.tsarsprocket.reportmid.data_dragon.model
 
-import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.model.ChampionModel
+import com.tsarsprocket.reportmid.model.ItemModel
+import com.tsarsprocket.reportmid.model.PerkModel
+import com.tsarsprocket.reportmid.model.RunePathModel
+import com.tsarsprocket.reportmid.model.SummonerSpellModel
 import io.reactivex.subjects.ReplaySubject
 
 interface DataDragon {

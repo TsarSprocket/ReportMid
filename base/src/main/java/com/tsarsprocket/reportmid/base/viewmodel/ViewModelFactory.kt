@@ -2,8 +2,6 @@ package com.tsarsprocket.reportmid.base.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import java.lang.Exception
-import java.lang.RuntimeException
 import javax.inject.Provider
 
 class ViewModelFactory constructor(

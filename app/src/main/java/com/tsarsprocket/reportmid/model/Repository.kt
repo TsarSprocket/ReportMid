@@ -9,21 +9,19 @@ import com.merakianalytics.orianna.types.common.Division
 import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
-import com.merakianalytics.orianna.types.common.Region
 import com.merakianalytics.orianna.types.common.Tier
 import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.staticdata.Champion
-import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
+import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
-import com.tsarsprocket.reportmid.di.AppScope
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.riotapi.RetrofitServiceProvider
 import com.tsarsprocket.reportmid.room.MainStorage
 import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.MyFriendEntity
@@ -40,6 +38,8 @@ import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import com.merakianalytics.orianna.types.common.Region as OriannaRegion
+import com.tsarsprocket.reportmid.lol_services_api.R as RServices
 
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
@@ -47,7 +47,7 @@ const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE
 class Repository @Inject constructor(
     val context: Context,
     val iconProvider: RIOTIconProvider,
-    val retrofitServiceProvider: RetrofitServiceProvider,
+    val serviceFactory: ServiceFactory,
     private val summonerRepository: SummonerRepository,
     private val currentMatchModelFactory: CurrentMatchModelFactory,
     private val matchHistoryModelFactory: MatchHistoryModelFactory,
@@ -79,8 +79,8 @@ class Repository @Inject constructor(
 
                 dataDragon = DataDragonImpl(database, iconProvider)
 
-                Orianna.setRiotAPIKey(loadRawResourceAsText(R.raw.riot_api_key))
-                Orianna.setDefaultRegion(Region.RUSSIA)
+                Orianna.setRiotAPIKey(loadRawResourceAsText(RServices.raw.riot_api_key))
+                Orianna.setDefaultRegion(OriannaRegion.RUSSIA)
 
                 Log.d(Repository::class.simpleName, "Done initialize")
 

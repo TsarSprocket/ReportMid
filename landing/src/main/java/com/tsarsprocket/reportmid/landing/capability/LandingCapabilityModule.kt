@@ -1,25 +1,28 @@
 package com.tsarsprocket.reportmid.landing.capability
 
 import com.tsarsprocket.reportmid.base.capability.Capability
-import com.tsarsprocket.reportmid.landing.view.LandingFragment
+import com.tsarsprocket.reportmid.base.di.AppScope
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.IntoSet
-import javax.inject.Singleton
 
 @Module
 interface LandingCapabilityModule {
 
     @Binds
+    @AppScope
     @IntoSet
-    fun bindLandingToCapability(landing: Landing): Capability<*>
+    fun bindLandingCapabilityToCapability(landingCapability: LandingCapability): Capability<*>
 
     companion object {
 
         @Provides
-        @Singleton
-        fun provideLandingApi(landing: Landing): LandingApi = landing.api
+        @AppScope
+        fun provideLandingCapability() = LandingCapability()
+
+        @Provides
+        @AppScope
+        fun provideLandingApi(landingCapability: LandingCapability): LandingApi = landingCapability.api
     }
 }

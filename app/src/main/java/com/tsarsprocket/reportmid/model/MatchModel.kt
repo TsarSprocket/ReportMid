@@ -9,7 +9,6 @@ import com.tsarsprocket.reportmid.riotapi.matchV5.MatchDto
 import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.lang.IllegalArgumentException
 
 class MatchModel @AssistedInject constructor(
     @Assisted matchDto: MatchDto,

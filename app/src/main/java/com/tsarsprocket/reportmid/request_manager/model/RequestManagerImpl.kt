@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.request_manager.model
 
-import com.tsarsprocket.reportmid.di.AppScope
+import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
 import io.reactivex.Scheduler
 import io.reactivex.Single

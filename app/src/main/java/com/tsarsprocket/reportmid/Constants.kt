@@ -9,5 +9,3 @@ const val RESULT_CONFIRM = "RESULT_CONFIRM"
 const val RESULT_PUUID_AND_REG = "RESULT_PUUID"
 
 const val MENU_ITEM_NONE = -1
-
-const val RIOT_APY_KEY_HEADER = "X-Riot-Token"

@@ -6,7 +6,8 @@ import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.model.ChampionModel
+import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerDto
 import dagger.assisted.Assisted

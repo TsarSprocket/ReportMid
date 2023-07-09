@@ -6,16 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.*
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.model.ChampionModel
+import com.tsarsprocket.reportmid.model.CurrentMatchModel
+import com.tsarsprocket.reportmid.model.CurrentMatchTeamModel
+import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import java.util.*
+import java.util.Formatter
+import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

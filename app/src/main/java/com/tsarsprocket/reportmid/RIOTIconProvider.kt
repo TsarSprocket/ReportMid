@@ -3,7 +3,7 @@ package com.tsarsprocket.reportmid
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
-import com.tsarsprocket.reportmid.di.AppScope
+import com.tsarsprocket.reportmid.base.di.AppScope
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray

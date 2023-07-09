@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
-import java.util.*
+import java.util.Formatter
 
 private const val INCORRECT_RUNE_PATH_ID_MESSAGE = "Incorrect rune path ID: %d"
 

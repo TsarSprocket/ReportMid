@@ -16,6 +16,6 @@
 /database
 .externalNativeBuild
 .cxx
-/app/src/main/res/raw/riot_api_key.txt
+/lol-services-api/src/main/res/raw/riot_api_key.txt
 /external/
 Резервная_копия_*

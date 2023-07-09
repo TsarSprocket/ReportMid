@@ -9,16 +9,24 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.tsarsprocket.reportmid.*
+import com.tsarsprocket.reportmid.ARG_REGION
+import com.tsarsprocket.reportmid.BaseFragment
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RESULT_CONFIRM
+import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.tsarsprocket.reportmid.tools.*
+import com.tsarsprocket.reportmid.tools.OneTimeObserver
+import com.tsarsprocket.reportmid.tools.peekNavigationReturnedValue
+import com.tsarsprocket.reportmid.tools.setNavigationResult
+import com.tsarsprocket.reportmid.tools.setSoftInputVisibility
 import com.tsarsprocket.reportmid.viewmodel.AddSummonerViewModel
 import io.reactivex.Maybe
-import java.util.*
+import java.util.Formatter
 import javax.inject.Inject
 
 class AddSummonerFragment : BaseFragment() {

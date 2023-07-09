@@ -12,9 +12,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app-api" />
             <option value="$PROJECT_DIR$/base" />
             <option value="$PROJECT_DIR$/landing" />
             <option value="$PROJECT_DIR$/lol" />
+            <option value="$PROJECT_DIR$/lol-services-api" />
+            <option value="$PROJECT_DIR$/lol-services-impl" />
             <option value="$PROJECT_DIR$/resourcelib" />
             <option value="$PROJECT_DIR$/utils" />
           </set>

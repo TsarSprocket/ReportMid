@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
 import com.tsarsprocket.reportmid.base.di.ViewModelKey
+import com.tsarsprocket.reportmid.viewmodel.ConfirmSummonerViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Subcomponent

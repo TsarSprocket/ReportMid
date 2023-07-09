@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.riotapi
+package com.tsarsprocket.reportmid.lol_services_impl.riotapi
 
 import io.reactivex.subjects.PublishSubject
 import okhttp3.Interceptor

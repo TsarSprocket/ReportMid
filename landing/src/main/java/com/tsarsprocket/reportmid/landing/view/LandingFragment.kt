@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
-import com.tsarsprocket.reportmid.landing.capability.Landing
+import com.tsarsprocket.reportmid.landing.capability.LandingCapability
 import com.tsarsprocket.reportmid.landing.viewmodel.LandingViewModel
 import javax.inject.Inject
 
@@ -20,7 +20,7 @@ class LandingFragment : Fragment() {
     private val viewModel: LandingViewModel by viewModels { viewModelFactory }
 
     override fun onAttach(context: Context) {
-        Landing.component.inject(this)
+        LandingCapability.component.inject(this)
         super.onAttach(context)
     }
 

@@ -3,12 +3,14 @@ package com.tsarsprocket.reportmid.viewmodel
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.LinearLayout
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
+import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.toLiveData

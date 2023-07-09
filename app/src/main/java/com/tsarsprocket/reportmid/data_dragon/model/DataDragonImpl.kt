@@ -3,18 +3,26 @@ package com.tsarsprocket.reportmid.data_dragon.model
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragon.Tail
 import com.tsarsprocket.reportmid.logError
-import com.tsarsprocket.reportmid.model.*
+import com.tsarsprocket.reportmid.model.ChampionModel
+import com.tsarsprocket.reportmid.model.ItemModel
+import com.tsarsprocket.reportmid.model.PerkModel
+import com.tsarsprocket.reportmid.model.RunePathModel
+import com.tsarsprocket.reportmid.model.SummonerSpellModel
 import com.tsarsprocket.reportmid.riotapi.ddragon.DataDragonService
 import com.tsarsprocket.reportmid.room.MainStorage
-import com.tsarsprocket.reportmid.room.ddragon.*
+import com.tsarsprocket.reportmid.room.ddragon.ChampionEntity
+import com.tsarsprocket.reportmid.room.ddragon.ItemEntity
+import com.tsarsprocket.reportmid.room.ddragon.LanguageEntity
+import com.tsarsprocket.reportmid.room.ddragon.RuneEntity
+import com.tsarsprocket.reportmid.room.ddragon.RunePathEntity
+import com.tsarsprocket.reportmid.room.ddragon.SummonerSpellEntity
+import com.tsarsprocket.reportmid.room.ddragon.VersionEntity
 import io.reactivex.subjects.ReplaySubject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
-import kotlin.Exception
-import kotlin.collections.ArrayList
 
 class DataDragonImpl @Inject constructor(private val db: MainStorage, private val iconProvider: RIOTIconProvider) : DataDragon {
     private val retrofit: Retrofit = Retrofit.Builder()

@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.tools
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.toLiveData
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
