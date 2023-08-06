@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.lol_services_impl.di
 
-import com.tsarsprocket.reportmid.app_api.capability.AppApi
+import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi

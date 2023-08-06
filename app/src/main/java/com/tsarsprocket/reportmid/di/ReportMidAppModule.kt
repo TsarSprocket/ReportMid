@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import android.content.Context
 import androidx.room.Room
-import com.tsarsprocket.reportmid.app_api.capability.AppApi
+import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.di.qualifiers.ComputationScheduler
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler

@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.app_api.capability
+package com.tsarsprocket.reportmid.app_api.di
 
 import android.content.Context
 import com.tsarsprocket.reportmid.base.di.Api
