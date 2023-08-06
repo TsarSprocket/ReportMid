@@ -1,7 +1,8 @@
 package com.tsarsprocket.reportmid.di
 
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.app.capability.AppCapabilityModule
+import com.tsarsprocket.reportmid.app.di.AppProvisionModule
+import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.controller.AddSummonerFragment
 import com.tsarsprocket.reportmid.controller.ConfirmSummonerFragment
@@ -11,13 +12,15 @@ import com.tsarsprocket.reportmid.controller.ManageFriendsFragment
 import com.tsarsprocket.reportmid.controller.ManageSummonersFragment
 import com.tsarsprocket.reportmid.controller.MatchHistoryFragment
 import com.tsarsprocket.reportmid.controller.MatchupFragment
-import com.tsarsprocket.reportmid.landing.capability.LandingCapabilityModule
-import com.tsarsprocket.reportmid.lol_services_impl.capability.LolServicesCapabilityModule
+import com.tsarsprocket.reportmid.landing.di.LandingProvisionModule
+import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
 import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
 import com.tsarsprocket.reportmid.summoner.di.SummonerModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
+import javax.inject.Provider
+import kotlin.reflect.KClass
 
 // TODO: After completing migrating to the capabilities, this component will only be used for the root graph creation
 @AppScope
@@ -40,10 +43,10 @@ import dagger.android.AndroidInjectionModule
         ManageFriendsViewModelModule::class,
         SummonerModule::class,
         RequestManagerModule::class,
-        // Capability modules
-        AppCapabilityModule::class,
-        LandingCapabilityModule::class,
-        LolServicesCapabilityModule::class,
+        // Provision modules
+        AppProvisionModule::class,
+        LandingProvisionModule::class,
+        LolServicesProvisionModule::class,
     ]
 )
 interface ReportMidAppComponent {

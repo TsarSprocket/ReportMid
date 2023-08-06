@@ -6,7 +6,7 @@ import okhttp3.Response
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class RequestRatePolicy(
+internal class RequestRatePolicy(
     private val requestRate: Int,
     private val interval: Long,
     private val timeUnit: TimeUnit,

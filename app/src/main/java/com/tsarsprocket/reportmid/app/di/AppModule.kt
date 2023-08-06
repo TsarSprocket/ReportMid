@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class AppModule {
+internal class AppModule {
 
     @Provides
     fun provideAppContext(): Context = ReportMidApp.instance

@@ -3,7 +3,7 @@ package com.tsarsprocket.reportmid.riotapi.ddragon
 import com.google.gson.annotations.SerializedName
 
 data class SpellDataDto(
-    @SerializedName("cooldown") val cooldown: List<Int>,
+    @SerializedName("cooldown") val cooldown: List<Double>,
     @SerializedName("cooldownBurn") val cooldownBurn: String,
     @SerializedName("cost") val cost: List<Int>,
     @SerializedName("costBurn") val costBurn: String,

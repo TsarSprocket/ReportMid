@@ -103,14 +103,14 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage, private va
         val championEntities = lstRetroChamps.data.values.map { champ -> ChampionEntity(langId, champ.key, champ.id, champ.name, champ.image.full)
             .also { champEnt -> db.championDao().insert(champEnt).ignoreElement().blockingAwait() } }
 
-        val lstRetroSummonerSpells = try { ddragon.summonerSpells(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get summoner spells from DD" ); throw ex }
+        val lstRetroSummonerSpells = try { ddragon.summonerSpells(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get summoner spells from DD", ex ); throw ex }
 
         val summonerSpellEntities = lstRetroSummonerSpells.data.values.map { retroSpell ->
             SummonerSpellEntity(langId, retroSpell.id, retroSpell.key.toLong(), retroSpell.image.full)
                 .also { spellEnt -> db.summonerSpellDao().insert(spellEnt).ignoreElement().blockingAwait() }
         }
 
-        val lstRetroItems = try { ddragon.items(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get items from DD" ); throw ex }
+        val lstRetroItems = try { ddragon.items(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get items from DD", ex ); throw ex }
 
         val itemEntities = lstRetroItems.data.entries.map { (key,data) ->
             ItemEntity(langId, key.toInt(), data.name, data.image.full)

@@ -7,7 +7,7 @@ import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.di.qualifiers.ComputationScheduler
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
 import com.tsarsprocket.reportmid.di.qualifiers.UiScheduler
-import com.tsarsprocket.reportmid.lol_services_api.capability.LolServicesApi
+import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.room.MainStorage
 import dagger.Module

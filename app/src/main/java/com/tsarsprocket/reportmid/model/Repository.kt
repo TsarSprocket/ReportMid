@@ -17,6 +17,7 @@ import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
+import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
@@ -86,7 +87,6 @@ class Repository @Inject constructor(
 
                 return@fromCallable true
             } catch (ex: Exception) {
-
                 return@fromCallable false
             }
         }.subscribeOn(Schedulers.io()).subscribe(initialized)

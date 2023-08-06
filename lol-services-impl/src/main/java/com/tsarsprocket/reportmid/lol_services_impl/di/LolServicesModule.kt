@@ -1,15 +1,15 @@
 package com.tsarsprocket.reportmid.lol_services_impl.di
 
-import com.tsarsprocket.reportmid.base.capability.PerCapability
+import com.tsarsprocket.reportmid.base.di.PerApi
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lol_services_impl.riotapi.ServiceFactoryImpl
 import dagger.Binds
 import dagger.Module
 
 @Module
-interface LolServicesModule {
+internal interface LolServicesModule {
 
     @Binds
-    @PerCapability
+    @PerApi
     fun bindServiceFactory(factory: ServiceFactoryImpl): ServiceFactory
 }

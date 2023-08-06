@@ -15,7 +15,7 @@ import java.util.Collections
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ServiceFactoryImpl @Inject constructor(
+internal class ServiceFactoryImpl @Inject constructor(
     private val context: Context,
 ) : com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory {
     private val okClient = OkHttpClient.Builder()

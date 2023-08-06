@@ -1,11 +1,11 @@
 package com.tsarsprocket.reportmid.lol_services_impl.di
 
 import com.tsarsprocket.reportmid.app_api.capability.AppApi
-import com.tsarsprocket.reportmid.base.capability.PerCapability
-import com.tsarsprocket.reportmid.lol_services_api.capability.LolServicesApi
+import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
 import dagger.Component
 
-@PerCapability
+@PerApi
 @Component(
     modules = [
         LolServicesModule::class,
@@ -14,7 +14,7 @@ import dagger.Component
         AppApi::class,
     ]
 )
-interface LolServicesComponent : LolServicesApi {
+internal interface LolServicesComponent : LolServicesApi {
 
     @Component.Factory
     interface Factory {
