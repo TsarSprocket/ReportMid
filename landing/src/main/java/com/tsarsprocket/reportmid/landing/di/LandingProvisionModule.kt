@@ -20,6 +20,6 @@ interface LandingProvisionModule {
 
         @Provides
         @AppScope
-        fun provideLandingApi(): LandingApi = DaggerLandingComponent.create()
+        fun provideLandingApi(): LandingApi = DaggerLandingApiComponent.create()
     }
 }

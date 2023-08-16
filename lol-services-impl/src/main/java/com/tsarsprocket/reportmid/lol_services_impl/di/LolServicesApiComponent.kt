@@ -14,10 +14,10 @@ import dagger.Component
         AppApi::class,
     ]
 )
-internal interface LolServicesComponent : LolServicesApi {
+internal interface LolServicesApiComponent : LolServicesApi {
 
     @Component.Factory
     interface Factory {
-        fun create(appApi: AppApi): LolServicesComponent
+        fun create(appApi: AppApi): LolServicesApiComponent
     }
 }

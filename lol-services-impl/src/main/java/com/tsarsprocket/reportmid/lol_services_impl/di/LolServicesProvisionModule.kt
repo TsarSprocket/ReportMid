@@ -23,6 +23,6 @@ interface LolServicesProvisionModule {
 
         @Provides
         @AppScope
-        fun provideLolServicesApi(appApi: Provider<AppApi>): LolServicesApi = DaggerLolServicesComponent.factory().create(appApi.get())
+        fun provideLolServicesApi(appApi: Provider<AppApi>): LolServicesApi = DaggerLolServicesApiComponent.factory().create(appApi.get())
     }
 }

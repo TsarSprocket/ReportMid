@@ -10,6 +10,6 @@ import dagger.Component
         LandingModule::class,
     ]
 )
-internal interface LandingComponent : LandingApi {
+internal interface LandingApiComponent : LandingApi {
     fun inject(landingFragment: LandingFragment)
 }

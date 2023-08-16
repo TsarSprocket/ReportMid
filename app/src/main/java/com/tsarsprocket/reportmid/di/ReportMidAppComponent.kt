@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.di
 
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.app.di.AppProvisionModule
-import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.controller.AddSummonerFragment
 import com.tsarsprocket.reportmid.controller.ConfirmSummonerFragment
@@ -19,8 +18,6 @@ import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
 import com.tsarsprocket.reportmid.summoner.di.SummonerModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
-import javax.inject.Provider
-import kotlin.reflect.KClass
 
 // TODO: After completing migrating to the capabilities, this component will only be used for the root graph creation
 @AppScope

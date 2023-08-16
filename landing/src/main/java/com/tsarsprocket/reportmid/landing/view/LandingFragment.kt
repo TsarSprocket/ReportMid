@@ -11,7 +11,7 @@ import com.tsarsprocket.reportmid.base.di.ApiLocator
 import com.tsarsprocket.reportmid.base.di.getApi
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.landing.di.LandingApi
-import com.tsarsprocket.reportmid.landing.di.LandingComponent
+import com.tsarsprocket.reportmid.landing.di.LandingApiComponent
 import com.tsarsprocket.reportmid.landing.viewmodel.LandingViewModel
 import javax.inject.Inject
 
@@ -23,7 +23,7 @@ class LandingFragment : Fragment() {
     private val viewModel: LandingViewModel by viewModels { viewModelFactory }
 
     override fun onAttach(context: Context) {
-        ((context.applicationContext as? ApiLocator)?.getApi<LandingApi>() as? LandingComponent)?.inject(this)
+        ((context.applicationContext as? ApiLocator)?.getApi<LandingApi>() as? LandingApiComponent)?.inject(this)
         super.onAttach(context)
     }
 

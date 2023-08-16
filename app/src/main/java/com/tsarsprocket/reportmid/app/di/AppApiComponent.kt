@@ -8,4 +8,4 @@ import dagger.Component
         AppModule::class,
     ]
 )
-internal interface AppComponent : AppApi
+internal interface AppApiComponent : AppApi
