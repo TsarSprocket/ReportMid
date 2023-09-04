@@ -1,9 +1,12 @@
 package com.tsarsprocket.reportmid.di
 
 import android.content.Context
+import androidx.fragment.app.Fragment
 import androidx.room.Room
 import com.tsarsprocket.reportmid.app_api.di.AppApi
+import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.base.di.FragmentsCreator
 import com.tsarsprocket.reportmid.di.qualifiers.ComputationScheduler
 import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
 import com.tsarsprocket.reportmid.di.qualifiers.UiScheduler
@@ -15,6 +18,7 @@ import dagger.Provides
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Provider
 
 @Module
 class ReportMidAppModule {
@@ -24,6 +28,14 @@ class ReportMidAppModule {
 
     @Provides
     fun provideServiceFactory(lolServicesApi: LolServicesApi): ServiceFactory = lolServicesApi.getServiceFactory()
+
+    @Provides
+    fun provideFragmentCreators(
+        apis: Map<Class<out Api>, @JvmSuppressWildcards Provider<Api>>,
+    ): Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>> {
+        return apis.entries.filter { it.key.interfaces.contains(FragmentsCreator::class.java) }
+            .fold(emptyMap()) { acc, entry -> acc + (entry.value.get() as FragmentsCreator).getFragmentCreators() }
+    }
 
     @Provides
     @IoScheduler

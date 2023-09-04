@@ -20,8 +20,11 @@ interface AppProvisionModule {
 
     companion object {
 
+        internal lateinit var appApiComponent: AppApiComponent
+            private set
+
         @Provides
         @AppScope
-        fun provideAppApi(): AppApi = DaggerAppApiComponent.create()
+        fun provideAppApi(): AppApi = DaggerAppApiComponent.create().also { appApiComponent = it }
     }
 }

@@ -40,7 +40,7 @@ import dagger.android.AndroidInjectionModule
         ManageFriendsViewModelModule::class,
         SummonerModule::class,
         RequestManagerModule::class,
-        // Provision modules
+        // Api provision modules
         AppProvisionModule::class,
         LandingProvisionModule::class,
         LolServicesProvisionModule::class,

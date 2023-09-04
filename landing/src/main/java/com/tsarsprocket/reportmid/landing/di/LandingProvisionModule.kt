@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid.landing.di
 
+import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.ApiKey
 import com.tsarsprocket.reportmid.base.di.AppScope
@@ -7,6 +8,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import javax.inject.Provider
 
 @Module
 interface LandingProvisionModule {
@@ -18,8 +20,13 @@ interface LandingProvisionModule {
 
     companion object {
 
+        internal lateinit var landingApiComponent: LandingApiComponent
+            private set
+
         @Provides
         @AppScope
-        fun provideLandingApi(): LandingApi = DaggerLandingApiComponent.create()
+        fun provideLandingApi(
+            appApi: Provider<AppApi>,
+        ): LandingApi = DaggerLandingApiComponent.factory().create(appApi.get()).also { landingApiComponent = it }
     }
 }

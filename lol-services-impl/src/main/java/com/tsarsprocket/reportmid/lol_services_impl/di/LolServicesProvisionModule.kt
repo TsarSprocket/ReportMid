@@ -21,8 +21,13 @@ interface LolServicesProvisionModule {
 
     companion object {
 
+        internal lateinit var lolServicesApiComponent: LolServicesApiComponent
+            private set
+
         @Provides
         @AppScope
-        fun provideLolServicesApi(appApi: Provider<AppApi>): LolServicesApi = DaggerLolServicesApiComponent.factory().create(appApi.get())
+        fun provideLolServicesApi(appApi: Provider<AppApi>): LolServicesApi {
+            return DaggerLolServicesApiComponent.factory().create(appApi.get()).also { lolServicesApiComponent = it }
+        }
     }
 }

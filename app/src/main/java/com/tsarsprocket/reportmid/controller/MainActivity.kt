@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import com.tsarsprocket.reportmid.BaseActivity
 import com.tsarsprocket.reportmid.MENU_ITEM_NONE
 import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.app.view.ReportMidFragmentFactory
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.ActivityMainBinding
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
@@ -21,6 +22,9 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    @Inject
+    lateinit var fragmentFactory: ReportMidFragmentFactory
+
     private val viewModel by viewModels<MainActivityViewModel> { viewModelFactory }
 
     lateinit var binding: ActivityMainBinding
@@ -29,6 +33,8 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportFragmentManager.fragmentFactory = fragmentFactory
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
