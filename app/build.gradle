@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
 
 
     defaultConfig {
         applicationId "com.tsarsprocket.reportmid"
         minSdkVersion 24
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -75,11 +75,12 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
     implementation project(path: ':app-api')
-    implementation project(path: ':resourcelib')
-    implementation project(path: ':landing')
+    implementation project(path: ':lol-resource-lib')
+    implementation project(path: ':landing-impl')
     implementation project(path: ':lol')
     implementation project(path: ':base')
     implementation project(path: ':lol-services-impl')
+    implementation project(path: ':theme')
 
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -141,7 +142,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$kotlin_coroutines_version"
 
     // Compose
-    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    def composeBom = platform("androidx.compose:compose-bom:$compose_bom_version")
     implementation composeBom
     androidTestImplementation composeBom
 
@@ -155,7 +156,7 @@ dependencies {
     // Optional - Integration with activities
     // implementation 'androidx.activity:activity-compose:1.7.0'
     // Optional - Integration with ViewModels
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$compose_viewmodel_version"
     // Optional - Integration with RxJava
     // implementation 'androidx.compose.runtime:runtime-rxjava2'
 }

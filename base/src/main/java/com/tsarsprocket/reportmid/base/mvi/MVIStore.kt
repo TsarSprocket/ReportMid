@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface MVIStore<ViewState, ViewEffect, Intent> {
     val viewEffects: Flow<ViewEffect>
     val viewStates: Flow<ViewState>
-    fun postIntent(intent: Intent)
+    fun processIntent(intent: Intent)
 }

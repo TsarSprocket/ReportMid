@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="landing_logo_description">ReportMid Logo</string>
+    <string name="landing_message">Loading...</string>
+
+</resources>
