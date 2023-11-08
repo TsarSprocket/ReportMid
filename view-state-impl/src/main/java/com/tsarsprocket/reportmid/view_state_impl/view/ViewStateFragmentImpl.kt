@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
@@ -27,12 +27,15 @@ internal class ViewStateFragmentImpl @Inject constructor(
 
     private val viewModel: ViewStateViewModel by viewModels { viewModelFactory }
 
+    private val backPressedCallback = object : OnBackPressedCallback(ENABLE_CALLBACK_ON_START) {
+
+        override fun handleOnBackPressed() {
+            viewModel.tryGoBack()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (!viewModel.tryGoBack()) parentFragmentManager.popBackStack()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -43,6 +46,16 @@ internal class ViewStateFragmentImpl @Inject constructor(
         view.updateLayoutParams<ViewGroup.LayoutParams> {
             height = ViewGroup.LayoutParams.WRAP_CONTENT
             width = ViewGroup.LayoutParams.MATCH_PARENT
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+
+        viewModel.viewModelScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.stackSize.collect { stackSize ->
+                    backPressedCallback.isEnabled = stackSize > 0
+                }
+            }
         }
 
         viewModel.viewModelScope.launch {
@@ -63,5 +76,9 @@ internal class ViewStateFragmentImpl @Inject constructor(
     @Composable
     private fun VisualizeState(state: ViewState) {
         viewModel.findStateVisualizer(state)?.visualize(state, viewModel)
+    }
+
+    companion object {
+        const val ENABLE_CALLBACK_ON_START = false
     }
 }

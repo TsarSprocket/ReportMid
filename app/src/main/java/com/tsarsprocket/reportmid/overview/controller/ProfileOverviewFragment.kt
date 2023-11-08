@@ -88,7 +88,7 @@ class ProfileOverviewFragment : BaseFragment() {
 
     fun onOpenNewUi(view: View) {
         val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToViewStateFragment()
-        val navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(R.id.profileOverviewFragment, true).build()
+        val navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
         findNavController().navigate(action, navOptions)
     }
 

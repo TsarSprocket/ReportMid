@@ -15,6 +15,7 @@ import com.tsarsprocket.reportmid.view_state_api.view_state.ViewStateController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -35,6 +36,8 @@ internal class ViewStateViewModel @Inject constructor(
     val viewEffects = mutableViewEffects.asSharedFlow()
 
     private val backStack = BackStack()
+    val stackSize: StateFlow<Int>
+        get() = backStack.stackSize
 
     init {
         viewModelScope.launch {
