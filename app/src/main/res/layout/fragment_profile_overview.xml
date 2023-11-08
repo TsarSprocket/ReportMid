@@ -7,10 +7,16 @@
     >
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.tsarsprocket.reportmid.overview.viewmodel.ProfileOverviewViewModel" />
+
+        <variable
+            name="fragment"
+            type="com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,15 +85,26 @@
 
             <include layout="@layout/champion_mastery"/>
 
-            <include layout="@layout/champion_mastery"/>
+            <include layout="@layout/champion_mastery" />
 
-            <include layout="@layout/champion_mastery"/>
+            <include layout="@layout/champion_mastery" />
 
-            <include layout="@layout/champion_mastery"/>
+            <include layout="@layout/champion_mastery" />
 
-            <include layout="@layout/champion_mastery"/>
+            <include layout="@layout/champion_mastery" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnNewInterface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:layout_marginEnd="20dp"
+            android:onClick="@{fragment::onOpenNewUi}"
+            android:text="@string/fragment_profile_overview_new_interface_button_title"
+            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"

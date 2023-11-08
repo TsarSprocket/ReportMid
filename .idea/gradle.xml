@@ -20,9 +20,13 @@
             <option value="$PROJECT_DIR$/lol-resource-lib" />
             <option value="$PROJECT_DIR$/lol-services-api" />
             <option value="$PROJECT_DIR$/lol-services-impl" />
+            <option value="$PROJECT_DIR$/navigation-api" />
+            <option value="$PROJECT_DIR$/navigation-impl" />
             <option value="$PROJECT_DIR$/res-lib" />
             <option value="$PROJECT_DIR$/theme" />
             <option value="$PROJECT_DIR$/utils" />
+            <option value="$PROJECT_DIR$/view-state-api" />
+            <option value="$PROJECT_DIR$/view-state-impl" />
           </set>
         </option>
       </GradleProjectSettings>

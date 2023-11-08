@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk compile_sdk_version
 
 
     defaultConfig {
@@ -72,9 +72,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-
     implementation project(path: ':app-api')
+    implementation project(path: ':view-state-impl')
     implementation project(path: ':lol-resource-lib')
     implementation project(path: ':landing-impl')
     implementation project(path: ':lol')

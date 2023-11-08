@@ -6,6 +6,13 @@ import dagger.Component
 @Component(
     modules = [
         AppModule::class,
-    ]
+    ],
 )
-internal interface AppApiComponent : AppApi
+internal interface AppApiComponent : AppApi {
+
+    @Component.Factory
+    interface Factory {
+
+        fun create(): AppApiComponent
+    }
+}

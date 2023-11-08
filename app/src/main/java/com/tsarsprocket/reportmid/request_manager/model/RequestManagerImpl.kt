@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.request_manager.model
 
 import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
+import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import java.util.concurrent.ConcurrentHashMap
@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @AppScope
 class RequestManagerImpl @Inject constructor(
-     @IoScheduler override val ioScheduler: Scheduler,
+    @Io override val ioScheduler: Scheduler,
 ) : RequestManager {
 
      private val requestMap: ConcurrentHashMap<RequestKey, RequestInfo> = ConcurrentHashMap()

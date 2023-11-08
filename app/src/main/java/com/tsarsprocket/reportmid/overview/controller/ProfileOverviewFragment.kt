@@ -47,6 +47,7 @@ class ProfileOverviewFragment : BaseFragment() {
         binding = FragmentProfileOverviewBinding.inflate( inflater, container, false )
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        binding.fragment = this
 
         return binding.root
     }
@@ -79,21 +80,28 @@ class ProfileOverviewFragment : BaseFragment() {
             }
         }
 
-        with( binding.bottomNavigation ) {
-            setOnNavigationItemSelectedListener{ menuItem -> navigateToSibling( menuItem ) }
+        with(binding.bottomNavigation) {
+            setOnNavigationItemSelectedListener { menuItem -> navigateToSibling(menuItem) }
             selectedItemId = R.id.profileOverviewFragment
         }
     }
 
-    private fun navigateToSibling(item: MenuItem ): Boolean {
-        val navOptions = NavOptions.Builder().setLaunchSingleTop( true ).setPopUpTo(R.id.profileOverviewFragment, true ).build()
-        return when( item.itemId ) {
+    fun onOpenNewUi(view: View) {
+        val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToViewStateFragment()
+        val navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(R.id.profileOverviewFragment, true).build()
+        findNavController().navigate(action, navOptions)
+    }
+
+    private fun navigateToSibling(item: MenuItem): Boolean {
+        val navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(R.id.profileOverviewFragment, true).build()
+        return when (item.itemId) {
             R.id.profileOverviewFragment -> true
             R.id.matchupFragment -> {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.summoner.take( 1 ).collect { summonerModel ->
+                    viewModel.summoner.take(1).collect { summonerModel ->
                         val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchupFragment(
-                            PuuidAndRegion( summonerModel.puuid, summonerModel.region ) )
+                            PuuidAndRegion(summonerModel.puuid, summonerModel.region)
+                        )
                         findNavController().navigate( action, navOptions )
                     }
                 }

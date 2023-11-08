@@ -21,6 +21,7 @@
     <string name="fragment_profile_overview_tag_champion_level">champion_level</string>
     <string name="fragment_profile_overview_tag_champion_points">champion_points</string>
     <string name="fragment_profile_overview_title_template">Summoner: %s</string>
+    <string name="fragment_profile_overview_new_interface_button_title">New Interface</string>
 
     <!-- Fragment: Matchup -->
     <string name="fragment_matchup_skill_na">n/a</string>

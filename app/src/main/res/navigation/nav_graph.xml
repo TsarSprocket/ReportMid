@@ -22,15 +22,15 @@
             app:destination="@id/matchHistoryFragment"
             app:launchSingleTop="true"
             app:popUpTo="@id/profileOverviewFragment"
-            app:popUpToInclusive="true"
-            >
-        </action>
+            app:popUpToInclusive="true"></action>
         <action
             android:id="@+id/action_profileOverviewFragment_to_matchupFragment"
             app:destination="@id/matchupFragment"
             app:popUpTo="@id/profileOverviewFragment"
-            app:popUpToInclusive="true"
-            />
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_profileOverviewFragment_to_viewStateFragment"
+            app:destination="@id/viewStateFragment" />
     </fragment>
     <fragment
         android:id="@+id/matchHistoryFragment"
@@ -130,13 +130,17 @@
         </action>
         <argument
             android:name="ARG_MY_ACC_ID"
-            app:argType="long"
-            />
+            app:argType="long" />
     </fragment>
     <action
         android:id="@+id/action_global_manageFriendsFragment"
         app:destination="@id/manageFriendsFragment"
-        app:launchSingleTop="true"
-        >
-    </action><action android:id="@+id/action_global_profileOverviewFragment" app:destination="@id/profileOverviewFragment"/>
+        app:launchSingleTop="true"></action>
+    <action
+        android:id="@+id/action_global_profileOverviewFragment"
+        app:destination="@id/profileOverviewFragment" />
+    <fragment
+        android:id="@+id/viewStateFragment"
+        android:name="com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment"
+        android:label="ViewStateFragment" />
 </navigation>

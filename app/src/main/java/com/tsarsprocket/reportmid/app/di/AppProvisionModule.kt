@@ -25,6 +25,8 @@ interface AppProvisionModule {
 
         @Provides
         @AppScope
-        fun provideAppApi(): AppApi = DaggerAppApiComponent.create().also { appApiComponent = it }
+        fun provideAppApi(): AppApi {
+            return AppApiLazyProxy { DaggerAppApiComponent.factory().create().also { appApiComponent = it } }
+        }
     }
 }

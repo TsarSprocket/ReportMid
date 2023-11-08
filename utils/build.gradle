@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.tsarsprocket.reportmid.utils'
-    compileSdk 34
+    compileSdk compile_sdk_version
 
     defaultConfig {
         minSdk 24

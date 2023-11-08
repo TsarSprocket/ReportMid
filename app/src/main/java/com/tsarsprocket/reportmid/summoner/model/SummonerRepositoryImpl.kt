@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.summoner.model
 
 import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
+import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
@@ -30,7 +30,7 @@ class SummonerRepositoryImpl @Inject constructor(
     private val serviceFactory: ServiceFactory,
     private val requestManager: RequestManager,
     private val database: MainStorage,
-    @IoScheduler private val ioScheduler: Scheduler,
+    @Io private val ioScheduler: Scheduler,
 ) : SummonerRepository {
 
     private val summonerCacheByAccountId = ConcurrentHashMap<AccountIdKey, SummonerModel>()

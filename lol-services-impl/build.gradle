@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.tsarsprocket.reportmid.lol_services'
-    compileSdk 34
+    compileSdk compile_sdk_version
 
     defaultConfig {
         minSdk 24

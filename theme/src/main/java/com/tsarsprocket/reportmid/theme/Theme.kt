@@ -14,7 +14,7 @@ fun ReportMidTheme(content: @Composable () -> Unit) {
 @Composable
 fun PreviewTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = LocalPreviewColorScheme.current,
+        colorScheme = previewColorScheme,
         content = content
     )
 }

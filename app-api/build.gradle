@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.tsarsprocket.reportmid.app_api'
-    compileSdk 34
+    compileSdk compile_sdk_version
 
     defaultConfig {
         minSdk 24
@@ -33,6 +33,7 @@ android {
 dependencies {
 
     implementation project(path: ':base')
+    api project(path: ':view-state-api')
 //    implementation 'androidx.core:core-ktx:1.8.0'
 //    implementation 'androidx.appcompat:appcompat:1.6.1'
 //    implementation 'com.google.android.material:material:1.9.0'

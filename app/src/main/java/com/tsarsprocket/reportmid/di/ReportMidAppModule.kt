@@ -7,9 +7,9 @@ import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.FragmentsCreator
-import com.tsarsprocket.reportmid.di.qualifiers.ComputationScheduler
-import com.tsarsprocket.reportmid.di.qualifiers.IoScheduler
-import com.tsarsprocket.reportmid.di.qualifiers.UiScheduler
+import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
+import com.tsarsprocket.reportmid.base.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.room.MainStorage
@@ -21,15 +21,22 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Provider
 
 @Module
-class ReportMidAppModule {
+internal class ReportMidAppModule {
 
     @Provides
+    @AppScope
     fun provideAppContext(appApi: AppApi): Context = appApi.getAppContext()
 
     @Provides
+    @AppScope
+    fun provideAllApis(apiMap: Map<Class<out Api>, Provider<Api>>): Collection<Provider<Api>> = apiMap.values
+
+    @Provides
+    @AppScope
     fun provideServiceFactory(lolServicesApi: LolServicesApi): ServiceFactory = lolServicesApi.getServiceFactory()
 
     @Provides
+    @AppScope
     fun provideFragmentCreators(
         apis: Map<Class<out Api>, @JvmSuppressWildcards Provider<Api>>,
     ): Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>> {
@@ -38,15 +45,15 @@ class ReportMidAppModule {
     }
 
     @Provides
-    @IoScheduler
+    @Io
     fun provideIoScheduler(): Scheduler = Schedulers.io()
 
     @Provides
-    @UiScheduler
+    @Ui
     fun provideUiScheduler(): Scheduler = AndroidSchedulers.mainThread()
 
     @Provides
-    @ComputationScheduler
+    @Computation
     fun provideComputationScheduler(): Scheduler = Schedulers.computation()
 
     @Provides

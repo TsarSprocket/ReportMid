@@ -16,6 +16,13 @@ import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModul
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
 import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
 import com.tsarsprocket.reportmid.summoner.di.SummonerModule
+import com.tsarsprocket.reportmid.view_state_api.view_state.EffectHandler
+import com.tsarsprocket.reportmid.view_state_api.view_state.StateReducer
+import com.tsarsprocket.reportmid.view_state_api.view_state.StateVisualizer
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewEffect
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
+import com.tsarsprocket.reportmid.view_state_impl.di.ViewStateProvisionModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 
@@ -44,6 +51,7 @@ import dagger.android.AndroidInjectionModule
         AppProvisionModule::class,
         LandingProvisionModule::class,
         LolServicesProvisionModule::class,
+        ViewStateProvisionModule::class,
     ]
 )
 interface ReportMidAppComponent {
@@ -73,4 +81,9 @@ interface ReportMidAppComponent {
     fun inject(matchupFragment: MatchupFragment)
     fun inject(manageSummonersFragment: ManageSummonersFragment)
     fun inject(manageFriendsFragment: ManageFriendsFragment)
+
+    // ViewState
+    fun getCollectedStateReducers(): Map<Class<out ViewIntent>, @JvmSuppressWildcards StateReducer<*>>
+    fun getCollectedStateVisualizers(): Map<Class<out ViewState>, @JvmSuppressWildcards StateVisualizer<*>>
+    fun getCollectedEffectHandlers(): Map<Class<out ViewEffect>, @JvmSuppressWildcards EffectHandler<*>>
 }
