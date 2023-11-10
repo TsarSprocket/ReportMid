@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
@@ -16,7 +14,6 @@ import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment
-import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
 import com.tsarsprocket.reportmid.view_state_impl.view_model.ViewStateViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,10 +31,6 @@ internal class ViewStateFragmentImpl @Inject constructor(
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext())
     }
@@ -51,31 +44,22 @@ internal class ViewStateFragmentImpl @Inject constructor(
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
 
         viewModel.viewModelScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.stackSize.collect { stackSize ->
-                    backPressedCallback.isEnabled = stackSize > 0
-                }
+            viewModel.stackSize.collect { stackSize ->
+                backPressedCallback.isEnabled = stackSize > 0
             }
         }
 
         viewModel.viewModelScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.viewEffects.collect { effect ->
-                    viewModel.findEffectHandler(effect)?.handleEffect(effect, this@ViewStateFragmentImpl, viewModel)
-                }
+                viewModel.viewEffects.collect { effectAction -> effectAction(this@ViewStateFragmentImpl) }
             }
         }
 
         (view as ComposeView).setContent {
             ReportMidTheme {
-                VisualizeState(viewModel.viewStates.collectAsState().value)
+                viewModel.rootHolder.Visualize()
             }
         }
-    }
-
-    @Composable
-    private fun VisualizeState(state: ViewState) {
-        viewModel.findStateVisualizer(state)?.visualize(state, viewModel)
     }
 
     companion object {

@@ -1,5 +1,8 @@
 package com.tsarsprocket.reportmid.view_state_impl.view_model
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
@@ -11,7 +14,7 @@ import com.tsarsprocket.reportmid.view_state_api.view_state.StateVisualizer
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewEffect
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
-import com.tsarsprocket.reportmid.view_state_api.view_state.ViewStateController
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewStateHolder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,47 +29,25 @@ internal class ViewStateViewModel @Inject constructor(
     @ViewStateCollected private val stateReducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards StateReducer<*>>,
     @ViewStateCollected private val stateVisualizers: Map<Class<out ViewState>, @JvmSuppressWildcards StateVisualizer<*>>,
     @Ui private val uiDispatcher: CoroutineDispatcher,
-) : ViewStateController, ViewModel() {
+) : ViewModel() {
 
-    private val mutableViewStates = MutableStateFlow<ViewState>(GeneralViewStateCluster.Initial)
-    private val mutableViewEffects = MutableSharedFlow<ViewEffect>()
-    private val mutableViewIntents = MutableSharedFlow<Pair<ViewIntent, ViewState?>>()
-
-    val viewStates = mutableViewStates.asStateFlow()
+    private val mutableViewEffects = MutableSharedFlow<suspend (Fragment) -> Unit>()
     val viewEffects = mutableViewEffects.asSharedFlow()
+
+    val rootHolder: ViewStateHolder = Holder(GeneralViewStateCluster.Initial)
 
     private val backStack = BackStack()
     val stackSize: StateFlow<Int>
         get() = backStack.stackSize
 
-    init {
-        viewModelScope.launch {
-            mutableViewIntents.collect { (intent, goBackState) ->
-                processIntent(intent, goBackState)
-            }
-        }
-    }
-
     fun tryGoBack(): Boolean {
-        return backStack.pop()?.let {
-            mutableViewStates.value = it
+        return backStack.pop()?.let { (holder, state) ->
+            (holder as Holder).setState(state)
             true
         } ?: false
     }
 
-    override fun postEffect(effect: ViewEffect) {
-        viewModelScope.launch(uiDispatcher) {
-            mutableViewEffects.emit(effect)
-        }
-    }
-
-    override fun postIntent(intent: ViewIntent, goBackState: ViewState?) {
-        viewModelScope.launch(uiDispatcher) {
-            mutableViewIntents.emit(intent to goBackState)
-        }
-    }
-
-    fun findEffectHandler(effect: ViewEffect): EffectHandler<ViewEffect>? {
+    private fun findEffectHandler(effect: ViewEffect): EffectHandler<ViewEffect>? {
         @Suppress("UNCHECKED_CAST")
         return (effectHandlers[effect.clusterClass.java] as? EffectHandler<ViewEffect>)
     }
@@ -76,11 +57,56 @@ internal class ViewStateViewModel @Inject constructor(
         return (stateVisualizers[state.clusterClass.java] as? StateVisualizer<ViewState>)
     }
 
-    private suspend fun processIntent(intent: ViewIntent, goBackState: ViewState?) {
-        @Suppress("UNCHECKED_CAST")
-        (stateReducers[intent.clusterClass.java] as? StateReducer<ViewIntent>)?.reduce(viewStates.value, intent, this)?.let { viewState ->
-            goBackState?.let { backStack.push(it) }
-            mutableViewStates.emit(viewState)
+    private fun postEffect(effect: ViewEffect, holder: ViewStateHolder) {
+        findEffectHandler(effect)?.let { handler ->
+            viewModelScope.launch(uiDispatcher) {
+                mutableViewEffects.emit { fragment -> handler.handleEffect(effect, fragment, holder) }
+            }
+        }
+    }
+
+    private inner class Holder(initialState: ViewState) : ViewStateHolder {
+
+        private val mutableViewStates = MutableStateFlow(initialState)
+        private val mutableViewIntents = MutableSharedFlow<Pair<ViewIntent, ViewState?>>()
+        override val viewStates = mutableViewStates.asStateFlow()
+
+        init {
+            viewModelScope.launch {
+                mutableViewIntents.collect { (intent, goBackState) ->
+                    processIntent(intent, goBackState)
+                }
+            }
+        }
+
+        override fun createSubholder(initialState: ViewState) = Holder(initialState)
+
+        override fun postIntent(intent: ViewIntent, goBackState: ViewState?) {
+            viewModelScope.launch(uiDispatcher) {
+                mutableViewIntents.emit(intent to goBackState)
+            }
+        }
+
+        override fun postEffect(effect: ViewEffect) {
+            this@ViewStateViewModel.postEffect(effect, this)
+        }
+
+        @Composable
+        override fun Visualize() {
+            val state = mutableViewStates.collectAsState().value
+            findStateVisualizer(state)?.Visualize(state, this)
+        }
+
+        fun setState(state: ViewState) {
+            mutableViewStates.value = state
+        }
+
+        private suspend fun processIntent(intent: ViewIntent, goBackState: ViewState?) {
+            @Suppress("UNCHECKED_CAST")
+            (stateReducers[intent.clusterClass.java] as? StateReducer<ViewIntent>)?.reduce(viewStates.value, intent, this)?.let { viewState ->
+                goBackState?.let { backStack.push(BackStack.Entry(this, it)) }
+                mutableViewStates.emit(viewState)
+            }
         }
     }
 }

@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 
 interface StateVisualizer<State : ViewState> {
     @Composable
-    fun visualize(state: State, controller: ViewStateController)
+    fun Visualize(state: State, stateHolder: ViewStateHolder)
 }
