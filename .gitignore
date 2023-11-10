@@ -2,13 +2,7 @@
 .backup
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea/compiler.xml
+/.idea
 /test
 .DS_Store
 /build
@@ -20,3 +14,5 @@
 /external/
 /export/
 Резервная_копия_*
+/screenshots
+/videos
