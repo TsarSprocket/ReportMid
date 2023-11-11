@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.view_state_impl.view
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
 import com.tsarsprocket.reportmid.view_state_impl.view_model.ViewStateViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +27,20 @@ internal class ViewStateFragmentImpl @Inject constructor(
     viewModelFactory: ViewModelFactory,
 ) : ViewStateFragment() {
 
-    private val viewModel: ViewStateViewModel by viewModels { viewModelFactory }
+    private val viewModel: ViewStateViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return viewModelFactory.create(modelClass).also { viewModel ->
+                    (arguments?.getParcelable<Parcelable>(INITIAL_STATE) as? ViewState)?.let { initialState ->
+                        (viewModel as ViewStateViewModel).setInitialState(initialState)
+                    }
+                    (arguments?.getParcelable<Parcelable>(START_INTENT) as? ViewIntent)?.let { startIntent ->
+                        (viewModel as ViewStateViewModel).rootHolder.postIntent(startIntent)
+                    }
+                }
+            }
+        }
+    }
 
     private val backPressedCallback = object : OnBackPressedCallback(ENABLE_CALLBACK_ON_START) {
 

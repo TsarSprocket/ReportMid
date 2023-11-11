@@ -34,7 +34,8 @@ internal class ViewStateViewModel @Inject constructor(
     private val mutableViewEffects = MutableSharedFlow<suspend (Fragment) -> Unit>()
     val viewEffects = mutableViewEffects.asSharedFlow()
 
-    val rootHolder: ViewStateHolder = Holder(GeneralViewStateCluster.Initial)
+    private val theHolder = Holder(GeneralViewStateCluster.Initial)
+    val rootHolder: ViewStateHolder = theHolder
 
     private val backStack = BackStack()
     val stackSize: StateFlow<Int>
@@ -47,12 +48,16 @@ internal class ViewStateViewModel @Inject constructor(
         } ?: false
     }
 
+    fun setInitialState(state: ViewState) {
+        theHolder.setState(state)
+    }
+
     private fun findEffectHandler(effect: ViewEffect): EffectHandler<ViewEffect>? {
         @Suppress("UNCHECKED_CAST")
         return (effectHandlers[effect.clusterClass.java] as? EffectHandler<ViewEffect>)
     }
 
-    fun findStateVisualizer(state: ViewState): StateVisualizer<ViewState>? {
+    private fun findStateVisualizer(state: ViewState): StateVisualizer<ViewState>? {
         @Suppress("UNCHECKED_CAST")
         return (stateVisualizers[state.clusterClass.java] as? StateVisualizer<ViewState>)
     }
