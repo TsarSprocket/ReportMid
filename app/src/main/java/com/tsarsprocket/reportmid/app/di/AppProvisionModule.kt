@@ -1,22 +1,21 @@
 package com.tsarsprocket.reportmid.app.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.Api
-import com.tsarsprocket.reportmid.base.di.ApiKey
 import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.base.di.BindingExport
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.multibindings.IntoMap
+import dagger.multibindings.IntoSet
 
 @Module
 interface AppProvisionModule {
 
     @Binds
-    @IntoMap
-    @ApiKey(AppApi::class)
+    @IntoSet
     @AppScope
-    fun bindToApi(api: AppApi): Api
+    @BindingExport
+    fun bindToApi(api: AppApi): Any
 
     companion object {
 

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.room.Room
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.Api
 import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.base.di.BindingExport
 import com.tsarsprocket.reportmid.base.di.FragmentsCreator
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
@@ -29,19 +29,13 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
-    fun provideAllApis(apiMap: Map<Class<out Api>, Provider<Api>>): Collection<Provider<Api>> = apiMap.values
-
-    @Provides
-    @AppScope
     fun provideServiceFactory(lolServicesApi: LolServicesApi): ServiceFactory = lolServicesApi.getServiceFactory()
 
     @Provides
     @AppScope
-    fun provideFragmentCreators(
-        apis: Map<Class<out Api>, @JvmSuppressWildcards Provider<Api>>,
-    ): Map<Class<out Fragment>, @JvmSuppressWildcards Provider<Fragment>> {
-        return apis.entries.filter { it.key.interfaces.contains(FragmentsCreator::class.java) }
-            .fold(emptyMap()) { acc, entry -> acc + (entry.value.get() as FragmentsCreator).getFragmentCreators() }
+    fun provideFragmentCreators(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out Fragment>, Provider<Fragment>> {
+        return bindingExports.filterIsInstance<FragmentsCreator>()
+            .fold(emptyMap()) { acc, entry -> acc + entry.getFragmentCreators() }
     }
 
     @Provides
