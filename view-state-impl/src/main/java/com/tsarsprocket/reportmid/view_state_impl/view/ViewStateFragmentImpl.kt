@@ -19,7 +19,7 @@ import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
-import com.tsarsprocket.reportmid.view_state_impl.view_model.ViewStateViewModel
+import com.tsarsprocket.reportmid.view_state_impl.viewmodel.ViewStateViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

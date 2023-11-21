@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.view_state_impl.view_model
+package com.tsarsprocket.reportmid.view_state_impl.viewmodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,6 +16,7 @@ import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewStateHolder
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,6 +72,9 @@ internal class ViewStateViewModel @Inject constructor(
     }
 
     private inner class Holder(initialState: ViewState) : ViewStateHolder {
+
+        override val coroutineScope: CoroutineScope
+            get() = viewModelScope
 
         private val mutableViewStates = MutableStateFlow(initialState)
         private val mutableViewIntents = MutableSharedFlow<Pair<ViewIntent, ViewState?>>()

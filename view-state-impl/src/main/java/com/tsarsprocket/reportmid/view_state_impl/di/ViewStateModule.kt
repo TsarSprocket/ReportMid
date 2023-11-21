@@ -15,10 +15,10 @@ import com.tsarsprocket.reportmid.view_state_api.view_state.GeneralViewStateClus
 import com.tsarsprocket.reportmid.view_state_api.view_state.StateReducer
 import com.tsarsprocket.reportmid.view_state_api.view_state.StateVisualizer
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
+import com.tsarsprocket.reportmid.view_state_impl.effects.GeneralEffectHandler
+import com.tsarsprocket.reportmid.view_state_impl.view.GeneralVisualizer
 import com.tsarsprocket.reportmid.view_state_impl.view.ViewStateFragmentImpl
-import com.tsarsprocket.reportmid.view_state_impl.view_model.ViewStateViewModel
-import com.tsarsprocket.reportmid.view_state_impl.view_state.GeneralEffectHandler
-import com.tsarsprocket.reportmid.view_state_impl.view_state.GeneralVisualizer
+import com.tsarsprocket.reportmid.view_state_impl.viewmodel.ViewStateViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -38,7 +38,7 @@ internal interface ViewStateModule {
     @PerApi
     @IntoMap
     @ViewEffectKey(GeneralViewEffectCluster::class)
-    fun bind(effectHandler: GeneralEffectHandler): EffectHandler<*>
+    fun bindGeneralEffectHandler(effectHandler: GeneralEffectHandler): EffectHandler<*>
 
     @Binds
     @IntoMap

@@ -1,44 +1,43 @@
 package com.tsarsprocket.reportmid.landing_impl.di
 
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.base.di.FragmentKey
 import com.tsarsprocket.reportmid.base.di.PerApi
-import com.tsarsprocket.reportmid.base.di.ViewModelKey
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
-import com.tsarsprocket.reportmid.landing_api.view.LandingFragment
+import com.tsarsprocket.reportmid.landing_impl.reducer.LandingStateReducer
 import com.tsarsprocket.reportmid.landing_impl.usecase.LandingUseCase
 import com.tsarsprocket.reportmid.landing_impl.usecase.LandingUseCaseImpl
-import com.tsarsprocket.reportmid.landing_impl.view.LandingFragmentImpl
-import com.tsarsprocket.reportmid.landing_impl.viewmodel.LandingViewModel
+import com.tsarsprocket.reportmid.landing_impl.view.LandingVisualizer
+import com.tsarsprocket.reportmid.landing_impl.viewstate.LandingViewIntent
+import com.tsarsprocket.reportmid.landing_impl.viewstate.LandingViewState
+import com.tsarsprocket.reportmid.view_state_api.di.ViewIntentKey
+import com.tsarsprocket.reportmid.view_state_api.di.ViewStateKey
+import com.tsarsprocket.reportmid.view_state_api.view_state.StateReducer
+import com.tsarsprocket.reportmid.view_state_api.view_state.StateVisualizer
+import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
-import javax.inject.Provider
 
 @Module
 internal interface LandingModule {
 
     @Binds
+    @PerApi
+    @IntoMap
+    @ViewIntentKey(LandingViewIntent::class)
+    fun bindLandingStateReducer(reducer: LandingStateReducer): StateReducer<*>
+
+    @Binds
     fun bindLandingUseCase(useCase: LandingUseCaseImpl): LandingUseCase
 
     @Binds
+    @PerApi
     @IntoMap
-    @ViewModelKey(LandingViewModel::class)
-    fun bindLandingViewModel(viewModel: LandingViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @FragmentKey(LandingFragment::class)
-    fun bindLandingFragment(fragment: LandingFragmentImpl): Fragment
+    @ViewStateKey(LandingViewState::class)
+    fun bindLandingVisualizer(visualizer: LandingVisualizer): StateVisualizer<*>
 
     companion object {
 
         @Provides
-        @PerApi
-        fun provideViewModelFactory(creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>): ViewModelFactory {
-            return ViewModelFactory(creators)
-        }
+        fun provideStartIntent(): ViewIntent = LandingViewIntent.LandingStartLoadIntent
     }
 }

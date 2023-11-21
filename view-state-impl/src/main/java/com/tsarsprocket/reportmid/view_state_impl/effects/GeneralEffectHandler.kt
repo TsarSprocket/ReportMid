@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.view_state_impl.view_state
+package com.tsarsprocket.reportmid.view_state_impl.effects
 
 import androidx.fragment.app.Fragment
 import com.tsarsprocket.reportmid.view_state_api.view_state.EffectHandler

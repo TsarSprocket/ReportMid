@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.view_state_impl.view_model
+package com.tsarsprocket.reportmid.view_state_impl.viewmodel
 
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewStateHolder
