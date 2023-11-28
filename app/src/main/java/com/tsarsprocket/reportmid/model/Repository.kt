@@ -17,7 +17,6 @@ import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
-import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
@@ -99,7 +98,7 @@ class Repository @Inject constructor(
             .first()
     }.map { Region.getByTag(it.tag) }
 
-    fun getMyRegions(): Observable<List<com.tsarsprocket.reportmid.lol.model.Region>> = ensureInitializedDoOnIO { Unit }
+    fun getMyRegions(): Observable<List<Region>> = ensureInitializedDoOnIO { }
         .switchMap { _ -> database.myAccountDAO().getAllObservable() }
         .map { lstMyAccs ->
             lstMyAccs.map { myAcc ->
@@ -113,12 +112,12 @@ class Repository @Inject constructor(
     private fun loadRawResourceAsText(resId: Int) = InputStreamReader(context.resources.openRawResource(resId)).readText()
 
     @WorkerThread
-    fun findSummonerForName(summonerName: String, regionModel: com.tsarsprocket.reportmid.lol.model.Region, failOnNotFound: Boolean = false ): Observable<SummonerModel> {
+    fun findSummonerForName(summonerName: String, regionModel: Region, failOnNotFound: Boolean = false): Observable<SummonerModel> {
 
-        return initialized.observeOn( Schedulers.io() )
+        return initialized.observeOn(Schedulers.io())
             .switchMapSingle { fInitialized ->
-                when( fInitialized ) {
-                    true -> summonerRepository.getBySummonerName( summonerName, regionModel )
+                when (fInitialized) {
+                    true -> summonerRepository.getBySummonerName(summonerName, regionModel)
                     else -> throw RepositoryNotInitializedException()
                 }
             }
@@ -148,14 +147,14 @@ class Repository @Inject constructor(
     fun getChampionById(id: Int): Single<ChampionModel> =
         ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
 
-    fun getMatchHistoryModel(region: com.tsarsprocket.reportmid.lol.model.Region, summoner: SummonerModel): MatchHistoryModel = matchHistoryModelFactory.create( region, summoner )
+    fun getMatchHistoryModel(region: Region, summoner: SummonerModel): MatchHistoryModel = matchHistoryModelFactory.create(region, summoner)
 
     fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { currentMatchModelFactory.create( summoner ) }
 
     fun getCurrentMatchForSummoner(summoner: SummonerModel): CurrentMatchModel? =
         try { currentMatchModelFactory.create( summoner ) } catch (ex: Exception) { null }
 
-    fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(this, it) } }
+    fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(it) } }
 
     fun getMyAccounts(): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO {
         database.myAccountDAO().getAll()
@@ -179,9 +178,9 @@ class Repository @Inject constructor(
         summonerRepository.getByPuuidAndRegion(PuuidAndRegion(sumEnt.puuid,database.regionDAO().getById(sumEnt.regionId).tag))
     }.firstOrError()
 
-    fun getCurrentAccountsPerRegionObservable(reg: com.tsarsprocket.reportmid.lol.model.Region): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
+    fun getCurrentAccountsPerRegionObservable(reg: Region): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO { }
         .switchMap { database.currentAccountDAO().getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id) }
-        .map { list -> list.map { curAccEnt -> MyAccountModel(this,curAccEnt.accountId) } }
+        .map { list -> list.map { curAccEnt -> MyAccountModel(this, curAccEnt.accountId) } }
 
     fun getFriendsForAcc(myAcc: MyAccountModel): ReplaySubject<List<MyFriendModel>> = ReplaySubject.create<List<MyFriendModel>>().also { subj ->
         ensureInitializedDoOnIO {}
@@ -273,7 +272,7 @@ class Repository @Inject constructor(
         val myAccEnt = database.myAccountDAO().getById(acc.id)
         val sumEnt = database.summonerDAO().getById(myAccEnt.summonerId)
         val curAccEnt = database.currentAccountDAO().getByRegionId(sumEnt.regionId)
-        if(curAccEnt != null && acc.id != curAccEnt?.accountId) {
+        if (curAccEnt != null && acc.id != curAccEnt.accountId) {
             curAccEnt.accountId = acc.id
             database.currentAccountDAO().update(curAccEnt)
         }

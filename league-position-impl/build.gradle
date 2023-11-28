@@ -1,15 +1,15 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
 }
 
 android {
-    namespace 'com.tsarsprocket.reportmid.lol_services_api'
-    compileSdk compile_sdk_version
+    namespace 'com.tsarsprocket.reportmid.league_position_impl'
+    compileSdk 34
 
     defaultConfig {
         minSdk 24
-        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -31,9 +31,17 @@ android {
 }
 
 dependencies {
+    api project(path: ':league-position-api')
+    api project(path: ':lol-services-api')
+    implementation project(path: ':utils')
 
-    api project(path: ':base')
-    api project(path: ':lol')
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+
+    // Dagger
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+
     implementation "androidx.core:core-ktx:$androidx_core_version"
     implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
     testImplementation "junit:junit:$junit_version"

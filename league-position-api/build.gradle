@@ -4,12 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.tsarsprocket.reportmid.lol_services_api'
-    compileSdk compile_sdk_version
+    namespace 'com.tsarsprocket.reportmid.league_position_api'
+    compileSdk 34
 
     defaultConfig {
         minSdk 24
-        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -34,9 +33,11 @@ dependencies {
 
     api project(path: ':base')
     api project(path: ':lol')
+
     implementation "androidx.core:core-ktx:$androidx_core_version"
     implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
+    implementation "com.google.android.material:material:$material_design_version"
     testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$androidx_junit_version"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
 }

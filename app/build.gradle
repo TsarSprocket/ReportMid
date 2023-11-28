@@ -80,6 +80,7 @@ dependencies {
     implementation project(path: ':base')
     implementation project(path: ':lol-services-impl')
     implementation project(path: ':theme')
+    implementation project(path: ':league-position-impl')
 
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"

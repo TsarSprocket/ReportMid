@@ -11,6 +11,9 @@ import org.mockito.kotlin.whenever
 
 class PuuidAndRegionUnitTest {
 
+    /**
+     * With this I explained the principles of unit-testing to my son
+     */
     @Test
     fun testWriteToParcel() {
         // готовим мок-объекты
