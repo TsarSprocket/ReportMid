@@ -4,6 +4,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
 import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.ChampionModel
@@ -18,6 +19,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import kotlinx.coroutines.rx2.rxSingle
 import java.util.Formatter
 import java.util.GregorianCalendar
 import java.util.concurrent.TimeUnit
@@ -37,6 +39,7 @@ private val DUR_FMT_MS = "%02d:%02d"
 class MatchupViewModel @Inject constructor(
     private val repository: Repository,
     private val summonerRepository: SummonerRepository,
+    private val leaguePositionRepository: LeaguePositionRepository, // temporary, until migrated to new screen
 ): ViewModel() {
 
     lateinit var puuidAndRegion: PuuidAndRegion
@@ -105,17 +108,18 @@ class MatchupViewModel @Inject constructor(
                         playerModel.summoner.subscribe(
                             { sum -> playerPresentation.summonerNameLive.postValue(sum.name); playerPresentation.summonerLevelLive.postValue(sum.level) },
                             { ex -> this.logError("Can't get summoner", ex) }),
-                        playerModel.summoner.flatMap { it.soloQueuePosition.firstOrError() }.subscribe({ soloQueuePosition ->
-                            playerPresentation.soloqueueRankLive.postValue(soloQueuePosition.tier.shortName + soloQueuePosition.division.numeric)
-                            playerPresentation.soloqueueWinrateLive.postValue((soloQueuePosition.wins.toFloat() / (soloQueuePosition.wins + soloQueuePosition.losses).toFloat()).takeUnless { it.isNaN() }
-                                ?: 0f)
-                        },
-                            { ex -> this.logError("Can't obtain soloqueue position", ex) }),
+                        playerModel.summoner.flatMap { rxSingle { leaguePositionRepository.getSoloQueueLeaguePosition(it.id, it.region)!! /* temporary*/ } }
+                            .subscribe({ soloQueuePosition ->
+                                playerPresentation.soloqueueRankLive.postValue(soloQueuePosition.tier.abbreviation + soloQueuePosition.division.numeric)
+                                playerPresentation.soloqueueWinrateLive.postValue((soloQueuePosition.wins.toFloat() / (soloQueuePosition.wins + soloQueuePosition.losses).toFloat()).takeUnless { it.isNaN() }
+                                    ?: 0f)
+                            },
+                                { ex -> this.logError("Can't obtain soloqueue position", ex) }),
                         playerModel.summonerSpellD?.icon?.subscribe { drawable -> playerPresentation.summonerSpellDLive.postValue(drawable) },
                         playerModel.summonerSpellF?.icon?.subscribe { drawable -> playerPresentation.summonerSpellFLive.postValue(drawable) },
                         playerModel.primaryRune?.let { runeModel ->
-                            runeModel.icon.subscribe( { drawable -> playerPresentation.primaryRuneIconLive.postValue(drawable) },
-                                { ex -> this.logError("Error getting primary rune path", ex) } )
+                            runeModel.icon.subscribe({ drawable -> playerPresentation.primaryRuneIconLive.postValue(drawable) },
+                                { ex -> this.logError("Error getting primary rune path", ex) })
                         },
                         playerModel.secondaryRunePath?.let { runePathModel ->
                             runePathModel.icon.subscribe( { drawable -> playerPresentation.secondaryRunePathIconLive.postValue(drawable) },

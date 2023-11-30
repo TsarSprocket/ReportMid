@@ -10,6 +10,8 @@ import com.tsarsprocket.reportmid.base.di.FragmentsCreator
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
+import com.tsarsprocket.reportmid.league_position_api.di.LeaguePositionApi
 import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.room.MainStorage
@@ -57,4 +59,9 @@ internal class ReportMidAppModule {
             .createFromAsset("database/init.db")
             .build()
     }
+
+    // Temporary until migrated
+    @Provides
+    @AppScope
+    fun provideLeaguePositionRepository(leaguePositionApi: LeaguePositionApi): LeaguePositionRepository = leaguePositionApi.getLeaguePositionRepository()
 }

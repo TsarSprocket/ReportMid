@@ -5,12 +5,9 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
-import com.merakianalytics.orianna.types.common.Division
 import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
-import com.merakianalytics.orianna.types.common.Tier
-import com.merakianalytics.orianna.types.core.league.LeagueEntry
 import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.base.di.AppScope
@@ -150,11 +147,6 @@ class Repository @Inject constructor(
     fun getMatchHistoryModel(region: Region, summoner: SummonerModel): MatchHistoryModel = matchHistoryModelFactory.create(region, summoner)
 
     fun getCurrentMatch(summoner: SummonerModel) = ensureInitializedDoOnIOSubject { currentMatchModelFactory.create( summoner ) }
-
-    fun getCurrentMatchForSummoner(summoner: SummonerModel): CurrentMatchModel? =
-        try { currentMatchModelFactory.create( summoner ) } catch (ex: Exception) { null }
-
-    fun getLeaguePosition(lmdLeagueEntry: () -> LeagueEntry?) = ensureInitializedDoOnIOSubject { lmdLeagueEntry()?.let { LeaguePositionModel(it) } }
 
     fun getMyAccounts(): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO {
         database.myAccountDAO().getAll()
@@ -322,10 +314,6 @@ class Repository @Inject constructor(
 
         fun getGameType(gameType: GameType? = null, queue: Queue? = null, gameMode: GameMode? = null, gameMap: GameMap? = null) =
             GameTypeModel.by(gameType, queue, gameMode, gameMap)
-
-        fun getTier(tier: Tier) = TierModel.values().find { it.shadowTier == tier } ?: throw RuntimeException("Tier $tier is not mapped")
-        fun getDivision(division: Division) =
-            DivisionModel.values().find { it.shadowDivision == division } ?: throw RuntimeException("Division $division is not mapped")
     }
 
     /*  Tools  ***************************************************************/

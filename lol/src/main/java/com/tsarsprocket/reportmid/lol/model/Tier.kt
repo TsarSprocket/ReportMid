@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.lol.model
 
-enum class Tier(val token: String, abbreviation: String) {
+enum class Tier(val token: String, val abbreviation: String) {
     Unranked(token = "Unranked", abbreviation = "U"),
     Iron(token = "IRON", abbreviation = "I"),
     Bronze(token = "BRONZE", abbreviation = "B"),

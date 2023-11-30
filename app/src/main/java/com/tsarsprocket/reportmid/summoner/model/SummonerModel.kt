@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.summoner.model
 
 import android.graphics.drawable.Drawable
 import com.merakianalytics.orianna.Orianna
-import com.merakianalytics.orianna.types.common.Queue
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
@@ -28,7 +27,6 @@ class SummonerModel @AssistedInject constructor(
     val icon: Single<Drawable> by lazy { Single.fromCallable { summonerDto.profileIconId }.subscribeOn( Schedulers.io() ).flatMap { repository.iconProvider.getProfileIcon(it) }  }
     val puuid: String = summonerDto.puuid
     val level: Long = summonerDto.summonerLevel
-    val soloQueuePosition by lazy{ repository.getLeaguePosition { Orianna.leaguePositionsForSummoner( Orianna.summonerWithId( id ).get()).get().find { it?.queue == Queue.RANKED_SOLO }  } }
     val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner( this ) }
     val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid,region) }
     val riotAccountId: String = summonerDto.accountId
