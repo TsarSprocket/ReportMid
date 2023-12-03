@@ -6,11 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
-import com.tsarsprocket.reportmid.view_state_api.di.ViewStateCollected
-import com.tsarsprocket.reportmid.view_state_api.view_state.EffectHandler
-import com.tsarsprocket.reportmid.view_state_api.view_state.GeneralViewStateCluster
-import com.tsarsprocket.reportmid.view_state_api.view_state.StateReducer
-import com.tsarsprocket.reportmid.view_state_api.view_state.StateVisualizer
+import com.tsarsprocket.reportmid.view_state_api.view_state.EmptyScreen
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewEffect
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
@@ -26,16 +22,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 internal class ViewStateViewModel @Inject constructor(
-    @ViewStateCollected private val effectHandlers: Map<Class<out ViewEffect>, @JvmSuppressWildcards EffectHandler<*>>,
-    @ViewStateCollected private val stateReducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards StateReducer<*>>,
-    @ViewStateCollected private val stateVisualizers: Map<Class<out ViewState>, @JvmSuppressWildcards StateVisualizer<*>>,
     @Ui private val uiDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val mutableViewEffects = MutableSharedFlow<suspend (Fragment) -> Unit>()
     val viewEffects = mutableViewEffects.asSharedFlow()
 
-    private val theHolder = Holder(GeneralViewStateCluster.Initial)
+    private val theHolder = Holder(EmptyScreen)
     val rootHolder: ViewStateHolder = theHolder
 
     private val backStack = BackStack()
@@ -53,21 +46,9 @@ internal class ViewStateViewModel @Inject constructor(
         theHolder.setState(state)
     }
 
-    private fun findEffectHandler(effect: ViewEffect): EffectHandler<ViewEffect>? {
-        @Suppress("UNCHECKED_CAST")
-        return (effectHandlers[effect.clusterClass.java] as? EffectHandler<ViewEffect>)
-    }
-
-    private fun findStateVisualizer(state: ViewState): StateVisualizer<ViewState>? {
-        @Suppress("UNCHECKED_CAST")
-        return (stateVisualizers[state.clusterClass.java] as? StateVisualizer<ViewState>)
-    }
-
     private fun postEffect(effect: ViewEffect, holder: ViewStateHolder) {
-        findEffectHandler(effect)?.let { handler ->
-            viewModelScope.launch(uiDispatcher) {
-                mutableViewEffects.emit { fragment -> handler.handleEffect(effect, fragment, holder) }
-            }
+        viewModelScope.launch(uiDispatcher) {
+            mutableViewEffects.emit { fragment -> effect.handle(fragment, holder) }
         }
     }
 
@@ -102,8 +83,7 @@ internal class ViewStateViewModel @Inject constructor(
 
         @Composable
         override fun Visualize() {
-            val state = mutableViewStates.collectAsState().value
-            findStateVisualizer(state)?.Visualize(state, this)
+            mutableViewStates.collectAsState().value.Visualize(this)
         }
 
         fun setState(state: ViewState) {
@@ -111,11 +91,9 @@ internal class ViewStateViewModel @Inject constructor(
         }
 
         private suspend fun processIntent(intent: ViewIntent, goBackState: ViewState?) {
-            @Suppress("UNCHECKED_CAST")
-            (stateReducers[intent.clusterClass.java] as? StateReducer<ViewIntent>)?.reduce(viewStates.value, intent, this)?.let { viewState ->
-                goBackState?.let { backStack.push(BackStack.Entry(this, it)) }
-                mutableViewStates.emit(viewState)
-            }
+            val viewState = intent.reduce(viewStates.value, this)
+            goBackState?.let { backStack.push(BackStack.Entry(this, it)) }
+            mutableViewStates.emit(viewState)
         }
     }
 }

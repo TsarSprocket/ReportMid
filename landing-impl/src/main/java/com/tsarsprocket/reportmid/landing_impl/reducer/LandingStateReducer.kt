@@ -1,15 +1,15 @@
 package com.tsarsprocket.reportmid.landing_impl.reducer
 
+import com.tsarsprocket.reportmid.base.di.PerApi
 import com.tsarsprocket.reportmid.landing_impl.viewstate.LandingViewIntent
 import com.tsarsprocket.reportmid.landing_impl.viewstate.LandingViewIntent.LandingStartLoadIntent
-import com.tsarsprocket.reportmid.view_state_api.view_state.StateReducer
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState
-import com.tsarsprocket.reportmid.view_state_api.view_state.ViewStateHolder
 import javax.inject.Inject
 
-class LandingStateReducer @Inject constructor() : StateReducer<LandingViewIntent> {
+@PerApi
+class LandingStateReducer @Inject constructor() {
 
-    override suspend fun reduce(state: ViewState, intent: LandingViewIntent, controller: ViewStateHolder): ViewState {
+    fun reduce(intent: LandingViewIntent): ViewState {
         return when (intent) {
             is LandingStartLoadIntent -> startLoading()
         }

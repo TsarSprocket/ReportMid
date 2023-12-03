@@ -6,17 +6,7 @@ import com.tsarsprocket.reportmid.base.di.FragmentKey
 import com.tsarsprocket.reportmid.base.di.PerApi
 import com.tsarsprocket.reportmid.base.di.ViewModelKey
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
-import com.tsarsprocket.reportmid.view_state_api.di.ViewEffectKey
-import com.tsarsprocket.reportmid.view_state_api.di.ViewStateKey
 import com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment
-import com.tsarsprocket.reportmid.view_state_api.view_state.EffectHandler
-import com.tsarsprocket.reportmid.view_state_api.view_state.GeneralViewEffectCluster
-import com.tsarsprocket.reportmid.view_state_api.view_state.GeneralViewStateCluster
-import com.tsarsprocket.reportmid.view_state_api.view_state.StateReducer
-import com.tsarsprocket.reportmid.view_state_api.view_state.StateVisualizer
-import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
-import com.tsarsprocket.reportmid.view_state_impl.effects.GeneralEffectHandler
-import com.tsarsprocket.reportmid.view_state_impl.view.GeneralVisualizer
 import com.tsarsprocket.reportmid.view_state_impl.view.ViewStateFragmentImpl
 import com.tsarsprocket.reportmid.view_state_impl.viewmodel.ViewStateViewModel
 import dagger.Binds
@@ -27,18 +17,6 @@ import javax.inject.Provider
 
 @Module
 internal interface ViewStateModule {
-
-    @Binds
-    @PerApi
-    @IntoMap
-    @ViewStateKey(GeneralViewStateCluster::class)
-    fun bindGeneralVisualizer(visualizer: GeneralVisualizer): StateVisualizer<*>
-
-    @Binds
-    @PerApi
-    @IntoMap
-    @ViewEffectKey(GeneralViewEffectCluster::class)
-    fun bindGeneralEffectHandler(effectHandler: GeneralEffectHandler): EffectHandler<*>
 
     @Binds
     @IntoMap
@@ -57,9 +35,5 @@ internal interface ViewStateModule {
         fun provideViewModelFactory(creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>): ViewModelFactory {
             return ViewModelFactory(creators)
         }
-
-        @Provides
-        @PerApi
-        fun provideEmptyStateReducersMap(): Map<Class<out ViewIntent>, @JvmSuppressWildcards StateReducer<*>> = emptyMap()
     }
 }

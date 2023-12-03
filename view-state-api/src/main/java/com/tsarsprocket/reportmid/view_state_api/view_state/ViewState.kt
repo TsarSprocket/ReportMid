@@ -1,5 +1,8 @@
 package com.tsarsprocket.reportmid.view_state_api.view_state
 
-interface ViewState : Clusterized<ViewState> {
+import androidx.compose.runtime.Composable
 
+interface ViewState {
+    @Composable
+    fun Visualize(stateHolder: ViewStateHolder)
 }
