@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.model
 
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
+import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
@@ -19,8 +20,8 @@ class ParticipantModel @AssistedInject constructor(
     val repository: Repository,
     summonerRepository: SummonerRepository,
 ) {
-    val puuid: String = participantDto.puuid
-    val summoner: Single<SummonerModel> by lazy { summonerRepository.getByPuuidAndRegion( PuuidAndRegion(puuid, region) ).cache() }
+    val puuid: Puuid = Puuid(participantDto.puuid)
+    val summoner: Single<SummonerModel> by lazy { summonerRepository.getByPuuidAndRegion(PuuidAndRegion(puuid, region)).cache() }
     val champion: ChampionModel = dataDragon.tail.getChampionById(participantDto.championId)
     val kills: Int = participantDto.kills
     val deaths: Int = participantDto.deaths

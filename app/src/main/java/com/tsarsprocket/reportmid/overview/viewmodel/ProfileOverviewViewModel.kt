@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
@@ -23,17 +24,18 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class ProfileOverviewViewModel @Inject constructor(
     private val summonerRepository: SummonerRepository,
-): ViewModel() {
+    private val iconProvider: RIOTIconProvider,
+) : ViewModel() {
 
     val puuidAndRegion = MutableSharedFlow<PuuidAndRegion>()
-    val summoner: SharedFlow<SummonerModel> = getSummonerFlow( puuidAndRegion ).shareIn( viewModelScope, SharingStarted.WhileSubscribed(), replay = 1 )
+    val summoner: SharedFlow<SummonerModel> = getSummonerFlow(puuidAndRegion).shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
     val summonerLevel = MutableLiveData<String>()
     val summonerName = MutableLiveData<String>()
     val summonerIconLive = MutableLiveData<Drawable>()
 
     init {
         viewModelScope.launch {
-            summoner.flatMapLatest { it.icon.toObservable().asFlow() }.collect { summonerIconLive.value = it }
+            summoner.flatMapLatest { iconProvider.getProfileIcon(it.iconName).toObservable().asFlow() }.collect { summonerIconLive.value = it }
         }
         viewModelScope.launch {
             summoner.collect {
@@ -47,11 +49,11 @@ class ProfileOverviewViewModel @Inject constructor(
         return summoner.flatMapLatest { summonerModel -> summonerModel.masteries.toObservable().asFlow() }
             .map { masteriesList ->
                 masteriesList.map model@{ masteryModel ->
-                    val iconFlow = masteryModel.champion.switchMapSingle { championModel -> championModel.icon }
+                    val iconFlow = masteryModel.champion.switchMapSingle { championModel -> iconProvider.getChampionIcon(championModel.iconName) }
                         .asFlow()
-                        .shareIn( viewModelScope, SharingStarted.WhileSubscribed(), replay = 1 )
+                        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(), replay = 1)
 
-                    return@model MasteryViewModel( iconFlow, masteryModel.level, masteryModel.points )
+                    return@model MasteryViewModel(iconFlow, masteryModel.level, masteryModel.points)
                 }
             }
     }
@@ -59,9 +61,9 @@ class ProfileOverviewViewModel @Inject constructor(
     // Implementation //////////////////////////////////////////////////////////
 
     @ExperimentalCoroutinesApi
-    private fun getSummonerFlow( puuidAndRegionFlow: Flow<PuuidAndRegion> ): Flow<SummonerModel> = puuidAndRegionFlow
+    private fun getSummonerFlow(puuidAndRegionFlow: Flow<PuuidAndRegion>): Flow<SummonerModel> = puuidAndRegionFlow
         .distinctUntilChanged()
-        .flatMapLatest { puuidAndRegion -> summonerRepository.getByPuuidAndRegion( puuidAndRegion ).toObservable().asFlow() }
+        .flatMapLatest { puuidAndRegion -> summonerRepository.getByPuuidAndRegion(puuidAndRegion).toObservable().asFlow() }
 
     data class MasteryViewModel(
         val icon: Flow<Drawable>,

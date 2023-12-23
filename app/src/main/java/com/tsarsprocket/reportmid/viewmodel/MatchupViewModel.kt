@@ -4,6 +4,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
+import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
 import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
@@ -40,6 +41,7 @@ class MatchupViewModel @Inject constructor(
     private val repository: Repository,
     private val summonerRepository: SummonerRepository,
     private val leaguePositionRepository: LeaguePositionRepository, // temporary, until migrated to new screen
+    private val iconProvider: RIOTIconProvider, // temporary, until migrated to new screen
 ): ViewModel() {
 
     lateinit var puuidAndRegion: PuuidAndRegion
@@ -94,7 +96,7 @@ class MatchupViewModel @Inject constructor(
                     disposer.addAll(
                         playerModel.summoner.subscribe({ sum -> playerPresentation.summoner.postValue(sum) },
                             { ex -> this.logError("Can't obtain icon for summoner", ex) }),
-                        playerModel.champion.flatMap { it.icon }.subscribe({ drawable -> playerPresentation.championIconLive.postValue(drawable) },
+                        playerModel.champion.flatMap { iconProvider.getChampionIcon(it.iconName) }.subscribe({ drawable -> playerPresentation.championIconLive.postValue(drawable) },
                             { ex -> this.logError("Can't obtain icon for champion", ex) }),
                         Single.zip(
                             playerModel.champion,
@@ -115,16 +117,16 @@ class MatchupViewModel @Inject constructor(
                                     ?: 0f)
                             },
                                 { ex -> this.logError("Can't obtain soloqueue position", ex) }),
-                        playerModel.summonerSpellD?.icon?.subscribe { drawable -> playerPresentation.summonerSpellDLive.postValue(drawable) },
-                        playerModel.summonerSpellF?.icon?.subscribe { drawable -> playerPresentation.summonerSpellFLive.postValue(drawable) },
+                        playerModel.summonerSpellD?.let { iconProvider.getSummonerSpellIcon(it.iconName) }?.subscribe { drawable -> playerPresentation.summonerSpellDLive.postValue(drawable) },
+                        playerModel.summonerSpellF?.let { iconProvider.getSummonerSpellIcon(it.iconName) }?.subscribe { drawable -> playerPresentation.summonerSpellFLive.postValue(drawable) },
                         playerModel.primaryRune?.let { runeModel ->
-                            runeModel.icon.subscribe({ drawable -> playerPresentation.primaryRuneIconLive.postValue(drawable) },
+                            iconProvider.getRuneIcon(runeModel.iconName).subscribe({ drawable -> playerPresentation.primaryRuneIconLive.postValue(drawable) },
                                 { ex -> this.logError("Error getting primary rune path", ex) })
                         },
                         playerModel.secondaryRunePath?.let { runePathModel ->
-                            runePathModel.icon.subscribe( { drawable -> playerPresentation.secondaryRunePathIconLive.postValue(drawable) },
-                                { ex -> logError("Error getting secondary rune path", ex) } )
-                       },
+                            iconProvider.getRunePathIcon(runePathModel.iconPath).subscribe({ drawable -> playerPresentation.secondaryRunePathIconLive.postValue(drawable) },
+                                { ex -> logError("Error getting secondary rune path", ex) })
+                        },
                     )
 
                     playerPresentation

@@ -6,6 +6,7 @@ import android.widget.LinearLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class DrawerViewModel @Inject constructor(
     val repository: Repository,
     private val summonerRepository: SummonerRepository,
+    private val iconProvider: RIOTIconProvider,
 ) : ViewModel() {
 
     //  LiveData Input  ///////////////////////////////////////////////////////
@@ -41,7 +43,7 @@ class DrawerViewModel @Inject constructor(
             .switchMap { reg -> summonerRepository.getMineForRegionSelected(reg) }
             .map { lst ->
                 lst.sortedWith { o1, o2 -> SUMO_COMP.compare(o1.first, o2.first) }
-                    .map { (sum, isSelected) -> Triple(sum.icon.blockingGet(), sum, isSelected) }
+                    .map { (sum, isSelected) -> Triple(iconProvider.getProfileIcon(sum.iconName).blockingGet(), sum, isSelected) }
             }
 
     private val currentAccountObservable: Observable<List<MyAccountModel>> =
@@ -52,7 +54,16 @@ class DrawerViewModel @Inject constructor(
         .filter { lst -> lst.isNotEmpty() }
         .switchMap { repository.getFriendsForAcc(it.first()) }
         .map { lst -> lst.map { fr -> fr to fr.summoner.blockingGet() } } // Observable.zip(lst.map { friend -> friend.summoner.toObservable().map { sum -> friend to sum } }) { arr -> arr.toList() as List<Pair<MyFriendModel,SummonerModel>> }
-        .map { lst -> lst.map { pair -> MyFriendData(pair.first, pair.second, pair.second.icon.blockingGet(), pair.second.name) } } // Observable.zip(lst.map { (friend, sum) -> sum.icon.map { bmp -> MyFriendData(friend, sum, bmp, sum.name) } }) { arr -> arr.toList() as List<MyFriendData> }
+        .map { lst ->
+            lst.map { pair ->
+                MyFriendData(
+                    pair.first,
+                    pair.second,
+                    iconProvider.getProfileIcon(pair.second.iconName).blockingGet(),
+                    pair.second.name
+                )
+            }
+        } // Observable.zip(lst.map { (friend, sum) -> sum.icon.map { bmp -> MyFriendData(friend, sum, bmp, sum.name) } }) { arr -> arr.toList() as List<MyFriendData> }
 
     //  LiveData Output  //////////////////////////////////////////////////////
 

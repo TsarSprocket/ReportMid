@@ -1,6 +1,5 @@
 package com.tsarsprocket.reportmid.model
 
-import android.graphics.drawable.Drawable
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
@@ -17,7 +16,6 @@ class PlayerModel @AssistedInject constructor(
 ) {
     val champion: Single<ChampionModel> = repository.getChampionById( info.championId ).cache()
     val summoner: Single<SummonerModel> = summonerRepository.getBySummonerId( info.summonerId, region )
-    val profileIcon: Single<Drawable> = repository.iconProvider.getProfileIcon( info.profileIconId.toInt() )
     val summonerSpellD: SummonerSpellModel? = repository.dataDragon.tail.getSummonerSpellById( info.spell1Id )
     val summonerSpellF: SummonerSpellModel? = repository.dataDragon.tail.getSummonerSpellById( info.spell2Id )
     val isBot = info.bot

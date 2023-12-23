@@ -17,9 +17,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "OKHTTP_LOGGING", "\"BODY\"")
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "OKHTTP_LOGGING", "\"NONE\"")
         }
     }
     compileOptions {
@@ -40,6 +45,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_logging_interceptor_version"
 
     // Dagger
     kapt "com.google.dagger:dagger-compiler:$dagger_version"

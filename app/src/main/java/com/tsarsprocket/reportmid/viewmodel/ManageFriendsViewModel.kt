@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
@@ -17,7 +18,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.ReplaySubject
 import javax.inject.Inject
 
-class ManageFriendsViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class ManageFriendsViewModel @Inject constructor(
+    private val repository: Repository,
+    private val iconProvider: RIOTIconProvider,
+) : ViewModel() {
 
     //  Input  ////////////////////////////////////////////////////////////////
 
@@ -29,17 +33,17 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
     private val selectedAccPositionObservable: Observable<Int> = selectedAccPositionLive.toObservable()
 
     private val myAccsAndSumsObservable: Observable<List<Triple<MyAccountModel, SummonerModel, Drawable>>> = repository.getMyAccounts()
-        .map { lst -> lst.map { myAcc -> myAcc.summoner.blockingGet().let { Triple(myAcc, it, it.icon.blockingGet()) } } }
+        .map { lst -> lst.map { myAcc -> myAcc.summoner.blockingGet().let { Triple(myAcc, it, iconProvider.getProfileIcon(it.iconName).blockingGet()) } } }
 
     private val selectedAccAndSum: ReplaySubject<Triple<MyAccountModel, SummonerModel, Drawable>> =
         ReplaySubject.create<Triple<MyAccountModel, SummonerModel, Drawable>>(1).also { subj ->
-            Observable.combineLatest(selectedAccPositionObservable,myAccsAndSumsObservable) { pos, tri ->
+            Observable.combineLatest(selectedAccPositionObservable, myAccsAndSumsObservable) { pos, tri ->
                 if(pos < tri.size) Maybe.just(tri[pos])
                 else Maybe.empty()
             }
                 .filter { maybe -> !maybe.isEmpty.blockingGet() }
-                .map {
-                    maybe -> maybe.blockingGet()
+                .map { maybe ->
+                    maybe.blockingGet()
                 }
                 .subscribe(subj)
         }
@@ -54,15 +58,16 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
             it.first.friends
         }
         .map { lst -> lst.map { friend -> friend to friend.summoner } }
-        .map { lst -> lst.map { (friend, sumObs) ->
+        .map { lst ->
+            lst.map { (friend, sumObs) ->
                 val sum = sumObs.blockingGet()
-                FriendListItem(friend, sum, sum.icon.blockingGet())
+                FriendListItem(friend, sum, iconProvider.getProfileIcon(sum.iconName).blockingGet())
             }
         }
 
     //  Output  ///////////////////////////////////////////////////////////////
 
-    val myAccsAndSumsLive: LiveData<List<Triple<MyAccountModel, SummonerModel,Drawable>>> = myAccsAndSumsObservable.toLiveData()
+    val myAccsAndSumsLive: LiveData<List<Triple<MyAccountModel, SummonerModel, Drawable>>> = myAccsAndSumsObservable.toLiveData()
     val selectedSummonerLive: LiveData<SummonerModel> = selectedSummonerObservable.toLiveData()
     val friendSummonersLive: LiveData<List<FriendListItem>> = friendSummonersObservable.toLiveData()
 
@@ -73,7 +78,7 @@ class ManageFriendsViewModel @Inject constructor(private val repository: Reposit
     //  Init  /////////////////////////////////////////////////////////////////
 
     fun init(myAccInitPos: Int) {
-        if (selectedAccPositionLive.value == null) selectedAccPositionLive.value = myAccInitPos
+        if(selectedAccPositionLive.value == null) selectedAccPositionLive.value = myAccInitPos
     }
 
     fun createFriend(friendsPuuidAndRegion: PuuidAndRegion, mySumPuuidAndRegion: PuuidAndRegion) {

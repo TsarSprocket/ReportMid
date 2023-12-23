@@ -2,6 +2,13 @@ package com.tsarsprocket.reportmid.data_dragon.model
 
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragon.Tail
+import com.tsarsprocket.reportmid.data_dragon_room.ChampionEntity
+import com.tsarsprocket.reportmid.data_dragon_room.ItemEntity
+import com.tsarsprocket.reportmid.data_dragon_room.LanguageEntity
+import com.tsarsprocket.reportmid.data_dragon_room.RuneEntity
+import com.tsarsprocket.reportmid.data_dragon_room.RunePathEntity
+import com.tsarsprocket.reportmid.data_dragon_room.SummonerSpellEntity
+import com.tsarsprocket.reportmid.data_dragon_room.VersionEntity
 import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.model.ChampionModel
 import com.tsarsprocket.reportmid.model.ItemModel
@@ -10,13 +17,6 @@ import com.tsarsprocket.reportmid.model.RunePathModel
 import com.tsarsprocket.reportmid.model.SummonerSpellModel
 import com.tsarsprocket.reportmid.riotapi.ddragon.DataDragonService
 import com.tsarsprocket.reportmid.room.MainStorage
-import com.tsarsprocket.reportmid.room.ddragon.ChampionEntity
-import com.tsarsprocket.reportmid.room.ddragon.ItemEntity
-import com.tsarsprocket.reportmid.room.ddragon.LanguageEntity
-import com.tsarsprocket.reportmid.room.ddragon.RuneEntity
-import com.tsarsprocket.reportmid.room.ddragon.RunePathEntity
-import com.tsarsprocket.reportmid.room.ddragon.SummonerSpellEntity
-import com.tsarsprocket.reportmid.room.ddragon.VersionEntity
 import io.reactivex.subjects.ReplaySubject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -146,16 +146,16 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage, private va
         itemEntities: List<ItemEntity>,
     ): Tail
     {
-        val runePaths = runePathEntities.associate { ent -> RunePathModel(ent.riot_id, ent.key, ent.name, ent.iconPath, iconProvider).let { ent.id to it } }
+        val runePaths = runePathEntities.associate { ent -> RunePathModel(ent.riot_id, ent.key, ent.name, ent.iconPath).let { ent.id to it } }
 
         val runes = runeEntities.mapNotNull { runePaths[it.runePathId]?.createRune(it.riotId, it.key, it.name, it.slotNo, it.iconPath, iconProvider) } +
                 PerkModel.getBasicPerks(iconProvider)
 
-        val champs = championEntities.map { ChampionModel(it.riotId, it.riotStrId, it.name, it.iconName, iconProvider) }
+        val champs = championEntities.map { ChampionModel(it.riotId, it.riotStrId, it.name, it.iconName) }
 
-        val summonerSpells = summonerSpellEntities.map { SummonerSpellModel(it.key, it.imageName, iconProvider) }
+        val summonerSpells = summonerSpellEntities.map { SummonerSpellModel(it.key, it.imageName) }
 
-        val items = itemEntities.map { ItemModel(it.riotId, it.name, it.imageName, iconProvider) }
+        val items = itemEntities.map { ItemModel(it.riotId, it.name, it.imageName) }
 
         return TailImpl(ver,lang, runePaths.values.toList(), runes, champs, summonerSpells, items)
     }

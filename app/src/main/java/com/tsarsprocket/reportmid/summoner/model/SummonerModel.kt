@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.summoner.model
 import android.graphics.drawable.Drawable
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
+import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.ChampionModel
@@ -24,15 +25,21 @@ class SummonerModel @AssistedInject constructor(
 ) {
     val id: String = summonerDto.id
     val name: String = summonerDto.name
-    val icon: Single<Drawable> by lazy { Single.fromCallable { summonerDto.profileIconId }.subscribeOn( Schedulers.io() ).flatMap { repository.iconProvider.getProfileIcon(it) }  }
-    val puuid: String = summonerDto.puuid
+    val iconName = summonerDto.profileIconId
+    val icon: Single<Drawable> by lazy {
+        repository.iconProvider.getProfileIcon(summonerDto.profileIconId).subscribeOn(Schedulers.io())
+    }
+    val puuid: Puuid = Puuid(summonerDto.puuid)
     val level: Long = summonerDto.summonerLevel
-    val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner( this ) }
-    val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid,region) }
+    val myAccount: Maybe<MyAccountModel> by lazy { repository.getMyAccountForSummoner(this) }
+    val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid, region) }
     val riotAccountId: String = summonerDto.accountId
 
-    fun getMasteryWithChampion( championModel: ChampionModel): Observable<ChampionMastery> =
-        Observable.fromCallable { ChampionMastery.forSummoner( Orianna.summonerWithId( id ).get() ).withChampion( Orianna.championWithId(championModel.id).get() ).get() }.subscribeOn( Schedulers.io() )
+    fun getMasteryWithChampion(championModel: ChampionModel): Observable<ChampionMastery> =
+        Observable.fromCallable {
+            ChampionMastery.forSummoner(Orianna.summonerWithId(id).get())
+                .withChampion(Orianna.championWithId(championModel.id).get()).get()
+        }.subscribeOn(Schedulers.io())
 
     fun getCurrentMatch() = repository.getCurrentMatch(this)
 
@@ -40,10 +47,10 @@ class SummonerModel @AssistedInject constructor(
 
     //  Classes  //////////////////////////////////////////////////////////////
 
-    class ByNameAndRegionComparator: Comparator<SummonerModel> {
+    class ByNameAndRegionComparator : Comparator<SummonerModel> {
         override fun compare(o1: SummonerModel, o2: SummonerModel): Int {
             val byName = o1.name.compareTo(o2.name)
-            if( byName != 0 ) return byName
+            if(byName != 0) return byName
             return o1.region.compareTo(o2.region)
         }
     }

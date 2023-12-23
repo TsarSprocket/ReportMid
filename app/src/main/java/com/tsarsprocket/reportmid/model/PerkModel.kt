@@ -5,12 +5,12 @@ import com.tsarsprocket.reportmid.RIOTIconProvider
 open class PerkModel(
     val id: Int,
     val name: String,
-    iconPath: String,
+    val iconName: String,
     iconProvider: RIOTIconProvider
 ) {
-    val icon by lazy { iconProvider.getRuneIcon(iconPath).cache() }
 
-    override fun equals(other: Any?): Boolean = if (other is RuneModel) id == other.id else false
+    override fun equals(other: Any?): Boolean = if(other is RuneModel) id == other.id else false
+    override fun hashCode() = id
 
     enum class STATMODS(
         val id: Int,

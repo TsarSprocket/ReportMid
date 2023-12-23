@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
+import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
@@ -35,6 +36,9 @@ class ManageSummonersFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var iconProvider: RIOTIconProvider
 
     private val viewModel by viewModels<ManageSummonersViewModel> { viewModelFactory }
     private val activityViewModel by activityViewModels<MainActivityViewModel> { viewModelFactory }
@@ -158,8 +162,8 @@ class ManageSummonersFragment : BaseFragment() {
             val binding = CardMyManagedSummonerBinding.bind(holder.cardView)
             with(binding) {
                 cbSelected.isChecked = viewModel.checkedSummoners.contains(summoner)
-                cbSelected.setOnCheckedChangeListener { _, isChecked -> if (isChecked) checkSummoner(summoner) else uncheckSummoner(summoner) }
-                holder.disposer.add(summoner.icon.observeOn(AndroidSchedulers.mainThread()).subscribe { icon -> imgProfileIcon.setImageDrawable(icon) })
+                cbSelected.setOnCheckedChangeListener { _, isChecked -> if(isChecked) checkSummoner(summoner) else uncheckSummoner(summoner) }
+                holder.disposer.add(iconProvider.getProfileIcon(summoner.iconName).observeOn(AndroidSchedulers.mainThread()).subscribe { icon -> imgProfileIcon.setImageDrawable(icon) })
                 txtSummonerName.text = summoner.name
                 txtRegion.text = summoner.region.tag
             }

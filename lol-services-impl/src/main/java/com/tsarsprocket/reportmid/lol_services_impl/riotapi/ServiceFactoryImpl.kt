@@ -2,11 +2,13 @@ package com.tsarsprocket.reportmid.lol_services_impl.riotapi
 
 import android.content.Context
 import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol_services.BuildConfig
 import com.tsarsprocket.reportmid.lol_services.R
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.CallByType
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.RiotServers
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServerInfo
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,6 +23,7 @@ internal class ServiceFactoryImpl @Inject constructor(
     private val okClient = OkHttpClient.Builder()
         .addInterceptor(RequestRatePolicy(20, 1, TimeUnit.SECONDS))
         .addInterceptor(RequestRatePolicy(100, 2, TimeUnit.MINUTES))
+        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.valueOf(BuildConfig.OKHTTP_LOGGING) })
         .addInterceptor { chain ->
             chain.proceed(
                 chain.request().newBuilder()

@@ -31,7 +31,7 @@ class MatchHistoryModel @AssistedInject constructor(
 
     override fun loadSingle(params: LoadParams<Int>): Single<LoadResult<Int, MyMatch>> =
         (params.key ?: 0).let{ gameNo ->
-            matchV5Service.matches(summoner.puuid, start = gameNo, count = params.loadSize)
+            matchV5Service.matches(summoner.puuid.value, start = gameNo, count = params.loadSize)
                 .subscribeOn(Schedulers.io())
                 .firstOrError()
                 .map { matchIdList ->

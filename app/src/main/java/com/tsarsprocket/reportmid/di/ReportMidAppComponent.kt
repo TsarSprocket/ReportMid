@@ -11,6 +11,7 @@ import com.tsarsprocket.reportmid.controller.ManageFriendsFragment
 import com.tsarsprocket.reportmid.controller.ManageSummonersFragment
 import com.tsarsprocket.reportmid.controller.MatchHistoryFragment
 import com.tsarsprocket.reportmid.controller.MatchupFragment
+import com.tsarsprocket.reportmid.data_dragon_impl.di.DataDragonProvisioningModule
 import com.tsarsprocket.reportmid.landing_impl.di.LandingProvisionModule
 import com.tsarsprocket.reportmid.league_position_impl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModule
@@ -44,6 +45,7 @@ import dagger.android.AndroidInjectionModule
         RequestManagerModule::class,
         // Api provision modules
         AppProvisionModule::class,
+        DataDragonProvisioningModule::class,
         LandingProvisionModule::class,
         LeaguePositionProvisionModule::class,
         LolServicesProvisionModule::class,

@@ -81,6 +81,8 @@ dependencies {
     implementation project(path: ':lol-services-impl')
     implementation project(path: ':theme')
     implementation project(path: ':league-position-impl')
+    implementation project(path: ':data-dragon-impl')
+    implementation project(path: ':data-dragon-room')
 
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"
