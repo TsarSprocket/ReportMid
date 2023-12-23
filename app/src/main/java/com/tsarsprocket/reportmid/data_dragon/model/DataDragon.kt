@@ -1,10 +1,10 @@
 package com.tsarsprocket.reportmid.data_dragon.model
 
-import com.tsarsprocket.reportmid.model.ChampionModel
-import com.tsarsprocket.reportmid.model.ItemModel
-import com.tsarsprocket.reportmid.model.PerkModel
-import com.tsarsprocket.reportmid.model.RunePathModel
-import com.tsarsprocket.reportmid.model.SummonerSpellModel
+import com.tsarsprocket.reportmid.lol.model.Champion
+import com.tsarsprocket.reportmid.lol.model.Item
+import com.tsarsprocket.reportmid.lol.model.Perk
+import com.tsarsprocket.reportmid.lol.model.RunePath
+import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import io.reactivex.subjects.ReplaySubject
 
 interface DataDragon {
@@ -14,15 +14,15 @@ interface DataDragon {
     interface Tail {
         val latestVersion: String
         val language: String
-        val runePaths: List<RunePathModel>
-        val perks: List<PerkModel>
-        val champs: List<ChampionModel>
-        val summonerSpells: List<SummonerSpellModel>
-        val items: List<ItemModel>
-        fun getRunePathById(id: Int): RunePathModel
-        fun getPerkById(id: Int): PerkModel
-        fun getChampionById(id: Int): ChampionModel
-        fun getSummonerSpellById(id: Long): SummonerSpellModel
-        fun getItemById(id: Int): ItemModel
+        val runePaths: List<RunePath>
+        val perks: List<Perk>
+        val champs: List<Champion>
+        val summonerSpells: List<SummonerSpell>
+        val items: List<Item>
+        fun getRunePathById(id: Int): RunePath
+        fun getPerkById(id: Int): Perk
+        fun getChampionById(id: Int): Champion
+        fun getSummonerSpellById(id: Long): SummonerSpell
+        fun getItemById(id: Int): Item
     }
 }

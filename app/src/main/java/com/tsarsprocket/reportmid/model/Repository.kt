@@ -8,12 +8,12 @@ import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
-import com.merakianalytics.orianna.types.core.staticdata.Champion
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
+import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
@@ -37,6 +37,7 @@ import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import com.merakianalytics.orianna.types.common.Region as OriannaRegion
+import com.merakianalytics.orianna.types.core.staticdata.Champion as OriannaChampion
 import com.tsarsprocket.reportmid.lol_services_api.R as RServices
 
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
@@ -159,10 +160,10 @@ class Repository @Inject constructor(
                 }
             }
 
-    fun getChampionModel(lmdChampion: () -> Champion) =
+    fun getChampionModel(lmdChampion: () -> OriannaChampion) =
         ensureInitializedDoOnIOSubject { getChampionById(lmdChampion().id).blockingGet() }
 
-    fun getChampionById(id: Int): Single<ChampionModel> =
+    fun getChampionById(id: Int): Single<Champion> =
         ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
 
     fun getMatchHistoryModel(region: Region, summoner: SummonerModel): MatchHistoryModel =

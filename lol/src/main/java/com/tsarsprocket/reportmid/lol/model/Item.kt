@@ -1,6 +1,6 @@
-package com.tsarsprocket.reportmid.model
+package com.tsarsprocket.reportmid.lol.model
 
-class ItemModel(
+class Item(
     val riotId: Int,
     val name: String,
     val imageName: String,

@@ -3,10 +3,10 @@ package com.tsarsprocket.reportmid.summoner.model
 import android.graphics.drawable.Drawable
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.core.championmastery.ChampionMastery
+import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.model.ChampionModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerDto
@@ -35,10 +35,10 @@ class SummonerModel @AssistedInject constructor(
     val puuidAndRegion: PuuidAndRegion by lazy { PuuidAndRegion(puuid, region) }
     val riotAccountId: String = summonerDto.accountId
 
-    fun getMasteryWithChampion(championModel: ChampionModel): Observable<ChampionMastery> =
+    fun getMasteryWithChampion(champion: Champion): Observable<ChampionMastery> =
         Observable.fromCallable {
             ChampionMastery.forSummoner(Orianna.summonerWithId(id).get())
-                .withChampion(Orianna.championWithId(championModel.id).get()).get()
+                .withChampion(Orianna.championWithId(champion.id).get()).get()
         }.subscribeOn(Schedulers.io())
 
     fun getCurrentMatch() = repository.getCurrentMatch(this)

@@ -7,8 +7,8 @@ import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
 import com.tsarsprocket.reportmid.logError
+import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.ChampionModel
 import com.tsarsprocket.reportmid.model.CurrentMatchModel
 import com.tsarsprocket.reportmid.model.CurrentMatchTeamModel
 import com.tsarsprocket.reportmid.model.Repository
@@ -101,7 +101,7 @@ class MatchupViewModel @Inject constructor(
                         Single.zip(
                             playerModel.champion,
                             playerModel.summoner,
-                            BiFunction<ChampionModel, SummonerModel, Single<Int>> { ch, su -> getSkillForChampion(su, ch) })
+                            BiFunction<Champion, SummonerModel, Single<Int>> { ch, su -> getSkillForChampion(su, ch) })
                             .flatMap { it }
                             .concatWith(Single.just(-1))
                             .take(1)
@@ -134,8 +134,8 @@ class MatchupViewModel @Inject constructor(
         )
     }
 
-    private fun getSkillForChampion(summoner: SummonerModel, champion: ChampionModel ) =
-        summoner.getMasteryWithChampion( champion ).map { it.points }.first(0)
+    private fun getSkillForChampion(summoner: SummonerModel, champion: Champion) =
+        summoner.getMasteryWithChampion(champion).map { it.points }.first(0)
 
     @MainThread
     private fun updateDuration() {

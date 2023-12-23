@@ -10,11 +10,11 @@ import com.tsarsprocket.reportmid.data_dragon_room.RunePathEntity
 import com.tsarsprocket.reportmid.data_dragon_room.SummonerSpellEntity
 import com.tsarsprocket.reportmid.data_dragon_room.VersionEntity
 import com.tsarsprocket.reportmid.logError
-import com.tsarsprocket.reportmid.model.ChampionModel
-import com.tsarsprocket.reportmid.model.ItemModel
-import com.tsarsprocket.reportmid.model.PerkModel
-import com.tsarsprocket.reportmid.model.RunePathModel
-import com.tsarsprocket.reportmid.model.SummonerSpellModel
+import com.tsarsprocket.reportmid.lol.model.Champion
+import com.tsarsprocket.reportmid.lol.model.Item
+import com.tsarsprocket.reportmid.lol.model.Perk
+import com.tsarsprocket.reportmid.lol.model.RunePath
+import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import com.tsarsprocket.reportmid.riotapi.ddragon.DataDragonService
 import com.tsarsprocket.reportmid.room.MainStorage
 import io.reactivex.subjects.ReplaySubject
@@ -144,42 +144,41 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage, private va
         championEntities: List<ChampionEntity>,
         summonerSpellEntities: List<SummonerSpellEntity>,
         itemEntities: List<ItemEntity>,
-    ): Tail
-    {
-        val runePaths = runePathEntities.associate { ent -> RunePathModel(ent.riot_id, ent.key, ent.name, ent.iconPath).let { ent.id to it } }
+    ): Tail {
+        val runePaths = runePathEntities.associate { ent -> RunePath(ent.riot_id, ent.key, ent.name, ent.iconPath).let { ent.id to it } }
 
-        val runes = runeEntities.mapNotNull { runePaths[it.runePathId]?.createRune(it.riotId, it.key, it.name, it.slotNo, it.iconPath, iconProvider) } +
-                PerkModel.getBasicPerks(iconProvider)
+        val runes = runeEntities.mapNotNull { runePaths[it.runePathId]?.createRune(it.riotId, it.key, it.name, it.slotNo, it.iconPath) } +
+                Perk.getBasicPerks()
 
-        val champs = championEntities.map { ChampionModel(it.riotId, it.riotStrId, it.name, it.iconName) }
+        val champs = championEntities.map { Champion(it.riotId, it.name, it.iconName) }
 
-        val summonerSpells = summonerSpellEntities.map { SummonerSpellModel(it.key, it.imageName) }
+        val summonerSpells = summonerSpellEntities.map { SummonerSpell(it.key, it.imageName) }
 
-        val items = itemEntities.map { ItemModel(it.riotId, it.name, it.imageName) }
+        val items = itemEntities.map { Item(it.riotId, it.name, it.imageName) }
 
-        return TailImpl(ver,lang, runePaths.values.toList(), runes, champs, summonerSpells, items)
+        return TailImpl(ver, lang, runePaths.values.toList(), runes, champs, summonerSpells, items)
     }
 
     class TailImpl(
         override val latestVersion: String,
         override val language: String,
-        override val runePaths: List<RunePathModel>,
-        override val perks: List<PerkModel>,
-        override val champs: List<ChampionModel>,
-        override val summonerSpells: List<SummonerSpellModel>,
-        override val items: List<ItemModel>,
+        override val runePaths: List<RunePath>,
+        override val perks: List<Perk>,
+        override val champs: List<Champion>,
+        override val summonerSpells: List<SummonerSpell>,
+        override val items: List<Item>,
     ) : Tail {
-        private val runePathRegistry: Map<Int, RunePathModel> = runePaths.associateBy { it.id }
-        private val perkRegistry: Map<Int, PerkModel> = perks.associateBy { it.id }
-        private val champRegistry: Map<Int, ChampionModel> = champs.associateBy { it.id }
-        private val summSpellRegistry: Map<Long, SummonerSpellModel> = summonerSpells.associateBy { it.key }
-        private val itemRegistry: Map<Int, ItemModel> = items.associateBy { it.riotId }
+        private val runePathRegistry: Map<Int, RunePath> = runePaths.associateBy { it.id }
+        private val perkRegistry: Map<Int, Perk> = perks.associateBy { it.id }
+        private val champRegistry: Map<Int, Champion> = champs.associateBy { it.id }
+        private val summSpellRegistry: Map<Long, SummonerSpell> = summonerSpells.associateBy { it.key }
+        private val itemRegistry: Map<Int, Item> = items.associateBy { it.riotId }
 
 
-        override fun getRunePathById(id: Int): RunePathModel = runePathRegistry[id] ?: throw RuntimeException("Rune path with unknown id=$id is requested")
-        override fun getPerkById(id: Int): PerkModel = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
-        override fun getChampionById(id: Int): ChampionModel = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
-        override fun getSummonerSpellById(id: Long): SummonerSpellModel = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
-        override fun getItemById(id: Int): ItemModel = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
+        override fun getRunePathById(id: Int): RunePath = runePathRegistry[id] ?: throw RuntimeException("Rune path with unknown id=$id is requested")
+        override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
+        override fun getChampionById(id: Int): Champion = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
+        override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
+        override fun getItemById(id: Int): Item = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
     }
 }
