@@ -1,5 +1,7 @@
 project.ext {
     compile_sdk_version = 34
+    min_sdk_version = 24
+    target_sdk_version = 34
 
     androidx_appcompat_version = '1.6.1'
     androidx_core_version = '1.12.0'

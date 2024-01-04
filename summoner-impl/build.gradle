@@ -1,10 +1,11 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
 }
 
 android {
-    namespace 'com.tsarsprocket.reportmid.res_lib'
+    namespace 'com.tsarsprocket.reportmid.summoner_impl'
     compileSdk compile_sdk_version
 
     defaultConfig {
@@ -28,4 +29,20 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_18.toString()
     }
+}
+
+dependencies {
+
+    api project(path: ':summoner-api')
+    api project(path: ':summoner-room')
+    api project(path: ':data-dragon-room')
+
+    // Dagger
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 }

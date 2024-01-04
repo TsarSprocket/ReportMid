@@ -8,7 +8,6 @@ import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.data_dragon_impl.data.DataDragonImpl
@@ -37,6 +36,7 @@ import io.reactivex.subjects.ReplaySubject
 import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import javax.inject.Provider
 import com.merakianalytics.orianna.types.common.Region as OriannaRegion
 import com.merakianalytics.orianna.types.core.staticdata.Champion as OriannaChampion
 import com.tsarsprocket.reportmid.lol_services_api.R as RServices
@@ -46,6 +46,7 @@ const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE
 @AppScope
 class Repository @Inject constructor(
     val context: Context,
+    databaseProvider: Provider<MainDatabase>,
     val iconProvider: RIOTIconProvider,
     val serviceFactory: ServiceFactory,
     private val summonerRepository: SummonerRepository,
@@ -66,7 +67,7 @@ class Repository @Inject constructor(
             try {
                 Log.d(Repository::class.simpleName, "Initializing...")
 
-                database = ReportMidApp.instance.comp.getMainDatabase()
+                database = databaseProvider.get()
 
                 val stateList = database.globalDAO().getAll()
 

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.tsarsprocket.reportmid.res_lib'
+    namespace 'com.tsarsprocket.reportmid.summoner_api'
     compileSdk compile_sdk_version
 
     defaultConfig {
@@ -28,4 +28,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_18.toString()
     }
+}
+
+dependencies {
+
+    api project(path: ':base')
+    api project(path: ':lol')
 }

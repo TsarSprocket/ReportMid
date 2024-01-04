@@ -1,10 +1,11 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
 }
 
 android {
-    namespace 'com.tsarsprocket.reportmid.res_lib'
+    namespace 'com.tsarsprocket.reportmid.summoner_room'
     compileSdk compile_sdk_version
 
     defaultConfig {
@@ -28,4 +29,14 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_18.toString()
     }
+}
+
+dependencies {
+
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
 }
