@@ -10,6 +10,7 @@ import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.data_dragon_impl.data.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
@@ -57,7 +58,7 @@ class Repository @Inject constructor(
     lateinit var database: MainDatabase
 
     val summoners = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
-    lateinit var dataDragon: DataDragonImpl
+    lateinit var dataDragon: DataDragon
 
     init {
 
