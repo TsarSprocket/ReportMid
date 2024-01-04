@@ -15,7 +15,7 @@ import com.tsarsprocket.reportmid.riotapi.championMastery.ChampionMasteryDto
 import com.tsarsprocket.reportmid.riotapi.championMastery.ChampionMasteryV4
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerDto
 import com.tsarsprocket.reportmid.riotapi.summoner.SummonerV4Service
-import com.tsarsprocket.reportmid.room.MainStorage
+import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.summoner.di.ChampionMasteryModelFactory
 import com.tsarsprocket.reportmid.summoner.di.SummonerModelFactory
 import io.reactivex.Observable
@@ -30,7 +30,7 @@ class SummonerRepositoryImpl @Inject constructor(
     private val summonerModelFactory: SummonerModelFactory,
     private val serviceFactory: ServiceFactory,
     private val requestManager: RequestManager,
-    private val database: MainStorage,
+    private val database: MainDatabase,
     @Io private val ioScheduler: Scheduler,
 ) : SummonerRepository {
 

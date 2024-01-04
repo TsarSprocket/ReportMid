@@ -32,11 +32,19 @@ android {
 
 dependencies {
 
+    api project(path: ':app-api')
     api project(path: ':data-dragon-api')
     api project(path: ':data-dragon-room')
+    api project(path: ':lol-services-api')
+
+    // Rx
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
     // Dagger
     kapt "com.google.dagger:dagger-compiler:$dagger_version"

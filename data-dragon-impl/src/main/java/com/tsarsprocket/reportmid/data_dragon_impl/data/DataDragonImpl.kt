@@ -1,7 +1,9 @@
-package com.tsarsprocket.reportmid.data_dragon.model
+package com.tsarsprocket.reportmid.data_dragon_impl.data
 
-import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.data_dragon.model.DataDragon.Tail
+import com.tsarsprocket.reportmid.app_api.room.MainStorage
+import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
+import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon.Tail
+import com.tsarsprocket.reportmid.data_dragon_impl.retrofit.DataDragonService
 import com.tsarsprocket.reportmid.data_dragon_room.ChampionEntity
 import com.tsarsprocket.reportmid.data_dragon_room.ItemEntity
 import com.tsarsprocket.reportmid.data_dragon_room.LanguageEntity
@@ -9,14 +11,12 @@ import com.tsarsprocket.reportmid.data_dragon_room.RuneEntity
 import com.tsarsprocket.reportmid.data_dragon_room.RunePathEntity
 import com.tsarsprocket.reportmid.data_dragon_room.SummonerSpellEntity
 import com.tsarsprocket.reportmid.data_dragon_room.VersionEntity
-import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Item
 import com.tsarsprocket.reportmid.lol.model.Perk
 import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
-import com.tsarsprocket.reportmid.riotapi.ddragon.DataDragonService
-import com.tsarsprocket.reportmid.room.MainStorage
+import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.subjects.ReplaySubject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -24,7 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
 import javax.inject.Inject
 
-class DataDragonImpl @Inject constructor(private val db: MainStorage, private val iconProvider: RIOTIconProvider) : DataDragon {
+class DataDragonImpl @Inject constructor(private val db: MainStorage) : DataDragon {
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl("https://ddragon.leagueoflegends.com/")
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

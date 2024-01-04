@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
-import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
+import com.tsarsprocket.reportmid.data_dragon_impl.data.DataDragonImpl
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.room.Room
 import com.tsarsprocket.reportmid.app_api.di.AppApi
+import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.BindingExport
 import com.tsarsprocket.reportmid.base.di.FragmentsCreator
@@ -14,7 +15,7 @@ import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionReposit
 import com.tsarsprocket.reportmid.league_position_api.di.LeaguePositionApi
 import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
-import com.tsarsprocket.reportmid.room.MainStorage
+import com.tsarsprocket.reportmid.room.MainDatabase
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
@@ -54,11 +55,15 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
-    fun provideMainStorage(context: Context): MainStorage {
-        return Room.databaseBuilder(context.applicationContext, MainStorage::class.java, "database")
+    fun provideMainDatabase(context: Context): MainDatabase {
+        return Room.databaseBuilder(context.applicationContext, MainDatabase::class.java, "database")
             .createFromAsset("database/init.db")
             .build()
     }
+
+    @Provides
+    @AppScope
+    fun provideMainStorage(db: MainDatabase): MainStorage = db
 
     // Temporary until migrated
     @Provides

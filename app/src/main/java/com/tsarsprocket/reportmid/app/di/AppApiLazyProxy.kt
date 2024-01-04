@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.app.di
 
 import android.content.Context
 import com.tsarsprocket.reportmid.app_api.di.AppApi
+import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import kotlinx.coroutines.CoroutineDispatcher
 
 class AppApiLazyProxy(appApiProducer: () -> AppApi) : AppApi {
@@ -15,4 +16,6 @@ class AppApiLazyProxy(appApiProducer: () -> AppApi) : AppApi {
     override fun getIoDispatcher(): CoroutineDispatcher = appApi.getIoDispatcher()
 
     override fun getComputationDispatcher(): CoroutineDispatcher = appApi.getComputationDispatcher()
+
+    override fun getMainStorage(): MainStorage = appApi.getMainStorage()
 }

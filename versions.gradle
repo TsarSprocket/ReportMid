@@ -22,5 +22,7 @@ project.ext {
     paging_version = '3.2.0-alpha04'
     retrofit_version = '2.9.0'
     room_version = '2.6.1'
+    rxkotlin_version = '2.4.0'
+    rxandroid_version = '2.1.1'
     viewmodel_version = '2.6.1'
 }

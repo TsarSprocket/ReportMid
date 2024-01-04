@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
-import com.tsarsprocket.reportmid.logError
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.CurrentMatchModel
@@ -15,6 +14,7 @@ import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
 import com.tsarsprocket.reportmid.summoner.model.SummonerModel
 import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

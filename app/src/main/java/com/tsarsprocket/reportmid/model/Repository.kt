@@ -3,14 +3,14 @@ package com.tsarsprocket.reportmid.model
 import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.room.Room
 import com.merakianalytics.orianna.Orianna
 import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.RIOTIconProvider
+import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.data_dragon.model.DataDragonImpl
+import com.tsarsprocket.reportmid.data_dragon_impl.data.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
 import com.tsarsprocket.reportmid.lol.model.Champion
@@ -20,7 +20,7 @@ import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.room.MainStorage
+import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.room.SummonerEntity
@@ -54,7 +54,7 @@ class Repository @Inject constructor(
 
     val initialized = ReplaySubject.createWithSize<Boolean>(1)
 
-    lateinit var database: MainStorage
+    lateinit var database: MainDatabase
 
     val summoners = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
     lateinit var dataDragon: DataDragonImpl
@@ -65,11 +65,7 @@ class Repository @Inject constructor(
             try {
                 Log.d(Repository::class.simpleName, "Initializing...")
 
-                database = Room.databaseBuilder(
-                    context.applicationContext,
-                    MainStorage::class.java,
-                    "database"
-                ).createFromAsset("database/init.db").build()
+                database = ReportMidApp.instance.comp.getMainDatabase()
 
                 val stateList = database.globalDAO().getAll()
 
@@ -80,7 +76,7 @@ class Repository @Inject constructor(
                     database.globalDAO().insert(GlobalEntity(accs.firstOrNull()?.id))
                 }
 
-                dataDragon = DataDragonImpl(database, iconProvider)
+                dataDragon = DataDragonImpl(database)
 
                 Orianna.setRiotAPIKey(loadRawResourceAsText(RServices.raw.riot_api_key))
                 Orianna.setDefaultRegion(OriannaRegion.RUSSIA)

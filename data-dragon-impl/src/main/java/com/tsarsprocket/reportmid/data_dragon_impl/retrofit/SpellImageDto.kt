@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.riotapi.ddragon
+package com.tsarsprocket.reportmid.data_dragon_impl.retrofit
 
 import com.google.gson.annotations.SerializedName
 

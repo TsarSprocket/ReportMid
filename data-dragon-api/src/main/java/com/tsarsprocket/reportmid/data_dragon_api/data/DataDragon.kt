@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.data_dragon.model
+package com.tsarsprocket.reportmid.data_dragon_api.data
 
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Item

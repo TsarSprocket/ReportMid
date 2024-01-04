@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.app.di.AppProvisionModule
+import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.controller.AddSummonerFragment
 import com.tsarsprocket.reportmid.controller.ConfirmSummonerFragment
@@ -17,6 +18,7 @@ import com.tsarsprocket.reportmid.league_position_impl.di.LeaguePositionProvisio
 import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
 import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
+import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.summoner.di.SummonerModule
 import com.tsarsprocket.reportmid.view_state_impl.di.ViewStateProvisionModule
 import dagger.Component
@@ -56,6 +58,9 @@ interface ReportMidAppComponent {
 
     // Application
     fun inject(app: ReportMidApp)
+
+    fun getMainDatabase(): MainDatabase // TODO: Remove after the migration of DB to individual modules is complete
+    fun getMainStorage(): MainStorage
 
     // Viewmodel
     fun mainActivityViewModelComponent(): MainActivityViewModelComponent.Factory

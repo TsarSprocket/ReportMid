@@ -1,11 +1,11 @@
-package com.tsarsprocket.reportmid.riotapi.ddragon
+package com.tsarsprocket.reportmid.data_dragon_impl.retrofit
 
 import com.google.gson.annotations.SerializedName
 
-data class RunePath(
+data class RunePathDto(
     @SerializedName("icon") val icon: String,
     @SerializedName("id") val id: Int,
     @SerializedName("key") val key: String,
     @SerializedName("name") val name: String,
-    @SerializedName("slots") val slots: List<RuneSlot>
+    @SerializedName("slots") val slots: List<RuneSlotDto>
 )
