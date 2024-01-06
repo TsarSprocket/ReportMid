@@ -38,16 +38,9 @@ dependencies {
     api project(path: ':data-dragon-room')
 
     // Room
-    api "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-    api "androidx.room:room-ktx:$room_version"
-    api "androidx.room:room-rxjava2:$room_version"
-    testApi "androidx.room:room-testing:$room_version"
-
-//    implementation "androidx.core:core-ktx:$androidx_core_version"
-//    implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
-//    implementation "com.google.android.material:material:$material_design_version"
-//    testImplementation "junit:junit:$junit_version"
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-//    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    api libs.androidx.room.runtime
+    kapt libs.androidx.room.compiler
+    api libs.androidx.room.ktx
+    api libs.androidx.room.rxjava2
+    testApi libs.androidx.room.testing
 }

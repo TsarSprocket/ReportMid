@@ -182,7 +182,7 @@ class ManageFriendsFragment : BaseFragment() {
             return view.apply {
                 findViewById<ImageView>(R.id.imgProfileIcon).setImageDrawable(item.third)
                 findViewById<TextView>(R.id.txtSummonerName).text = item.second.name
-                findViewById<TextView>(R.id.txtRegion).text = item.second.region.tag
+                findViewById<TextView>(R.id.txtRegion).text = item.second.region.title
             }
         }
     }
@@ -210,7 +210,7 @@ class ManageFriendsFragment : BaseFragment() {
             with(holder.cardView) {
                 findViewById<ImageView>(R.id.imgProfileIcon).apply { if (item != null) setImageDrawable(item.icon) else setImageResource(R.drawable.champion_icon_placegolder) }
                 findViewById<TextView>(R.id.txtSummonerName).text = item?.sum?.name ?: "N/A"
-                findViewById<TextView>(R.id.txtRegion).text = item?.sum?.region?.tag ?: "N/A"
+                findViewById<TextView>(R.id.txtRegion).text = item?.sum?.region?.title ?: "N/A"
                 with(findViewById<CheckBox>(R.id.cbSelected)) {
                     isChecked = item?.isChecked ?: false
                     setOnCheckedChangeListener{ _, isChckd ->

@@ -66,8 +66,8 @@ repositories {
 
 dependencies {
 
-    implementation "androidx.multidex:multidex:$multidex_version"
-    implementation "com.android.support:multidex:$multidex_support_version"
+    implementation libs.androidx.multidex
+    implementation libs.android.support.multidex
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -84,76 +84,76 @@ dependencies {
     implementation project(path: ':data-dragon-impl')
 
     // Dagger
-    implementation "com.google.dagger:dagger:$dagger_version"
-    implementation "com.google.dagger:dagger-android:$dagger_version"
+    implementation libs.dagger
+    implementation libs.dagger.android
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     // AndroidX
-    implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
-    implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
-    implementation 'androidx.activity:activity-ktx:1.7.1'
-    implementation "androidx.core:core-ktx:$androidx_core_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "androidx.drawerlayout:drawerlayout:1.2.0"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_version"
-    implementation 'androidx.preference:preference-ktx:1.2.0'
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$androidx_junit_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    implementation libs.reactivestreams
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activity.ktx
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.drawerlayout
+    implementation libs.androidx.legacy.support.v4
+    implementation libs.androidx.lifecycle.extensions
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.preference.ktx
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 
     // Room
-    kapt "androidx.room:room-compiler:$room_version"
+    kapt libs.androidx.room.compiler
 
     // Navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
 
     // Orianna API
-    implementation "com.merakianalytics.orianna:orianna-android:4.0.0-rc6"
+    implementation "com.merakianalytics.orianna:orianna-android:4.0.0-rc6" // Will be sun set after the migration to the RIOT API
 
     // Rx
-    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
-    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    implementation libs.rxandroid
+    implementation libs.rxkotlin
 
     // Material
-    implementation "com.google.android.material:material:$material_design_version"
+    implementation libs.material
 
     // GSON
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation libs.gson
 
     // Retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation libs.retrofit
+    implementation libs.adapter.rxjava2
+    implementation libs.converter.gson
 
     // Paging 3
-    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
-    testImplementation "androidx.paging:paging-common-ktx:$paging_version" // alternatively - without Android dependencies for tests
-    implementation "androidx.paging:paging-rxjava2-ktx:$paging_version" // optional - RxJava2 support
+    implementation libs.androidx.paging.runtime.ktx
+    testImplementation libs.androidx.paging.common.ktx // alternatively - without Android dependencies for tests
+    implementation libs.androidx.paging.rxjava2.ktx // optional - RxJava2 support
 
     // Flow
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$kotlin_coroutines_version"
+    implementation libs.kotlinx.coroutines.rx2
 
     // Compose
-    def composeBom = platform("androidx.compose:compose-bom:$compose_bom_version")
+    def composeBom = platform(libs.compose.bom)
     implementation composeBom
     androidTestImplementation composeBom
 
     // Compose Material 3
-    implementation 'androidx.compose.material3:material3'
+    implementation libs.compose.material3
 
     // Compose preview support
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation libs.compose.ui.tooling.preview
+    debugImplementation libs.compose.ui.tooling
 
     // Optional - Integration with activities
     // implementation 'androidx.activity:activity-compose:1.7.0'
     // Optional - Integration with ViewModels
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$compose_viewmodel_version"
+    implementation libs.androidx.lifecycle.viewmodel.compose
     // Optional - Integration with RxJava
     // implementation 'androidx.compose.runtime:runtime-rxjava2'
 }

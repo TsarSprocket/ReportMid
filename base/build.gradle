@@ -34,20 +34,20 @@ android {
 dependencies {
     api project(path: ':utils')
 
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation libs.listenablefuture
 
-    api "androidx.core:core-ktx:$androidx_core_version"
-    api "androidx.appcompat:appcompat:$androidx_appcompat_version"
-    api "com.google.android.material:material:$material_design_version"
-    api "androidx.fragment:fragment-ktx:$androidx_fragment_ktx"
+    api libs.androidx.core.ktx
+    api libs.androidx.appcompat
+    api libs.material
+    api libs.androidx.fragment.ktx
 
     // Dagger
-    api "com.google.dagger:dagger:$dagger_version"
-    api "com.google.dagger:dagger-android:$dagger_version"
-    api "com.google.dagger:dagger-android-support:$dagger_version"
+    api libs.dagger
+    api libs.dagger.android
+    api libs.dagger.android.support
 
     // Test
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$androidx_junit_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 }

@@ -36,12 +36,12 @@ dependencies {
     api project(path: ':lol')
 
     // Rx
-    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    implementation libs.rxandroid
 
-    implementation "androidx.core:core-ktx:$androidx_core_version"
-    implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
-    implementation "com.google.android.material:material:$material_design_version"
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 }

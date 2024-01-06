@@ -38,11 +38,11 @@ dependencies {
     api project(path: ':data-dragon-room')
 
     // Dagger
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    kapt libs.dagger.compiler
+    kapt libs.dagger.android.processor
 
     // Retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation libs.retrofit
+    implementation libs.adapter.rxjava2
+    implementation libs.converter.gson
 }
