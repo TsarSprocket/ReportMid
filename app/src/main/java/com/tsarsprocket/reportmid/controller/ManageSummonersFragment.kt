@@ -23,7 +23,7 @@ import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
@@ -163,7 +163,7 @@ class ManageSummonersFragment : BaseFragment() {
             with(binding) {
                 cbSelected.isChecked = viewModel.checkedSummoners.contains(summoner)
                 cbSelected.setOnCheckedChangeListener { _, isChecked -> if(isChecked) checkSummoner(summoner) else uncheckSummoner(summoner) }
-                holder.disposer.add(iconProvider.getProfileIcon(summoner.iconName).observeOn(AndroidSchedulers.mainThread()).subscribe { icon -> imgProfileIcon.setImageDrawable(icon) })
+                holder.disposer.add(iconProvider.getProfileIcon(summoner.iconId).observeOn(AndroidSchedulers.mainThread()).subscribe { icon -> imgProfileIcon.setImageDrawable(icon) })
                 txtSummonerName.text = summoner.name
                 txtRegion.text = summoner.region.tag
             }

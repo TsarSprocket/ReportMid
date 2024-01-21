@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers

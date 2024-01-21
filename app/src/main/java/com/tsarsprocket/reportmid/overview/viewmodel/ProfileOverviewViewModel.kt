@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +22,7 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 class ProfileOverviewViewModel @Inject constructor(
-    private val summonerRepository: SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
     private val iconProvider: RIOTIconProvider,
 ) : ViewModel() {
 
@@ -35,7 +34,7 @@ class ProfileOverviewViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            summoner.flatMapLatest { iconProvider.getProfileIcon(it.iconName).toObservable().asFlow() }.collect { summonerIconLive.value = it }
+            summoner.flatMapLatest { iconProvider.getProfileIcon(it.iconId).toObservable().asFlow() }.collect { summonerIconLive.value = it }
         }
         viewModelScope.launch {
             summoner.collect {

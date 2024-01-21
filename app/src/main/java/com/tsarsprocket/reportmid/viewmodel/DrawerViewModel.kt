@@ -11,8 +11,7 @@ import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
@@ -24,7 +23,7 @@ import javax.inject.Inject
 
 class DrawerViewModel @Inject constructor(
     val repository: Repository,
-    private val summonerRepository: SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
     private val iconProvider: RIOTIconProvider,
 ) : ViewModel() {
 
@@ -43,7 +42,7 @@ class DrawerViewModel @Inject constructor(
             .switchMap { reg -> summonerRepository.getMineForRegionSelected(reg) }
             .map { lst ->
                 lst.sortedWith { o1, o2 -> SUMO_COMP.compare(o1.first, o2.first) }
-                    .map { (sum, isSelected) -> Triple(iconProvider.getProfileIcon(sum.iconName).blockingGet(), sum, isSelected) }
+                    .map { (sum, isSelected) -> Triple(iconProvider.getProfileIcon(sum.iconId).blockingGet(), sum, isSelected) }
             }
 
     private val currentAccountObservable: Observable<List<MyAccountModel>> =
@@ -59,7 +58,7 @@ class DrawerViewModel @Inject constructor(
                 MyFriendData(
                     pair.first,
                     pair.second,
-                    iconProvider.getProfileIcon(pair.second.iconName).blockingGet(),
+                    iconProvider.getProfileIcon(pair.second.iconId).blockingGet(),
                     pair.second.name
                 )
             }
@@ -98,7 +97,7 @@ class DrawerViewModel @Inject constructor(
     private fun getCurrentRegionsValue() = currentRegionsLive.value
 
     fun activateAcc(sum: SummonerModel, view: View, group: LinearLayout) {
-        disposer.add(sum.myAccount
+        disposer.add(repository.getMyAccountForSummoner(sum.puuid, sum.region)
             .observeOn(Schedulers.io())
             .subscribe {
                 it.activate()

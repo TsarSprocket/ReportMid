@@ -8,20 +8,19 @@ import androidx.lifecycle.switchMap
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
 import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.subjects.ReplaySubject
 import javax.inject.Inject
 
 class ConfirmSummonerViewModel @Inject constructor(
     val repository: Repository,
-    private val summonerRepository: SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
     private val iconProvider: RIOTIconProvider,
 ): ViewModel() {
 
     val puuidSubj = ReplaySubject.create<PuuidAndRegion>( 1 )
     val summoner = puuidSubj.switchMapSingle { puuidAndRegion -> summonerRepository.getByPuuidAndRegion(puuidAndRegion) }.toLiveData()
-    val bitmap = summoner.switchMap { sum -> iconProvider.getProfileIcon(sum.iconName).toObservable().toLiveData() }
+    val bitmap = summoner.switchMap { sum -> iconProvider.getProfileIcon(sum.iconId).toObservable().toLiveData() }
     val name = summoner.map { sum -> sum.name }
     val level = summoner.map { sum -> sum.level.toString() }
     val confirm = MutableLiveData<Boolean>()

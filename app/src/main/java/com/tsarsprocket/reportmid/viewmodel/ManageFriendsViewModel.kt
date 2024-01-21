@@ -9,7 +9,7 @@ import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
 import io.reactivex.Maybe
@@ -33,7 +33,7 @@ class ManageFriendsViewModel @Inject constructor(
     private val selectedAccPositionObservable: Observable<Int> = selectedAccPositionLive.toObservable()
 
     private val myAccsAndSumsObservable: Observable<List<Triple<MyAccountModel, SummonerModel, Drawable>>> = repository.getMyAccounts()
-        .map { lst -> lst.map { myAcc -> myAcc.summoner.blockingGet().let { Triple(myAcc, it, iconProvider.getProfileIcon(it.iconName).blockingGet()) } } }
+        .map { lst -> lst.map { myAcc -> myAcc.summoner.blockingGet().let { Triple(myAcc, it, iconProvider.getProfileIcon(it.iconId).blockingGet()) } } }
 
     private val selectedAccAndSum: ReplaySubject<Triple<MyAccountModel, SummonerModel, Drawable>> =
         ReplaySubject.create<Triple<MyAccountModel, SummonerModel, Drawable>>(1).also { subj ->
@@ -61,7 +61,7 @@ class ManageFriendsViewModel @Inject constructor(
         .map { lst ->
             lst.map { (friend, sumObs) ->
                 val sum = sumObs.blockingGet()
-                FriendListItem(friend, sum, iconProvider.getProfileIcon(sum.iconName).blockingGet())
+                FriendListItem(friend, sum, iconProvider.getProfileIcon(sum.iconId).blockingGet())
             }
         }
 

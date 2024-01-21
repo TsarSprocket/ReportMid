@@ -4,6 +4,17 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/buildSrc" name="buildSrc">
+                <projects>
+                  <project path="$PROJECT_DIR$/buildSrc" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
@@ -12,6 +23,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/app-api" />
             <option value="$PROJECT_DIR$/base" />
+            <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/data-dragon-api" />
             <option value="$PROJECT_DIR$/data-dragon-impl" />
             <option value="$PROJECT_DIR$/data-dragon-room" />
@@ -21,8 +33,12 @@
             <option value="$PROJECT_DIR$/league-position-impl" />
             <option value="$PROJECT_DIR$/lol" />
             <option value="$PROJECT_DIR$/lol-resource-lib" />
+            <option value="$PROJECT_DIR$/lol-room" />
             <option value="$PROJECT_DIR$/lol-services-api" />
             <option value="$PROJECT_DIR$/lol-services-impl" />
+            <option value="$PROJECT_DIR$/my-account-api" />
+            <option value="$PROJECT_DIR$/my-account-impl" />
+            <option value="$PROJECT_DIR$/my-account-room" />
             <option value="$PROJECT_DIR$/res-lib" />
             <option value="$PROJECT_DIR$/summoner-api" />
             <option value="$PROJECT_DIR$/summoner-impl" />

@@ -7,7 +7,7 @@ import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.SpectatorV4Service
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.Team
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.Calendar

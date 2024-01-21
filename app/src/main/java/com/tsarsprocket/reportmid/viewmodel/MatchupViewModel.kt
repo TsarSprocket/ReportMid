@@ -12,8 +12,7 @@ import com.tsarsprocket.reportmid.model.CurrentMatchModel
 import com.tsarsprocket.reportmid.model.CurrentMatchTeamModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -39,7 +38,7 @@ private val DUR_FMT_MS = "%02d:%02d"
 
 class MatchupViewModel @Inject constructor(
     private val repository: Repository,
-    private val summonerRepository: SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
     private val leaguePositionRepository: LeaguePositionRepository, // temporary, until migrated to new screen
     private val iconProvider: RIOTIconProvider, // temporary, until migrated to new screen
 ): ViewModel() {

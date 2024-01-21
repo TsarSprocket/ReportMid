@@ -27,7 +27,7 @@ import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentManageFriendsBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getRoundedCroppedDrawable
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue

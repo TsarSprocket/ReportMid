@@ -9,8 +9,7 @@ import androidx.paging.rxjava2.cachedIn
 import androidx.paging.rxjava2.flowable
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.toFlowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +17,7 @@ import javax.inject.Inject
 
 class MatchHistoryViewModel @Inject constructor(
     private val repository: Repository,
-    private val summonerRepository: SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
 ) : ViewModel() {
 
     val activeSummonerModel = MutableLiveData<SummonerModel>()
@@ -31,7 +30,7 @@ class MatchHistoryViewModel @Inject constructor(
 
     @ExperimentalCoroutinesApi
     val flowableMatches = activeSummonerModel.toFlowable()
-        .switchMap { (Pager(PagingConfig(pageSize = 8, prefetchDistance = 24)) { it.getMatchHistory() }).flowable.cachedIn(viewModelScope) }
+        .switchMap { (Pager(PagingConfig(pageSize = 8, prefetchDistance = 24)) { repository.getMatchHistoryModel(it.region, it) }).flowable.cachedIn(viewModelScope) }
 
     override fun onCleared() {
         allDisposables.clear()

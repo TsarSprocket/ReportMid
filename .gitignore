@@ -16,3 +16,5 @@
 Резервная_копия_*
 /screenshots
 /videos
+/buildSrc/.gradle
+/buildSrc/build

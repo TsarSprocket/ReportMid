@@ -36,6 +36,9 @@ dependencies {
     implementation project(path: ':base')
     api project(path: ':view-state-api')
     api project(path: ':data-dragon-room')
+    api project(path: ':lol-room')
+    api project(path: ':summoner-room')
+    api project(path: ':my-account-room')
 
     // Room
     api libs.androidx.room.runtime

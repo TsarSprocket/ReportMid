@@ -1,5 +1,10 @@
 package com.tsarsprocket.reportmid.request_manager.model
 
+import com.tsarsprocket.reportmid.app_api.request_manager.CancelableRequest
+import com.tsarsprocket.reportmid.app_api.request_manager.Request
+import com.tsarsprocket.reportmid.app_api.request_manager.RequestKey
+import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
+import com.tsarsprocket.reportmid.app_api.request_manager.RequestResult
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import io.reactivex.Scheduler
@@ -25,12 +30,12 @@ class RequestManagerImpl @Inject constructor(
 
      override fun cancelRequest(key: RequestKey) {
           requestMap[ key ]?.let { requestInfo ->
-               if( requestInfo.request is CancelableRequest ) requestInfo.request.cancel()
+              if(requestInfo.request is CancelableRequest) requestInfo.request.cancel()
                requestMap.remove( key )
           }
      }
 
-     override fun getRequest(key: RequestKey): Request<*,*>? = requestMap[key]?.request
+    override fun getRequest(key: RequestKey): Request<*, *>? = requestMap[key]?.request
 
      override fun hasRequest(key: RequestKey): Boolean = requestMap.contains(key)
 

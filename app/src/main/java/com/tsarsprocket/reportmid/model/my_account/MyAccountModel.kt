@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.model.my_account
 
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
 

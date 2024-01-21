@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.di
 
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.app.di.AppProvisionModule
+import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.controller.AddSummonerFragment
@@ -61,6 +62,7 @@ interface ReportMidAppComponent {
 
     fun getMainDatabase(): MainDatabase // TODO: Remove after the migration of DB to individual modules is complete
     fun getMainStorage(): MainStorage
+    fun getRequestManager(): RequestManager
 
     // Viewmodel
     fun mainActivityViewModelComponent(): MainActivityViewModelComponent.Factory

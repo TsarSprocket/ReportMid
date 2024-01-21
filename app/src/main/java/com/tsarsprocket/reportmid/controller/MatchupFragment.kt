@@ -25,7 +25,7 @@ import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
 import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.MatchupViewModel

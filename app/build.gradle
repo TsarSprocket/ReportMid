@@ -8,11 +8,10 @@ plugins {
 android {
     compileSdk compile_sdk_version
 
-
     defaultConfig {
         applicationId "com.tsarsprocket.reportmid"
-        minSdkVersion 24
-        targetSdkVersion 34
+        minSdk min_sdk_version
+        targetSdk target_sdk_version
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -77,17 +76,20 @@ dependencies {
     implementation project(path: ':lol-resource-lib')
     implementation project(path: ':landing-impl')
     implementation project(path: ':lol')
+    implementation project(path: ':lol-room')
     implementation project(path: ':base')
     implementation project(path: ':lol-services-impl')
     implementation project(path: ':theme')
     implementation project(path: ':league-position-impl')
     implementation project(path: ':data-dragon-impl')
+    implementation project(path: ':summoner-impl')
+    implementation project(path: ':my-account-impl')
 
     // Dagger
     implementation libs.dagger
     implementation libs.dagger.android
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    kapt libs.dagger.compiler
+    kapt libs.dagger.android.processor
 
     // AndroidX
     implementation libs.reactivestreams

@@ -20,14 +20,13 @@ import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
+import com.tsarsprocket.reportmid.my_account_room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.MainDatabase
-import com.tsarsprocket.reportmid.room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.MyFriendEntity
-import com.tsarsprocket.reportmid.room.SummonerEntity
 import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
 import com.tsarsprocket.reportmid.room.state.GlobalEntity
-import com.tsarsprocket.reportmid.summoner.model.SummonerModel
-import com.tsarsprocket.reportmid.summoner.model.SummonerRepository
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -49,7 +48,7 @@ class Repository @Inject constructor(
     databaseProvider: Provider<MainDatabase>,
     val iconProvider: RIOTIconProvider,
     val serviceFactory: ServiceFactory,
-    private val summonerRepository: SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
     private val currentMatchModelFactory: CurrentMatchModelFactory,
     private val matchHistoryModelFactory: MatchHistoryModelFactory,
 ) {
@@ -179,12 +178,12 @@ class Repository @Inject constructor(
             Observable.just(MyAccountModel(this, id)).subscribe(subj)
         }
 
-    fun getMyAccountForSummoner(summoner: SummonerModel): Maybe<MyAccountModel> =
+    fun getMyAccountForSummoner(summonerPuuid: Puuid, summonerRegion: Region): Maybe<MyAccountModel> =
         ensureInitializedDoOnIO {}.firstElement().flatMap {
             Maybe.fromCallable {
                 val myAccEnt =
                     database.summonerDAO()
-                        .getByPuuidAndRegionTag(summoner.puuid.value, summoner.region.tag)
+                        .getByPuuidAndRegionTag(summonerPuuid.value, summonerRegion.tag)
                         ?.let { database.myAccountDAO().getBySummonerId(it.id) }
                         ?: throw RuntimeException("No My Account for summoner ")
                 MyAccountModel(this, myAccEnt.id)

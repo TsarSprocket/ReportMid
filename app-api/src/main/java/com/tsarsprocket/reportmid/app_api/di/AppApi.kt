@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.app_api.di
 
 import android.content.Context
+import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
@@ -20,4 +21,6 @@ interface AppApi {
     fun getComputationDispatcher(): CoroutineDispatcher
 
     fun getMainStorage(): MainStorage
+
+    fun getRequestManager(): RequestManager
 }

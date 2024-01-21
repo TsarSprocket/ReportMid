@@ -6,14 +6,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.tsarsprocket.reportmid.room.MyAccountEntity
-import com.tsarsprocket.reportmid.room.RegionEntity
+import com.tsarsprocket.reportmid.my_account_room.MyAccountEntity
 
 @Entity(
     tableName = "state_current_accounts",
     foreignKeys = [
-        ForeignKey( entity = RegionEntity::class, parentColumns = [ "id" ], childColumns = [ "region_id" ] ),
-        ForeignKey( entity = MyAccountEntity::class, parentColumns = [ "id" ], childColumns = [ "account_id" ] )
+        ForeignKey(entity = com.tsarsprocket.reportmid.lol_room.room.RegionEntity::class, parentColumns = ["id"], childColumns = ["region_id"]),
+        ForeignKey(entity = MyAccountEntity::class, parentColumns = ["id"], childColumns = ["account_id"])
     ],
     indices = [
         Index( "region_id", unique = true ),
