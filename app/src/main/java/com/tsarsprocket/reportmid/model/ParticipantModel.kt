@@ -10,10 +10,11 @@ import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
 import com.tsarsprocket.reportmid.riotapi.matchV5.PerkStyleDto
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single
+import kotlinx.coroutines.rx2.rxSingle
 
 class ParticipantModel @AssistedInject constructor(
     @Assisted val team: TeamModel,
@@ -24,8 +25,8 @@ class ParticipantModel @AssistedInject constructor(
     summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
 ) {
     val puuid: Puuid = Puuid(participantDto.puuid)
-    val summoner: Single<SummonerModel> by lazy { summonerRepository.getByPuuidAndRegion(PuuidAndRegion(puuid, region)).cache() }
-    val champion: Champion = dataDragon.tail.getChampionById(participantDto.championId)
+    val summoner: Single<Summoner> by lazy { rxSingle { summonerRepository.requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(puuid, region)) }.cache() }
+    val champion: Champion = dataDragon.tail.getChampionById(participantDto.championId.toLong())
     val kills: Int = participantDto.kills
     val deaths: Int = participantDto.deaths
     val assists: Int = participantDto.assists

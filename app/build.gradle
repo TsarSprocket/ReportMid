@@ -83,7 +83,7 @@ dependencies {
     implementation project(path: ':league-position-impl')
     implementation project(path: ':data-dragon-impl')
     implementation project(path: ':summoner-impl')
-    implementation project(path: ':my-account-impl')
+    implementation project(path: ':state-impl')
 
     // Dagger
     implementation libs.dagger
@@ -136,6 +136,9 @@ dependencies {
     implementation libs.androidx.paging.runtime.ktx
     testImplementation libs.androidx.paging.common.ktx // alternatively - without Android dependencies for tests
     implementation libs.androidx.paging.rxjava2.ktx // optional - RxJava2 support
+
+    // Channels
+    implementation libs.kotlinx.coroutines.core
 
     // Flow
     implementation libs.kotlinx.coroutines.rx2

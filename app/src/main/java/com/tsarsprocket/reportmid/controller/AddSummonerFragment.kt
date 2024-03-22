@@ -19,7 +19,7 @@ import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.peekNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.setNavigationResult
@@ -70,7 +70,7 @@ class AddSummonerFragment : BaseFragment() {
         val confirmed = peekNavigationReturnedValue<Boolean>(RESULT_CONFIRM)
         if (confirmed != null && confirmed) {
             bringUpKeyboard = false
-            val summonerModel = viewModel.activeSummonerModel.value!!
+            val summonerModel = viewModel.activeSummoner.value!!
             setNavigationResult(result = PuuidAndRegion(summonerModel.puuid,summonerModel.region), key = RESULT_PUUID_AND_REG)
             findNavController().popBackStack()
         }
@@ -87,8 +87,8 @@ class AddSummonerFragment : BaseFragment() {
     fun onValidateInitial(view: View?) {
         setSoftInputVisibility(requireContext(), binding.edSummonerName, false)
 
-        object : OneTimeObserver<Maybe<SummonerModel>>() {
-            override fun onOneTimeChanged(maybe: Maybe<SummonerModel>) {
+        object : OneTimeObserver<Maybe<Summoner>>() {
+            override fun onOneTimeChanged(maybe: Maybe<Summoner>) {
                 if (maybe.isEmpty.blockingGet()) {
                     viewModel.activeSummonerName.observe(this@AddSummonerFragment) { summonerName ->
                         Snackbar.make(

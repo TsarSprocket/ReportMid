@@ -10,11 +10,9 @@ import com.tsarsprocket.reportmid.data_dragon_room.RunePathEntity
 import com.tsarsprocket.reportmid.data_dragon_room.SummonerSpellEntity
 import com.tsarsprocket.reportmid.data_dragon_room.VersionEntity
 import com.tsarsprocket.reportmid.lol_room.room.RegionEntity
-import com.tsarsprocket.reportmid.my_account_room.MyAccountEntity
-import com.tsarsprocket.reportmid.room.state.CurrentAccountDAO
-import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
-import com.tsarsprocket.reportmid.room.state.GlobalDAO
-import com.tsarsprocket.reportmid.room.state.GlobalEntity
+import com.tsarsprocket.reportmid.state_room.CurrentAccountEntity
+import com.tsarsprocket.reportmid.state_room.GlobalEntity
+import com.tsarsprocket.reportmid.summoner_room.MyAccountEntity
 import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
 
 @Database(
@@ -38,7 +36,5 @@ import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
     exportSchema = false,
 )
 abstract class MainDatabase : MainStorage() {
-    abstract fun globalDAO(): GlobalDAO
-    abstract fun currentAccountDAO(): CurrentAccountDAO
     abstract fun myFriendDAO(): MyFriendDAO
 }

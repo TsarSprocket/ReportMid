@@ -10,6 +10,7 @@ enum class Division(val roman: String, val numeric: Int) {
 
     companion object {
 
+        @OptIn(ExperimentalStdlibApi::class)
         fun byRoman(roman: String) = roman.uppercase().let { capitalized -> entries.find { it.roman == capitalized } } ?: UNKNOWN
     }
 }

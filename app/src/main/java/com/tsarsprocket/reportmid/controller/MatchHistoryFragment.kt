@@ -54,7 +54,7 @@ class MatchHistoryFragment : BaseFragment() {
     override fun onAttach(context: Context) {
         (context.applicationContext as ReportMidApp).comp.inject(this)
         super.onAttach(context)
-        if(viewModel.activeSummonerModel.value == null) {
+        if(viewModel.activeSummoner.value == null) {
             viewModel.initialize(
                 requireArguments().getParcelable(ARG_PUUID_AND_REG)
                     ?: throw IllegalArgumentException("Missing ARG_PUUID_AND_REG argument")
@@ -87,7 +87,7 @@ class MatchHistoryFragment : BaseFragment() {
             selectedItemId = R.id.matchHistoryFragment
         }
 
-        viewModel.activeSummonerModel.observe(viewLifecycleOwner) {
+        viewModel.activeSummoner.observe(viewLifecycleOwner) {
             baseActivity.toolbar.title =
                 getString(R.string.fragment_match_history_title_template).format(it.name)
         }
@@ -123,7 +123,7 @@ class MatchHistoryFragment : BaseFragment() {
             .setPopUpTo(R.id.matchHistoryFragment, true).build()
         return when(item.itemId) {
             R.id.profileOverviewFragment -> {
-                val sum = viewModel.activeSummonerModel.value!!
+                val sum = viewModel.activeSummoner.value!!
                 val action =
                     MatchHistoryFragmentDirections.actionMatchHistoryFragmentToProfileOverviewFragment(
                         PuuidAndRegion(sum.puuid, sum.region)
@@ -133,7 +133,7 @@ class MatchHistoryFragment : BaseFragment() {
             }
 
             R.id.matchupFragment -> {
-                val sum = viewModel.activeSummonerModel.value!!
+                val sum = viewModel.activeSummoner.value!!
                 val action =
                     MatchHistoryFragmentDirections.actionMatchHistoryFragmentToMatchupFragment(
                         PuuidAndRegion(sum.puuid, sum.region)
@@ -280,13 +280,13 @@ class MatchHistoryFragment : BaseFragment() {
             oldItem: MatchHistoryModel.MyMatch,
             newItem: MatchHistoryModel.MyMatch
         ): Boolean =
-            oldItem.matchId == newItem.matchId && oldItem.summoner.id == newItem.summoner.id
+            oldItem.matchId == newItem.matchId && oldItem.summoner.riotId == newItem.summoner.riotId
 
         override fun areContentsTheSame(
             oldItem: MatchHistoryModel.MyMatch,
             newItem: MatchHistoryModel.MyMatch
         ): Boolean =
-            oldItem.matchId == newItem.matchId && oldItem.summoner.id == newItem.summoner.id // Sufficient assumption: same IDs always represent same data sets
+            oldItem.matchId == newItem.matchId && oldItem.summoner.riotId == newItem.summoner.riotId // Sufficient assumption: same IDs always represent same data sets
     }
 
     companion object {

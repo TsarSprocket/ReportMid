@@ -2,10 +2,10 @@ package com.tsarsprocket.reportmid.presentation
 
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 
 class PlayerPresentation() {
-    val summoner = MutableLiveData<SummonerModel>()
+    val summoner = MutableLiveData<Summoner>()
     val championIconLive = MutableLiveData<Drawable>()
     val summonerChampionSkillLive = MutableLiveData<Int>()
     val summonerNameLive = MutableLiveData<String>()

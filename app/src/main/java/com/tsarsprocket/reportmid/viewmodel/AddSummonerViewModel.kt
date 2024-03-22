@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -23,7 +23,7 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
 
     val activeSummonerName = MutableLiveData("")
 
-    val activeSummonerModel = MutableLiveData<SummonerModel>()
+    val activeSummoner = MutableLiveData<Summoner>()
 
     val selectedRegionName = selectedRegionPosition.map { pos -> if (pos >= 0) allRegions[pos].title else "<not selected>" }
 
@@ -41,9 +41,9 @@ class AddSummonerViewModel @Inject constructor(private val repository: Repositor
         }
         .toLiveData()
         .map {
-            if (!it.isEmpty.blockingGet()) activeSummonerModel.value = it.blockingGet()
+            if(!it.isEmpty.blockingGet()) activeSummoner.value = it.blockingGet()
             it
         }
 
-    fun isSummonerInUseLive(sum: SummonerModel): LiveData<Boolean> = repository.checkSummonerExistInDB(sum).toLiveData()
+    fun isSummonerInUseLive(sum: Summoner): LiveData<Boolean> = repository.checkSummonerInUse(sum).toLiveData()
 }

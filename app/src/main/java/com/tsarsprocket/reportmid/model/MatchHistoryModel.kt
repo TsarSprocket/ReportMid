@@ -6,7 +6,7 @@ import com.tsarsprocket.reportmid.di.assisted.MatchModelFactory
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
 import com.tsarsprocket.reportmid.riotapi.matchV5.MatchV5Service
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single
@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers
 
 class MatchHistoryModel @AssistedInject constructor(
     @Assisted val region: Region,
-    @Assisted val summoner: SummonerModel,
+    @Assisted val summoner: Summoner,
     val repository: Repository,
     private val matchModelFactory: MatchModelFactory,
 ): RxPagingSource<Int, MatchHistoryModel.MyMatch>() {
@@ -50,7 +50,7 @@ class MatchHistoryModel @AssistedInject constructor(
         }
 
     data class MyMatch(
-        val summoner: SummonerModel,
+        val summoner: Summoner,
         val matchId: String,
         val match: Single<MatchModel>,
     )

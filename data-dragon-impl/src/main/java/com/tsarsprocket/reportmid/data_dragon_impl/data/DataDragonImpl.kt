@@ -100,7 +100,8 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage) : DataDrag
 
         val lstRetroChamps = try { ddragon.champions(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError("Can't get champions from DD", ex); throw ex }
 
-        val championEntities = lstRetroChamps.data.values.map { champ -> ChampionEntity(langId, champ.key, champ.id, champ.name, champ.image.full)
+        val championEntities = lstRetroChamps.data.values.map { champ ->
+            ChampionEntity(langId, champ.key.toLong(), champ.id, champ.name, champ.image.full)
             .also { champEnt -> db.championDao().insert(champEnt).ignoreElement().blockingAwait() } }
 
         val lstRetroSummonerSpells = try { ddragon.summonerSpells(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get summoner spells from DD", ex ); throw ex }
@@ -170,14 +171,14 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage) : DataDrag
     ) : Tail {
         private val runePathRegistry: Map<Int, RunePath> = runePaths.associateBy { it.id }
         private val perkRegistry: Map<Int, Perk> = perks.associateBy { it.id }
-        private val champRegistry: Map<Int, Champion> = champs.associateBy { it.id }
+        private val champRegistry: Map<Long, Champion> = champs.associateBy { it.id }
         private val summSpellRegistry: Map<Long, SummonerSpell> = summonerSpells.associateBy { it.key }
         private val itemRegistry: Map<Int, Item> = items.associateBy { it.riotId }
 
 
         override fun getRunePathById(id: Int): RunePath = runePathRegistry[id] ?: throw RuntimeException("Rune path with unknown id=$id is requested")
         override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
-        override fun getChampionById(id: Int): Champion = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
+        override fun getChampionById(id: Long): Champion = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
         override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
         override fun getItemById(id: Int): Item = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
     }

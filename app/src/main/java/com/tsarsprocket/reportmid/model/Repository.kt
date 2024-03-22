@@ -18,20 +18,24 @@ import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
-import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.my_account_room.MyAccountEntity
 import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.room.MyFriendEntity
-import com.tsarsprocket.reportmid.room.state.CurrentAccountEntity
-import com.tsarsprocket.reportmid.room.state.GlobalEntity
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
-import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
-import io.reactivex.Maybe
+import com.tsarsprocket.reportmid.state_api.data.StateRepository
+import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summoner_api.model.puuidAndRegion
+import com.tsarsprocket.reportmid.tools.Optional
+import com.tsarsprocket.reportmid.tools.Optional.Companion.optional
+import com.tsarsprocket.reportmid.utils.annotations.Temporary
+import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.rx2.rxObservable
+import kotlinx.coroutines.rx2.rxSingle
 import java.io.InputStreamReader
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -48,7 +52,8 @@ class Repository @Inject constructor(
     databaseProvider: Provider<MainDatabase>,
     val iconProvider: RIOTIconProvider,
     val serviceFactory: ServiceFactory,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository, // temporary
+    private val stateRepository: StateRepository,
     private val currentMatchModelFactory: CurrentMatchModelFactory,
     private val matchHistoryModelFactory: MatchHistoryModelFactory,
 ) {
@@ -57,24 +62,23 @@ class Repository @Inject constructor(
 
     lateinit var database: MainDatabase
 
-    val summoners = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
+    val summoners = ConcurrentHashMap<PuuidAndRegion, Summoner>()
     lateinit var dataDragon: DataDragon
 
     init {
-
         Observable.fromCallable {
             try {
                 Log.d(Repository::class.simpleName, "Initializing...")
 
                 database = databaseProvider.get()
 
-                val stateList = database.globalDAO().getAll()
+                @Temporary runBlocking {
+                    if(stateRepository.getActiveCurrentAccountId() == null) {
 
-                if(stateList.isEmpty()) {
-
-                    val accs = database.myAccountDAO().getAll()
-
-                    database.globalDAO().insert(GlobalEntity(accs.firstOrNull()?.id))
+                        summonerRepository.getAllMyAccounts().firstOrNull()?.let { myAccount ->
+                            stateRepository.setActiveCurrentAccountId(myAccount.id)
+                        }
+                    }
                 }
 
                 dataDragon = DataDragonImpl(database)
@@ -86,24 +90,27 @@ class Repository @Inject constructor(
 
                 return@fromCallable true
             } catch(ex: Exception) {
+                logError("Error initializing the repository", ex)
                 return@fromCallable false
             }
         }.subscribeOn(Schedulers.io()).subscribe(initialized)
     }
 
-    fun getSelectedAccountRegion() = ensureInitializedDoOnIOSubject {
-        database.globalDAO().getAll()
-            .map { database.currentAccountDAO().getById(it.currentAccountId!!) }
-            .map { database.regionDAO().getById(it.regionId) }
-            .first()
-    }.map { Region.getByTag(it.tag) }
+    fun getSelectedAccountRegion(): Observable<Region> {
+        return ensureInitializedDoOnIOSubject {}.switchMap {
+            @Temporary rxObservable {
+                stateRepository.getActiveCurrentAccountId()?.let { myAccointId ->
+                    send(stateRepository.getCurrentAccountById(myAccointId).region)
+                }
+            }
+        }
+    }
 
     fun getMyRegions(): Observable<List<Region>> = ensureInitializedDoOnIO { }
-        .switchMap { _ -> database.myAccountDAO().getAllObservable() }
+        .map { _ -> @Temporary runBlocking { summonerRepository.getAllMyAccounts() } }
         .map { lstMyAccs ->
             lstMyAccs.map { myAcc ->
-                val sum = database.summonerDAO().getById(myAcc.summonerId)
-                database.regionDAO().getById(sum.regionId)
+                @Temporary runBlocking { summonerRepository.getSummonerInfoById(myAcc.summonerId).region }
             }
                 .distinct()
                 .map { regEnt ->
@@ -120,12 +127,12 @@ class Repository @Inject constructor(
         summonerName: String,
         regionModel: Region,
         failOnNotFound: Boolean = false
-    ): Observable<SummonerModel> {
+    ): Observable<Summoner> {
 
         return initialized.observeOn(Schedulers.io())
             .switchMapSingle { fInitialized ->
                 when(fInitialized) {
-                    true -> summonerRepository.getBySummonerName(summonerName, regionModel)
+                    true -> rxSingle { summonerRepository.requestRemoteSummonerByName(summonerName, regionModel) }
                     else -> throw RepositoryNotInitializedException()
                 }
             }
@@ -137,22 +144,14 @@ class Repository @Inject constructor(
             .switchMap { fInitialized ->
                 when(fInitialized) {
                     true -> {
-                        val curAccId = database.globalDAO().getAll().first().currentAccountId
-
-                        if(curAccId != null) {
-                            val accId = database.currentAccountDAO().getById(curAccId).accountId
-                            val curSummonerId = database.myAccountDAO().getById(accId).summonerId
-                            val sum = database.summonerDAO().getById(curSummonerId)
-                            val regEnt = database.regionDAO().getById(sum.regionId)
-                            Observable.just(
-                                PuuidAndRegion(
-                                    Puuid(sum.puuid),
-                                    Region.getByTag(regEnt.tag)
-                                )
-                            )
-                        } else Observable.empty()
+                        rxObservable {
+                            stateRepository.getActiveCurrentAccountId()?.let { curAccId ->
+                                val accId = stateRepository.getCurrentAccountById(curAccId).myAccountId
+                                val curSummonerId = summonerRepository.getMyAccountById(accId).summonerId
+                                send(summonerRepository.getSummonerInfoById(curSummonerId).puuidAndRegion)
+                            }
+                        }
                     }
-
                     else -> throw RepositoryNotInitializedException()
                 }
             }
@@ -161,56 +160,48 @@ class Repository @Inject constructor(
         ensureInitializedDoOnIOSubject { getChampionById(lmdChampion().id).blockingGet() }
 
     fun getChampionById(id: Int): Single<Champion> =
-        ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id) }.firstOrError()
+        ensureInitializedDoOnIO { dataDragon.tail.getChampionById(id.toLong()) }.firstOrError()
 
-    fun getMatchHistoryModel(region: Region, summoner: SummonerModel): MatchHistoryModel =
+    fun getMatchHistoryModel(region: Region, summoner: Summoner): MatchHistoryModel =
         matchHistoryModelFactory.create(region, summoner)
 
-    fun getCurrentMatch(summoner: SummonerModel) =
+    fun getCurrentMatch(summoner: Summoner) =
         ensureInitializedDoOnIOSubject { currentMatchModelFactory.create(summoner) }
 
-    fun getMyAccounts(): Observable<List<MyAccountModel>> = ensureInitializedDoOnIO {
-        database.myAccountDAO().getAll()
-    }.map { list -> list.map { MyAccountModel(this, it.id) } }
+    fun getMyAccounts(): Observable<List<MyAccount>> = ensureInitializedDoOnIO {
+        @Temporary runBlocking { summonerRepository.getAllMyAccounts() }
+    }
 
-    fun getMyAccountById(id: Long): ReplaySubject<MyAccountModel> =
-        ReplaySubject.create<MyAccountModel>(1).also { subj ->
-            Observable.just(MyAccountModel(this, id)).subscribe(subj)
-        }
-
-    fun getMyAccountForSummoner(summonerPuuid: Puuid, summonerRegion: Region): Maybe<MyAccountModel> =
-        ensureInitializedDoOnIO {}.firstElement().flatMap {
-            Maybe.fromCallable {
-                val myAccEnt =
-                    database.summonerDAO()
-                        .getByPuuidAndRegionTag(summonerPuuid.value, summonerRegion.tag)
-                        ?.let { database.myAccountDAO().getBySummonerId(it.id) }
-                        ?: throw RuntimeException("No My Account for summoner ")
-                MyAccountModel(this, myAccEnt.id)
-            }
+    fun getMyAccountForSummoner(summonerPuuid: Puuid, summonerRegion: Region): Single<MyAccount> {
+        return ensureInitializedDoOnIO {}.firstOrError().map {
+            runBlocking { summonerRepository.getMyAccountByPuuidAndRegion(PuuidAndRegion(summonerPuuid, summonerRegion)) }
         }.subscribeOn(Schedulers.io()).cache()
+    }
 
-    fun getSummonerForMyAccount(myAccount: MyAccountModel): Single<SummonerModel> =
-        ensureInitializedDoOnIO {}.flatMapSingle {
-            val sumEnt = database.summonerDAO()
-                .getById(database.myAccountDAO().getById(myAccount.id).summonerId)
-            summonerRepository.getByPuuidAndRegion(
-                PuuidAndRegion(
-                    sumEnt.puuid,
-                    database.regionDAO().getById(sumEnt.regionId).tag
-                )
-            )
-        }.firstOrError()
-
-    fun getCurrentAccountsPerRegionObservable(reg: Region): Observable<List<MyAccountModel>> =
-        ensureInitializedDoOnIO { }
-            .switchMap {
-                database.currentAccountDAO()
-                    .getByRegionIdObservable(database.regionDAO().getByTag(reg.tag).id)
+    fun getSummonerForMyAccount(myAccount: MyAccount): Single<Summoner> =
+        ensureInitializedDoOnIO {}
+            .firstOrError()
+            .map {
+                @Temporary runBlocking {
+                    val summonerInfo = summonerRepository.getSummonerInfoById(myAccount.summonerId)
+                    summonerRepository.requestRemoteSummonerByPuuidAndRegion(summonerInfo.puuidAndRegion)
+                }
             }
-            .map { list -> list.map { curAccEnt -> MyAccountModel(this, curAccEnt.accountId) } }
 
-    fun getFriendsForAcc(myAcc: MyAccountModel): ReplaySubject<List<MyFriendModel>> =
+    fun getMyCurrentAccountsPerRegionObservable(reg: Region): Observable<Optional<MyAccount>> {
+        return ensureInitializedDoOnIO {
+            @Temporary runBlocking {
+                try {
+                    val currentAccount = stateRepository.getCurrentAccountByRegion(reg)
+                    summonerRepository.getMyAccountById(currentAccount.myAccountId).optional()
+                } catch(exception: Exception) {
+                    Optional.empty()
+                }
+            }
+        }
+    }
+
+    fun getFriendsForAcc(myAcc: MyAccount): ReplaySubject<List<MyFriendModel>> =
         ReplaySubject.create<List<MyFriendModel>>().also { subj ->
             ensureInitializedDoOnIO {}
                 .switchMap {
@@ -219,17 +210,13 @@ class Repository @Inject constructor(
                 }.subscribe(subj)
         }
 
-    fun getSummonerForFriend(myFriend: MyFriendModel): Single<SummonerModel> =
+    fun getSummonerForFriend(myFriend: MyFriendModel): Single<Summoner> =
         ensureInitializedDoOnIO {
             val friendEnt = database.myFriendDAO().getById(myFriend.id)
-            val sumEnt = database.summonerDAO().getById(friendEnt.summonerId)
-            val regEnt = database.regionDAO().getById(sumEnt.regionId)
-            Pair(sumEnt, regEnt)
+            @Temporary runBlocking { summonerRepository.getSummonerInfoById(friendEnt.summonerId) }
         }
-            .switchMapSingle { (sumEnt, regEnt) ->
-                summonerRepository.getByPuuidAndRegion(
-                    PuuidAndRegion(sumEnt.puuid, regEnt.tag)
-                )
+            .switchMapSingle { summonerInfo ->
+                rxSingle { summonerRepository.requestRemoteSummonerByPuuidAndRegion(summonerInfo.puuidAndRegion) }
             }
             .firstOrError()
 
@@ -240,129 +227,84 @@ class Repository @Inject constructor(
      * @throws <code>RepositoryNotInitializedException</code>
      */
     fun addMyAccountNotify(
-        summonerModel: SummonerModel,
+        summoner: Summoner,
         setCurrent: Boolean = false
-    ): Observable<Boolean> =
-        initialized.observeOn(Schedulers.io())
+    ): Observable<Boolean> {
+        return initialized.observeOn(Schedulers.io())
             .doOnNext { fInitialized ->
                 when(fInitialized) {
                     true -> {
-                        val regionEntity = database.regionDAO().getByTag(summonerModel.region.tag)
+                        @Temporary runBlocking {
+                            val summonerId = summonerRepository.addKnownSummoner(summoner.puuid, summoner.region).id
+                            val myAccount = summonerRepository.createMyAccount(summonerId = summonerId)
+                            val currentId = stateRepository.setCurrentAccountIdByRegion(summoner.region, myAccount.id).id
 
-                        val summonerEntity =
-                            SummonerEntity(summonerModel.puuid.value, regionEntity.id)
-
-                        val sumId = database.summonerDAO().insert(summonerEntity)
-
-                        val myAccountEntity = MyAccountEntity(sumId)
-
-                        val accId = database.myAccountDAO().insert(myAccountEntity)
-
-                        val current = database.currentAccountDAO().getByRegionId(regionEntity.id)
-
-                        val currentId = if(current != null) {
-                            if(current.accountId != accId && setCurrent) {
-                                current.accountId = accId
-                                database.currentAccountDAO().update(current)
+                            if(setCurrent) {
+                                stateRepository.setActiveCurrentAccountId(currentId)
                             }
-
-                            current.id
-                        } else {
-                            database.currentAccountDAO().insert(
-                                CurrentAccountEntity(
-                                    regionId = regionEntity.id,
-                                    accountId = accId
-                                )
-                            )
-                        }
-
-                        if(setCurrent) {
-                            val globalState = database.globalDAO().getAll()[0]
-                            globalState.currentAccountId = currentId
-                            database.globalDAO().update(globalState)
                         }
                     }
 
                     else -> throw RepositoryNotInitializedException()
                 }
             }
+    }
 
-    fun deleteMySummonersSwitchActive(summoners: List<SummonerModel>): ReplaySubject<List<String>> =
+    fun deleteMySummonersSwitchActive(summoners: List<Summoner>): ReplaySubject<List<String>> =
         ensureInitializedDoOnIOSubject {
             val newCurrentPuuids: MutableList<String> = MutableList(0) { throw RuntimeException() }
             database.runInTransaction {
-                val mySums = summoners.mapNotNull {
-                    database.summonerDAO().getByPuuidAndRegionId(
-                        it.puuid.value,
-                        database.regionDAO().getByTag(it.region.tag).id
-                    )
-                }
-                val myAccs = mySums.mapNotNull { database.myAccountDAO().getBySummonerId(it.id) }
-
-                if(database.myAccountDAO()
-                        .count() <= myAccs.size
-                ) throw RuntimeException("At least 1 account should be left")
-
-                val curAccs =
-                    myAccs.mapNotNull { database.currentAccountDAO().getByMyAccountId(it.id) }
-                curAccs.forEach { curAcc ->
-                    val accsInRegion = database.myAccountDAO().getByRegion(curAcc.regionId)
-                    val newActiveAcc = accsInRegion.subtract(myAccs).firstOrNull()
-                    if(newActiveAcc != null) {
-                        curAcc.accountId = newActiveAcc.id
-                        database.currentAccountDAO().update(curAcc)
-                        newCurrentPuuids.add(
-                            database.summonerDAO().getById(newActiveAcc.summonerId).puuid
-                        )
-                    } else {
-                        database.currentAccountDAO().delete(curAcc)
+                @Temporary runBlocking {
+                    val mySumsIds = summoners.map {
+                        summonerRepository.getKnownSummonerId(PuuidAndRegion(it.puuid, Region.getByTag(it.region.tag)))
                     }
+                    val myAccs = mySumsIds.map { summonerRepository.getMyAccountBySummonerId(it) }
+
+                    if(summonerRepository.getNumberOfMyAccounts() <= myAccs.size) throw RuntimeException("At least 1 account should be left")
+
+                    val curAccs = myAccs.mapNotNull { stateRepository.getCurrentAccountByMyAccountId(it.id) }
+                    curAccs.forEach { curAcc ->
+                        val accsInRegion = summonerRepository.getMyAccountsByRegion(Region.getById(curAcc.region.id))
+                        val newActiveAcc = accsInRegion.subtract(myAccs).firstOrNull()
+                        @Temporary runBlocking {
+                            if(newActiveAcc != null) {
+                                stateRepository.setCurrentAccountIdByRegion(Region.getById(curAcc.region.id), newActiveAcc.id)
+                                newCurrentPuuids.add(summonerRepository.getSummonerInfoById(newActiveAcc.summonerId).puuid.value)
+                            } else {
+                                stateRepository.deleteCurrentAccount(curAcc)
+                            }
+                        }
+                    }
+                    myAccs.forEach { myAccount -> summonerRepository.deleteMyAccount(myAccount) }
+                    mySumsIds.forEach { summonerRepository.forgetSummonerById(it) }
                 }
-                myAccs.forEach { database.myAccountDAO().delete(it) }
-                mySums.forEach { database.summonerDAO().delete(it) }
             }
             newCurrentPuuids
         }
 
-    fun activateAccount(acc: MyAccountModel) {
-        val myAccEnt = database.myAccountDAO().getById(acc.id)
-        val sumEnt = database.summonerDAO().getById(myAccEnt.summonerId)
-        val curAccEnt = database.currentAccountDAO().getByRegionId(sumEnt.regionId)
-        if(curAccEnt != null && acc.id != curAccEnt.accountId) {
-            curAccEnt.accountId = acc.id
-            database.currentAccountDAO().update(curAccEnt)
-        }
+    fun activateAccount(acc: MyAccount) = @Temporary runBlocking {
+        val accEnt = summonerRepository.getMyAccountById(acc.id)
+        val puuidAndRegion = summonerRepository.getSummonerInfoById(accEnt.summonerId)
+        stateRepository.setCurrentAccountIdByRegion(puuidAndRegion.region, acc.id)
     }
 
-    fun checkSummonerExistInDB(summoner: SummonerModel): Observable<Boolean> =
-        ensureInitializedDoOnIO {
-            val sumEnt = database.summonerDAO().getByPuuidAndRegionId(
-                summoner.puuid.value,
-                database.regionDAO().getByTag(summoner.region.tag).id
-            )
-            sumEnt != null
-        }
+    fun checkSummonerInUse(summoner: Summoner): Observable<Boolean> = ensureInitializedDoOnIO {
+        @Temporary runBlocking { summonerRepository.isSummonerKnown(summoner.puuidAndRegion) }
+    }
 
-    fun createFriend(friend: PuuidAndRegion, mine: PuuidAndRegion) =
+    fun createFriend(friend: PuuidAndRegion, mine: PuuidAndRegion): Observable<Boolean> =
         ensureInitializedDoOnIOSubject {
             try {
                 database.runInTransaction {
-                    with(database) {
-                        val friendsSumId = summonerDAO().insert(
-                            SummonerEntity(
-                                friend.puuid.value,
-                                regionDAO().getByTag(friend.region.tag).id
-                            )
-                        )
-                        val mySumEnt = summonerDAO().getByPuuidAndRegionId(
-                            mine.puuid.value,
-                            regionDAO().getByTag(mine.region.tag).id
-                        )!!
-                        val myAcc = myAccountDAO().getBySummonerId(mySumEnt.id)!!
-                        myFriendDAO().insert(MyFriendEntity(myAcc.id, friendsSumId))
+                    @Temporary runBlocking {
+                        with(database) {
+                            val friendsSumId = summonerRepository.addKnownSummoner(friend.puuid, friend.region).id
+                            val mySummonerId = summonerRepository.getKnownSummonerId(mine)
+                            val myAcc = summonerRepository.getMyAccountBySummonerId(mySummonerId)
+                            myFriendDAO().insert(MyFriendEntity(myAcc.id, friendsSumId))
+                        }
                     }
                 }
-
                 true
             } catch(ex: Exception) {
                 false
@@ -375,9 +317,8 @@ class Repository @Inject constructor(
                 with(database) {
                     friends.forEach {
                         val friendEnt = myFriendDAO().getById(it.id)
-                        val sumEnt = summonerDAO().getById(friendEnt.summonerId)
                         myFriendDAO().delete(friendEnt)
-                        summonerDAO().delete(sumEnt)
+                        @Temporary runBlocking { summonerRepository.forgetSummonerById(friendEnt.summonerId) }
                     }
                 }
             }

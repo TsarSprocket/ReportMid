@@ -3,8 +3,11 @@ package com.tsarsprocket.reportmid.summoner_impl.di
 import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
+import com.tsarsprocket.reportmid.summoner_api.di.SummonerApi
+import dagger.Module
 import dagger.Provides
 
+@Module
 interface SummonerProvisionModule {
 
     companion object {
@@ -14,7 +17,7 @@ interface SummonerProvisionModule {
 
         @Provides
         @AppScope
-        fun provideSummonerApiComponent(lolServicesApi: LolServicesApi, appApi: AppApi): SummonerApiComponent {
+        fun provideSummonerApi(lolServicesApi: LolServicesApi, appApi: AppApi): SummonerApi {
             return DaggerSummonerApiComponent.factory().create(lolServicesApi, appApi).also { summonerApiComponent = it }
         }
     }

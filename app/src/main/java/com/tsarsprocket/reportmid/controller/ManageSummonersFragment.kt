@@ -23,7 +23,7 @@ import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
@@ -60,7 +60,7 @@ class ManageSummonersFragment : BaseFragment() {
 
         baseActivity.toolbar.title = getString(R.string.fragment_manage_my_summoners_title)
 
-        val mySummonersAdapter = MySummonersAdapter(SummonerModel.ByNameAndRegionComparator())
+        val mySummonersAdapter = MySummonersAdapter(Summoner.ByNameAndRegionComparator())
         with(binding.recvMySummoners) {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
@@ -95,13 +95,13 @@ class ManageSummonersFragment : BaseFragment() {
         baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = false
     }
 
-    fun checkSummoner(summoner: SummonerModel) {
+    fun checkSummoner(summoner: Summoner) {
         viewModel.checkedSummoners.add(summoner)
         baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled =
             viewModel.checkedSummoners.size < viewModel.mySummonersLive.value?.size ?: 0
     }
 
-    fun uncheckSummoner(summoner: SummonerModel) {
+    fun uncheckSummoner(summoner: Summoner) {
         viewModel.checkedSummoners.apply {
             remove(summoner)
             baseActivity.toolbar.menu.findItem(R.id.miManageMyAccountsDelete).isEnabled = count() != 0
@@ -145,9 +145,9 @@ class ManageSummonersFragment : BaseFragment() {
 
     //  Classes  //////////////////////////////////////////////////////////////
 
-    inner class MySummonersAdapter(private val comparator: Comparator<SummonerModel>) : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
+    inner class MySummonersAdapter(private val comparator: Comparator<Summoner>) : RecyclerView.Adapter<CardViewHolderWithDisposer>() {
 
-        var summoners: Array<out SummonerModel> = arrayOf()
+        var summoners: Array<out Summoner> = arrayOf()
             set(v) {
                 field = v.sortedArrayWith(comparator)
                 notifyDataSetChanged()

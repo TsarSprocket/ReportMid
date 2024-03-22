@@ -5,6 +5,9 @@ import com.tsarsprocket.reportmid.app.di.AppProvisionModule
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
+import com.tsarsprocket.reportmid.base.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.controller.AddSummonerFragment
 import com.tsarsprocket.reportmid.controller.ConfirmSummonerFragment
 import com.tsarsprocket.reportmid.controller.DrawerFragment
@@ -20,10 +23,12 @@ import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModul
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
 import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
 import com.tsarsprocket.reportmid.room.MainDatabase
-import com.tsarsprocket.reportmid.summoner.di.SummonerModule
+import com.tsarsprocket.reportmid.state_impl.di.StateProvisionModule
+import com.tsarsprocket.reportmid.summoner_impl.di.SummonerProvisionModule
 import com.tsarsprocket.reportmid.view_state_impl.di.ViewStateProvisionModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
+import kotlinx.coroutines.CoroutineDispatcher
 
 // TODO: After completing migrating to the capabilities, this component will only be used for the root graph creation
 @AppScope
@@ -44,7 +49,6 @@ import dagger.android.AndroidInjectionModule
         MatchHistoryViewModelModule::class,
         ManageSummonersViewModelModule::class,
         ManageFriendsViewModelModule::class,
-        SummonerModule::class,
         RequestManagerModule::class,
         // Api provision modules
         AppProvisionModule::class,
@@ -52,10 +56,22 @@ import dagger.android.AndroidInjectionModule
         LandingProvisionModule::class,
         LeaguePositionProvisionModule::class,
         LolServicesProvisionModule::class,
+        StateProvisionModule::class,
+        SummonerProvisionModule::class,
         ViewStateProvisionModule::class,
     ]
 )
 interface ReportMidAppComponent {
+
+    // Dispatchers
+    @Io
+    fun getIoDispatcher(): CoroutineDispatcher
+
+    @Ui
+    fun getUiDispatcher(): CoroutineDispatcher
+
+    @Computation
+    fun getComputationDispatcher(): CoroutineDispatcher
 
     // Application
     fun inject(app: ReportMidApp)

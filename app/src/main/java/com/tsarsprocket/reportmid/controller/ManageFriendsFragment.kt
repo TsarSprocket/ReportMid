@@ -26,8 +26,8 @@ import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentManageFriendsBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getRoundedCroppedDrawable
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
@@ -112,8 +112,8 @@ class ManageFriendsFragment : BaseFragment() {
     }
 
     private fun goAddFriend() {
-        object: OneTimeObserver<SummonerModel>() {
-            override fun onOneTimeChanged(sum: SummonerModel) {
+        object : OneTimeObserver<Summoner>() {
+            override fun onOneTimeChanged(sum: Summoner) {
                 setPermVar(VAR_SELECTED_SUMMONER_PUUID_AND_REGION, sum.puuidAndRegion)
                 val action = ManageFriendsFragmentDirections.actionManageFriendsFragmentToAddSummonerGraph(sum.region.tag)
                 findNavController().navigate(action)
@@ -154,7 +154,7 @@ class ManageFriendsFragment : BaseFragment() {
      */
     inner class AccountSelectorAdapter: BaseAdapter() {
 
-        var accList: List<Triple<MyAccountModel, SummonerModel,Drawable>> = listOf()
+        var accList: List<Triple<MyAccount, Summoner, Drawable>> = listOf()
             set(lst) {
                 field = lst
                 notifyDataSetChanged()
@@ -162,7 +162,7 @@ class ManageFriendsFragment : BaseFragment() {
 
         override fun getCount(): Int = accList.size
 
-        override fun getItem(position: Int): Triple<MyAccountModel, SummonerModel,Drawable> = accList[position]
+        override fun getItem(position: Int): Triple<MyAccount, Summoner, Drawable> = accList[position]
 
         override fun getItemId(position: Int): Long = if (position<accList.size) accList[position].first.id else -1
 

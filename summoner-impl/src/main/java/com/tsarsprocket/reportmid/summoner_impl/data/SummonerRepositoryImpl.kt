@@ -1,11 +1,13 @@
 package com.tsarsprocket.reportmid.summoner_impl.data
 
+import androidx.room.EmptyResultSetException
 import com.tsarsprocket.reportmid.app_api.request_manager.Request
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestKey
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestResult
+import com.tsarsprocket.reportmid.app_api.request_manager.request
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
-import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
@@ -13,223 +15,237 @@ import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
 import com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.ChampionMastery
+import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summoner_api.model.SummonerInfo
+import com.tsarsprocket.reportmid.summoner_impl.model.MyAccountImpl
+import com.tsarsprocket.reportmid.summoner_impl.model.SummonerInfoImpl
 import com.tsarsprocket.reportmid.summoner_impl.retrofit.championMastery.ChampionMasteryDto
 import com.tsarsprocket.reportmid.summoner_impl.retrofit.championMastery.ChampionMasteryV4
 import com.tsarsprocket.reportmid.summoner_impl.retrofit.summoner.SummonerDto
 import com.tsarsprocket.reportmid.summoner_impl.retrofit.summoner.SummonerV4Service
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.Single
+import com.tsarsprocket.reportmid.summoner_room.MyAccountEntity
+import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
+import com.tsarsprocket.reportmid.utils.data.ExpiringValue
+import com.tsarsprocket.reportmid.utils.data.expiring
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-@AppScope
 class SummonerRepositoryImpl @Inject constructor(
-    private val championMasteryModelFactory: com.tsarsprocket.reportmid.summoner.di.ChampionMasteryModelFactory,
-    private val summonerModelFactory: com.tsarsprocket.reportmid.summoner.di.SummonerModelFactory,
     private val serviceFactory: ServiceFactory,
     private val requestManager: RequestManager,
     private val storage: MainStorage,
-    @Io private val ioScheduler: Scheduler,
+    @Io private val ioDispatcher: CoroutineDispatcher,
+    @Computation private val computationDispatcher: CoroutineDispatcher,
 ) : SummonerRepository {
 
-    private val summonerCacheByAccountId = ConcurrentHashMap<AccountIdKey, SummonerModel>()
-    private val summonerCacheByPuuid = ConcurrentHashMap<PuuidAndRegion, SummonerModel>()
-    private val summonerCacheBySummonerId = ConcurrentHashMap<SummonerIdKey, SummonerModel>()
-    private val summonerCacheBySummonerName = ConcurrentHashMap<SummonerNameKey, SummonerModel>()
+    private val summonerCacheByPuuid = ConcurrentHashMap<PuuidAndRegion, ExpiringValue<Summoner>>()
+    private val summonerCacheBySummonerId = ConcurrentHashMap<SummonerIdKey, ExpiringValue<Summoner>>()
+    private val summonerCacheBySummonerName = ConcurrentHashMap<SummonerNameKey, ExpiringValue<Summoner>>()
 
-    override fun getByAccountId(accountId: String, region: Region): Single<SummonerModel> {
-        val key = AccountIdKey(accountId, region)
-        return summonerCacheByAccountId[key]?.let { summonerModel -> Single.just(summonerModel) }
-            ?: fetchSummonerByAccountId(key)
-                .subscribeOn(ioScheduler)
-                .doOnSuccess { summonerModel ->
-                    summonerCacheByAccountId[key] = summonerModel
-                    summonerCacheByPuuid[PuuidAndRegion(
-                        summonerModel.puuid,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheBySummonerId[SummonerIdKey(
-                        summonerModel.id,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheBySummonerName[SummonerNameKey(
-                        summonerModel.name,
-                        summonerModel.region
-                    )] = summonerModel
-                }
+    override suspend fun addKnownSummoner(puuid: Puuid, region: Region): SummonerInfo = withContext(ioDispatcher) {
+        SummonerInfoImpl(
+            id = storage.summonerDAO().insert(SummonerEntity(puuid = puuid.value, regionId = region.id)),
+            puuid = puuid,
+            region = region,
+        )
     }
 
-    override fun getByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Single<SummonerModel> {
-        return summonerCacheByPuuid[puuidAndRegion]?.let { summonerModel ->
-            Single.just(
-                summonerModel
+    override suspend fun createMyAccount(summonerId: Long): MyAccount = withContext(ioDispatcher) {
+        val entity = MyAccountEntity(summonerId)
+        entity.id = storage.myAccountDAO().insert(entity)
+        MyAccountImpl(entity)
+    }
+
+    override suspend fun deleteMyAccount(myAccount: MyAccount) {
+        storage.myAccountDAO().delete(storage.myAccountDAO().getById(myAccount.id))
+    }
+
+    override suspend fun forgetSummonerById(id: Long) = withContext(ioDispatcher) {
+        storage.summonerDAO().delete(storage.summonerDAO().getById(id))
+    }
+
+    override suspend fun getAllMyAccounts(): List<MyAccount> = withContext(ioDispatcher) {
+        storage.myAccountDAO().getAll().map { entity -> MyAccountImpl(entity) }
+    }
+
+    override suspend fun getKnownSummonerId(puuidAndRegion: PuuidAndRegion): Long = withContext(ioDispatcher) {
+        storage.summonerDAO().getByPuuidAndRegionId(puuidAndRegion.puuid.value, puuidAndRegion.region.id).id
+    }
+
+    override suspend fun getMyAccountById(id: Long): MyAccount = withContext(ioDispatcher) {
+        val entity = storage.myAccountDAO().getById(id)
+        MyAccountImpl(id, entity.summonerId)
+    }
+
+    override suspend fun getMyAccountByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): MyAccount = withContext(ioDispatcher) {
+        with(storage.myAccountDAO().getByPuuidAndRegionId(puuidAndRegion.puuid.value, puuidAndRegion.region.id)) {
+            MyAccountImpl(id = id, summonerId = summonerId)
+        }
+    }
+
+    override suspend fun getMyAccountsByRegion(region: Region): List<MyAccount> = withContext(ioDispatcher) {
+        storage.myAccountDAO().getByRegion(region.id).map { MyAccountImpl(id = it.id, summonerId = it.summonerId) }
+    }
+
+    override suspend fun getMyAccountBySummonerId(summonerId: Long): MyAccount = withContext(ioDispatcher) {
+        with(storage.myAccountDAO().getBySummonerId(summonerId)) {
+            MyAccountImpl(id, summonerId)
+        }
+    }
+
+    override suspend fun getNumberOfMyAccounts(): Int = withContext(ioDispatcher) {
+        storage.myAccountDAO().count()
+    }
+
+    override suspend fun getSummonerInfoById(id: Long): SummonerInfo = withContext(ioDispatcher) {
+        SummonerInfoImpl(storage.summonerDAO().getById(id))
+    }
+
+    override suspend fun isSummonerKnown(puuidAndRegion: PuuidAndRegion): Boolean = withContext(ioDispatcher) {
+        try {
+            storage.summonerDAO().getByPuuidAndRegionId(puuid = puuidAndRegion.puuid.value, regionId = puuidAndRegion.region.id)
+            true
+        } catch(exception: EmptyResultSetException) {
+            false
+        }
+    }
+
+    override suspend fun requestRemoteSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Summoner {
+        return summonerCacheByPuuid[puuidAndRegion]?.getIfValid(TTL) ?: withContext(computationDispatcher) { fetchSummonerByPuuid(puuidAndRegion) }.also { summoner ->
+            val expiring = summoner.expiring
+            summonerCacheByPuuid[puuidAndRegion] = expiring
+            summonerCacheBySummonerId[SummonerIdKey(summoner.riotId, summoner.region)] = expiring
+            summonerCacheBySummonerName[SummonerNameKey(summoner.name, summoner.region)] = expiring
+        }
+    }
+
+    override suspend fun requestRemoteSummonerByRiotId(id: String, region: Region): Summoner {
+        val key = SummonerIdKey(id, region)
+        return summonerCacheBySummonerId[key]?.getIfValid(TTL) ?: withContext(computationDispatcher) {
+            fetchSummonerBySummonerId(key).also { summoner ->
+                val expiring = summoner.expiring
+                summonerCacheByPuuid[PuuidAndRegion(summoner.puuid, summoner.region)] = expiring
+                summonerCacheBySummonerId[key] = expiring
+                summonerCacheBySummonerName[SummonerNameKey(summoner.name, summoner.region)] = expiring
+            }
+        }
+    }
+
+    override suspend fun requestRemoteSummonerByName(name: String, region: Region): Summoner {
+        val key = SummonerNameKey(name, region)
+        return summonerCacheBySummonerName[key]?.getIfValid(TTL) ?: withContext(computationDispatcher) {
+            fetchSummonerBySummonerName(key).also { summoner ->
+                val expiring = summoner.expiring
+                summonerCacheByPuuid[PuuidAndRegion(summoner.puuid, summoner.region)] = expiring
+                summonerCacheBySummonerId[SummonerIdKey(summoner.riotId, summoner.region)] = expiring
+                summonerCacheBySummonerName[key] = expiring
+            }
+        }
+    }
+
+    override suspend fun getMySummoners(): List<Summoner> = withContext(computationDispatcher) {
+        withContext(ioDispatcher) { storage.summonerDAO().getMySummoners() }
+            .map { summonerEntity ->
+                val reg = Region.getById(summonerEntity.regionId)
+                requestRemoteSummonerByPuuidAndRegion(
+                    PuuidAndRegion(
+                        Puuid(summonerEntity.puuid),
+                        Region.getByTag(reg.tag)
+                    )
+                )
+            }
+    }
+
+    override suspend fun getMySummonersForRegion(reg: Region): List<Summoner> = withContext(ioDispatcher) {
+        coroutineScope {
+            storage.summonerDAO().getMySummonersByRegion(reg.id).map {
+                async { requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(Puuid(it.puuid), Region.getById(it.regionId))) }
+            }.awaitAll()
+        }
+    }
+
+    override suspend fun requestSummonerByMyAccount(myAccount: MyAccount): Summoner = withContext(ioDispatcher) {
+        with(storage.summonerDAO().getById(myAccount.summonerId)) {
+            fetchSummonerByPuuid(PuuidAndRegion(Puuid(puuid), Region.getById(regionId)))
+        }
+    }
+
+    private suspend fun fetchChampionMasteriesByPuuid(key: MasteriesPuuidKey): List<ChampionMastery> {
+        val championMasteriesRequestResult: ChampionMasteriesRequestResult = requestManager.request(ChampionMasteriesByPuuid(key))
+        return championMasteriesRequestResult.championMasteryDtos.map { dto ->
+            ChampionMastery(
+                championId = dto.championId,
+                level = dto.championLevel,
+                points = dto.championPoints,
             )
-        } ?: fetchSummonerByPuuid(puuidAndRegion)
-            .subscribeOn(ioScheduler)
-            .doOnSuccess { summonerModel ->
-                summonerCacheByAccountId[AccountIdKey(
-                    summonerModel.riotAccountId,
-                    summonerModel.region
-                )] = summonerModel
-                summonerCacheByPuuid[puuidAndRegion] = summonerModel
-                summonerCacheBySummonerId[SummonerIdKey(summonerModel.id, summonerModel.region)] =
-                    summonerModel
-                summonerCacheBySummonerName[SummonerNameKey(
-                    summonerModel.name,
-                    summonerModel.region
-                )] = summonerModel
-            }
+        }
     }
 
-    override fun getBySummonerId(summonerId: String, region: Region): Single<SummonerModel> {
-        val key = SummonerIdKey(summonerId, region)
-        return summonerCacheBySummonerId[key]?.let { summonerModel -> Single.just(summonerModel) }
-            ?: fetchSummonerBySummonerId(key)
-                .subscribeOn(ioScheduler)
-                .doOnSuccess { summonerModel ->
-                    summonerCacheByAccountId[AccountIdKey(
-                        summonerModel.riotAccountId,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheByPuuid[PuuidAndRegion(
-                        summonerModel.puuid,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheBySummonerId[key] = summonerModel
-                    summonerCacheBySummonerName[SummonerNameKey(
-                        summonerModel.name,
-                        summonerModel.region
-                    )] = summonerModel
-                }
-    }
-
-    override fun getBySummonerName(summonerName: String, region: Region): Single<SummonerModel> {
-        val key = SummonerNameKey(summonerName, region)
-        return summonerCacheBySummonerName[key]?.let { summonerModel -> Single.just(summonerModel) }
-            ?: fetchSummonerBySummonerName(key)
-                .subscribeOn(ioScheduler)
-                .doOnSuccess { summonerModel ->
-                    summonerCacheByAccountId[AccountIdKey(
-                        summonerModel.riotAccountId,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheByPuuid[PuuidAndRegion(
-                        summonerModel.puuid,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheBySummonerId[SummonerIdKey(
-                        summonerModel.id,
-                        summonerModel.region
-                    )] = summonerModel
-                    summonerCacheBySummonerName[key] = summonerModel
-                }
-    }
-
-    override fun getMine(): Observable<List<SummonerModel>> {
-        return storage.summonerDAO().getMySummoners()
-            .switchMap { lst ->
-                Observable.combineLatest(
-                    lst.map { sumEnt ->
-                        val reg = storage.regionDAO().getById(sumEnt.regionId)
-                        getByPuuidAndRegion(
-                            PuuidAndRegion(
-                                Puuid(sumEnt.puuid),
-                                Region.getByTag(reg.tag)
-                            )
-                        ).toObservable()
-                    },
-                    fun(arr: Array<Any>): List<SummonerModel> =
-                        arr.asList().map { it as SummonerModel })
-            }
-    }
-
-    override fun getMineForRegionSelected(reg: Region): Observable<List<Pair<SummonerModel, Boolean>>> {
-        return storage.regionDAO().getByTagObservable(reg.tag)
-            .switchMap { regEnt ->
-                storage.currentAccountDAO().getByRegionIdObservable(regEnt.id)
-                    .map { lstCurAcc ->
-                        val firstOne = lstCurAcc.first()
-                        Pair(regEnt, storage.myAccountDAO().getById(firstOne.accountId))
-                    }
-            }
-            .switchMap { (regEnt, myCurAccEnt) ->
-                storage.summonerDAO().getMySummonersByRegionObservable(regEnt.id)
-                    .map { sumEntities ->
-                        sumEntities.map { sumEnt ->
-                            Pair(
-                                sumEnt,
-                                sumEnt.id == myCurAccEnt.summonerId
-                            )
-                        }
-                    }
-                    .map { lst ->
-                        lst.map { (sumEnt, isSelected) ->
-                            getByPuuidAndRegion(
-                                PuuidAndRegion(
-                                    Puuid(sumEnt.puuid),
-                                    Region.getByTag(regEnt.tag)
-                                )
-                            )
-                                .map { sum -> Pair(sum, isSelected) }.blockingGet()
-                        }
-                    }
-            }
-    }
-
-    private fun fetchChampionMasteriesByPuuid(key: MasteriesPuuidKey): Single<List<com.tsarsprocket.reportmid.summoner.model.ChampionMasteryModel>> {
-        return requestManager.addRequest(ChampionMasteriesByPuuid(key))
-            .map { requestResult ->
-                requestResult.championMasteryDtos.map { dto ->
-                    championMasteryModelFactory.create(dto)
-                }
-            }
-    }
-
-    private fun fetchSummonerByAccountId(key: AccountIdKey): Single<SummonerModel> =
-        requestManager.addRequest(SummonerRequestByAccountId(key))
-            .map { requestResult ->
+    private suspend fun fetchSummonerByAccountId(key: AccountIdKey): Summoner =
+        requestManager.request(SummonerRequestByAccountId(key))
+            .let { requestResult ->
                 with(requestResult.summonerDto) {
-                    SummonerModel(
+                    Summoner(
                         region = key.region,
-                        id = id,
+                        riotId = riotId,
                         name = name,
                         iconId = profileIconId,
                         puuid = Puuid(puuid),
                         level = summonerLevel,
-                        riotAccountId = accountId,
-                        masteries = fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(requestResult.summonerDto.puuid), key.region)),
+                        masteriesProvider = { fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(requestResult.summonerDto.puuid), key.region)) },
                     )
                 }
             }
 
-    private fun fetchSummonerByPuuid(puuidAndRegion: PuuidAndRegion): Single<SummonerModel> =
-        requestManager.addRequest(SummonerRequestByPuuid(PuuidKey(puuidAndRegion)))
-            .map { requestResult ->
-                summonerModelFactory.create(
-                    puuidAndRegion.region, requestResult.summonerDto,
-                    fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(requestResult.summonerDto.puuid), puuidAndRegion.region)),
-                )
-            }
+    private suspend fun fetchSummonerByPuuid(puuidAndRegion: PuuidAndRegion): Summoner {
+        return with(requestManager.request(SummonerRequestByPuuid(PuuidKey(puuidAndRegion))).summonerDto) {
+            Summoner(
+                region = puuidAndRegion.region,
+                riotId = riotId,
+                name = name,
+                iconId = profileIconId,
+                puuid = Puuid(puuid),
+                level = summonerLevel,
+                masteriesProvider = { fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(puuid), puuidAndRegion.region)) },
+            )
+        }
+    }
 
-    private fun fetchSummonerBySummonerId(key: SummonerIdKey): Single<SummonerModel> =
-        requestManager.addRequest(SummonerRequestBySummonerId(key))
-            .map { requestResult ->
-                summonerModelFactory.create(
-                    key.region, requestResult.summonerDto,
-                    fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(requestResult.summonerDto.puuid), key.region)),
-                )
-            }
+    private suspend fun fetchSummonerBySummonerId(key: SummonerIdKey): Summoner {
+        return with(requestManager.request(SummonerRequestBySummonerId(key)).summonerDto) {
+            Summoner(
+                region = key.region,
+                riotId = riotId,
+                name = name,
+                iconId = profileIconId,
+                puuid = Puuid(puuid),
+                level = summonerLevel,
+                masteriesProvider = { fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(puuid), key.region)) },
+            )
+        }
+    }
 
-    private fun fetchSummonerBySummonerName(key: SummonerNameKey): Single<SummonerModel> =
-        requestManager.addRequest(SummonerRequestBySummonerName(key))
-            .map { requestResult ->
-                summonerModelFactory.create(
-                    key.region, requestResult.summonerDto,
-                    fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(requestResult.summonerDto.puuid), key.region)),
-                )
-            }
+    private suspend fun fetchSummonerBySummonerName(key: SummonerNameKey): Summoner {
+        val result = requestManager.request(SummonerRequestBySummonerName(key))
+        return with(result.summonerDto) {
+            Summoner(
+                region = key.region,
+                riotId = riotId,
+                name = name,
+                iconId = profileIconId,
+                puuid = Puuid(puuid),
+                level = summonerLevel,
+                masteriesProvider = { fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(puuid), key.region)) },
+            )
+        }
+    }
 
     // Classes
 
@@ -260,11 +276,9 @@ class SummonerRepositoryImpl @Inject constructor(
     private inner class ChampionMasteriesByPuuid(key: MasteriesPuuidKey) :
         Request<MasteriesPuuidKey, ChampionMasteriesRequestResult>(key) {
 
-        override fun invoke(): ChampionMasteriesRequestResult {
-            return serviceFactory.getService<ChampionMasteryV4>(key.region)
-                .getByPuuid(key.puuid.value)
-                .map { masteryList -> ChampionMasteriesRequestResult(masteryList) }
-                .blockingGet()
+        override suspend fun invoke(): ChampionMasteriesRequestResult {
+            val championMasteryV4 = serviceFactory.getService<ChampionMasteryV4>(key.region)
+            return ChampionMasteriesRequestResult(championMasteryV4.getByPuuid(key.puuid.value))
         }
     }
 
@@ -275,48 +289,47 @@ class SummonerRepositoryImpl @Inject constructor(
     private inner class SummonerRequestByAccountId(key: AccountIdKey) :
         Request<AccountIdKey, SummonerRequestResult>(key) {
 
-        override fun invoke(): SummonerRequestResult {
-            return serviceFactory.getService<SummonerV4Service>(key.region)
-                .getByAccountId(key.accountId)
-                .map { summoner -> SummonerRequestResult(summoner) }
-                .blockingGet()
+        override suspend fun invoke(): SummonerRequestResult {
+            val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
+            return SummonerRequestResult(summonerV4Service.getByAccountId(key.accountId))
         }
     }
 
-    private inner class SummonerRequestByPuuid(key: PuuidKey) :
-        Request<PuuidKey, SummonerRequestResult>(key) {
+    private inner class SummonerRequestByPuuid(key: PuuidKey) : Request<PuuidKey, SummonerRequestResult>(key) {
 
-        override fun invoke(): SummonerRequestResult {
-            return serviceFactory.getService<SummonerV4Service>(key.puuidAndRegion.region)
-                .getByPuuid(key.puuidAndRegion.puuid.value)
-                .map { summoner -> SummonerRequestResult(summoner) }
-                .blockingGet()
+        override suspend fun invoke(): SummonerRequestResult {
+            val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.puuidAndRegion.region)
+            return SummonerRequestResult(summonerV4Service.getByPuuid(key.puuidAndRegion.puuid.value))
         }
     }
 
     private inner class SummonerRequestBySummonerId(key: SummonerIdKey) :
         Request<SummonerIdKey, SummonerRequestResult>(key) {
 
-        override fun invoke(): SummonerRequestResult {
-            return serviceFactory.getService<SummonerV4Service>(key.region)
-                .getBySummonerId(key.summonerId)
-                .map { summoner -> SummonerRequestResult(summoner) }
-                .blockingGet()
+        override suspend fun invoke(): SummonerRequestResult {
+            val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
+            return SummonerRequestResult(summonerV4Service.getBySummonerId(key.summonerId))
         }
     }
 
     private inner class SummonerRequestBySummonerName(key: SummonerNameKey) :
         Request<SummonerNameKey, SummonerRequestResult>(key) {
 
-        override fun invoke(): SummonerRequestResult {
-            return serviceFactory.getService<SummonerV4Service>(key.region)
-                .getBySummonerName(key.summonerName)
-                .map { summoner -> SummonerRequestResult(summoner) }
-                .blockingGet()
+        override suspend fun invoke(): SummonerRequestResult {
+            val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
+            return SummonerRequestResult(summonerV4Service.getBySummonerName(key.summonerName))
         }
     }
 
     private data class SummonerRequestResult(
         val summonerDto: SummonerDto,
     ) : RequestResult
+
+    companion object {
+
+        /**
+         * Time to live in millis
+         */
+        const val TTL = 1L * 1000 * 60
+    }
 }

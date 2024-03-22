@@ -8,6 +8,7 @@ import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.rx2.rxSingle
 import javax.inject.Inject
 
 class LandingViewModel @Inject constructor(
@@ -36,7 +37,7 @@ class LandingViewModel @Inject constructor(
             })
     }
 
-    fun defineMainAccount(puuidAndRegion: PuuidAndRegion) = summonerRepository.getByPuuidAndRegion(puuidAndRegion).flatMapObservable { summonerModel ->
+    fun defineMainAccount(puuidAndRegion: PuuidAndRegion) = rxSingle { summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuidAndRegion) }.flatMapObservable { summonerModel ->
         repository.addMyAccountNotify(summonerModel, true)
     }.toLiveData()
 

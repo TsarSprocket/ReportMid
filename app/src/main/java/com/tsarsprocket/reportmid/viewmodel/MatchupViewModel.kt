@@ -12,13 +12,14 @@ import com.tsarsprocket.reportmid.model.CurrentMatchModel
 import com.tsarsprocket.reportmid.model.CurrentMatchTeamModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import kotlinx.coroutines.rx2.rxObservable
 import kotlinx.coroutines.rx2.rxSingle
 import java.util.Formatter
 import java.util.GregorianCalendar
@@ -45,7 +46,7 @@ class MatchupViewModel @Inject constructor(
 
     lateinit var puuidAndRegion: PuuidAndRegion
 
-    var summoner = MutableLiveData<SummonerModel>()
+    var summoner = MutableLiveData<Summoner>()
 
     val matchInProgress = MutableLiveData<Boolean>()
 
@@ -67,9 +68,8 @@ class MatchupViewModel @Inject constructor(
     }
 
     fun loadForSummoner( puuidAndRegion: PuuidAndRegion) {
-        allDisposables.add( summonerRepository.getByPuuidAndRegion( puuidAndRegion )
-            .toObservable()
-            .switchMap{ summoner.value = it; it.getCurrentMatch() }
+        allDisposables.add(rxObservable<Summoner> { summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuidAndRegion) }
+            .switchMap { summoner.value = it; repository.getCurrentMatch(it) }
             .observeOn( AndroidSchedulers.mainThread() )
             .subscribe( { match ->
                 currentMatchLive.value = match
@@ -100,7 +100,7 @@ class MatchupViewModel @Inject constructor(
                         Single.zip(
                             playerModel.champion,
                             playerModel.summoner,
-                            BiFunction<Champion, SummonerModel, Single<Int>> { ch, su -> getSkillForChampion(su, ch) })
+                            BiFunction<Champion, Summoner, Single<Int>> { ch, su -> getSkillForChampion(su, ch) })
                             .flatMap { it }
                             .concatWith(Single.just(-1))
                             .take(1)
@@ -109,7 +109,7 @@ class MatchupViewModel @Inject constructor(
                         playerModel.summoner.subscribe(
                             { sum -> playerPresentation.summonerNameLive.postValue(sum.name); playerPresentation.summonerLevelLive.postValue(sum.level) },
                             { ex -> this.logError("Can't get summoner", ex) }),
-                        playerModel.summoner.flatMap { rxSingle { leaguePositionRepository.getSoloQueueLeaguePosition(it.id, it.region)!! /* temporary*/ } }
+                        playerModel.summoner.flatMap { rxSingle { leaguePositionRepository.getSoloQueueLeaguePosition(it.riotId, it.region)!! /* temporary*/ } }
                             .subscribe({ soloQueuePosition ->
                                 playerPresentation.soloqueueRankLive.postValue(soloQueuePosition.tier.abbreviation + soloQueuePosition.division.numeric)
                                 playerPresentation.soloqueueWinrateLive.postValue((soloQueuePosition.wins.toFloat() / (soloQueuePosition.wins + soloQueuePosition.losses).toFloat()).takeUnless { it.isNaN() }
@@ -133,7 +133,7 @@ class MatchupViewModel @Inject constructor(
         )
     }
 
-    private fun getSkillForChampion(summoner: SummonerModel, champion: Champion) =
+    private fun getSkillForChampion(summoner: Summoner, champion: Champion) =
         summoner.getMasteryWithChampion(champion).map { it.points }.first(0)
 
     @MainThread

@@ -10,6 +10,7 @@ import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.subjects.ReplaySubject
+import kotlinx.coroutines.rx2.rxSingle
 import javax.inject.Inject
 
 class ConfirmSummonerViewModel @Inject constructor(
@@ -19,7 +20,7 @@ class ConfirmSummonerViewModel @Inject constructor(
 ): ViewModel() {
 
     val puuidSubj = ReplaySubject.create<PuuidAndRegion>( 1 )
-    val summoner = puuidSubj.switchMapSingle { puuidAndRegion -> summonerRepository.getByPuuidAndRegion(puuidAndRegion) }.toLiveData()
+    val summoner = puuidSubj.switchMapSingle { puuidAndRegion -> rxSingle { summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuidAndRegion) } }.toLiveData()
     val bitmap = summoner.switchMap { sum -> iconProvider.getProfileIcon(sum.iconId).toObservable().toLiveData() }
     val name = summoner.map { sum -> sum.name }
     val level = summoner.map { sum -> sum.level.toString() }

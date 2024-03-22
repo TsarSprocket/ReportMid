@@ -7,10 +7,11 @@ import com.tsarsprocket.reportmid.lol.model.Rune
 import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single
+import kotlinx.coroutines.rx2.rxSingle
 
 class PlayerModel @AssistedInject constructor(
     @Assisted info: CurrentGameParticipant,
@@ -19,7 +20,7 @@ class PlayerModel @AssistedInject constructor(
     private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
 ) {
     val champion: Single<Champion> = repository.getChampionById(info.championId).cache()
-    val summoner: Single<SummonerModel> = summonerRepository.getBySummonerId(info.summonerId, region)
+    val summoner: Single<Summoner> = rxSingle { summonerRepository.requestRemoteSummonerByRiotId(info.summonerId, region) }
     val summonerSpellD: SummonerSpell? = repository.dataDragon.tail.getSummonerSpellById(info.spell1Id)
     val summonerSpellF: SummonerSpell? = repository.dataDragon.tail.getSummonerSpellById(info.spell2Id)
     val isBot = info.bot

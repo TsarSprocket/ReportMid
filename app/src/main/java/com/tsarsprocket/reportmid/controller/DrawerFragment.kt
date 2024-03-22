@@ -20,9 +20,10 @@ import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMyFriendLineBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMySummonerLineBinding
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.model.my_account.MyAccountModel
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
+import com.tsarsprocket.reportmid.tools.Optional
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel
 import javax.inject.Inject
 
@@ -55,7 +56,7 @@ class DrawerFragment : BaseFragment() {
         return binding.root
     }
 
-    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Drawable, SummonerModel,Boolean>>) {
+    fun updateMySummoners(listOfMarkedSummoners: List<Triple<Drawable, Summoner, Boolean>>) {
         val group = binding.llMySummoners
         group.removeAllViews()
         listOfMarkedSummoners.forEach { (icon, sum, isSelected) ->
@@ -63,7 +64,7 @@ class DrawerFragment : BaseFragment() {
             binding.iconSummoner.setImageDrawable(icon)
             binding.txtSummonerName.text = sum.name
             binding.cbSelected.isChecked = isSelected
-            binding.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum,view,group) }
+            binding.cbSelected.setOnClickListener { view -> viewModel.activateAcc(sum) }
             binding.root.setOnClickListener { goSeeProfile(sum) }
             group.addView(binding.root)
         }
@@ -93,9 +94,9 @@ class DrawerFragment : BaseFragment() {
 
     private fun goManageFriends() {
         baseActivity.closeDrawers()
-        object : OneTimeObserver<List<MyAccountModel>>() {
-            override fun onOneTimeChanged(v: List<MyAccountModel>) {
-                v.firstOrNull()?.let { myAccModel ->
+        object : OneTimeObserver<Optional<MyAccount>>() {
+            override fun onOneTimeChanged(optional: Optional<MyAccount>) {
+                optional.ifHasValue { myAccModel ->
                     val action = DrawerFragmentDirections.actionGlobalManageFriendsFragment(myAccModel.id)
                     findNavController().navigate(action)
                 }
@@ -103,7 +104,7 @@ class DrawerFragment : BaseFragment() {
         }.observeOn(viewModel.currentAccountLive,this)
     }
 
-    private fun goSeeProfile(sum: SummonerModel) {
+    private fun goSeeProfile(sum: Summoner) {
         baseActivity.closeDrawers()
         val action = DrawerFragmentDirections.actionGlobalProfileOverviewFragment(sum.puuidAndRegion)
         findNavController().navigate(action)

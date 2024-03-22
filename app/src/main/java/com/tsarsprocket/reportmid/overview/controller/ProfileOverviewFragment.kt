@@ -75,7 +75,7 @@ class ProfileOverviewFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.summoner.collect { summoner ->
+            viewModel.summonerFlow.collect { summoner ->
                 baseActivity.toolbar.title = summoner.name
             }
         }
@@ -98,7 +98,7 @@ class ProfileOverviewFragment : BaseFragment() {
             R.id.profileOverviewFragment -> true
             R.id.matchupFragment -> {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.summoner.take(1).collect { summonerModel ->
+                    viewModel.summonerFlow.take(1).collect { summonerModel ->
                         val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchupFragment(
                             PuuidAndRegion(summonerModel.puuid, summonerModel.region)
                         )
@@ -109,7 +109,7 @@ class ProfileOverviewFragment : BaseFragment() {
             }
             R.id.matchHistoryFragment -> {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.summoner.take( 1 ).collect { summonerModel ->
+                    viewModel.summonerFlow.take(1).collect { summonerModel ->
                         val action = ProfileOverviewFragmentDirections.actionProfileOverviewFragmentToMatchHistoryFragment(
                             PuuidAndRegion( summonerModel.puuid, summonerModel.region ) )
                         findNavController().navigate( action, navOptions )

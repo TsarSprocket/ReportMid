@@ -7,7 +7,7 @@ import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.SpectatorV4Service
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.Team
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.Calendar
@@ -16,7 +16,7 @@ import com.merakianalytics.orianna.types.common.Map as OriannaMap
 import com.merakianalytics.orianna.types.common.Queue as OriannaQueue
 
 class CurrentMatchModel @AssistedInject constructor(
-    @Assisted summoner: SummonerModel,
+    @Assisted summoner: Summoner,
     private val repository: Repository,
     private val currentMatchTeamModelFactory: CurrentMatchTeamModelFactory,
 ) {
@@ -27,7 +27,7 @@ class CurrentMatchModel @AssistedInject constructor(
     val gameType: GameTypeModel
 
     init {
-        val info = repository.serviceFactory.getService<SpectatorV4Service>(summoner.region).spectatorV4(summoner.id).blockingFirst()
+        val info = repository.serviceFactory.getService<SpectatorV4Service>(summoner.region).spectatorV4(summoner.riotId).blockingFirst()
         val blue = LinkedList<CurrentGameParticipant>()
         val red = LinkedList<CurrentGameParticipant>()
         info.participants.forEach { (if (it.teamId == Team.Blue.teamId.toLong()) blue else red).add(it) }

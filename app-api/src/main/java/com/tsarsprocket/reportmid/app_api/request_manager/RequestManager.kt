@@ -1,13 +1,12 @@
 package com.tsarsprocket.reportmid.app_api.request_manager
 
-import io.reactivex.Scheduler
-import io.reactivex.Single
+import kotlin.reflect.KClass
 
 interface RequestManager {
-    val ioScheduler: Scheduler
-
-    fun <R : RequestResult> addRequest(request: Request<*, R>, scheduler: Scheduler = ioScheduler): Single<R>
+    suspend fun <R : RequestResult> request(request: Request<*, R>, clazz: KClass<R>): R
     fun cancelRequest(key: RequestKey)
     fun getRequest(key: RequestKey): Request<*, *>?
     fun hasRequest(key: RequestKey): Boolean
 }
+
+suspend inline fun <reified T : RequestResult> RequestManager.request(request: Request<*, T>): T = request(request, T::class)

@@ -25,7 +25,7 @@ import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.SideModel
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.formatPoints
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import com.tsarsprocket.reportmid.viewmodel.MatchupViewModel
@@ -181,7 +181,7 @@ class MatchupFragment : BaseFragment() {
         override fun getItemCount(): Int = blueTeam.size + redTeam.size
     }
 
-    private fun goToChampion(summoner: SummonerModel) {
+    private fun goToChampion(summoner: Summoner) {
         val action = MatchupFragmentDirections.actionMatchupFragmentToProfileOverviewFragment(summoner.puuidAndRegion)
         findNavController().navigate(action)
     }

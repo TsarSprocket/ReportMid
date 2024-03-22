@@ -11,7 +11,6 @@ import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 @Module
 internal class AppModule {
@@ -25,17 +24,17 @@ internal class AppModule {
     @Provides
     @Computation
     @PerApi
-    fun provideComputationDispatcher(): CoroutineDispatcher = Dispatchers.Default
+    fun provideComputationDispatcher(): CoroutineDispatcher = ReportMidApp.instance.comp.getComputationDispatcher()
 
     @Provides
     @Io
     @PerApi
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun provideIoDispatcher(): CoroutineDispatcher = ReportMidApp.instance.comp.getIoDispatcher()
 
     @Provides
     @Ui
     @PerApi
-    fun provideUiDispatcher(): CoroutineDispatcher = Dispatchers.Main
+    fun provideUiDispatcher(): CoroutineDispatcher = ReportMidApp.instance.comp.getUiDispatcher()
 
     // Storage
 

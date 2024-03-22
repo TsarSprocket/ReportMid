@@ -4,10 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner_api.model.SummonerModel
+import com.tsarsprocket.reportmid.summoner_api.model.Summoner
 import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.rx2.rxObservable
+import kotlinx.coroutines.rx2.rxSingle
 import javax.inject.Inject
 
 class ManageSummonersViewModel @Inject constructor(
@@ -15,25 +17,24 @@ class ManageSummonersViewModel @Inject constructor(
     private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
 ) : ViewModel() {
 
-    val mySummonersLive: LiveData<List<SummonerModel>> = summonerRepository.getMine().toLiveData()
+    val mySummonersLive: LiveData<List<Summoner>> = rxSingle { summonerRepository.getMySummoners() }.toObservable().toLiveData()
 
-    val checkedSummoners = HashSet<SummonerModel>()
+    val checkedSummoners = HashSet<Summoner>()
 
     private val disposer = CompositeDisposable()
 
     //  Methods  ///////////////////////////////////////////////////////////////
 
     fun addMySummoner(puuidAndRegion: PuuidAndRegion) {
-        disposer.add(summonerRepository.getByPuuidAndRegion( puuidAndRegion )
-            .toObservable()
-            .switchMap { summonerModel -> repository.addMyAccountNotify( summonerModel ) }
+        disposer.add(rxObservable<Summoner> { summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuidAndRegion) }
+            .switchMap { summonerModel -> repository.addMyAccountNotify(summonerModel) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe())
     }
 
     fun deleteSelected() {
         val selected = checkedSummoners.toList()
-        if (selected.size == (mySummonersLive.value?.size ?: 0)) throw CannotDeleteAllSummoners()
+        if(selected.size == (mySummonersLive.value?.size ?: 0)) throw CannotDeleteAllSummoners()
         if(selected.isEmpty()) throw CannotDeleteNothing()
         repository.deleteMySummonersSwitchActive(checkedSummoners.toList())
     }
@@ -44,6 +45,6 @@ class ManageSummonersViewModel @Inject constructor(
 
     //  Local Exceptions  /////////////////////////////////////////////////////
 
-    class CannotDeleteAllSummoners: RuntimeException()
-    class CannotDeleteNothing: RuntimeException()
+    class CannotDeleteAllSummoners : RuntimeException()
+    class CannotDeleteNothing : RuntimeException()
 }

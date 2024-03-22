@@ -21,7 +21,7 @@ interface DataDragon {
         val items: List<Item>
         fun getRunePathById(id: Int): RunePath
         fun getPerkById(id: Int): Perk
-        fun getChampionById(id: Int): Champion
+        fun getChampionById(id: Long): Champion
         fun getSummonerSpellById(id: Long): SummonerSpell
         fun getItemById(id: Int): Item
     }

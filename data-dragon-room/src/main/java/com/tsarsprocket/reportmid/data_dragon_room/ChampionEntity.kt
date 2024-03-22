@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
 )
 data class ChampionEntity(
     @ColumnInfo(name = "language_id", index = true) var language_id: Long,
-    @ColumnInfo(name = "riot_id", index = true) var riotId: Int,
+    @ColumnInfo(name = "riot_id", index = true) var riotId: Long,
     @ColumnInfo(name = "riot_str_id") var riotStrId: String,
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "icon_name") var iconName: String,

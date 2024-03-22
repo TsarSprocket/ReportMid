@@ -16,7 +16,7 @@
           </compositeBuild>
         </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
+        <option name="gradleJvm" value="corretto-18" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -36,10 +36,10 @@
             <option value="$PROJECT_DIR$/lol-room" />
             <option value="$PROJECT_DIR$/lol-services-api" />
             <option value="$PROJECT_DIR$/lol-services-impl" />
-            <option value="$PROJECT_DIR$/my-account-api" />
-            <option value="$PROJECT_DIR$/my-account-impl" />
-            <option value="$PROJECT_DIR$/my-account-room" />
             <option value="$PROJECT_DIR$/res-lib" />
+            <option value="$PROJECT_DIR$/state-api" />
+            <option value="$PROJECT_DIR$/state-impl" />
+            <option value="$PROJECT_DIR$/state-room" />
             <option value="$PROJECT_DIR$/summoner-api" />
             <option value="$PROJECT_DIR$/summoner-impl" />
             <option value="$PROJECT_DIR$/summoner-room" />
