@@ -9,11 +9,11 @@ import androidx.room.Update
 interface GlobalDAO {
 
     @Query( "SELECT * FROM state_global" )
-    fun getAll(): List<GlobalEntity>
+    suspend fun getGlobal(): GlobalEntity?
 
     @Insert
-    fun insert(globalEntity: GlobalEntity): Long
+    suspend fun insert(globalEntity: GlobalEntity): Long
 
     @Update()
-    fun update(globalEntity: GlobalEntity)
+    suspend fun update(globalEntity: GlobalEntity)
 }

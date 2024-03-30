@@ -14,6 +14,6 @@ internal class SummonerInfoImpl(
     constructor(entity: SummonerEntity) : this(
         entity.id,
         Puuid(entity.puuid),
-        Region.getById(entity.id)
+        Region.getById(entity.regionId)
     )
 }

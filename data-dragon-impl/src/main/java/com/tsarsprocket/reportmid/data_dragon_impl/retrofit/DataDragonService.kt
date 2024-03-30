@@ -9,7 +9,7 @@ interface DataDragonService {
     fun versions(): Observable<List<String>>
 
     @GET("cdn/languages.json")
-    fun languages(): Observable<List<String>>
+    suspend fun languages(): List<String>
 
     @GET("cdn/{version}/data/{lang}/runesReforged.json")
     fun runesReforged(@Path("version") version: String, @Path("lang") lang: String): Observable<List<RunePathDto>>

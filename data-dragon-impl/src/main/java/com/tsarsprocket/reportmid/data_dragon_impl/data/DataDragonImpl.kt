@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.data_dragon_impl.data
 
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
+import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon.Tail
 import com.tsarsprocket.reportmid.data_dragon_impl.retrofit.DataDragonService
@@ -16,37 +17,55 @@ import com.tsarsprocket.reportmid.lol.model.Item
 import com.tsarsprocket.reportmid.lol.model.Perk
 import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
+import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.subjects.ReplaySubject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.rx2.await
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
 import javax.inject.Inject
 
-class DataDragonImpl @Inject constructor(private val db: MainStorage) : DataDragon {
+@OptIn(DelicateCoroutinesApi::class)
+class DataDragonImpl @Inject constructor(
+    private val db: MainStorage,
+    @Io private val ioDispatcher: CoroutineDispatcher,
+) : DataDragon {
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl("https://ddragon.leagueoflegends.com/")
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val ddragon: DataDragonService = retrofit.create(DataDragonService::class.java)
-    private val lang: String
     override val tailSubject: ReplaySubject<Tail> = ReplaySubject.createWithSize(1)
     override val tail: Tail get() = tailSubject.value ?: throw RuntimeException("Data Dragon is missing its tail")
 
     init {
-        lang = selectLanguage()
-
-        tailSubject.onNext(updateAndLoadTail())
+        @Temporary GlobalScope.launch(ioDispatcher + CoroutineExceptionHandler { _, throwable ->
+            logError("Problem initializing Dragon Tail", throwable)
+        }) {
+            tailSubject.onNext(updateAndLoadTail(selectLanguage()))
+        }
     }
 
-    private fun selectLanguage(): String {
+    override suspend fun waitForInitialization() {
+        withContext(ioDispatcher) { tailSubject.firstOrError().await() }
+    }
+
+    private suspend fun selectLanguage(): String {
         val locale = Locale.getDefault()
         val langCode = locale.language
         val country = locale.country
 
-        val availableLangs = ddragon.languages().blockingFirst()
+        val availableLangs = ddragon.languages()
 
         val idealLang = "${langCode}_$country"
 
@@ -61,24 +80,24 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage) : DataDrag
         return availableLangs[0]
     }
 
-    private fun updateAndLoadTail(): Tail {
+    private fun updateAndLoadTail(language: String): Tail {
         val versions = ddragon.versions().blockingFirst()
         val latestVersion = versions.first()
 
         val dbVersions = db.ddragonVersionDao().getAll().blockingFirst()
 
-        val dbLanguages = dbVersions.find { it.version == latestVersion }?.let { db.ddragonLanguageDao().getAllForVersion(it.id).blockingFirst() } ?: listOf()
+        val dbLanguages = dbVersions.find { it.version == latestVersion }?.let { @Temporary runBlocking { db.ddragonLanguageDao().getAllForVersion(it.id) } } ?: listOf()
 
-        return if(dbLanguages.find { it.language == lang } == null) {
-            updateTail(latestVersion, lang)
+        return if(dbLanguages.find { it.language == language } == null) {
+            updateTail(latestVersion, language)
         } else {
             loadLatestTail()
         }
     }
 
     private fun updateTail(ver: String, lang: String): Tail = db.runInTransaction<Tail> {
-        val verId = db.ddragonVersionDao().insert(VersionEntity(ver)).blockingGet()
-        val langId = db.ddragonLanguageDao().insert(LanguageEntity(verId, lang)).blockingGet()
+        val verId = @Temporary runBlocking { db.ddragonVersionDao().insert(VersionEntity(ver)) }
+        val langId = @Temporary runBlocking { db.ddragonLanguageDao().insert(LanguageEntity(verId, lang)) }
 
         val lstRetroRunes = ddragon.runesReforged(ver, lang).blockingFirst()
 
@@ -88,53 +107,66 @@ class DataDragonImpl @Inject constructor(private val db: MainStorage) : DataDrag
             lstRetroRunes.map { retroPath ->
                 RunePathEntity(langId, retroPath.id, retroPath.key, retroPath.name, retroPath.icon)
                     .also { runePathEnt ->
-                        runePathEnt.id = db.runePathDao().insert(runePathEnt).blockingGet()
+                        runePathEnt.id = @Temporary runBlocking { db.runePathDao().insert(runePathEnt) }
                         lstRuneEntities.addAll(retroPath.slots.withIndex().flatMap { (slotIdx, retroSlot) ->
                             retroSlot.runes.map { rune ->
                                 RuneEntity(runePathEnt.id, rune.id, rune.key, rune.name, rune.icon, slotIdx)
-                                    .also { re -> re.id = db.runeDao().insert(re).blockingGet() }
+                                    .also { re -> re.id = @Temporary runBlocking { db.runeDao().insert(re) } }
                             }
                         })
                     }
             }
 
-        val lstRetroChamps = try { ddragon.champions(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError("Can't get champions from DD", ex); throw ex }
+        val lstRetroChamps = try {
+            ddragon.champions(ver, lang).blockingFirst()
+        } catch(ex: Exception) {
+            this.logError("Can't get champions from DD", ex); throw ex
+        }
 
         val championEntities = lstRetroChamps.data.values.map { champ ->
             ChampionEntity(langId, champ.key.toLong(), champ.id, champ.name, champ.image.full)
-            .also { champEnt -> db.championDao().insert(champEnt).ignoreElement().blockingAwait() } }
+                .also { champEnt -> @Temporary runBlocking { db.championDao().insert(champEnt) } }
+        }
 
-        val lstRetroSummonerSpells = try { ddragon.summonerSpells(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get summoner spells from DD", ex ); throw ex }
+        val lstRetroSummonerSpells = try {
+            ddragon.summonerSpells(ver, lang).blockingFirst()
+        } catch(ex: Exception) {
+            this.logError("Can't get summoner spells from DD", ex); throw ex
+        }
 
         val summonerSpellEntities = lstRetroSummonerSpells.data.values.map { retroSpell ->
             SummonerSpellEntity(langId, retroSpell.id, retroSpell.key.toLong(), retroSpell.image.full)
-                .also { spellEnt -> db.summonerSpellDao().insert(spellEnt).ignoreElement().blockingAwait() }
+                .also { spellEnt -> @Temporary runBlocking { db.summonerSpellDao().insert(spellEnt) } }
         }
 
-        val lstRetroItems = try { ddragon.items(ver, lang).blockingFirst() } catch (ex: Exception) { this.logError( "Can't get items from DD", ex ); throw ex }
+        val lstRetroItems = try {
+            ddragon.items(ver, lang).blockingFirst()
+        } catch(ex: Exception) {
+            this.logError("Can't get items from DD", ex); throw ex
+        }
 
-        val itemEntities = lstRetroItems.data.entries.map { (key,data) ->
+        val itemEntities = lstRetroItems.data.entries.map { (key, data) ->
             ItemEntity(langId, key.toInt(), data.name, data.image.full)
-                .also { db.itemDao().insert(it).ignoreElement().blockingAwait() }
+                .also { @Temporary runBlocking { db.itemDao().insert(it) } }
         }
 
         tailFromEntities(ver, lang, runePathEntities, lstRuneEntities, championEntities, summonerSpellEntities, itemEntities)
     }
 
-    private fun loadLatestTail(): Tail {
-        val lang = db.ddragonLanguageDao().getLatestLanguage().blockingFirst().first() // get latest created language entity
-        val ver = db.ddragonVersionDao().getById(lang.versionId).blockingFirst()
+    private fun loadLatestTail(): Tail = @Temporary runBlocking {
+        val lang = db.ddragonLanguageDao().getLatestLanguage()!! // get latest created language entity
+        val ver = db.ddragonVersionDao().getById(lang.versionId)!!
 
-        val runePathEnts = db.runePathDao().getByLanguageId(lang.id).blockingFirst()
-        val runeEnts = runePathEnts.flatMap { db.runeDao().getByRunePathId(it.id).blockingFirst() }
+        val runePathEnts = db.runePathDao().getByLanguageId(lang.id)
+        val runeEnts = runePathEnts.flatMap { db.runeDao().getByRunePathId(it.id) }
 
-        val championEnts = db.championDao().getByLangueageId(lang.id).blockingFirst()
+        val championEnts = db.championDao().getByLangueageId(lang.id)
 
-        val summonerSpellEnts = db.summonerSpellDao().getByLanguageId(lang.id).blockingFirst()
+        val summonerSpellEnts = db.summonerSpellDao().getByLanguageId(lang.id)
 
-        val itemEnts = db.itemDao().getByLanguageId(lang.id).blockingFirst()
+        val itemEnts = db.itemDao().getByLanguageId(lang.id)
 
-        return tailFromEntities(ver.version, lang.language, runePathEnts, runeEnts, championEnts, summonerSpellEnts, itemEnts)
+        tailFromEntities(ver.version, lang.language, runePathEnts, runeEnts, championEnts, summonerSpellEnts, itemEnts)
     }
 
     private fun tailFromEntities(

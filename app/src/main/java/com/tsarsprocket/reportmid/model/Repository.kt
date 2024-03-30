@@ -10,7 +10,6 @@ import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
-import com.tsarsprocket.reportmid.data_dragon_impl.data.DataDragonImpl
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
 import com.tsarsprocket.reportmid.lol.model.Champion
@@ -56,6 +55,7 @@ class Repository @Inject constructor(
     private val stateRepository: StateRepository,
     private val currentMatchModelFactory: CurrentMatchModelFactory,
     private val matchHistoryModelFactory: MatchHistoryModelFactory,
+    private val dataDragonProvider: Provider<DataDragon>
 ) {
 
     val initialized = ReplaySubject.createWithSize<Boolean>(1)
@@ -81,7 +81,7 @@ class Repository @Inject constructor(
                     }
                 }
 
-                dataDragon = DataDragonImpl(database)
+                dataDragon = dataDragonProvider.get()
 
                 Orianna.setRiotAPIKey(loadRawResourceAsText(RServices.raw.riot_api_key))
                 Orianna.setDefaultRegion(OriannaRegion.RUSSIA)
@@ -92,6 +92,11 @@ class Repository @Inject constructor(
             } catch(ex: Exception) {
                 logError("Error initializing the repository", ex)
                 return@fromCallable false
+            }
+        }.flatMapSingle {
+            rxSingle {
+                dataDragon.waitForInitialization()
+                it
             }
         }.subscribeOn(Schedulers.io()).subscribe(initialized)
     }
@@ -113,10 +118,6 @@ class Repository @Inject constructor(
                 @Temporary runBlocking { summonerRepository.getSummonerInfoById(myAcc.summonerId).region }
             }
                 .distinct()
-                .map { regEnt ->
-                    Region.byTag[regEnt.tag]
-                        ?: throw RuntimeException("Region not found for tag ${regEnt.tag}")
-                }
         }
 
     private fun loadRawResourceAsText(resId: Int) =

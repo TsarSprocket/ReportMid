@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.state_impl.data
 
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
+import com.tsarsprocket.reportmid.base.data.NoDataFoundException
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.state_api.data.MyAccountNotFoundException
@@ -27,11 +28,11 @@ class StateRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getActiveCurrentAccountId(): Long? = withContext(ioDispatcher) {
-        storage.globalDAO().getAll().firstOrNull()?.currentAccountId
+        storage.globalDAO().getGlobal()?.currentAccountId
     }
 
     override suspend fun getCurrentAccountById(id: Long): CurrentAccount = withContext(ioDispatcher) {
-        storage.currentAccountDAO().getById(id).run { CurrentAccount(id, Region.getById(regionId), accountId) }
+        storage.currentAccountDAO().getById(id)?.run { CurrentAccount(id, Region.getById(regionId), accountId) } ?: throw NoDataFoundException()
     }
 
     override suspend fun getCurrentAccountByMyAccountId(myAccountId: Long): CurrentAccount? = withContext(ioDispatcher) {
@@ -50,7 +51,7 @@ class StateRepositoryImpl @Inject constructor(
 
     override suspend fun setActiveCurrentAccountId(newCurrentAccountId: Long) {
         with(storage.globalDAO()) {
-            val entity = getAll().firstOrNull()
+            val entity = getGlobal()
             if(entity != null) {
                 entity.currentAccountId = newCurrentAccountId
                 update(entity)

@@ -1,12 +1,12 @@
 package com.tsarsprocket.reportmid.summoner_impl.data
 
-import androidx.room.EmptyResultSetException
 import com.tsarsprocket.reportmid.app_api.request_manager.Request
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestKey
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestResult
 import com.tsarsprocket.reportmid.app_api.request_manager.request
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
+import com.tsarsprocket.reportmid.base.data.NoDataFoundException
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.lol.model.Puuid
@@ -64,11 +64,11 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteMyAccount(myAccount: MyAccount) {
-        storage.myAccountDAO().delete(storage.myAccountDAO().getById(myAccount.id))
+        storage.myAccountDAO().getById(myAccount.id)?.let { storage.myAccountDAO().delete(it) } ?: throw NoDataFoundException()
     }
 
     override suspend fun forgetSummonerById(id: Long) = withContext(ioDispatcher) {
-        storage.summonerDAO().delete(storage.summonerDAO().getById(id))
+        storage.summonerDAO().getById(id)?.let { storage.summonerDAO().delete(it) } ?: throw NoDataFoundException()
     }
 
     override suspend fun getAllMyAccounts(): List<MyAccount> = withContext(ioDispatcher) {
@@ -76,18 +76,19 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getKnownSummonerId(puuidAndRegion: PuuidAndRegion): Long = withContext(ioDispatcher) {
-        storage.summonerDAO().getByPuuidAndRegionId(puuidAndRegion.puuid.value, puuidAndRegion.region.id).id
+        storage.summonerDAO().getByPuuidAndRegionId(puuidAndRegion.puuid.value, puuidAndRegion.region.id)?.id ?: throw NoDataFoundException()
     }
 
     override suspend fun getMyAccountById(id: Long): MyAccount = withContext(ioDispatcher) {
-        val entity = storage.myAccountDAO().getById(id)
-        MyAccountImpl(id, entity.summonerId)
+        storage.myAccountDAO().getById(id)?.let { entity ->
+            MyAccountImpl(id, entity.summonerId)
+        } ?: throw NoDataFoundException()
     }
 
     override suspend fun getMyAccountByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): MyAccount = withContext(ioDispatcher) {
-        with(storage.myAccountDAO().getByPuuidAndRegionId(puuidAndRegion.puuid.value, puuidAndRegion.region.id)) {
+        storage.myAccountDAO().getByPuuidAndRegionId(puuidAndRegion.puuid.value, puuidAndRegion.region.id)?.run {
             MyAccountImpl(id = id, summonerId = summonerId)
-        }
+        } ?: throw NoDataFoundException()
     }
 
     override suspend fun getMyAccountsByRegion(region: Region): List<MyAccount> = withContext(ioDispatcher) {
@@ -95,9 +96,9 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMyAccountBySummonerId(summonerId: Long): MyAccount = withContext(ioDispatcher) {
-        with(storage.myAccountDAO().getBySummonerId(summonerId)) {
+        storage.myAccountDAO().getBySummonerId(summonerId)?.run {
             MyAccountImpl(id, summonerId)
-        }
+        } ?: throw NoDataFoundException()
     }
 
     override suspend fun getNumberOfMyAccounts(): Int = withContext(ioDispatcher) {
@@ -105,16 +106,11 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSummonerInfoById(id: Long): SummonerInfo = withContext(ioDispatcher) {
-        SummonerInfoImpl(storage.summonerDAO().getById(id))
+        storage.summonerDAO().getById(id)?.let { SummonerInfoImpl(it) } ?: throw NoDataFoundException()
     }
 
     override suspend fun isSummonerKnown(puuidAndRegion: PuuidAndRegion): Boolean = withContext(ioDispatcher) {
-        try {
-            storage.summonerDAO().getByPuuidAndRegionId(puuid = puuidAndRegion.puuid.value, regionId = puuidAndRegion.region.id)
-            true
-        } catch(exception: EmptyResultSetException) {
-            false
-        }
+        storage.summonerDAO().getByPuuidAndRegionId(puuid = puuidAndRegion.puuid.value, regionId = puuidAndRegion.region.id) != null
     }
 
     override suspend fun requestRemoteSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Summoner {
@@ -172,9 +168,9 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun requestSummonerByMyAccount(myAccount: MyAccount): Summoner = withContext(ioDispatcher) {
-        with(storage.summonerDAO().getById(myAccount.summonerId)) {
+        storage.summonerDAO().getById(myAccount.summonerId)?.run {
             fetchSummonerByPuuid(PuuidAndRegion(Puuid(puuid), Region.getById(regionId)))
-        }
+        } ?: throw NoDataFoundException()
     }
 
     private suspend fun fetchChampionMasteriesByPuuid(key: MasteriesPuuidKey): List<ChampionMastery> {

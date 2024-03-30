@@ -11,6 +11,8 @@ interface DataDragon {
     val tailSubject: ReplaySubject<Tail>
     val tail: Tail
 
+    suspend fun waitForInitialization()
+
     interface Tail {
         val latestVersion: String
         val language: String

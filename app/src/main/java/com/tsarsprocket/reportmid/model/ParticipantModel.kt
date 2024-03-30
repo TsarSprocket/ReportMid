@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
-import com.tsarsprocket.reportmid.data_dragon_impl.data.DataDragonImpl
+import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
@@ -20,7 +20,7 @@ class ParticipantModel @AssistedInject constructor(
     @Assisted val team: TeamModel,
     @Assisted participantDto: ParticipantDto,
     @Assisted val region: Region,
-    private val dataDragon: DataDragonImpl,
+    private val dataDragon: DataDragon,
     val repository: Repository,
     summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
 ) {

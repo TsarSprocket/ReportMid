@@ -10,7 +10,7 @@ import androidx.room.Update
 interface CurrentAccountDAO {
 
     @Query("SELECT * FROM state_current_accounts WHERE id = :id")
-    suspend fun getById(id: Long): CurrentAccountEntity
+    suspend fun getById(id: Long): CurrentAccountEntity?
 
     @Query("SELECT * FROM state_current_accounts WHERE region_id = :regionId")
     suspend fun getByRegionId(regionId: Long): CurrentAccountEntity?

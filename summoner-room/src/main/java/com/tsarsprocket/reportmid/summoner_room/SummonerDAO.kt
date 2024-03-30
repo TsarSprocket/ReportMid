@@ -9,10 +9,10 @@ import androidx.room.Query
 interface SummonerDAO {
 
     @Query("SELECT * FROM summoners WHERE id = :id")
-    suspend fun getById(id: Long): SummonerEntity
+    suspend fun getById(id: Long): SummonerEntity?
 
     @Query("SELECT * FROM summoners WHERE puuid = :puuid AND region_id = :regionId")
-    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Long): SummonerEntity
+    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Long): SummonerEntity?
 
     @Query("""
         SELECT s.*

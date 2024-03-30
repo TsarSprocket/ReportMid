@@ -12,10 +12,10 @@ interface MyAccountDAO {
     suspend fun getAll(): List<MyAccountEntity>
 
     @Query("SELECT * FROM my_accounts WHERE id = :id")
-    suspend fun getById(id: Long): MyAccountEntity
+    suspend fun getById(id: Long): MyAccountEntity?
 
     @Query("SELECT * FROM my_accounts WHERE summoner_id = :summonerId")
-    suspend fun getBySummonerId(summonerId: Long): MyAccountEntity
+    suspend fun getBySummonerId(summonerId: Long): MyAccountEntity?
 
     @Query(
         """
@@ -25,7 +25,7 @@ interface MyAccountDAO {
         WHERE s.puuid = :puuid AND s.region_id = :regionId
         """
     )
-    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Long): MyAccountEntity
+    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Long): MyAccountEntity?
 
     @Query("""
         SELECT ma.*

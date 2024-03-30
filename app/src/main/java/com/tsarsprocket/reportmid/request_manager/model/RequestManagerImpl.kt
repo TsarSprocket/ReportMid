@@ -8,10 +8,8 @@ import com.tsarsprocket.reportmid.app_api.request_manager.RequestResult
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
@@ -26,23 +24,18 @@ class RequestManagerImpl @Inject constructor(
 
     private val requestMap: ConcurrentHashMap<RequestKey, RequestInfo> = ConcurrentHashMap()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun <R : RequestResult> request(request: Request<*, R>, clazz: KClass<R>): R {
 
         suspend fun createNewEntry(request: Request<*, R>): RequestResult {
-            return RequestInfo(request, coroutineScope { produce { request().also { requestMap.remove(request.key) } } }).run {
+            return RequestInfo(request, coroutineScope { async { request().also { requestMap.remove(request.key) } } }).run {
                 requestMap[request.key] = this
-                channel.receive()
+                deferredValue.await()
             }
         }
 
         return withContext(ioDispatcher) {
             clazz.cast(requestMap[request.key]?.run {
-                try {
-                    channel.receive()
-                } catch(closedException: ClosedReceiveChannelException) {
-                    createNewEntry(request)
-                }
+                deferredValue.await()
             } ?: createNewEntry(request))
         }
     }
@@ -60,6 +53,6 @@ class RequestManagerImpl @Inject constructor(
 
     private data class RequestInfo(
         val request: Request<*, *>,
-        val channel: ReceiveChannel<RequestResult>,
+        val deferredValue: Deferred<RequestResult>,
     )
 }

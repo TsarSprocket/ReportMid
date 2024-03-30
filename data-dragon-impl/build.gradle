@@ -41,6 +41,7 @@ dependencies {
     // Rx
     implementation libs.rxandroid
     implementation libs.rxkotlin
+    implementation libs.kotlinx.coroutines.rx2
 
     // Retrofit
     implementation libs.retrofit

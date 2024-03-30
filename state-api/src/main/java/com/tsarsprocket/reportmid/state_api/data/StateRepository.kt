@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.state_api.model.CurrentAccount
 
 interface StateRepository {
     suspend fun getActiveCurrentAccountId(): Long?
-    suspend fun setActiveCurrentAccountId(id: Long)
+    suspend fun setActiveCurrentAccountId(newCurrentAccountId: Long)
 
     suspend fun deleteCurrentAccount(currentAccount: CurrentAccount)
     suspend fun getCurrentAccountById(id: Long): CurrentAccount

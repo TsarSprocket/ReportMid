@@ -9,7 +9,6 @@ import com.tsarsprocket.reportmid.data_dragon_room.RuneEntity
 import com.tsarsprocket.reportmid.data_dragon_room.RunePathEntity
 import com.tsarsprocket.reportmid.data_dragon_room.SummonerSpellEntity
 import com.tsarsprocket.reportmid.data_dragon_room.VersionEntity
-import com.tsarsprocket.reportmid.lol_room.room.RegionEntity
 import com.tsarsprocket.reportmid.state_room.CurrentAccountEntity
 import com.tsarsprocket.reportmid.state_room.GlobalEntity
 import com.tsarsprocket.reportmid.summoner_room.MyAccountEntity
@@ -21,7 +20,6 @@ import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
         CurrentAccountEntity::class,
         MyAccountEntity::class,
         MyFriendEntity::class,
-        RegionEntity::class,
         SummonerEntity::class,
         // Data Dragon
         VersionEntity::class,
