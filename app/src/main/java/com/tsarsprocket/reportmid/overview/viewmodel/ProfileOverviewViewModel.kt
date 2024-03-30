@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -68,7 +67,7 @@ class ProfileOverviewViewModel @Inject constructor(
     @ExperimentalCoroutinesApi
     private fun getSummonerFlow(puuidAndRegionFlow: Flow<PuuidAndRegion>): Flow<Summoner> = puuidAndRegionFlow
         .distinctUntilChanged()
-        .flatMapLatest { puuidAndRegion -> flow { summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuidAndRegion) } }
+        .map { puuidAndRegion -> summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuidAndRegion) }
 
     data class MasteryViewModel(
         val icon: Flow<Drawable>,
