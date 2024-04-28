@@ -64,7 +64,7 @@ dependencies {
 
     // Compose preview support
     implementation libs.compose.ui.tooling.preview
-    debugImplementation libs.compose.ui.tooling
+    debugImplementation libs.compose.ui.tooling.main
 
     // Optional - Integration with ViewModels
     implementation libs.androidx.lifecycle.viewmodel.compose

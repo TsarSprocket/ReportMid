@@ -8,6 +8,10 @@ fun DependencyHandlerScope.api(dependency: Dependency) = addDependency(ConfigTyp
 
 fun DependencyHandlerScope.api(dependencyProvider: Provider<out Dependency>) = addDependency(ConfigTypes.API, dependencyProvider.get())
 
+fun DependencyHandlerScope.debug(dependency: Dependency) = addDependency(ConfigTypes.DEBUG, dependency)
+
+fun DependencyHandlerScope.debug(dependencyProvider: Provider<out Dependency>) = addDependency(ConfigTypes.DEBUG, dependencyProvider.get())
+
 fun DependencyHandlerScope.impl(dependency: Dependency) = addDependency(ConfigTypes.IMPL, dependency)
 
 fun DependencyHandlerScope.impl(dependencyProvider: Provider<out Dependency>) = addDependency(ConfigTypes.IMPL, dependencyProvider.get())
