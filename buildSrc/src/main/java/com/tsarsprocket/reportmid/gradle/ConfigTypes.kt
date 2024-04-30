@@ -5,6 +5,7 @@ enum class ConfigTypes(val configName: String) {
     DEBUG("debugImplementation"),
     IMPL("implementation"),
     KAPT("kapt"),
+    KSP("ksp"),
     TEST("testImplementation"),
     ANDROID_TEST("androidTestImplementation")
 }

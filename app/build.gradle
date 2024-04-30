@@ -53,7 +53,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "$composeCompilerVersion"
+        kotlinCompilerExtensionVersion = composeCompilerVersion
     }
 
     namespace 'com.tsarsprocket.reportmid'

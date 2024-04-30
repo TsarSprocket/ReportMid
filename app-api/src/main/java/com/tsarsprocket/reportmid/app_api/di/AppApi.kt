@@ -6,8 +6,10 @@ import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base.di.qualifiers.Io
 import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.lazy_proxy_ksp.annotation.LazyProxy
 import kotlinx.coroutines.CoroutineDispatcher
 
+@LazyProxy
 interface AppApi {
     fun getAppContext(): Context
 

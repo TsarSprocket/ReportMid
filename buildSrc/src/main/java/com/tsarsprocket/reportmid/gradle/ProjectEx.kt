@@ -30,6 +30,7 @@ fun Project.application(
         apply("com.android.application")
         apply("org.jetbrains.kotlin.android")
         apply("org.jetbrains.kotlin.kapt")
+        apply("com.google.devtools.ksp")
     }
 
     configure<ApplicationExtension> {
@@ -89,12 +90,16 @@ fun Project.application(
     }
 }
 
-fun Project.library(namespace: String, dependenciesConfigurator: DependencyHandlerScope.() -> Unit) {
-
+fun Project.library(
+    namespace: String,
+    enableCompose: Boolean = false,
+    dependenciesConfigurator: DependencyHandlerScope.() -> Unit,
+) {
     plugins.apply {
         apply("com.android.library")
         apply("org.jetbrains.kotlin.android")
         apply("org.jetbrains.kotlin.kapt")
+        apply("com.google.devtools.ksp")
     }
 
     configure<LibraryExtension> {
@@ -120,12 +125,14 @@ fun Project.library(namespace: String, dependenciesConfigurator: DependencyHandl
             targetCompatibility = JavaVersion.VERSION_18
         }
 
-        buildFeatures {
-            compose = true
-        }
+        if(enableCompose) {
+            buildFeatures {
+                compose = true
+            }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion = COMPOSE_COMPILER_VERSION
+            composeOptions {
+                kotlinCompilerExtensionVersion = COMPOSE_COMPILER_VERSION
+            }
         }
 
         packaging {

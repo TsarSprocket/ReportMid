@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.gradle
 
 object ConfigVersions {
     const val COMPILE_SDK_VERSION = 34
-    const val COMPOSE_COMPILER_VERSION = "1.5.10"
+    const val COMPOSE_COMPILER_VERSION = "1.5.12"
     const val MIN_SDK_VERSION = 24
     const val PACKAGING_EXCLUDES = "/META-INF/{AL2.0,LGPL2.1}"
     const val PROGUARD_CONSUMER_RULES = "consumer-rules.pro"
