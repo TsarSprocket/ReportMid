@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.app.di
 
 import android.content.Context
 import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.PerApi
@@ -17,6 +18,7 @@ internal class AppModule {
 
     @Provides
     @PerApi
+    @AppContext
     fun provideAppContext(): Context = ReportMidApp.instance
 
     // Schedulers

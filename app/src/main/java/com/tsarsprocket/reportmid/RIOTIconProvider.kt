@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
+import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.base.di.AppScope
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -29,7 +30,7 @@ const val STR_PATH_SUMMONER_SPELL_ICONS = "spell/%s" // summoner spell key
 const val STR_PATH_RUNE_ICONS = "%s" // rune/rune path icon path
 
 @AppScope
-class RIOTIconProvider @Inject constructor(val context: Context) {
+class RIOTIconProvider @Inject constructor(@AppContext val context: Context) {
 
     //  Properties  ///////////////////////////////////////////////////////////
 

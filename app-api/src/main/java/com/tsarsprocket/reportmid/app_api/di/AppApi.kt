@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 
 @LazyProxy
 interface AppApi {
+    @AppContext
     fun getAppContext(): Context
 
     @Ui

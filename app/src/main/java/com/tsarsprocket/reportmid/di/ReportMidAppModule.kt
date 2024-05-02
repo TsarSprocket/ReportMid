@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.room.Room
 import com.tsarsprocket.reportmid.app_api.di.AppApi
+import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.BindingExport
@@ -36,6 +37,7 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
+    @AppContext
     fun provideAppContext(appApi: AppApi): Context = appApi.getAppContext()
 
     @Provides
@@ -81,7 +83,7 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
-    fun provideMainDatabase(context: Context): MainDatabase {
+    fun provideMainDatabase(@AppContext context: Context): MainDatabase {
         return Room.databaseBuilder(context.applicationContext, MainDatabase::class.java, "database")
             .build()
     }

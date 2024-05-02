@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.lol_services_impl.riotapi
 
 import android.content.Context
+import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services.BuildConfig
 import com.tsarsprocket.reportmid.lol_services.R
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class ServiceFactoryImpl @Inject constructor(
+    @AppContext
     private val context: Context,
 ) : com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory {
     private val okClient = OkHttpClient.Builder()

@@ -8,6 +8,7 @@ import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.RIOTIconProvider
+import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
@@ -47,6 +48,7 @@ const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE
 
 @AppScope
 class Repository @Inject constructor(
+    @AppContext
     val context: Context,
     databaseProvider: Provider<MainDatabase>,
     val iconProvider: RIOTIconProvider,

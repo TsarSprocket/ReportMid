@@ -1,11 +1,16 @@
+import com.tsarsprocket.reportmid.gradle.api
 import com.tsarsprocket.reportmid.gradle.application
 import com.tsarsprocket.reportmid.gradle.debug
 import com.tsarsprocket.reportmid.gradle.impl
+import com.tsarsprocket.reportmid.gradle.kapt
 
 application(
     appId = "com.tsarsprocket.reportmid.app",
     namespace = "com.tsarsprocket.reportmid.app_impl",
 ) {
+    impl(project(":base"))
+    api(project(":app-api"))
+
     impl(libs.androidx.core.ktx)
     impl(libs.androidx.lifecycle.runtime.ktx)
     impl(libs.androidx.activity.compose)
@@ -16,4 +21,8 @@ application(
     impl(libs.compose.material3)
     debug(libs.compose.ui.tooling.main)
     debug(libs.androidx.ui.test.manifest)
+
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 }
