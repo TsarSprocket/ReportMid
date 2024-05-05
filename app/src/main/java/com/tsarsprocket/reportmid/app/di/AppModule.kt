@@ -3,7 +3,6 @@ package com.tsarsprocket.reportmid.app.di
 import android.content.Context
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.app_api.di.AppContext
-import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.PerApi
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
@@ -43,8 +42,4 @@ internal class AppModule {
     @Provides
     @PerApi
     fun provideMainStorage(): MainStorage = ReportMidApp.instance.comp.getMainStorage()
-
-    @Provides
-    @PerApi
-    fun provideRequestManager(): RequestManager = ReportMidApp.instance.comp.getRequestManager()
 }

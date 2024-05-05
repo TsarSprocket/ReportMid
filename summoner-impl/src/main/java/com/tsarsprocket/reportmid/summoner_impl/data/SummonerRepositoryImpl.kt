@@ -1,10 +1,5 @@
 package com.tsarsprocket.reportmid.summoner_impl.data
 
-import com.tsarsprocket.reportmid.app_api.request_manager.Request
-import com.tsarsprocket.reportmid.app_api.request_manager.RequestKey
-import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
-import com.tsarsprocket.reportmid.app_api.request_manager.RequestResult
-import com.tsarsprocket.reportmid.app_api.request_manager.request
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.data.NoDataFoundException
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
@@ -14,6 +9,8 @@ import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
+import com.tsarsprocket.reportmid.request_manager_api.data.RequestManager
+import com.tsarsprocket.reportmid.request_manager_api.data.request
 import com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository
 import com.tsarsprocket.reportmid.summoner_api.model.ChampionMastery
 import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
@@ -248,29 +245,29 @@ class SummonerRepositoryImpl @Inject constructor(
     private data class AccountIdKey(
         val accountId: String,
         val region: Region,
-    ) : RequestKey
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestKey
 
     private data class PuuidKey(
         val puuidAndRegion: PuuidAndRegion,
-    ) : RequestKey
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestKey
 
     private data class MasteriesPuuidKey(
         val puuid: Puuid,
         val region: Region,
-    ) : RequestKey
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestKey
 
     private data class SummonerNameKey(
         val summonerName: String,
         val region: Region,
-    ) : RequestKey
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestKey
 
     private data class SummonerIdKey(
         val summonerId: String,
         val region: Region,
-    ) : RequestKey
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestKey
 
     private inner class ChampionMasteriesByPuuid(key: MasteriesPuuidKey) :
-        Request<MasteriesPuuidKey, ChampionMasteriesRequestResult>(key) {
+        com.tsarsprocket.reportmid.request_manager_api.data.Request<MasteriesPuuidKey, ChampionMasteriesRequestResult>(key) {
 
         override suspend fun invoke(): ChampionMasteriesRequestResult {
             val championMasteryV4 = serviceFactory.getService<ChampionMasteryV4>(key.region)
@@ -280,10 +277,10 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private data class ChampionMasteriesRequestResult(
         val championMasteryDtos: List<ChampionMasteryDto>
-    ) : RequestResult
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestResult
 
     private inner class SummonerRequestByAccountId(key: AccountIdKey) :
-        Request<AccountIdKey, SummonerRequestResult>(key) {
+        com.tsarsprocket.reportmid.request_manager_api.data.Request<AccountIdKey, SummonerRequestResult>(key) {
 
         override suspend fun invoke(): SummonerRequestResult {
             val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
@@ -291,7 +288,7 @@ class SummonerRepositoryImpl @Inject constructor(
         }
     }
 
-    private inner class SummonerRequestByPuuid(key: PuuidKey) : Request<PuuidKey, SummonerRequestResult>(key) {
+    private inner class SummonerRequestByPuuid(key: PuuidKey) : com.tsarsprocket.reportmid.request_manager_api.data.Request<PuuidKey, SummonerRequestResult>(key) {
 
         override suspend fun invoke(): SummonerRequestResult {
             val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.puuidAndRegion.region)
@@ -300,7 +297,7 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     private inner class SummonerRequestBySummonerId(key: SummonerIdKey) :
-        Request<SummonerIdKey, SummonerRequestResult>(key) {
+        com.tsarsprocket.reportmid.request_manager_api.data.Request<SummonerIdKey, SummonerRequestResult>(key) {
 
         override suspend fun invoke(): SummonerRequestResult {
             val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
@@ -309,7 +306,7 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     private inner class SummonerRequestBySummonerName(key: SummonerNameKey) :
-        Request<SummonerNameKey, SummonerRequestResult>(key) {
+        com.tsarsprocket.reportmid.request_manager_api.data.Request<SummonerNameKey, SummonerRequestResult>(key) {
 
         override suspend fun invoke(): SummonerRequestResult {
             val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
@@ -319,7 +316,7 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private data class SummonerRequestResult(
         val summonerDto: SummonerDto,
-    ) : RequestResult
+    ) : com.tsarsprocket.reportmid.request_manager_api.data.RequestResult
 
     companion object {
 

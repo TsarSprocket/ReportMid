@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -84,6 +85,10 @@ dependencies {
     implementation project(path: ':data-dragon-impl')
     implementation project(path: ':summoner-impl')
     implementation project(path: ':state-impl')
+    implementation project(path: ':request-manager-impl')
+
+    implementation project(path: ':lazy-proxy-ksp')
+    ksp project(path: ':lazy-proxy-ksp')
 
     // Dagger
     implementation libs.dagger

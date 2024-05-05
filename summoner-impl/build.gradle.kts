@@ -10,6 +10,7 @@ library(namespace = "com.tsarsprocket.reportmid.summoner_impl") {
     api(project(":data-dragon-room"))
     api(project(":lol-services-api"))
     api(project(":app-api"))
+    api(project(":request-manager-api"))
     api(project(":utils"))
 
     // Dagger

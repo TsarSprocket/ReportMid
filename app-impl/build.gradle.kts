@@ -3,6 +3,7 @@ import com.tsarsprocket.reportmid.gradle.application
 import com.tsarsprocket.reportmid.gradle.debug
 import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.kapt
+import com.tsarsprocket.reportmid.gradle.ksp
 
 application(
     appId = "com.tsarsprocket.reportmid.app",
@@ -10,6 +11,9 @@ application(
 ) {
     impl(project(":base"))
     api(project(":app-api"))
+
+    impl(project(":lazy-proxy-ksp"))
+    ksp(project(":lazy-proxy-ksp"))
 
     impl(libs.androidx.core.ktx)
     impl(libs.androidx.lifecycle.runtime.ktx)

@@ -1,7 +1,6 @@
 package com.tsarsprocket.reportmid.app.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.app_api.di.AppApiLazyProxy
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.BindingExport
 import dagger.Binds
@@ -26,7 +25,7 @@ interface AppProvisionModule {
         @Provides
         @AppScope
         fun provideAppApi(): AppApi {
-            return AppApiLazyProxy { DaggerAppApiComponent.factory().create().also { appApiComponent = it } }
+            return AppApiComponentLazyProxy { DaggerAppApiComponent.factory().create() }.also { appApiComponent = it }
         }
     }
 }

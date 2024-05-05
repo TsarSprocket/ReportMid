@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.di
 
 import com.tsarsprocket.reportmid.ReportMidApp
 import com.tsarsprocket.reportmid.app.di.AppProvisionModule
-import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
@@ -21,7 +20,7 @@ import com.tsarsprocket.reportmid.landing_impl.di.LandingProvisionModule
 import com.tsarsprocket.reportmid.league_position_impl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
-import com.tsarsprocket.reportmid.request_manager.di.RequestManagerModule
+import com.tsarsprocket.reportmid.request_manager_impl.di.RequestManagerProvisionModule
 import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.state_impl.di.StateProvisionModule
 import com.tsarsprocket.reportmid.summoner_impl.di.SummonerProvisionModule
@@ -49,7 +48,6 @@ import kotlinx.coroutines.CoroutineDispatcher
         MatchHistoryViewModelModule::class,
         ManageSummonersViewModelModule::class,
         ManageFriendsViewModelModule::class,
-        RequestManagerModule::class,
         // Api provision modules
         AppProvisionModule::class,
         DataDragonProvisioningModule::class,
@@ -59,6 +57,7 @@ import kotlinx.coroutines.CoroutineDispatcher
         StateProvisionModule::class,
         SummonerProvisionModule::class,
         ViewStateProvisionModule::class,
+        RequestManagerProvisionModule::class,
     ]
 )
 interface ReportMidAppComponent {
@@ -78,7 +77,6 @@ interface ReportMidAppComponent {
 
     fun getMainDatabase(): MainDatabase // TODO: Remove after the migration of DB to individual modules is complete
     fun getMainStorage(): MainStorage
-    fun getRequestManager(): RequestManager
 
     // Viewmodel
     fun mainActivityViewModelComponent(): MainActivityViewModelComponent.Factory

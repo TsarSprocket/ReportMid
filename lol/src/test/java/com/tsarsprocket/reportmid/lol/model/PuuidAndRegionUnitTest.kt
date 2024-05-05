@@ -22,7 +22,7 @@ class PuuidAndRegionUnitTest {
         val testFlafs = 0
 
         // создаём реальный тестируемый объект
-        val puuidAndRegion = PuuidAndRegion(TEST_PUUID, testRegion)
+        val puuidAndRegion = PuuidAndRegion(Puuid(TEST_PUUID), testRegion)
 
         // Предопределяем поведение мок-объектов (только необходимое)
         whenever(testRegion.tag).thenReturn(TEST_REGION_TAG)

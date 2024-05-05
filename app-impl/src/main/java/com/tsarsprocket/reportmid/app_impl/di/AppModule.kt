@@ -1,6 +1,5 @@
 package com.tsarsprocket.reportmid.app_impl.di
 
-import com.tsarsprocket.reportmid.app_api.request_manager.RequestManager
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
 import com.tsarsprocket.reportmid.base.di.AppScope
 import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
@@ -34,9 +33,5 @@ internal interface AppModule {
         @Provides
         @AppScope
         fun provideMainStorage(): MainStorage = TODO()
-
-        @Provides
-        @AppScope
-        fun provideRequestManager(): RequestManager = TODO()
     }
 }

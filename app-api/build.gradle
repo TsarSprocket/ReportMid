@@ -2,7 +2,6 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
-    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -40,9 +39,6 @@ dependencies {
     api project(path: ':lol-room')
     api project(path: ':summoner-room')
     api project(path: ':state-room')
-
-    implementation project(path: ':lazy-proxy-ksp')
-    ksp project(path: ':lazy-proxy-ksp')
 
     // Room
     api libs.androidx.room.runtime

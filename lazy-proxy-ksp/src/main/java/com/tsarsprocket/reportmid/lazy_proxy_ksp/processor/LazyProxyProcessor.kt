@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid.lazy_proxy_ksp.processor
 
+import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
@@ -12,9 +13,11 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.KSVisitorVoid
+import com.google.devtools.ksp.symbol.Modifier.INTERNAL
 import com.google.devtools.ksp.validate
 import com.tsarsprocket.reportmid.lazy_proxy_ksp.annotation.LazyProxy
 import java.io.BufferedWriter
+import java.util.LinkedList
 
 class LazyProxyProcessor(
     private val codeGenerator: CodeGenerator,
@@ -22,26 +25,33 @@ class LazyProxyProcessor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        return resolver.getSymbolsWithAnnotation(LazyProxy::class.qualifiedName.orEmpty()).filterIsInstance<KSClassDeclaration>().onEach { classDeclaration ->
-            val className = classDeclaration.simpleName.asString()
+        return resolver.getSymbolsWithAnnotation(LazyProxy::class.qualifiedName.orEmpty()).filterIsInstance<KSClassDeclaration>().onEach { rootClassDeclaration ->
+            val className = rootClassDeclaration.simpleName.asString()
             val fieldName = className.startLowercase()
-            val dependencies = Dependencies(true, classDeclaration.containingFile!!)
-            val packageName = classDeclaration.packageName.asString()
+            val dependencies = Dependencies(true, rootClassDeclaration.containingFile!!)
+            val packageName = rootClassDeclaration.packageName.asString()
             val lazyProxyClassName = className + LAZY_PROXY_SUFFIX
             val producerName = "${fieldName}Producer"
+            val isInternal = rootClassDeclaration.modifiers.contains(INTERNAL)
 
             codeGenerator.createNewFile(dependencies, packageName, lazyProxyClassName).bufferedWriter().use { writer ->
                 writer.write(
                     """
                         package $packageName
 
-                        class $lazyProxyClassName($producerName: () -> $className) : $className {
+                        ${if(isInternal) "internal " else ""}class $lazyProxyClassName($producerName: () -> $className) : $className {
 
                             private val $fieldName by lazy(${producerName})
                     """.trimIndent() + "\n"
                 )
 
-                classDeclaration.declarations.forEach { it.accept(FieldVisitor(writer = writer, fieldName = fieldName, logger = logger), Unit) }
+                val classDeclarations = LinkedList<KSClassDeclaration>().apply { add(rootClassDeclaration) }
+
+                while(classDeclarations.isNotEmpty()) {
+                    val theClassDeclaration = classDeclarations.pop()
+                    classDeclarations.addAll(theClassDeclaration.superTypes.map { it.resolve().declaration }.filterIsInstance<KSClassDeclaration>())
+                    theClassDeclaration.declarations.forEach { it.accept(FieldVisitor(writer = writer, fieldName = fieldName, logger = logger), Unit) }
+                }
 
                 writer.write("\n}\n")
             }
@@ -55,10 +65,9 @@ class LazyProxyProcessor(
     ) : KSVisitorVoid() {
 
         override fun visitPropertyDeclaration(property: KSPropertyDeclaration, data: Unit) {
-            if(property.extensionReceiver == null) {
+            if(property.extensionReceiver == null && property.isAbstract()) {
                 val propertyName = property.simpleName.asString()
                 val propertyType = property.type.resolveToName()
-
 
                 writer.write(
                     "\n" + """
@@ -80,7 +89,7 @@ class LazyProxyProcessor(
         }
 
         override fun visitFunctionDeclaration(function: KSFunctionDeclaration, data: Unit) {
-            if(function.functionKind == FunctionKind.MEMBER && function.extensionReceiver == null) {
+            if(function.functionKind == FunctionKind.MEMBER && function.extensionReceiver == null && function.isAbstract) {
                 val functionName = function.simpleName.asString()
                 val args = function.parameters.map {
                     FuncArg(it.name?.asString().orEmpty(), it.type.resolveToName())
