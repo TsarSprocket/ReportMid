@@ -28,9 +28,9 @@
             <option value="$PROJECT_DIR$/data-dragon-api" />
             <option value="$PROJECT_DIR$/data-dragon-impl" />
             <option value="$PROJECT_DIR$/data-dragon-room" />
+            <option value="$PROJECT_DIR$/ksp-processor" />
             <option value="$PROJECT_DIR$/landing-api" />
             <option value="$PROJECT_DIR$/landing-impl" />
-            <option value="$PROJECT_DIR$/lazy-proxy-ksp" />
             <option value="$PROJECT_DIR$/league-position-api" />
             <option value="$PROJECT_DIR$/league-position-impl" />
             <option value="$PROJECT_DIR$/lol" />

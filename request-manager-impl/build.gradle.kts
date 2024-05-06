@@ -9,8 +9,8 @@ library(namespace = "com.tsarsprocket.reportmid.request_manager_impl") {
     api(project(":request-manager-api"))
     api(project(":app-api"))
 
-    impl(project(":lazy-proxy-ksp"))
-    ksp(project(":lazy-proxy-ksp"))
+    impl(project(":ksp-processor"))
+    ksp(project(":ksp-processor"))
 
     // Dagger
     kapt(libs.dagger.compiler)

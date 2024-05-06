@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.lazy_proxy_ksp.processor
+package com.tsarsprocket.reportmid.ksp_processor.processor
 
 import com.google.devtools.ksp.isAbstract
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -15,11 +15,11 @@ import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier.INTERNAL
 import com.google.devtools.ksp.validate
-import com.tsarsprocket.reportmid.lazy_proxy_ksp.annotation.LazyProxy
+import com.tsarsprocket.reportmid.ksp_processor.annotation.LazyProxy
 import java.io.BufferedWriter
 import java.util.LinkedList
 
-class LazyProxyProcessor(
+internal class KspProcessor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger,
 ) : SymbolProcessor {

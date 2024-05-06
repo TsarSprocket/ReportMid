@@ -87,8 +87,8 @@ dependencies {
     implementation project(path: ':state-impl')
     implementation project(path: ':request-manager-impl')
 
-    implementation project(path: ':lazy-proxy-ksp')
-    ksp project(path: ':lazy-proxy-ksp')
+    implementation project(path: ':ksp-processor')
+    ksp project(path: ':ksp-processor')
 
     // Dagger
     implementation libs.dagger

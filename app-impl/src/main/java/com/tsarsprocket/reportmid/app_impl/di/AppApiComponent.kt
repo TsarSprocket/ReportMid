@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.app_impl.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.lazy_proxy_ksp.annotation.LazyProxy
+import com.tsarsprocket.reportmid.ksp_processor.annotation.LazyProxy
 import dagger.Component
 
 @LazyProxy

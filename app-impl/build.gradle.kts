@@ -12,8 +12,8 @@ application(
     impl(project(":base"))
     api(project(":app-api"))
 
-    impl(project(":lazy-proxy-ksp"))
-    ksp(project(":lazy-proxy-ksp"))
+    impl(project(":ksp-processor"))
+    ksp(project(":ksp-processor"))
 
     impl(libs.androidx.core.ktx)
     impl(libs.androidx.lifecycle.runtime.ktx)
