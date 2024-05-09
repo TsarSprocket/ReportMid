@@ -2,10 +2,10 @@ package com.tsarsprocket.reportmid.view_state_impl.di
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.base.di.FragmentKey
-import com.tsarsprocket.reportmid.base.di.PerApi
-import com.tsarsprocket.reportmid.base.di.ViewModelKey
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.di.FragmentKey
+import com.tsarsprocket.reportmid.base_api.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.ViewModelKey
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment
 import com.tsarsprocket.reportmid.view_state_impl.view.ViewStateFragmentImpl
 import com.tsarsprocket.reportmid.view_state_impl.viewmodel.ViewStateViewModel

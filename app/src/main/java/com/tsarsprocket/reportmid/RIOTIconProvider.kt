@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.res.ResourcesCompat
 import com.tsarsprocket.reportmid.app_api.di.AppContext
-import com.tsarsprocket.reportmid.base.di.AppScope
+import com.tsarsprocket.reportmid.base_api.di.AppScope
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray

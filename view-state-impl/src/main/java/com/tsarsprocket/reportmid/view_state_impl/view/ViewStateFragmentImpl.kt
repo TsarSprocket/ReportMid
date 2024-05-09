@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent

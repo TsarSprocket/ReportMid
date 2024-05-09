@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.data_dragon_impl.data
 
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
-import com.tsarsprocket.reportmid.base.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Io
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon.Tail
 import com.tsarsprocket.reportmid.data_dragon_impl.retrofit.DataDragonService

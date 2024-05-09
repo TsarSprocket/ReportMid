@@ -2,16 +2,18 @@ package com.tsarsprocket.reportmid.di
 
 import android.content.Context
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.room.Room
 import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
-import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.base.di.BindingExport
-import com.tsarsprocket.reportmid.base.di.FragmentsCreator
-import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
-import com.tsarsprocket.reportmid.base.di.qualifiers.Io
-import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.base_api.di.AppScope
+import com.tsarsprocket.reportmid.base_api.di.BaseApi
+import com.tsarsprocket.reportmid.base_api.di.BindingExport
+import com.tsarsprocket.reportmid.base_api.di.FragmentsCreator
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Computation
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
 import com.tsarsprocket.reportmid.data_dragon_api.di.DataDragonApi
 import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
@@ -107,5 +109,9 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
-    fun provide(dataDragonApi: DataDragonApi): DataDragon = dataDragonApi.getDataDragon()
+    fun providedataDragon(dataDragonApi: DataDragonApi): DataDragon = dataDragonApi.getDataDragon()
+
+    @Provides
+    @AppScope
+    fun provideFRragmentFactory(baseApi: BaseApi): FragmentFactory = baseApi.getFragmentFactory()
 }

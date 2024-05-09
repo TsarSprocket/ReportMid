@@ -14,7 +14,7 @@ import com.tsarsprocket.reportmid.ARG_PUUID_AND_REG
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.ChampionMasteryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentProfileOverviewBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion

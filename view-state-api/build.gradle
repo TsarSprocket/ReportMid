@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':base')
+    implementation project(path: ':base-api')
 
     implementation libs.androidx.core.ktx
 

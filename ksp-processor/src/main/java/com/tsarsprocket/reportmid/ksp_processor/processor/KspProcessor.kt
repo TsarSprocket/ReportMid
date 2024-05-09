@@ -14,6 +14,8 @@ import com.google.devtools.ksp.symbol.KSPropertyDeclaration
 import com.google.devtools.ksp.symbol.KSTypeReference
 import com.google.devtools.ksp.symbol.KSVisitorVoid
 import com.google.devtools.ksp.symbol.Modifier.INTERNAL
+import com.google.devtools.ksp.symbol.Variance.CONTRAVARIANT
+import com.google.devtools.ksp.symbol.Variance.COVARIANT
 import com.google.devtools.ksp.validate
 import com.tsarsprocket.reportmid.ksp_processor.annotation.LazyProxy
 import java.io.BufferedWriter
@@ -107,7 +109,18 @@ internal class KspProcessor(
             }
         }
 
-        private fun KSTypeReference.resolveToName() = resolve().declaration.qualifiedName?.asString().orEmpty()
+        private fun KSTypeReference.resolveToName(recursionLevel: Int = MAX_RECURSION_DEPTH): String {
+            if(recursionLevel < 0) throw MaximumRecursionLevelReachedException()
+
+            return resolve().let { type ->
+                val name = type.declaration.qualifiedName?.asString().orEmpty()
+                val args = type.arguments.map { typeArgument ->
+                    typeArgument.variance.run { if(this in setOf(COVARIANT, CONTRAVARIANT)) "$label " else label } +
+                            typeArgument.type?.resolveToName(recursionLevel - 1).orEmpty()
+                }
+                if(args.isNotEmpty()) "$name<${args.joinToString()}>" else name
+            }
+        }
     }
 
     private data class FuncArg(val name: String, val type: String)
@@ -116,5 +129,6 @@ internal class KspProcessor(
 
     private companion object {
         const val LAZY_PROXY_SUFFIX = "LazyProxy"
+        const val MAX_RECURSION_DEPTH = 1000
     }
 }

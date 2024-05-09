@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.lol_services_impl.di
 
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lol_services_impl.riotapi.ServiceFactoryImpl
 import dagger.Binds

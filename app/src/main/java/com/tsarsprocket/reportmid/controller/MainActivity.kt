@@ -6,13 +6,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentFactory
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.tsarsprocket.reportmid.BaseActivity
 import com.tsarsprocket.reportmid.MENU_ITEM_NONE
 import com.tsarsprocket.reportmid.R
-import com.tsarsprocket.reportmid.app.view.ReportMidFragmentFactory
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.ActivityMainBinding
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import javax.inject.Inject
@@ -23,7 +23,7 @@ class MainActivity : BaseActivity() {
     lateinit var viewModelFactory: ViewModelFactory
 
     @Inject
-    lateinit var fragmentFactory: ReportMidFragmentFactory
+    lateinit var fragmentFactory: FragmentFactory
 
     private val viewModel by viewModels<MainActivityViewModel> { viewModelFactory }
 

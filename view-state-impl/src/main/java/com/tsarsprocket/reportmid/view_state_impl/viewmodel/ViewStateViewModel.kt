@@ -5,7 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.view_state_api.view_state.EmptyScreen
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewEffect
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent

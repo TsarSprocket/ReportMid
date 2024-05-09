@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.request_manager_impl.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.ksp_processor.annotation.LazyProxy
 import com.tsarsprocket.reportmid.request_manager_api.di.RequestManagerApi
 import dagger.Component

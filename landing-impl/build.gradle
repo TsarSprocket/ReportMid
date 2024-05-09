@@ -43,7 +43,7 @@ android {
 
 dependencies {
     api project(path: ':landing-api')
-    implementation project(path: ':base')
+    implementation project(path: ':base-api')
     implementation project(path: ':app-api')
     implementation project(path: ':lol')
     implementation project(path: ':res-lib')

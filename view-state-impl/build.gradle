@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':base')
+    implementation project(path: ':base-api')
     implementation project(path: ':app-api')
     implementation project(path: ':theme')
     api project(path: ':view-state-api')

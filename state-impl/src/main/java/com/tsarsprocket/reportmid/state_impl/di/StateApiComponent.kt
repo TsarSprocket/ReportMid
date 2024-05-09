@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.state_impl.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.state_api.di.StateApi
 import dagger.Component
 

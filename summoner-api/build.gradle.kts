@@ -4,7 +4,7 @@ import com.tsarsprocket.reportmid.gradle.library
 
 library(namespace = "com.tsarsprocket.reportmid.summoner_api") {
 
-    api(project(":base"))
+    api(project(":base-api"))
     api(project(":lol"))
 
     // Rx

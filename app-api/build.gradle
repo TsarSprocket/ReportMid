@@ -33,7 +33,7 @@ android {
 
 dependencies {
 
-    implementation project(path: ':base')
+    api project(path: ':base-api')
     api project(path: ':view-state-api')
     api project(path: ':data-dragon-room')
     api project(path: ':lol-room')

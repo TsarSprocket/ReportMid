@@ -9,12 +9,22 @@ application(
     appId = "com.tsarsprocket.reportmid.app",
     namespace = "com.tsarsprocket.reportmid.app_impl",
 ) {
-    impl(project(":base"))
+    api(project(":base-api"))
     api(project(":app-api"))
+    impl(project(":base-impl"))
+    impl(project(":data-dragon-impl"))
+    impl(project(":landing-impl"))
+    impl(project(":league-position-impl"))
+    impl(project(":lol-services-impl"))
+    impl(project(":request-manager-impl"))
+    impl(project(":state-impl"))
+    impl(project(":summoner-impl"))
+    impl(project(":view-state-impl"))
 
     impl(project(":ksp-processor"))
     ksp(project(":ksp-processor"))
 
+    // Android
     impl(libs.androidx.core.ktx)
     impl(libs.androidx.lifecycle.runtime.ktx)
     impl(libs.androidx.activity.compose)

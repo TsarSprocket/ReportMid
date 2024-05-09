@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.gradle.ksp
 import com.tsarsprocket.reportmid.gradle.library
 
 library(namespace = "com.tsarsprocket.reportmid.request_manager_impl") {
-    api(project(":base"))
+    api(project(":base-api"))
     api(project(":request-manager-api"))
     api(project(":app-api"))
 

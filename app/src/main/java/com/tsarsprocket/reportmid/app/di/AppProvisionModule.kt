@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.app.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.base.di.BindingExport
+import com.tsarsprocket.reportmid.base_api.di.AppScope
+import com.tsarsprocket.reportmid.base_api.di.BindingExport
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

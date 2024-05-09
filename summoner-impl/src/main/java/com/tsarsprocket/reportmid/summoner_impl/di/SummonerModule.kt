@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.summoner_impl.di
 
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository
 import com.tsarsprocket.reportmid.summoner_impl.data.SummonerRepositoryImpl
 import dagger.Binds

@@ -32,7 +32,7 @@ android {
 
 dependencies {
 
-    api project(path: ':base')
+    api project(path: ':base-api')
     api project(path: ':lol')
 
     implementation libs.androidx.core.ktx

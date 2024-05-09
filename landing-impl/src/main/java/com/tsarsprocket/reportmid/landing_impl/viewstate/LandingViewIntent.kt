@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.landing_impl.viewstate
 
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.landing_impl.reducer.LandingStateReducer
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewIntent
 import com.tsarsprocket.reportmid.view_state_api.view_state.ViewState

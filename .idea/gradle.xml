@@ -23,7 +23,8 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/app-api" />
             <option value="$PROJECT_DIR$/app-impl" />
-            <option value="$PROJECT_DIR$/base" />
+            <option value="$PROJECT_DIR$/base-api" />
+            <option value="$PROJECT_DIR$/base-impl" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/data-dragon-api" />
             <option value="$PROJECT_DIR$/data-dragon-impl" />

@@ -1,10 +1,13 @@
 package com.tsarsprocket.reportmid.app_impl.di
 
+import android.content.Context
+import com.tsarsprocket.reportmid.app_api.di.AppContext
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
-import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.base.di.qualifiers.Computation
-import com.tsarsprocket.reportmid.base.di.qualifiers.Io
-import com.tsarsprocket.reportmid.base.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.app_impl.application.ReportMidApplication
+import com.tsarsprocket.reportmid.base_api.di.AppScope
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Computation
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Ui
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
@@ -33,5 +36,10 @@ internal interface AppModule {
         @Provides
         @AppScope
         fun provideMainStorage(): MainStorage = TODO()
+
+        @Provides
+        @AppScope
+        @AppContext
+        fun provideApplicationContext(): Context = ReportMidApplication.theInstance.applicationContext
     }
 }

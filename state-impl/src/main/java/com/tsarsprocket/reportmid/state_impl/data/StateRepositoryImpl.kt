@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.state_impl.data
 
 import com.tsarsprocket.reportmid.app_api.room.MainStorage
-import com.tsarsprocket.reportmid.base.data.NoDataFoundException
-import com.tsarsprocket.reportmid.base.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base_api.data.NoDataFoundException
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Io
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.state_api.data.MyAccountNotFoundException
 import com.tsarsprocket.reportmid.state_api.data.StateRepository

@@ -15,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMyFriendLineBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMySummonerLineBinding

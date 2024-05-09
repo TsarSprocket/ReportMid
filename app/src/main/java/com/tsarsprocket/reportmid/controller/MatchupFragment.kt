@@ -19,7 +19,7 @@ import com.tsarsprocket.reportmid.ARG_RELOAD
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardPlayerPreviewBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchupBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion

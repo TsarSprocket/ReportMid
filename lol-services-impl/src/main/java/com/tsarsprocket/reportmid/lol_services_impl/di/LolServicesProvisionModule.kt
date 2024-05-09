@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.lol_services_impl.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.AppScope
-import com.tsarsprocket.reportmid.base.di.BindingExport
+import com.tsarsprocket.reportmid.base_api.di.AppScope
+import com.tsarsprocket.reportmid.base_api.di.BindingExport
 import com.tsarsprocket.reportmid.lol_services_api.di.LolServicesApi
 import dagger.Binds
 import dagger.Module

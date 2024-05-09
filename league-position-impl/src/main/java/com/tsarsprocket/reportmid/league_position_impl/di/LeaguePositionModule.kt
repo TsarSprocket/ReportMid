@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.league_position_impl.di
 
-import com.tsarsprocket.reportmid.base.common.Mapper
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.common.Mapper
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
 import com.tsarsprocket.reportmid.league_position_api.model.LeaguePosition
 import com.tsarsprocket.reportmid.league_position_impl.data.LeaguePositionMapper

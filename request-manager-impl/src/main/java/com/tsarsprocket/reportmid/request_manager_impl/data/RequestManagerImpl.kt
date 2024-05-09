@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.request_manager_impl.data
 
-import com.tsarsprocket.reportmid.base.di.qualifiers.Io
+import com.tsarsprocket.reportmid.base_api.di.qualifiers.Io
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async

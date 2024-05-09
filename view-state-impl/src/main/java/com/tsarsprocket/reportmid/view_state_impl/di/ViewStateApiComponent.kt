@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.view_state_impl.di
 
 import com.tsarsprocket.reportmid.app_api.di.AppApi
-import com.tsarsprocket.reportmid.base.di.FragmentsCreator
-import com.tsarsprocket.reportmid.base.di.PerApi
+import com.tsarsprocket.reportmid.base_api.di.FragmentsCreator
+import com.tsarsprocket.reportmid.base_api.di.PerApi
 import com.tsarsprocket.reportmid.view_state_api.di.ViewStateApi
 import dagger.Component
 

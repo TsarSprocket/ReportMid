@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.league_position_impl.data
 
-import com.tsarsprocket.reportmid.base.common.Mapper
+import com.tsarsprocket.reportmid.base_api.common.Mapper
 import com.tsarsprocket.reportmid.league_position_api.model.LeaguePosition
 import com.tsarsprocket.reportmid.league_position_impl.retrofit.LeaguePositionDto
 import com.tsarsprocket.reportmid.lol.model.Division

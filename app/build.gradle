@@ -72,13 +72,14 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+    implementation project(path: ':base-impl')
     implementation project(path: ':app-api')
     implementation project(path: ':view-state-impl')
     implementation project(path: ':lol-resource-lib')
     implementation project(path: ':landing-impl')
     implementation project(path: ':lol')
     implementation project(path: ':lol-room')
-    implementation project(path: ':base')
+    implementation project(path: ':base-api')
     implementation project(path: ':lol-services-impl')
     implementation project(path: ':theme')
     implementation project(path: ':league-position-impl')

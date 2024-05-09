@@ -15,7 +15,7 @@ import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RESULT_CONFIRM
 import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentAddSummonerBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
