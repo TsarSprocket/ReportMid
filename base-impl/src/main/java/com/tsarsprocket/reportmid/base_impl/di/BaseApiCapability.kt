@@ -3,12 +3,11 @@ package com.tsarsprocket.reportmid.base_impl.di
 import com.tsarsprocket.reportmid.app_api.di.AppApi
 import com.tsarsprocket.reportmid.base_api.di.BaseApi
 import com.tsarsprocket.reportmid.base_api.di.PerApi
-import com.tsarsprocket.reportmid.ksp_processor.annotation.LazyProxy
-import dagger.Component
+import com.tsarsprocket.reportmid.ksp_processor.annotation.Capability
 
-@LazyProxy
 @PerApi
-@Component(
+@Capability(
+    api = BaseApi::class,
     modules = [
         BaseModule::class,
     ],
@@ -16,10 +15,4 @@ import dagger.Component
         AppApi::class,
     ]
 )
-internal interface BaseApiComponent : BaseApi {
-
-    @Component.Factory
-    interface Factory {
-        fun create(appApi: AppApi): BaseApiComponent
-    }
-}
+internal interface BaseCapability

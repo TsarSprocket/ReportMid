@@ -8,7 +8,7 @@ import com.tsarsprocket.reportmid.base_api.di.AppScope
 import com.tsarsprocket.reportmid.base_api.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.base_api.di.qualifiers.Io
 import com.tsarsprocket.reportmid.base_api.di.qualifiers.Ui
-import com.tsarsprocket.reportmid.base_impl.di.BaseProvisionModule
+import com.tsarsprocket.reportmid.base_impl.di.BaseCapabilityProvisionModule
 import com.tsarsprocket.reportmid.controller.AddSummonerFragment
 import com.tsarsprocket.reportmid.controller.ConfirmSummonerFragment
 import com.tsarsprocket.reportmid.controller.DrawerFragment
@@ -22,11 +22,11 @@ import com.tsarsprocket.reportmid.landing_impl.di.LandingProvisionModule
 import com.tsarsprocket.reportmid.league_position_impl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lol_services_impl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
-import com.tsarsprocket.reportmid.request_manager_impl.di.RequestManagerProvisionModule
+import com.tsarsprocket.reportmid.request_manager_impl.di.RequestManagerCapabilityProvisionModule
 import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.state_impl.di.StateProvisionModule
 import com.tsarsprocket.reportmid.summoner_impl.di.SummonerProvisionModule
-import com.tsarsprocket.reportmid.view_state_impl.di.ViewStateProvisionModule
+import com.tsarsprocket.reportmid.view_state_impl.di.ViewStateCapabilityProvisionModule
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,7 +52,7 @@ import javax.inject.Provider
         ManageSummonersViewModelModule::class,
         ManageFriendsViewModelModule::class,
         // Api provision modules
-        BaseProvisionModule::class,
+        BaseCapabilityProvisionModule::class,
         AppProvisionModule::class,
         DataDragonProvisionModule::class,
         LandingProvisionModule::class,
@@ -60,8 +60,8 @@ import javax.inject.Provider
         LolServicesProvisionModule::class,
         StateProvisionModule::class,
         SummonerProvisionModule::class,
-        ViewStateProvisionModule::class,
-        RequestManagerProvisionModule::class,
+        ViewStateCapabilityProvisionModule::class,
+        RequestManagerCapabilityProvisionModule::class,
     ]
 )
 interface ReportMidAppComponent {

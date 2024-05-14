@@ -19,6 +19,7 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun Project.application(
@@ -31,6 +32,13 @@ fun Project.application(
         apply("org.jetbrains.kotlin.android")
         apply("org.jetbrains.kotlin.kapt")
         apply("com.google.devtools.ksp")
+    }
+
+    configure<KotlinProjectExtension> {
+        sourceSets.getByName("main").kotlin {
+            srcDir("build/generated/ksp/debug/kotlin")
+            srcDir("build/generated/ksp/release/kotlin")
+        }
     }
 
     configure<ApplicationExtension> {
@@ -100,6 +108,13 @@ fun Project.library(
         apply("org.jetbrains.kotlin.android")
         apply("org.jetbrains.kotlin.kapt")
         apply("com.google.devtools.ksp")
+    }
+
+    configure<KotlinProjectExtension> {
+        sourceSets.getByName("main").kotlin {
+            srcDir("build/generated/ksp/debug/kotlin")
+            srcDir("build/generated/ksp/release/kotlin")
+        }
     }
 
     configure<LibraryExtension> {
