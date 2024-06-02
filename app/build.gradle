@@ -70,26 +70,26 @@ dependencies {
     implementation libs.android.support.multidex
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':baseImpl')
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation project(path: ':base-impl')
-    implementation project(path: ':app-api')
-    implementation project(path: ':view-state-impl')
-    implementation project(path: ':lol-resource-lib')
-    implementation project(path: ':landing-impl')
+    implementation project(path: ':appApi')
+    implementation project(path: ':viewStateImpl')
+    implementation project(path: ':lolResourceLib')
+    implementation project(path: ':landingImpl')
     implementation project(path: ':lol')
-    implementation project(path: ':lol-room')
-    implementation project(path: ':base-api')
-    implementation project(path: ':lol-services-impl')
+    implementation project(path: ':lolRoom')
+    implementation project(path: ':baseApi')
+    implementation project(path: ':lolServicesImpl')
     implementation project(path: ':theme')
-    implementation project(path: ':league-position-impl')
-    implementation project(path: ':data-dragon-impl')
-    implementation project(path: ':summoner-impl')
-    implementation project(path: ':state-impl')
-    implementation project(path: ':request-manager-impl')
+    implementation project(path: ':leaguePositionImpl')
+    implementation project(path: ':dataDragonImpl')
+    implementation project(path: ':summonerImpl')
+    implementation project(path: ':stateImpl')
+    implementation project(path: ':requestManagerImpl')
+    implementation project(path: ':kspProcessor')
+    ksp project(path: ':kspProcessor')
 
-    implementation project(path: ':ksp-processor')
-    ksp project(path: ':ksp-processor')
 
     // Dagger
     implementation libs.dagger

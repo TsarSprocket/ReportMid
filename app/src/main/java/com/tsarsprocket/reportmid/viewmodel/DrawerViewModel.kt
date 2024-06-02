@@ -8,10 +8,10 @@ import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.state_api.data.StateRepository
-import com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository
-import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.stateApi.data.StateRepository
+import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
+import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.Optional
 import com.tsarsprocket.reportmid.tools.toLiveData

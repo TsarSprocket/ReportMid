@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.league_position_api.data.LeaguePositionRepository
+import com.tsarsprocket.reportmid.leaguePositionApi.data.LeaguePositionRepository
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.CurrentMatchModel
 import com.tsarsprocket.reportmid.model.CurrentMatchTeamModel
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.presentation.PlayerPresentation
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.utils.common.logError
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -39,7 +39,7 @@ private val DUR_FMT_MS = "%02d:%02d"
 
 class MatchupViewModel @Inject constructor(
     private val repository: Repository,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
     private val leaguePositionRepository: LeaguePositionRepository, // temporary, until migrated to new screen
     private val iconProvider: RIOTIconProvider, // temporary, until migrated to new screen
 ): ViewModel() {

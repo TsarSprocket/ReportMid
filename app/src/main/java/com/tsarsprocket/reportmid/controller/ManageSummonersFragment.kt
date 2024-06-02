@@ -19,11 +19,11 @@ import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMyManagedSummonerBinding
 import com.tsarsprocket.reportmid.databinding.FragmentManageSummonersBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.getNavigationReturnedValue
 import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue

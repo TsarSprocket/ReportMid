@@ -20,7 +20,7 @@ import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.CardMatchHistoryBinding
 import com.tsarsprocket.reportmid.databinding.FragmentMatchHistoryBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion

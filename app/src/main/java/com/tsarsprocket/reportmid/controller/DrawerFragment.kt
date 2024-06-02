@@ -15,13 +15,13 @@ import androidx.navigation.fragment.findNavController
 import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentDrawerBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMyFriendLineBinding
 import com.tsarsprocket.reportmid.databinding.LayoutMySummonerLineBinding
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.Optional
 import com.tsarsprocket.reportmid.viewmodel.DrawerViewModel

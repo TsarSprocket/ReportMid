@@ -141,6 +141,6 @@
         app:destination="@id/profileOverviewFragment" />
     <fragment
         android:id="@+id/viewStateFragment"
-        android:name="com.tsarsprocket.reportmid.view_state_api.view.ViewStateFragment"
+        android:name="com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment"
         android:label="ViewStateFragment" />
 </navigation>

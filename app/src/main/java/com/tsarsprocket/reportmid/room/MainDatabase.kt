@@ -1,18 +1,18 @@
 package com.tsarsprocket.reportmid.room
 
 import androidx.room.Database
-import com.tsarsprocket.reportmid.app_api.room.MainStorage
-import com.tsarsprocket.reportmid.data_dragon_room.ChampionEntity
-import com.tsarsprocket.reportmid.data_dragon_room.ItemEntity
-import com.tsarsprocket.reportmid.data_dragon_room.LanguageEntity
-import com.tsarsprocket.reportmid.data_dragon_room.RuneEntity
-import com.tsarsprocket.reportmid.data_dragon_room.RunePathEntity
-import com.tsarsprocket.reportmid.data_dragon_room.SummonerSpellEntity
-import com.tsarsprocket.reportmid.data_dragon_room.VersionEntity
-import com.tsarsprocket.reportmid.state_room.CurrentAccountEntity
-import com.tsarsprocket.reportmid.state_room.GlobalEntity
-import com.tsarsprocket.reportmid.summoner_room.MyAccountEntity
-import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
+import com.tsarsprocket.reportmid.appApi.room.MainStorage
+import com.tsarsprocket.reportmid.dataDragonRoom.ChampionEntity
+import com.tsarsprocket.reportmid.dataDragonRoom.ItemEntity
+import com.tsarsprocket.reportmid.dataDragonRoom.LanguageEntity
+import com.tsarsprocket.reportmid.dataDragonRoom.RuneEntity
+import com.tsarsprocket.reportmid.dataDragonRoom.RunePathEntity
+import com.tsarsprocket.reportmid.dataDragonRoom.SummonerSpellEntity
+import com.tsarsprocket.reportmid.dataDragonRoom.VersionEntity
+import com.tsarsprocket.reportmid.stateRoom.CurrentAccountEntity
+import com.tsarsprocket.reportmid.stateRoom.GlobalEntity
+import com.tsarsprocket.reportmid.summonerRoom.MyAccountEntity
+import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
 
 @Database(
     entities = [

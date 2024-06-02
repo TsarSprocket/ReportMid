@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.model
 
-import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
@@ -10,7 +10,7 @@ import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import com.tsarsprocket.reportmid.riotapi.matchV5.ParticipantDto
 import com.tsarsprocket.reportmid.riotapi.matchV5.PerkStyleDto
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single
@@ -22,7 +22,7 @@ class ParticipantModel @AssistedInject constructor(
     @Assisted val region: Region,
     private val dataDragon: DataDragon,
     val repository: Repository,
-    summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
 ) {
     val puuid: Puuid = Puuid(participantDto.puuid)
     val summoner: Single<Summoner> by lazy { rxSingle { summonerRepository.requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(puuid, region)) }.cache() }

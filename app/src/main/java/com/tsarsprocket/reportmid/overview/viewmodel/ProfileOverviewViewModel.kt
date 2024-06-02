@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 class ProfileOverviewViewModel @Inject constructor(
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
     private val dataDragon: DataDragon,
     private val iconProvider: RIOTIconProvider,
 ) : ViewModel() {

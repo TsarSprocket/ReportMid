@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class ConfirmSummonerViewModel @Inject constructor(
     val repository: Repository,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
     private val iconProvider: RIOTIconProvider,
 ): ViewModel() {
 

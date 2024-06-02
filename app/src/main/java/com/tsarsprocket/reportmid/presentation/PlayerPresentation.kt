@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.presentation
 
 import android.graphics.drawable.Drawable
 import androidx.lifecycle.MutableLiveData
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 
 class PlayerPresentation() {
     val summoner = MutableLiveData<Summoner>()

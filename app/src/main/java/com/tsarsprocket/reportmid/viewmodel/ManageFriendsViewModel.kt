@@ -8,8 +8,8 @@ import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
-import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
 import io.reactivex.Maybe

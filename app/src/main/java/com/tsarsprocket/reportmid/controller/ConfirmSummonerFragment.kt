@@ -13,7 +13,7 @@ import com.tsarsprocket.reportmid.BaseFragment
 import com.tsarsprocket.reportmid.R
 import com.tsarsprocket.reportmid.RESULT_CONFIRM
 import com.tsarsprocket.reportmid.ReportMidApp
-import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentConfirmSummonerBinding
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.tools.setNavigationResult

@@ -42,8 +42,7 @@ android {
 
 dependencies {
 
-    implementation project(path: ':res-lib')
-
+    implementation project(path: ':resLib')
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material

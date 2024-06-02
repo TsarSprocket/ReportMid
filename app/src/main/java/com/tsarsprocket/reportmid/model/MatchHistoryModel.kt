@@ -4,9 +4,9 @@ import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
 import com.tsarsprocket.reportmid.di.assisted.MatchModelFactory
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.lol_services_api.riotapi.getService
+import com.tsarsprocket.reportmid.lolServicesApi.riotapi.getService
 import com.tsarsprocket.reportmid.riotapi.matchV5.MatchV5Service
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single

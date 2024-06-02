@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.di
 
 import androidx.lifecycle.ViewModel
-import com.tsarsprocket.reportmid.base_api.di.ViewModelKey
+import com.tsarsprocket.reportmid.baseApi.di.ViewModelKey
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import dagger.Binds
 import dagger.Module

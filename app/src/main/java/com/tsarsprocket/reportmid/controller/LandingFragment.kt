@@ -8,11 +8,16 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.tsarsprocket.reportmid.*
-import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.BaseFragment
+import com.tsarsprocket.reportmid.R
+import com.tsarsprocket.reportmid.RESULT_PUUID_AND_REG
+import com.tsarsprocket.reportmid.ReportMidApp
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.FragmentLandingBindingImpl
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.tools.*
+import com.tsarsprocket.reportmid.tools.doesReturnedValueExist
+import com.tsarsprocket.reportmid.tools.prepareNavigationReturnedValue
+import com.tsarsprocket.reportmid.tools.removeNavigationReturnedValue
 import com.tsarsprocket.reportmid.viewmodel.LandingViewModel
 import javax.inject.Inject
 

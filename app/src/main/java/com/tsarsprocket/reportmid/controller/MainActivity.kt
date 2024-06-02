@@ -12,7 +12,7 @@ import androidx.navigation.findNavController
 import com.tsarsprocket.reportmid.BaseActivity
 import com.tsarsprocket.reportmid.MENU_ITEM_NONE
 import com.tsarsprocket.reportmid.R
-import com.tsarsprocket.reportmid.base_api.viewmodel.ViewModelFactory
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.databinding.ActivityMainBinding
 import com.tsarsprocket.reportmid.viewmodel.MainActivityViewModel
 import javax.inject.Inject

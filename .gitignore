@@ -1,6 +1,7 @@
 *.iml
 .backup
 .gradle
+/.kotlin
 /local.properties
 /.idea
 /test
@@ -10,7 +11,7 @@
 /database
 .externalNativeBuild
 .cxx
-/lol-services-api/src/main/res/raw/riot_api_key.txt
+/lolServicesApi/src/main/res/raw/riot_api_key.txt
 /external/
 /export/
 Резервная_копия_*

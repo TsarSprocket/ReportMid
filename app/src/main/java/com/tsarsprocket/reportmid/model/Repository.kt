@@ -8,23 +8,23 @@ import com.merakianalytics.orianna.types.common.GameMode
 import com.merakianalytics.orianna.types.common.GameType
 import com.merakianalytics.orianna.types.common.Queue
 import com.tsarsprocket.reportmid.RIOTIconProvider
-import com.tsarsprocket.reportmid.app_api.di.AppContext
-import com.tsarsprocket.reportmid.base_api.di.AppScope
-import com.tsarsprocket.reportmid.data_dragon_api.data.DataDragon
+import com.tsarsprocket.reportmid.appApi.di.AppContext
+import com.tsarsprocket.reportmid.baseApi.di.AppScope
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.di.assisted.CurrentMatchModelFactory
 import com.tsarsprocket.reportmid.di.assisted.MatchHistoryModelFactory
 import com.tsarsprocket.reportmid.lol.model.Champion
 import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServiceFactory
+import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
 import com.tsarsprocket.reportmid.room.MainDatabase
 import com.tsarsprocket.reportmid.room.MyFriendEntity
-import com.tsarsprocket.reportmid.state_api.data.StateRepository
-import com.tsarsprocket.reportmid.summoner_api.model.MyAccount
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
-import com.tsarsprocket.reportmid.summoner_api.model.puuidAndRegion
+import com.tsarsprocket.reportmid.stateApi.data.StateRepository
+import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.puuidAndRegion
 import com.tsarsprocket.reportmid.tools.Optional
 import com.tsarsprocket.reportmid.tools.Optional.Companion.optional
 import com.tsarsprocket.reportmid.utils.annotations.Temporary
@@ -42,7 +42,7 @@ import javax.inject.Inject
 import javax.inject.Provider
 import com.merakianalytics.orianna.types.common.Region as OriannaRegion
 import com.merakianalytics.orianna.types.core.staticdata.Champion as OriannaChampion
-import com.tsarsprocket.reportmid.lol_services_api.R as RServices
+import com.tsarsprocket.reportmid.lolServicesApi.R as RServices
 
 const val PUUID_NONE = "com.tsarsprocket.reportmid.model.RepositoryKt.PUUID_NONE"
 
@@ -53,7 +53,7 @@ class Repository @Inject constructor(
     databaseProvider: Provider<MainDatabase>,
     val iconProvider: RIOTIconProvider,
     val serviceFactory: ServiceFactory,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository, // temporary
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository, // temporary
     private val stateRepository: StateRepository,
     private val currentMatchModelFactory: CurrentMatchModelFactory,
     private val matchHistoryModelFactory: MatchHistoryModelFactory,

@@ -9,7 +9,7 @@ import androidx.paging.rxjava2.cachedIn
 import androidx.paging.rxjava2.flowable
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.toFlowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class MatchHistoryViewModel @Inject constructor(
     private val repository: Repository,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
 ) : ViewModel() {
 
     val activeSummoner = MutableLiveData<Summoner>()

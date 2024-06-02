@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.toLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class ManageSummonersViewModel @Inject constructor(
     private val repository: Repository,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
 ) : ViewModel() {
 
     val mySummonersLive: LiveData<List<Summoner>> = rxSingle { summonerRepository.getMySummoners() }.toObservable().toLiveData()

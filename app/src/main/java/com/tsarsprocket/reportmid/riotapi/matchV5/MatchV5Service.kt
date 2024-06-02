@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.riotapi.matchV5
 
-import com.tsarsprocket.reportmid.lol_services_api.riotapi.CallByType
-import com.tsarsprocket.reportmid.lol_services_api.riotapi.ServerInfo
+import com.tsarsprocket.reportmid.lolServicesApi.riotapi.CallByType
+import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServerInfo
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Path

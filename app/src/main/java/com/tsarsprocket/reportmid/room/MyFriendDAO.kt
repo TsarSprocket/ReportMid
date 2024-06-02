@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.tsarsprocket.reportmid.summoner_room.SummonerEntity
+import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
 import io.reactivex.Observable
 
 @Dao

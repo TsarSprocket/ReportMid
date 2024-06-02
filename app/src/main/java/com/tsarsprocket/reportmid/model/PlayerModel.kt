@@ -7,7 +7,7 @@ import com.tsarsprocket.reportmid.lol.model.Rune
 import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import com.tsarsprocket.reportmid.riotapi.spectatorV4.CurrentGameParticipant
-import com.tsarsprocket.reportmid.summoner_api.model.Summoner
+import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.Single
@@ -17,7 +17,7 @@ class PlayerModel @AssistedInject constructor(
     @Assisted info: CurrentGameParticipant,
     @Assisted region: Region,
     private val repository: Repository,
-    private val summonerRepository: com.tsarsprocket.reportmid.summoner_api.data.SummonerRepository,
+    private val summonerRepository: com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository,
 ) {
     val champion: Single<Champion> = repository.getChampionById(info.championId).cache()
     val summoner: Single<Summoner> = rxSingle { summonerRepository.requestRemoteSummonerByRiotId(info.summonerId, region) }
