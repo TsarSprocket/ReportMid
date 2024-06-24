@@ -29,6 +29,7 @@ mockito-kotlin = "5.1.0"
 multidex = "2.0.1"
 navigation-ui-ktx = "2.7.7"
 navigation-fragment-ktx = "2.7.7"
+orianna-android = "4.0.0-rc6"
 paging-runtime-ktx = "3.2.1"
 preference-ktx = "1.2.1"
 reactivestreams = "1.1.1"
@@ -76,7 +77,7 @@ compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-ui-tooling-main = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converter-gson" }
-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-main = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-android = { module = "com.google.dagger:dagger-android", version.ref = "dagger" }
 dagger-android-processor = { module = "com.google.dagger:dagger-android-processor", version.ref = "dagger" }
 dagger-android-support = { module = "com.google.dagger:dagger-android-support", version.ref = "dagger" }
@@ -93,6 +94,7 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 material = { module = "com.google.android.material:material", version.ref = "material" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-core" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
+orianna-android = { module = "com.merakianalytics.orianna:orianna-android", version.ref = "orianna-android" }
 reactivestreams = { module = "android.arch.lifecycle:reactivestreams", version.ref = "reactivestreams" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 rxkotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "rxkotlin" }

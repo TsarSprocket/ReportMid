@@ -5,6 +5,9 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.updateLayoutParams
@@ -54,9 +57,13 @@ internal class ViewStateFragmentImpl @Inject constructor(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        view.updateLayoutParams<ViewGroup.LayoutParams> {
-            height = ViewGroup.LayoutParams.WRAP_CONTENT
-            width = ViewGroup.LayoutParams.MATCH_PARENT
+        if(view.layoutParams != null) {
+            view.updateLayoutParams<LayoutParams> {
+                height = WRAP_CONTENT
+                width = MATCH_PARENT
+            }
+        } else {
+            view.layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)

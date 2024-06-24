@@ -4,12 +4,14 @@ import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.library
 
 library(
-    namespace = "com.tsarsprocket.reportmid.stateRoom",
+    namespace = "com.tsarsprocket.reportmid.lolRoom",
 ) {
-    api(projects.lolRoom)
-    impl(libs.androidx.room.rxjava2)
+    api(projects.lol)
+
+    // Rx
+    impl(libs.rxandroid)
 
     // Room
-    impl(libs.androidx.room.runtime)
+    api(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
 }

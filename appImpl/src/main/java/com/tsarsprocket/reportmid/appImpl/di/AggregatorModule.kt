@@ -10,7 +10,7 @@ import dagger.Provides
 import javax.inject.Provider
 
 @Module
-interface AggregatorModule {
+internal interface AggregatorModule {
 
     companion object {
 

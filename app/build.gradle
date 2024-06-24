@@ -92,7 +92,7 @@ dependencies {
 
 
     // Dagger
-    implementation libs.dagger
+    implementation libs.dagger.main
     implementation libs.dagger.android
     kapt libs.dagger.compiler
     kapt libs.dagger.android.processor
@@ -114,6 +114,7 @@ dependencies {
     androidTestImplementation libs.androidx.espresso.core
 
     // Room
+    implementation libs.androidx.room.rxjava2
     kapt libs.androidx.room.compiler
 
     // Navigation

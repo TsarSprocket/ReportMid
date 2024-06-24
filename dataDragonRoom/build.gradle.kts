@@ -1,15 +1,17 @@
-import com.tsarsprocket.reportmid.gradle.api
 import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.library
 
 library(
-    namespace = "com.tsarsprocket.reportmid.stateRoom",
+    namespace = "com.tsarsprocket.reportmid.dataDragonRoom",
 ) {
-    api(projects.lolRoom)
-    impl(libs.androidx.room.rxjava2)
+    impl(libs.androidx.core.ktx)
+    impl(libs.androidx.appcompat)
+    impl(libs.material)
 
     // Room
     impl(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
+    impl(libs.androidx.room.ktx)
+    impl(libs.androidx.room.rxjava2)
 }

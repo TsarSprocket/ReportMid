@@ -3,8 +3,9 @@ import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.library
 import com.tsarsprocket.reportmid.gradle.test
 
-library(namespace = "com.tsarsprocket.reportmid.summonerRoom") {
-
+library(
+    namespace = "com.tsarsprocket.reportmid.summonerRoom",
+) {
     impl(projects.lolRoom)
 
     // Room

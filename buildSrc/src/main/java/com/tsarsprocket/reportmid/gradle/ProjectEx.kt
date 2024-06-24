@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 fun Project.application(
     appId: String,
     namespace: String = appId,
+    buildConfigFields: List<BuildConfigField> = emptyList(),
     dependenciesConfigurator: DependencyHandlerScope.() -> Unit,
 ) {
     plugins.apply {
@@ -64,6 +65,14 @@ fun Project.application(
                 proguardFiles(getDefaultProguardFile(PROGUARD_DEFAULT_FILE), PROGUARD_RULES)
 
             }
+
+            buildConfigFields.forEach { buildConfigField ->
+                buildConfigField.values.entries.forEach { (buildType, value) ->
+                    getByName(buildType.buildTypeName).run {
+                        buildConfigField(type = buildConfigField.type, name = buildConfigField.name, value = value)
+                    }
+                }
+            }
         }
 
         compileOptions {
@@ -101,7 +110,8 @@ fun Project.application(
 fun Project.library(
     namespace: String,
     enableCompose: Boolean = false,
-    dependenciesConfigurator: DependencyHandlerScope.() -> Unit,
+    buildConfigFields: List<BuildConfigField> = emptyList(),
+    dependenciesConfigurator: DependencyHandlerScope.() -> Unit = {},
 ) {
     plugins.apply {
         apply("com.android.library")
@@ -134,7 +144,16 @@ fun Project.library(
                 isMinifyEnabled = false
                 proguardFiles(getDefaultProguardFile(PROGUARD_DEFAULT_FILE), PROGUARD_RULES)
             }
+
+            buildConfigFields.forEach { buildConfigField ->
+                buildConfigField.values.entries.forEach { (buildType, value) ->
+                    getByName(buildType.buildTypeName).run {
+                        buildConfigField(type = buildConfigField.type, name = buildConfigField.name, value = value)
+                    }
+                }
+            }
         }
+
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_18
             targetCompatibility = JavaVersion.VERSION_18
@@ -154,6 +173,10 @@ fun Project.library(
             resources {
                 excludes += PACKAGING_EXCLUDES
             }
+        }
+
+        buildFeatures {
+            buildConfig = true
         }
     }
 

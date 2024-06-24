@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.appImpl.di.AppApiComponent
 import com.tsarsprocket.reportmid.appImpl.di.AppApiComponentLazyProxy
 import com.tsarsprocket.reportmid.appImpl.di.DaggerAppApiComponent
 
-class ReportMidApplication : Application() {
+internal class ReportMidApplication : Application() {
 
     internal val applicationComponent: AppApiComponent = AppApiComponentLazyProxy { DaggerAppApiComponent.factory().create() }
 

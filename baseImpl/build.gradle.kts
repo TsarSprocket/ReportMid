@@ -4,7 +4,9 @@ import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.ksp
 import com.tsarsprocket.reportmid.gradle.library
 
-library(namespace = "com.tsarsprocket.reportmid.baseImpl") {
+library(
+    namespace = "com.tsarsprocket.reportmid.baseImpl",
+) {
     api(projects.baseApi)
     api(projects.appApi)
 

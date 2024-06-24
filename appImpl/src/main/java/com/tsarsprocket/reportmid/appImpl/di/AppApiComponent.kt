@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.appImpl.di
 
 import com.tsarsprocket.reportmid.appApi.di.AppApi
+import com.tsarsprocket.reportmid.appImpl.activity.MainActivity
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseImpl.di.BaseCapabilityProvisionModule
 import com.tsarsprocket.reportmid.dataDragonImpl.di.DataDragonProvisionModule
@@ -34,6 +35,8 @@ import dagger.Component
     ],
 )
 internal interface AppApiComponent : AppApi {
+
+    fun inject(mainActivity: MainActivity)
 
     @Component.Factory
     interface Factory {
