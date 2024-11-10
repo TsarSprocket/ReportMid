@@ -9,6 +9,9 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.activity.OnBackPressedCallback
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
@@ -20,8 +23,8 @@ import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactory
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
-import com.tsarsprocket.reportmid.viewStateApi.view_state.ViewIntent
-import com.tsarsprocket.reportmid.viewStateApi.view_state.ViewState
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +32,8 @@ import javax.inject.Inject
 internal class ViewStateFragmentImpl @Inject constructor(
     viewModelFactory: ViewModelFactory,
 ) : ViewStateFragment() {
+
+    override val snackbarHostState = SnackbarHostState()
 
     private val viewModel: ViewStateViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -83,6 +88,10 @@ internal class ViewStateFragmentImpl @Inject constructor(
         (view as ComposeView).setContent {
             ReportMidTheme {
                 viewModel.rootHolder.Visualize()
+
+                SnackbarHost(
+                    hostState = remember { snackbarHostState }
+                )
             }
         }
     }

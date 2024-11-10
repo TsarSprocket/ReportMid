@@ -5,16 +5,14 @@ import com.tsarsprocket.reportmid.lol.model.Item
 import com.tsarsprocket.reportmid.lol.model.Perk
 import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
-import io.reactivex.subjects.ReplaySubject
 
 interface DataDragon {
-    val tailSubject: ReplaySubject<Tail>
     val tail: Tail
 
-    suspend fun waitForInitialization()
+    suspend fun initialize()
 
     interface Tail {
-        val latestVersion: String
+        val version: String
         val language: String
         val runePaths: List<RunePath>
         val perks: List<Perk>
@@ -26,5 +24,15 @@ interface DataDragon {
         fun getChampionById(id: Long): Champion
         fun getSummonerSpellById(id: Long): SummonerSpell
         fun getItemById(id: Int): Item
+
+        // Image url formatters
+        fun getSummonerImageUrl(summonerIconId: Int): String
+    }
+
+    companion object {
+        const val BASE_URL = "https://ddragon.leagueoflegends.com/cdn/"
+        const val IMAGE_INFIX = "img/"
+        const val PROFILE_IMAGE_INFIX = "${IMAGE_INFIX}profileicon/"
+        const val PROFILE_IMAGE_EXT = ".png"
     }
 }

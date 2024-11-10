@@ -7,19 +7,23 @@ import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
+import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
+import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
 import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
+import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.ReplaySubject
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class ManageFriendsViewModel @Inject constructor(
     private val repository: Repository,
+    private val summonerRepository: SummonerRepository,
     private val iconProvider: RIOTIconProvider,
 ) : ViewModel() {
 
@@ -57,10 +61,9 @@ class ManageFriendsViewModel @Inject constructor(
         .switchMap {
             repository.getFriendsForAcc(it.first)
         }
-        .map { lst -> lst.map { friend -> friend to friend.summoner } }
+        .map { lst -> lst.map { friend -> friend to @Temporary runBlocking { summonerRepository.requestSummonerForFriend(friend) } } }
         .map { lst ->
-            lst.map { (friend, sumObs) ->
-                val sum = sumObs.blockingGet()
+            lst.map { (friend, sum) ->
                 FriendListItem(friend, sum, iconProvider.getProfileIcon(sum.iconId).blockingGet())
             }
         }
@@ -94,7 +97,7 @@ class ManageFriendsViewModel @Inject constructor(
     //  Classes  //////////////////////////////////////////////////////////////
 
     data class FriendListItem(
-        val friend: MyFriendModel,
+        val friend: Friend,
         val sum: Summoner,
         val icon: Drawable,
         var isChecked: Boolean = false

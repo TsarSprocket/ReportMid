@@ -15,9 +15,9 @@ INSERT INTO android_metadata (locale) VALUES ('ru_RU');
 DROP TABLE IF EXISTS my_accounts;
 CREATE TABLE `my_accounts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `summoner_id` INTEGER NOT NULL, FOREIGN KEY(`summoner_id`) REFERENCES `summoners`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION );
 
--- Таблица: my_friends
-DROP TABLE IF EXISTS my_friends;
-CREATE TABLE `my_friends` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `my_account_id` INTEGER NOT NULL, `summoner_id` INTEGER NOT NULL, FOREIGN KEY(`my_account_id`) REFERENCES `my_accounts`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`summoner_id`) REFERENCES `summoners`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION );
+-- Таблица: friends
+DROP TABLE IF EXISTS friends;
+CREATE TABLE `friends` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `my_account_id` INTEGER NOT NULL, `summoner_id` INTEGER NOT NULL, FOREIGN KEY(`my_account_id`) REFERENCES `my_accounts`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`summoner_id`) REFERENCES `summoners`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION );
 
 -- Таблица: regions
 DROP TABLE IF EXISTS regions;
@@ -56,13 +56,13 @@ CREATE TABLE `summoners` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `puui
 DROP INDEX IF EXISTS index_my_accounts_summoner_id;
 CREATE UNIQUE INDEX `index_my_accounts_summoner_id` ON `my_accounts` (`summoner_id`);
 
--- Индекс: index_my_friends_my_account_id
-DROP INDEX IF EXISTS index_my_friends_my_account_id;
-CREATE INDEX `index_my_friends_my_account_id` ON `my_friends` (`my_account_id`);
+-- Индекс: index_friends_my_account_id
+DROP INDEX IF EXISTS index_friends_my_account_id;
+CREATE INDEX `index_friends_my_account_id` ON `friends` (`my_account_id`);
 
--- Индекс: index_my_friends_summoner_id
-DROP INDEX IF EXISTS index_my_friends_summoner_id;
-CREATE INDEX `index_my_friends_summoner_id` ON `my_friends` (`summoner_id`);
+-- Индекс: index_friends_summoner_id
+DROP INDEX IF EXISTS index_friends_summoner_id;
+CREATE INDEX `index_friends_summoner_id` ON `friends` (`summoner_id`);
 
 -- Индекс: index_regions_tag
 DROP INDEX IF EXISTS index_regions_tag;

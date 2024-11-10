@@ -18,7 +18,7 @@ import com.tsarsprocket.reportmid.controller.ManageSummonersFragment
 import com.tsarsprocket.reportmid.controller.MatchHistoryFragment
 import com.tsarsprocket.reportmid.controller.MatchupFragment
 import com.tsarsprocket.reportmid.dataDragonImpl.di.DataDragonProvisionModule
-import com.tsarsprocket.reportmid.landingImpl.di.LandingProvisionModule
+import com.tsarsprocket.reportmid.landingImpl.di.LandingCapabilityProvisionModule
 import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lolServicesImpl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.overview.controller.ProfileOverviewFragment
@@ -55,7 +55,7 @@ import javax.inject.Provider
         BaseCapabilityProvisionModule::class,
         AppProvisionModule::class,
         DataDragonProvisionModule::class,
-        LandingProvisionModule::class,
+        LandingCapabilityProvisionModule::class,
         LeaguePositionProvisionModule::class,
         LolServicesProvisionModule::class,
         StateProvisionModule::class,

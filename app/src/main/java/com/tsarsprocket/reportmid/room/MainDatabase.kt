@@ -11,6 +11,7 @@ import com.tsarsprocket.reportmid.dataDragonRoom.SummonerSpellEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.VersionEntity
 import com.tsarsprocket.reportmid.stateRoom.CurrentAccountEntity
 import com.tsarsprocket.reportmid.stateRoom.GlobalEntity
+import com.tsarsprocket.reportmid.summonerRoom.FriendEntity
 import com.tsarsprocket.reportmid.summonerRoom.MyAccountEntity
 import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
 
@@ -19,7 +20,7 @@ import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
         GlobalEntity::class,
         CurrentAccountEntity::class,
         MyAccountEntity::class,
-        MyFriendEntity::class,
+        FriendEntity::class,
         SummonerEntity::class,
         // Data Dragon
         VersionEntity::class,
@@ -33,6 +34,4 @@ import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
     version = 1,
     exportSchema = false,
 )
-abstract class MainDatabase : MainStorage() {
-    abstract fun myFriendDAO(): MyFriendDAO
-}
+abstract class MainDatabase : MainStorage()

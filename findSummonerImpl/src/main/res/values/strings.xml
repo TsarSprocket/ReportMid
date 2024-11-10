@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="addAccountImplHash">#</string>
+    <string name="labelFind">Find</string>
+    <string name="regionSelectionPrompt">Select region</string>
+    <string name="snackCannotFindSummoner">Cannot find this summoner</string>
+    <string name="snackSummonerIsAlreadyInUse">This summoner is already added</string>
+
+    <string name="confirmationPrompt">Is it the summoner?</string>
+    <string name="buttonLabelConfirm">Yes</string>
+    <string name="buttonLabelReject">No</string>
+
+</resources>

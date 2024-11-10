@@ -1,3 +1,5 @@
 package com.tsarsprocket.reportmid.utils.common
 
-const val EMPTY = ""
+const val EMPTY_STRING = ""
+
+const val SLASH = "/"

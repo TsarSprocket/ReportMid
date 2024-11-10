@@ -5,10 +5,12 @@ import com.tsarsprocket.reportmid.appImpl.activity.MainActivity
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseImpl.di.BaseCapabilityProvisionModule
 import com.tsarsprocket.reportmid.dataDragonImpl.di.DataDragonProvisionModule
+import com.tsarsprocket.reportmid.findSummonerImpl.di.FindSummonerCapabilityProvisionModule
 import com.tsarsprocket.reportmid.kspProcessor.annotation.LazyProxy
-import com.tsarsprocket.reportmid.landingImpl.di.LandingProvisionModule
+import com.tsarsprocket.reportmid.landingImpl.di.LandingCapabilityProvisionModule
 import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lolServicesImpl.di.LolServicesProvisionModule
+import com.tsarsprocket.reportmid.navigationMapImpl.di.NavigationMapCapabilityProvisionModule
 import com.tsarsprocket.reportmid.requestManagerImpl.di.RequestManagerCapabilityProvisionModule
 import com.tsarsprocket.reportmid.stateImpl.di.StateProvisionModule
 import com.tsarsprocket.reportmid.summonerImpl.di.SummonerProvisionModule
@@ -25,9 +27,11 @@ import dagger.Component
         AppProvisionModule::class,
         BaseCapabilityProvisionModule::class,
         DataDragonProvisionModule::class,
-        LandingProvisionModule::class,
+        FindSummonerCapabilityProvisionModule::class,
+        LandingCapabilityProvisionModule::class,
         LeaguePositionProvisionModule::class,
         LolServicesProvisionModule::class,
+        NavigationMapCapabilityProvisionModule::class,
         RequestManagerCapabilityProvisionModule::class,
         StateProvisionModule::class,
         SummonerProvisionModule::class,

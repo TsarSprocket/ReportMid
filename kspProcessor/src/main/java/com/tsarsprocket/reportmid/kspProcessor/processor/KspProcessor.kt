@@ -43,7 +43,6 @@ internal class KspProcessor(
     }
 
     private fun defineCapability(capabilityClassDeclaration: KSClassDeclaration, resolver: Resolver) {
-
         capabilityClassDeclaration.annotations.fold(object {
             var capability: KSAnnotation? = null
             val others = mutableListOf<KSAnnotation>()
@@ -158,6 +157,17 @@ internal class KspProcessor(
                         """.trimIndent() + NEW_LINE
                     )
                 }
+
+                codeGenerator.createNewFile(fileDependency, packageName, COMPONENT_ACCESSOR_FILE_NAME).bufferedWriter().use { writer ->
+                    writer.write(
+                        """
+                            package $packageName
+                            
+                            internal val component: $componentName
+                                get() = $provisionModuleName.${componentName.startLowercase()}
+                        """.trimIndent() + NEW_LINE
+                    )
+                }
             }
     }
 
@@ -268,6 +278,7 @@ internal class KspProcessor(
         const val CAPABILITY_ARGUMENT_EXPORT_BINDINGS_NAME = "exportBindings"
         const val CAPABILITY_ARGUMENT_MODULES_NAME = "modules"
         const val CAPABILITY_ARGUMENT_DEPENDENCIES_NAME = "dependencies"
+        const val COMPONENT_ACCESSOR_FILE_NAME = "component"
         const val COMPONENT_POSTFIX = "Component"
         const val EMPTY_STRING = ""
         const val LAZY_PROXY_SUFFIX = "LazyProxy"

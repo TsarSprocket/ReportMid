@@ -5,10 +5,6 @@ import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.library
 
-plugins {
-
-}
-
 library(
     namespace = "com.tsarsprocket.reportmid.lolServicesImpl",
     buildConfigFields = listOf(

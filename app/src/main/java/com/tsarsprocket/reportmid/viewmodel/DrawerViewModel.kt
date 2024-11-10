@@ -7,19 +7,21 @@ import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.RIOTIconProvider
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.model.Repository
-import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
 import com.tsarsprocket.reportmid.stateApi.data.StateRepository
 import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
+import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
 import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.tools.OneTimeObserver
 import com.tsarsprocket.reportmid.tools.Optional
 import com.tsarsprocket.reportmid.tools.toLiveData
 import com.tsarsprocket.reportmid.tools.toObservable
+import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.rx2.rxSingle
 import javax.inject.Inject
 
@@ -55,7 +57,7 @@ class DrawerViewModel @Inject constructor(
     private val myFriendsRx: Observable<List<MyFriendData>> = myCurrentAccountsObservable
         .filter { optional -> optional.hasValue }
         .switchMap { repository.getFriendsForAcc(it.value) }
-        .map { lst -> lst.map { fr -> fr to fr.summoner.blockingGet() } } // Observable.zip(lst.map { friend -> friend.summoner.toObservable().map { sum -> friend to sum } }) { arr -> arr.toList() as List<Pair<MyFriendModel,SummonerModel>> }
+        .map { lst -> lst.map { fr -> fr to @Temporary runBlocking { summonerRepository.requestSummonerForFriend(fr) } } } // Observable.zip(lst.map { friend -> friend.summoner.toObservable().map { sum -> friend to sum } }) { arr -> arr.toList() as List<Pair<MyFriendModel,SummonerModel>> }
         .map { lst ->
             lst.map { pair ->
                 MyFriendData(
@@ -131,7 +133,7 @@ class DrawerViewModel @Inject constructor(
     //  Classes  //////////////////////////////////////////////////////////////
 
     data class MyFriendData(
-        val friend: MyFriendModel,
+        val friend: Friend,
         val sum: Summoner,
         val icon: Drawable,
         val name: String,

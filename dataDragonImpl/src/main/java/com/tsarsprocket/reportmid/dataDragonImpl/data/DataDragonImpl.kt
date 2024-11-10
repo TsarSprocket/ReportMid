@@ -1,8 +1,10 @@
 package com.tsarsprocket.reportmid.dataDragonImpl.data
 
 import com.tsarsprocket.reportmid.appApi.room.MainStorage
-import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.BASE_URL
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_EXT
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Tail
 import com.tsarsprocket.reportmid.dataDragonImpl.retrofit.DataDragonService
 import com.tsarsprocket.reportmid.dataDragonRoom.ChampionEntity
@@ -19,45 +21,26 @@ import com.tsarsprocket.reportmid.lol.model.RunePath
 import com.tsarsprocket.reportmid.lol.model.SummonerSpell
 import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import com.tsarsprocket.reportmid.utils.common.logError
-import io.reactivex.subjects.ReplaySubject
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.rx2.await
-import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
 import javax.inject.Inject
 
-@OptIn(DelicateCoroutinesApi::class)
 class DataDragonImpl @Inject constructor(
     private val db: MainStorage,
-    @Io private val ioDispatcher: CoroutineDispatcher,
 ) : DataDragon {
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://ddragon.leagueoflegends.com/")
+        .baseUrl(BASE_URL)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private val ddragon: DataDragonService = retrofit.create(DataDragonService::class.java)
-    override val tailSubject: ReplaySubject<Tail> = ReplaySubject.createWithSize(1)
-    override val tail: Tail get() = tailSubject.value ?: throw RuntimeException("Data Dragon is missing its tail")
+    private val ddragonService: DataDragonService = retrofit.create(DataDragonService::class.java)
+    override lateinit var tail: Tail
 
-    init {
-        @Temporary GlobalScope.launch(ioDispatcher + CoroutineExceptionHandler { _, throwable ->
-            logError("Problem initializing Dragon Tail", throwable)
-        }) {
-            tailSubject.onNext(updateAndLoadTail(selectLanguage()))
-        }
-    }
-
-    override suspend fun waitForInitialization() {
-        withContext(ioDispatcher) { tailSubject.firstOrError().await() }
+    override suspend fun initialize() {
+        tail = updateAndLoadTail(selectLanguage())
     }
 
     private suspend fun selectLanguage(): String {
@@ -65,7 +48,7 @@ class DataDragonImpl @Inject constructor(
         val langCode = locale.language
         val country = locale.country
 
-        val availableLangs = ddragon.languages()
+        val availableLangs = ddragonService.languages()
 
         val idealLang = "${langCode}_$country"
 
@@ -81,7 +64,7 @@ class DataDragonImpl @Inject constructor(
     }
 
     private fun updateAndLoadTail(language: String): Tail {
-        val versions = ddragon.versions().blockingFirst()
+        val versions = ddragonService.versions().blockingFirst()
         val latestVersion = versions.first()
 
         val dbVersions = db.ddragonVersionDao().getAll().blockingFirst()
@@ -99,7 +82,7 @@ class DataDragonImpl @Inject constructor(
         val verId = @Temporary runBlocking { db.ddragonVersionDao().insert(VersionEntity(ver)) }
         val langId = @Temporary runBlocking { db.ddragonLanguageDao().insert(LanguageEntity(verId, lang)) }
 
-        val lstRetroRunes = ddragon.runesReforged(ver, lang).blockingFirst()
+        val lstRetroRunes = ddragonService.runesReforged(ver, lang).blockingFirst()
 
         val lstRuneEntities = ArrayList<RuneEntity>()
 
@@ -118,7 +101,7 @@ class DataDragonImpl @Inject constructor(
             }
 
         val lstRetroChamps = try {
-            ddragon.champions(ver, lang).blockingFirst()
+            ddragonService.champions(ver, lang).blockingFirst()
         } catch(ex: Exception) {
             this.logError("Can't get champions from DD", ex); throw ex
         }
@@ -129,7 +112,7 @@ class DataDragonImpl @Inject constructor(
         }
 
         val lstRetroSummonerSpells = try {
-            ddragon.summonerSpells(ver, lang).blockingFirst()
+            ddragonService.summonerSpells(ver, lang).blockingFirst()
         } catch(ex: Exception) {
             this.logError("Can't get summoner spells from DD", ex); throw ex
         }
@@ -140,7 +123,7 @@ class DataDragonImpl @Inject constructor(
         }
 
         val lstRetroItems = try {
-            ddragon.items(ver, lang).blockingFirst()
+            ddragonService.items(ver, lang).blockingFirst()
         } catch(ex: Exception) {
             this.logError("Can't get items from DD", ex); throw ex
         }
@@ -193,7 +176,7 @@ class DataDragonImpl @Inject constructor(
     }
 
     class TailImpl(
-        override val latestVersion: String,
+        override val version: String,
         override val language: String,
         override val runePaths: List<RunePath>,
         override val perks: List<Perk>,
@@ -213,5 +196,9 @@ class DataDragonImpl @Inject constructor(
         override fun getChampionById(id: Long): Champion = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
         override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
         override fun getItemById(id: Int): Item = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
+
+        override fun getSummonerImageUrl(summonerIconId: Int): String = "${getVersionedImageBase()}$PROFILE_IMAGE_INFIX$summonerIconId$PROFILE_IMAGE_EXT"
+
+        private fun getVersionedImageBase(): String = "$BASE_URL$version/"
     }
 }

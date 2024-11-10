@@ -23,12 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsarsprocket.reportmid.landingImpl.R
-import com.tsarsprocket.reportmid.theme.PreviewTheme
+import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidFontFamily
 
 
 @Composable
-fun Landing() {
+fun LandingScreen() {
     Surface {
         Column(
             modifier = Modifier
@@ -71,7 +71,7 @@ fun Landing() {
 @Preview()
 @Composable
 fun LandingPreview() {
-    PreviewTheme {
-        Landing()
+    ReportMidTheme {
+        LandingScreen()
     }
 }

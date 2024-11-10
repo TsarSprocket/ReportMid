@@ -18,10 +18,9 @@ import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
-import com.tsarsprocket.reportmid.model.my_friend.MyFriendModel
 import com.tsarsprocket.reportmid.room.MainDatabase
-import com.tsarsprocket.reportmid.room.MyFriendEntity
 import com.tsarsprocket.reportmid.stateApi.data.StateRepository
+import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
 import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.summonerApi.model.puuidAndRegion
@@ -97,7 +96,7 @@ class Repository @Inject constructor(
             }
         }.flatMapSingle {
             rxSingle {
-                dataDragon.waitForInitialization()
+                dataDragon.initialize()
                 it
             }
         }.subscribeOn(Schedulers.io()).subscribe(initialized)
@@ -204,19 +203,16 @@ class Repository @Inject constructor(
         }
     }
 
-    fun getFriendsForAcc(myAcc: MyAccount): ReplaySubject<List<MyFriendModel>> =
-        ReplaySubject.create<List<MyFriendModel>>().also { subj ->
+    fun getFriendsForAcc(myAcc: MyAccount): ReplaySubject<List<Friend>> =
+        ReplaySubject.create<List<Friend>>().also { subj ->
             ensureInitializedDoOnIO {}
-                .switchMap {
-                    database.myFriendDAO().getByAccountIdObservable(myAcc.id)
-                        .map { lst -> lst.map { MyFriendModel(this, it.id) } }
-                }.subscribe(subj)
+                .map { @Temporary runBlocking { summonerRepository.getFriends(myAcc) } }
+                .subscribe(subj)
         }
 
-    fun getSummonerForFriend(myFriend: MyFriendModel): Single<Summoner> =
+    fun getSummonerForFriend(friend: Friend): Single<Summoner> =
         ensureInitializedDoOnIO {
-            val friendEnt = database.myFriendDAO().getById(myFriend.id)
-            @Temporary runBlocking { summonerRepository.getSummonerInfoById(friendEnt.summonerId) }
+            @Temporary runBlocking { summonerRepository.getSummonerInfoById(friend.summonerId) }
         }
             .switchMapSingle { summonerInfo ->
                 rxSingle { summonerRepository.requestRemoteSummonerByPuuidAndRegion(summonerInfo.puuidAndRegion) }
@@ -238,8 +234,7 @@ class Repository @Inject constructor(
                 when(fInitialized) {
                     true -> {
                         @Temporary runBlocking {
-                            val summonerId = summonerRepository.addKnownSummoner(summoner.puuid, summoner.region).id
-                            val myAccount = summonerRepository.createMyAccount(summonerId = summonerId)
+                            val myAccount = summonerRepository.createMyAccount(summoner.puuid, summoner.region)
                             val currentId = stateRepository.setCurrentAccountIdByRegion(summoner.region, myAccount.id).id
 
                             if(setCurrent) {
@@ -279,7 +274,6 @@ class Repository @Inject constructor(
                         }
                     }
                     myAccs.forEach { myAccount -> summonerRepository.deleteMyAccount(myAccount) }
-                    mySumsIds.forEach { summonerRepository.forgetSummonerById(it) }
                 }
             }
             newCurrentPuuids
@@ -300,12 +294,9 @@ class Repository @Inject constructor(
             try {
                 database.runInTransaction {
                     @Temporary runBlocking {
-                        with(database) {
-                            val friendsSumId = summonerRepository.addKnownSummoner(friend.puuid, friend.region).id
-                            val mySummonerId = summonerRepository.getKnownSummonerId(mine)
-                            val myAcc = summonerRepository.getMyAccountBySummonerId(mySummonerId)
-                            myFriendDAO().insert(MyFriendEntity(myAcc.id, friendsSumId))
-                        }
+                        val mySummonerId = summonerRepository.getKnownSummonerId(mine)
+                        val myAcc = summonerRepository.getMyAccountBySummonerId(mySummonerId)
+                        summonerRepository.createFriend(myAcc, friend.puuid, friend.region)
                     }
                 }
                 true
@@ -314,15 +305,11 @@ class Repository @Inject constructor(
             }
         }
 
-    fun deleteFriendsAndSummoners(friends: List<MyFriendModel>) = ensureInitializedDoOnIOSubject {
+    fun deleteFriendsAndSummoners(friends: List<Friend>) = ensureInitializedDoOnIOSubject {
         try {
             database.runInTransaction {
-                with(database) {
-                    friends.forEach {
-                        val friendEnt = myFriendDAO().getById(it.id)
-                        myFriendDAO().delete(friendEnt)
-                        @Temporary runBlocking { summonerRepository.forgetSummonerById(friendEnt.summonerId) }
-                    }
+                friends.forEach {
+                    @Temporary runBlocking { summonerRepository.deleteFriend(it) }
                 }
             }
 

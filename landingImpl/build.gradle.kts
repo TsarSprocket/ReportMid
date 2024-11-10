@@ -10,11 +10,17 @@ library(
     enableCompose = true,
 ) {
     api(projects.landingApi)
+
     impl(projects.baseApi)
     impl(projects.appApi)
+    impl(projects.findSummonerApi)
     impl(projects.lol)
+    impl(projects.navigationMapApi)
     impl(projects.resLib)
     api(projects.theme)
+    impl(projects.stateApi)
+    impl(projects.summonerApi)
+    impl(projects.dataDragonApi)
 
     impl(projects.kspProcessor)
     ksp(projects.kspProcessor)
