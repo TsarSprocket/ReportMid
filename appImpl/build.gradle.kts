@@ -18,6 +18,7 @@ application(
     impl(projects.leaguePositionImpl)
     impl(projects.lolServicesImpl)
     impl(projects.navigationMapImpl)
+    impl(projects.profileScreenImpl)
     impl(projects.requestManagerImpl)
     impl(projects.stateImpl)
     impl(projects.summonerImpl)

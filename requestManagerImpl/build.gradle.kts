@@ -10,6 +10,7 @@ library(
     api(projects.baseApi)
     api(projects.requestManagerApi)
     api(projects.appApi)
+    api(projects.navigationMapApi)
 
     impl(projects.kspProcessor)
     ksp(projects.kspProcessor)

@@ -1,15 +1,27 @@
 package com.tsarsprocket.reportmid.navigationMapImpl.di
 
+import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.landingApi.navigation.LandingRouteOut
+import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingViewIntent
+import com.tsarsprocket.reportmid.profileScreenApi.viewIntent.ShowProfileScreenViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.navigation.NavigationRoute
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
 @Module
-internal class NavigationMapModule {
+internal interface NavigationMapModule {
 
-    @Provides
-    @NavigationRoute
-    fun provideLandingRouteOut(): (LandingRouteOut) -> ViewIntent = { TODO("Not implemented yet") }
+    @Binds
+    @PerApi
+    fun bindStartViewIntentCreator(creator: () -> LandingViewIntent): () -> ViewIntent
+
+    companion object {
+
+        @Provides
+        @PerApi
+        @NavigationRoute
+        fun provideLandingRouteOut(viewIntentCreator: () -> ShowProfileScreenViewIntent): (LandingRouteOut) -> ViewIntent = { viewIntentCreator() }
+    }
 }

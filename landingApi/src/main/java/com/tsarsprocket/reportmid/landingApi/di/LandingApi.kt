@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.landingApi.di
 
-import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingViewIntent
 
 interface LandingApi {
-    fun getStartIntent(): ViewIntent
+    fun getLandingViewIntentCreator(): () -> LandingViewIntent
 }

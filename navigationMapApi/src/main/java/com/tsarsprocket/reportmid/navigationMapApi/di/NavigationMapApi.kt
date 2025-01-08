@@ -5,6 +5,9 @@ import com.tsarsprocket.reportmid.viewStateApi.navigation.NavigationRoute
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 
 interface NavigationMapApi {
+
+    fun getStartViewIntentCreator(): () -> ViewIntent
+
     @NavigationRoute
-    fun landingRouteOut(): (LandingRouteOut) -> ViewIntent
+    fun getLandingRouteOut(): (LandingRouteOut) -> ViewIntent
 }

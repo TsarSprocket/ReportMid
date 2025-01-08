@@ -1,5 +1,7 @@
 package com.tsarsprocket.reportmid.viewStateApi.viewIntent
 
-fun interface ReturnIntentFactory<in ResultData> {
+import android.os.Parcelable
+
+interface ReturnIntentFactory<in ResultData> : Parcelable {
     fun create(data: ResultData): ViewIntent
 }

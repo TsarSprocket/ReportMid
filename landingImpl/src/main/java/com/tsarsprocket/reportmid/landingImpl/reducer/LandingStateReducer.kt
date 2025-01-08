@@ -4,8 +4,8 @@ import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.findSummonerApi.viewIntent.FindSummonerViewIntent
 import com.tsarsprocket.reportmid.landingApi.navigation.LandingRouteOut
 import com.tsarsprocket.reportmid.landingImpl.domain.LandingUseCase
-import com.tsarsprocket.reportmid.landingImpl.viewIntent.LandingViewIntent
-import com.tsarsprocket.reportmid.landingImpl.viewIntent.LandingViewIntent.LandingStartLoadIntent
+import com.tsarsprocket.reportmid.landingImpl.viewIntent.LandingViewIntentImpl
+import com.tsarsprocket.reportmid.landingImpl.viewIntent.LandingViewIntentImpl.LandingStartLoadIntent
 import com.tsarsprocket.reportmid.landingImpl.viewState.DataDragonNotLoadedViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.LandingViewState
 import com.tsarsprocket.reportmid.viewStateApi.navigation.NavigationRoute
@@ -23,9 +23,9 @@ internal class LandingStateReducer @Inject constructor(
     private val findSummonerIntentFactory: FindSummonerViewIntent.Factory
 ) {
 
-    suspend fun reduce(intent: LandingViewIntent, stateHolder: ViewStateHolder): ViewState {
+    suspend fun reduce(intent: LandingViewIntentImpl, stateHolder: ViewStateHolder): ViewState {
         return when(intent) {
-            is LandingViewIntent.DataDragonNotLoadedViewIntent -> DataDragonNotLoadedViewState()
+            is LandingViewIntentImpl.DataDragonNotLoadedViewIntent -> DataDragonNotLoadedViewState()
             is LandingStartLoadIntent -> startLoading(stateHolder)
         }
     }
@@ -36,14 +36,14 @@ internal class LandingStateReducer @Inject constructor(
                 try {
                     useCase.initializeDataDragon()
                 } catch(exception: Exception) {
-                    stateHolder.postIntent(LandingViewIntent.DataDragonNotLoadedViewIntent(this@LandingStateReducer))
+                    stateHolder.postIntent(LandingViewIntentImpl.DataDragonNotLoadedViewIntent)
                 }
 
 
                 if(useCase.checkAccountExists()) {
                     stateHolder.postIntent(routeOut(LandingRouteOut))
                 } else {
-                    stateHolder.postIntent(findSummonerIntentFactory.create({ LandingStartLoadIntent(this@LandingStateReducer) }, removeRecentState = true))
+                    stateHolder.postIntent(findSummonerIntentFactory.create({ LandingStartLoadIntent }, removeRecentState = true))
                 }
             }
         }

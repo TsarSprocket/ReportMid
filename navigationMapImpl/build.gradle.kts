@@ -10,6 +10,7 @@ library(
     api(projects.navigationMapApi)
 
     impl(projects.baseApi)
+    impl(projects.profileScreenApi)
 
     impl(projects.kspProcessor)
     ksp(projects.kspProcessor)

@@ -32,6 +32,7 @@ fun Project.application(
         apply("com.android.application")
         apply("org.jetbrains.kotlin.android")
         apply("org.jetbrains.kotlin.kapt")
+        apply("org.jetbrains.kotlin.plugin.parcelize")
         apply("com.google.devtools.ksp")
     }
 
@@ -117,6 +118,7 @@ fun Project.library(
         apply("com.android.library")
         apply("org.jetbrains.kotlin.android")
         apply("org.jetbrains.kotlin.kapt")
+        apply("org.jetbrains.kotlin.plugin.parcelize")
         apply("com.google.devtools.ksp")
     }
 

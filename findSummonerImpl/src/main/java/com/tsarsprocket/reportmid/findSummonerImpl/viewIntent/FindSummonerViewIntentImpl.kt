@@ -7,13 +7,13 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryVi
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ReturnIntentFactory
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-internal class FindSummonerViewIntentImpl @AssistedInject constructor(
-    @Assisted override var returnIntentProducer: ReturnIntentFactory<FindSummonerResult>,
-    @Assisted override val removeRecentState: Boolean,
+@Parcelize
+internal class FindSummonerViewIntentImpl(
+    override var returnIntentProducer: ReturnIntentFactory<FindSummonerResult>,
+    override val removeRecentState: Boolean,
 ) : FindSummonerViewIntent {
 
     override suspend fun reduce(state: ViewState, stateHolder: ViewStateHolder): ViewState {

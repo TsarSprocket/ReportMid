@@ -115,7 +115,7 @@ internal class KspProcessor(
                     )
                 }
 
-                // TODO: If required, create capability lazy proxy
+                val lowercasedComponentName = componentName.startLowercase()
 
                 codeGenerator.createNewFile(fileDependency, packageName, provisionModuleName).bufferedWriter().use { writer ->
                     writer.write(
@@ -140,16 +140,20 @@ internal class KspProcessor(
                                 
                                 companion object {
                                 
-                                    internal lateinit var ${componentName.startLowercase()}: $componentName
+                                    internal lateinit var $lowercasedComponentName: $componentName
                                         private set
                                         
                                     @Provides
                                     @AppScope
                                     fun provide${api.shortName}(${dependencies.joinToString { it.shortName.startLowercase() + ": " + it.qualifiedName }}): ${api.qualifiedName} {
-                                        return $componentName$LAZY_PROXY_SUFFIX {
-                                            Dagger$componentName.factory().create(${dependencies.joinToString { it.shortName.startLowercase() }})
-                                        }.also {
-                                            ${componentName.startLowercase()} = it
+                                        return try {
+                                            $lowercasedComponentName
+                                        } catch(_: UninitializedPropertyAccessException) {
+                                            $componentName$LAZY_PROXY_SUFFIX {
+                                                Dagger$componentName.factory().create(${dependencies.joinToString { it.shortName.startLowercase() }})
+                                            }.also {
+                                                $lowercasedComponentName = it
+                                            }
                                         }
                                     }
                                 }
@@ -164,7 +168,7 @@ internal class KspProcessor(
                             package $packageName
                             
                             internal val component: $componentName
-                                get() = $provisionModuleName.${componentName.startLowercase()}
+                                get() = $provisionModuleName.$lowercasedComponentName
                         """.trimIndent() + NEW_LINE
                     )
                 }

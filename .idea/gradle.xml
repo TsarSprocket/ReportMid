@@ -44,6 +44,8 @@
             <option value="$PROJECT_DIR$/lolServicesImpl" />
             <option value="$PROJECT_DIR$/navigationMapApi" />
             <option value="$PROJECT_DIR$/navigationMapImpl" />
+            <option value="$PROJECT_DIR$/profileScreenApi" />
+            <option value="$PROJECT_DIR$/profileScreenImpl" />
             <option value="$PROJECT_DIR$/requestManagerApi" />
             <option value="$PROJECT_DIR$/requestManagerImpl" />
             <option value="$PROJECT_DIR$/resLib" />

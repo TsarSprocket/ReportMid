@@ -6,6 +6,7 @@ import com.tsarsprocket.reportmid.dataDragonApi.di.DataDragonApi
 import com.tsarsprocket.reportmid.findSummonerApi.di.FindSummonerApi
 import com.tsarsprocket.reportmid.kspProcessor.annotation.Capability
 import com.tsarsprocket.reportmid.landingApi.di.LandingApi
+import com.tsarsprocket.reportmid.landingImpl.reducer.LandingStateReducer
 import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
 import com.tsarsprocket.reportmid.stateApi.di.StateApi
 import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
@@ -25,4 +26,6 @@ import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
         LandingModule::class,
     ]
 )
-internal interface LandingCapability
+internal interface LandingCapability {
+    fun getLandingStateReducer(): LandingStateReducer
+}

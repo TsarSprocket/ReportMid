@@ -16,5 +16,6 @@ internal interface FindSummonerModule {
     fun bindViewIntentProducer(producer: FindSummonerViewIntentImpl.Factory): FindSummonerViewIntent.Factory
 
     @Binds
+    @PerApi
     fun bindUseCase(useCase: FindSummonerUseCaseImpl): FindSummonerUseCase
 }

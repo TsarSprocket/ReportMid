@@ -10,6 +10,7 @@ internal class ReportMidApplication : Application() {
     internal val applicationComponent: AppApiComponent = AppApiComponentLazyProxy { DaggerAppApiComponent.factory().create() }
 
     init {
+        applicationComponent.getAppContext() // To ensure creation of the component
         theInstance = this
     }
 
