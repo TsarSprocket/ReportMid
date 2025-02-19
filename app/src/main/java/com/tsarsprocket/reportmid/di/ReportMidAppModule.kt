@@ -25,6 +25,9 @@ import com.tsarsprocket.reportmid.stateApi.data.StateRepository
 import com.tsarsprocket.reportmid.stateApi.di.StateApi
 import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
 import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
+import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinder
+import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
@@ -113,5 +116,12 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
-    fun provideFRragmentFactory(baseApi: BaseApi): FragmentFactory = baseApi.getFragmentFactory()
+    fun provideFragmentFactory(baseApi: BaseApi): FragmentFactory = baseApi.getFragmentFactory()
+
+    @Provides
+    @AppScope
+    fun provideViewStateReducers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewIntent>, Provider<Reducer>> {
+        return bindingExports.filterIsInstance<ReducerBinder>()
+            .fold(emptyMap()) { acc, entry -> acc + entry.getReducers() }
+    }
 }

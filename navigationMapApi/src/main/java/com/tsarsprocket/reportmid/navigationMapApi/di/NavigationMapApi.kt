@@ -1,13 +1,17 @@
 package com.tsarsprocket.reportmid.navigationMapApi.di
 
-import com.tsarsprocket.reportmid.landingApi.navigation.LandingRouteOut
-import com.tsarsprocket.reportmid.viewStateApi.navigation.NavigationRoute
+import com.tsarsprocket.reportmid.findSummonerApi.navigation.FindSummonerNavigation
+import com.tsarsprocket.reportmid.landingApi.navigation.LandingNavigation
+import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 
 interface NavigationMapApi {
 
-    fun getStartViewIntentCreator(): () -> ViewIntent
+    @Navigation(FindSummonerNavigation.TAG)
+    fun getFindSummonerNavigation(): FindSummonerNavigation
 
-    @NavigationRoute
-    fun getLandingRouteOut(): (LandingRouteOut) -> ViewIntent
+    @Navigation(LandingNavigation.TAG)
+    fun getLandingNavigation(): LandingNavigation
+
+    fun getStartViewIntentCreator(): ViewIntent
 }

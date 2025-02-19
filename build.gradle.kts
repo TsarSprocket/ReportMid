@@ -9,20 +9,25 @@ allprojects {
 }
 
 plugins {
-    id("com.google.devtools.ksp") version "1.9.23-1.0.20" apply false
+    id(libs.plugins.android.application.get().pluginId) apply false
+    id(libs.plugins.android.library.get().pluginId) apply false
+    alias(libs.plugins.devtools.ksp) apply false
+    id(libs.plugins.jetbrains.kotlin.android.get().pluginId) apply false
+    id(libs.plugins.jetbrains.kotlin.kapt.get().pluginId) apply false
+    alias(libs.plugins.compose.compiler) apply false
+    id(libs.plugins.kotlin.parcelize.get().pluginId) apply false
 }
 
 buildscript {
     apply(rootProject.file("versions.gradle.kts"))
 
-    val gradleVersion = "8.7.2"
-    val kotlinVersion = "1.9.23"
+    val gradleVersion = "8.8.1"
+    val kotlinVersion = "2.1.10"
     val navVersion = "2.7.5"
 
     repositories {
         google()
         mavenCentral()
-//        maven(url = "https://oss.jfrog.org/libs-snapshot")
     }
 
     dependencies {

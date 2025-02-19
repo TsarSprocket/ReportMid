@@ -11,6 +11,7 @@ library(
 
     impl(projects.baseApi)
     impl(projects.profileScreenApi)
+    impl(projects.findSummonerApi)
 
     impl(projects.kspProcessor)
     ksp(projects.kspProcessor)

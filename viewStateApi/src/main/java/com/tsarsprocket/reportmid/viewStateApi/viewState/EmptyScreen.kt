@@ -1,11 +1,6 @@
 package com.tsarsprocket.reportmid.viewStateApi.viewState
 
-import androidx.compose.runtime.Composable
+import kotlinx.parcelize.Parcelize
 
-object EmptyScreen : ViewState {
-
-    @Composable
-    override fun Visualize(stateHolder: ViewStateHolder) {
-        // Empty
-    }
-}
+@Parcelize
+data object EmptyScreen : ViewState

@@ -1,3 +1,0 @@
-package com.tsarsprocket.reportmid.landingApi.navigation
-
-object LandingRouteOut

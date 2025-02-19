@@ -21,6 +21,4 @@ library(
     // Compose preview support
     impl(libs.compose.ui.tooling.preview)
     debug(libs.compose.ui.tooling.main)
-
-    impl(libs.androidx.core.ktx)
 }

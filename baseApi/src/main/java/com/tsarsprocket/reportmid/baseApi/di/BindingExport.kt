@@ -1,7 +1,8 @@
 package com.tsarsprocket.reportmid.baseApi.di
 
 import javax.inject.Qualifier
+import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @Qualifier
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(RUNTIME)
 annotation class BindingExport

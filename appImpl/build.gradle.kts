@@ -9,7 +9,6 @@ application(
     appId = "com.tsarsprocket.reportmid.app",
     namespace = "com.tsarsprocket.reportmid.appImpl",
 ) {
-    api(projects.baseApi)
     api(projects.appApi)
     impl(projects.baseImpl)
     impl(projects.dataDragonImpl)
@@ -42,4 +41,9 @@ application(
     // Dagger
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.android.processor)
+
+    // Room
+    api(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    api(libs.androidx.room.ktx)
 }

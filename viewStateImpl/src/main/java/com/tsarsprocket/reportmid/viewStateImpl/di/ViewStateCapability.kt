@@ -10,7 +10,9 @@ import com.tsarsprocket.reportmid.viewStateApi.di.ViewStateApi
 @Capability(
     api = ViewStateApi::class,
     modules = [
-        ViewStateModule::class,
+        MainModule::class,
+        ReducerBinding::class,
+        VisualizerBinding::class,
     ],
     dependencies = [
         AppApi::class,

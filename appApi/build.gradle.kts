@@ -1,5 +1,4 @@
 import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.library
 
 library(
@@ -14,6 +13,5 @@ library(
 
     // Room
     api(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
     api(libs.androidx.room.ktx)
 }

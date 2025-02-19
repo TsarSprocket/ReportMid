@@ -1,8 +1,5 @@
 package com.tsarsprocket.reportmid.viewStateApi.viewState
 
-import androidx.compose.runtime.Composable
+import android.os.Parcelable
 
-interface ViewState {
-    @Composable
-    fun Visualize(stateHolder: ViewStateHolder)
-}
+interface ViewState : Parcelable

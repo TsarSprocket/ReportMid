@@ -3,12 +3,11 @@ package com.tsarsprocket.reportmid.dataDragonRoom
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import io.reactivex.Observable
 
 @Dao
 interface VersionDao {
     @Query("SELECT * FROM ddragon_versions")
-    fun getAll(): Observable<List<VersionEntity>>
+    suspend fun getAll(): List<VersionEntity>
 
     @Query("SELECT * FROM ddragon_versions WHERE id = :id")
     suspend fun getById(id: Long): VersionEntity?

@@ -23,7 +23,8 @@ tasks.withType<JavaCompile>().configureEach {
 
 dependencies {
     gradleApi()
-    implementation("com.android.tools.build:gradle:8.7.2")
+    implementation(libs.gradle)
     gradleKotlinDsl()
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23")
+    implementation(libs.kotlin.gradle.plugin)
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 }

@@ -6,4 +6,5 @@ library(
 ) {
     api(projects.viewStateApi)
     api(projects.landingApi)
+    api(projects.findSummonerApi)
 }

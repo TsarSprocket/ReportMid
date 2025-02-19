@@ -1,5 +1,7 @@
 package com.tsarsprocket.reportmid.profileScreenApi.viewIntent
 
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import kotlinx.parcelize.Parcelize
 
-interface ShowProfileScreenViewIntent : ViewIntent
+@Parcelize
+data object ShowProfileScreenViewIntent : ViewIntent

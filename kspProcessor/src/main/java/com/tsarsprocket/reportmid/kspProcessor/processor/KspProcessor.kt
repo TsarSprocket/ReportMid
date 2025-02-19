@@ -128,6 +128,7 @@ internal class KspProcessor(
                             import dagger.Module
                             import dagger.Provides
                             import dagger.multibindings.IntoSet
+                            import javax.inject.Provider
 
                             @Module
                             interface $provisionModuleName {
@@ -136,7 +137,7 @@ internal class KspProcessor(
                                 @IntoSet
                                 @AppScope
                                 @BindingExport
-                                fun bindBindingExports(api: ${api.qualifiedName}): Any
+                                fun bindExports(api: ${api.qualifiedName}): Any
                                 
                                 companion object {
                                 
@@ -145,12 +146,12 @@ internal class KspProcessor(
                                         
                                     @Provides
                                     @AppScope
-                                    fun provide${api.shortName}(${dependencies.joinToString { it.shortName.startLowercase() + ": " + it.qualifiedName }}): ${api.qualifiedName} {
+                                    fun provide${api.shortName}(${dependencies.joinToString { "${it.shortName.startLowercase()}: Provider<${it.qualifiedName}>" }}): ${api.qualifiedName} {
                                         return try {
                                             $lowercasedComponentName
                                         } catch(_: UninitializedPropertyAccessException) {
                                             $componentName$LAZY_PROXY_SUFFIX {
-                                                Dagger$componentName.factory().create(${dependencies.joinToString { it.shortName.startLowercase() }})
+                                                Dagger$componentName.factory().create(${dependencies.joinToString { "${it.shortName.startLowercase()}.get()" }})
                                             }.also {
                                                 $lowercasedComponentName = it
                                             }
@@ -201,10 +202,20 @@ internal class KspProcessor(
             while(classDeclarations.isNotEmpty()) {
                 val theClassDeclaration = classDeclarations.pop()
                 classDeclarations.addAll(theClassDeclaration.superTypes.map { it.resolve().declaration }.filterIsInstance<KSClassDeclaration>())
-                theClassDeclaration.declarations.forEach { it.accept(FieldVisitor(writer = writer, fieldName = fieldName, logger = logger), Unit) }
+                theClassDeclaration.declarations.forEach { declaration ->
+                    declaration.accept(FieldVisitor(writer = writer, fieldName = fieldName, logger = logger), Unit)
+                }
             }
 
-            writer.write("$NEW_LINE}$NEW_LINE")
+            writer.write(
+                """
+                    
+                    fun forceInitialize() {
+                        $fieldName
+                    }
+                }$NEW_LINE
+                """.trimIndent()
+            )
         }
     }
 
@@ -250,6 +261,8 @@ internal class KspProcessor(
                     """.trimMargin()
                     )
                 }
+
+                writer.write(NEW_LINE)
             } else {
                 logger.warn("Cannot proxy extension property, skipping", property)
             }
@@ -269,6 +282,8 @@ internal class KspProcessor(
                     |    }
                 """.trimMargin()
                 )
+
+                writer.write(NEW_LINE)
             } else {
                 logger.warn("Cannot proxy this function", function)
             }

@@ -1,38 +1,27 @@
 package com.tsarsprocket.reportmid.viewStateApi.viewState
 
 import androidx.compose.runtime.Composable
+import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Provider
 
 interface ViewStateHolder {
     val coroutineScope: CoroutineScope
-    val viewStates: StateFlow<ViewState>
     val currentState: ViewState
+    val topReturnIntent: ViewIntent?
+    val viewStates: StateFlow<ViewState>
     fun createSubholder(initialState: ViewState): ViewStateHolder
-    fun pop()
-    fun postIntent(intent: ViewIntent)
+    fun popTopReturnIntent(): ViewIntent
+    fun postIntent(intent: ViewIntent, returnIntent: ViewIntent? = null)
     fun postEffect(effect: ViewEffect)
-    fun push()
+    fun skipStack(conditionWhile: (ViewIntent) -> Boolean)
     @Composable
     fun Visualize()
+}
 
-    object Preview : ViewStateHolder {
-        override val coroutineScope = CoroutineScope(Job())
-        override val viewStates = MutableStateFlow(EmptyScreen)
-        override val currentState = EmptyScreen
-
-        override fun createSubholder(initialState: ViewState) = this
-        override fun postIntent(intent: ViewIntent) {}
-        override fun postEffect(effect: ViewEffect) {}
-        override fun pop() {}
-        override fun push() {}
-
-        @Composable
-        override fun Visualize() {
-        }
-    }
+fun <IntentMapper> ViewStateHolder.postReturnIntent(processors: Map<Class<out ViewIntent>, Provider<IntentMapper>>, viewIntentProducer: IntentMapper.() -> ViewIntent) {
+    postIntent(processors.findProcessor(popTopReturnIntent()).viewIntentProducer())
 }

@@ -19,6 +19,7 @@ library(
 
     impl(libs.androidx.core.ktx)
     impl(libs.kotlin.reflect)
+    impl(libs.kotlin.stdlib)
 
     // Dagger
     kapt(libs.dagger.compiler)

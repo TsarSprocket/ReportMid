@@ -53,7 +53,7 @@ internal class ViewStateFragmentImpl @Inject constructor(
     private val backPressedCallback = object : OnBackPressedCallback(ENABLE_CALLBACK_ON_START) {
 
         override fun handleOnBackPressed() {
-            viewModel.tryGoBack()
+            viewModel.goBack()
         }
     }
 

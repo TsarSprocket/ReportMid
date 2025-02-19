@@ -29,7 +29,7 @@ internal class MainActivity : AppCompatActivity() {
                 0,
                 ViewStateFragment::class.java,
                 Bundle(1).apply {
-                    putParcelable(START_INTENT, navigationMapApi.getStartViewIntentCreator()())
+                    putParcelable(START_INTENT, navigationMapApi.getStartViewIntentCreator())
                 },
                 null
             )

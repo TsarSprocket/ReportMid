@@ -13,11 +13,13 @@ import com.tsarsprocket.reportmid.gradle.ConfigVersions.TARGET_SDK_VERSION
 import com.tsarsprocket.reportmid.gradle.ConfigVersions.TEST_INSTRUMENTATION_RUNNER
 import com.tsarsprocket.reportmid.gradle.ConfigVersions.VERSION_CODE
 import com.tsarsprocket.reportmid.gradle.ConfigVersions.VERSION_NAME
+import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -28,12 +30,15 @@ fun Project.application(
     buildConfigFields: List<BuildConfigField> = emptyList(),
     dependenciesConfigurator: DependencyHandlerScope.() -> Unit,
 ) {
+    val libs = the<LibrariesForLibs>()
+
     plugins.apply {
-        apply("com.android.application")
-        apply("org.jetbrains.kotlin.android")
-        apply("org.jetbrains.kotlin.kapt")
-        apply("org.jetbrains.kotlin.plugin.parcelize")
-        apply("com.google.devtools.ksp")
+        apply(libs.plugins.android.application.get().pluginId)
+        apply(libs.plugins.jetbrains.kotlin.android.get().pluginId)
+        apply(libs.plugins.compose.compiler.get().pluginId)
+        apply(libs.plugins.jetbrains.kotlin.kapt.get().pluginId)
+        apply(libs.plugins.kotlin.parcelize.get().pluginId)
+        apply(libs.plugins.devtools.ksp.get().pluginId)
     }
 
     configure<KotlinProjectExtension> {
@@ -114,12 +119,15 @@ fun Project.library(
     buildConfigFields: List<BuildConfigField> = emptyList(),
     dependenciesConfigurator: DependencyHandlerScope.() -> Unit = {},
 ) {
+    val libs = the<LibrariesForLibs>()
+
     plugins.apply {
-        apply("com.android.library")
-        apply("org.jetbrains.kotlin.android")
-        apply("org.jetbrains.kotlin.kapt")
-        apply("org.jetbrains.kotlin.plugin.parcelize")
-        apply("com.google.devtools.ksp")
+        apply(libs.plugins.android.library.get().pluginId)
+        apply(libs.plugins.jetbrains.kotlin.android.get().pluginId)
+        if(enableCompose) apply(libs.plugins.compose.compiler.get().pluginId)
+        apply(libs.plugins.jetbrains.kotlin.kapt.get().pluginId)
+        apply(libs.plugins.kotlin.parcelize.get().pluginId)
+        apply(libs.plugins.devtools.ksp.get().pluginId)
     }
 
     configure<KotlinProjectExtension> {

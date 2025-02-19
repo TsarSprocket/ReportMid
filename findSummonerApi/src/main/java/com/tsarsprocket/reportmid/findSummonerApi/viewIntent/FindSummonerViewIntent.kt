@@ -1,11 +1,7 @@
 package com.tsarsprocket.reportmid.findSummonerApi.viewIntent
 
-import com.tsarsprocket.reportmid.viewStateApi.viewIntent.CallViewIntent
-import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ReturnIntentFactory
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import kotlinx.parcelize.Parcelize
 
-interface FindSummonerViewIntent : CallViewIntent<FindSummonerResult> {
-
-    interface Factory {
-        fun create(returnIntentFactory: ReturnIntentFactory<FindSummonerResult>, removeRecentState: Boolean): FindSummonerViewIntent
-    }
-}
+@Parcelize
+data object FindSummonerViewIntent : ViewIntent

@@ -1,6 +1,8 @@
 package com.tsarsprocket.reportmid.viewStateApi.viewIntent
 
-interface CallViewIntent<ResultData> : ViewIntent {
-    var returnIntentProducer: ReturnIntentFactory<ResultData>
-    val removeRecentState: Boolean
+import android.os.Parcelable
+
+interface CallViewIntent<ResultData : Parcelable> : ViewIntent {
+    val returnViewIntent: ReturnViewIntent<ResultData>
+    val removeTopIntent: Boolean
 }

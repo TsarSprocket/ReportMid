@@ -67,7 +67,7 @@ class DataDragonImpl @Inject constructor(
         val versions = ddragonService.versions().blockingFirst()
         val latestVersion = versions.first()
 
-        val dbVersions = db.ddragonVersionDao().getAll().blockingFirst()
+        val dbVersions = runBlocking { db.ddragonVersionDao().getAll() }
 
         val dbLanguages = dbVersions.find { it.version == latestVersion }?.let { @Temporary runBlocking { db.ddragonLanguageDao().getAllForVersion(it.id) } } ?: listOf()
 

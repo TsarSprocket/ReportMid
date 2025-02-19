@@ -4,14 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.utils.dagger.findProcessor
+import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
-import com.tsarsprocket.reportmid.viewStateApi.viewState.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreen
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackOperation
+import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStack
+import com.tsarsprocket.reportmid.viewStateImpl.viewState.InternalViewStateHolder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,9 +27,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Provider
 
 internal class ViewStateViewModel @Inject constructor(
     @Ui private val uiDispatcher: CoroutineDispatcher,
+    @Aggregated private val reducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards Provider<Reducer>>,
+    @Aggregated private val visualizers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<Visualizer>>
 ) : ViewModel() {
 
     private val mutableViewEffects = MutableSharedFlow<suspend (ViewStateFragment) -> Unit>()
@@ -32,15 +41,12 @@ internal class ViewStateViewModel @Inject constructor(
     private val theHolder = Holder(EmptyScreen)
     val rootHolder: ViewStateHolder = theHolder
 
-    private val backStack = BackStackImpl()
+    private val backStack = BackStack()
     val stackSize: StateFlow<Int>
         get() = backStack.stackSize
 
-    fun tryGoBack(): Boolean {
-        return backStack.pop()?.let { (holder, state) ->
-            (holder as Holder).setState(state)
-            true
-        } ?: false
+    fun goBack() {
+        backStack.goBack()
     }
 
     fun setInitialState(state: ViewState) {
@@ -53,7 +59,7 @@ internal class ViewStateViewModel @Inject constructor(
         }
     }
 
-    private inner class Holder(initialState: ViewState) : ViewStateHolder {
+    private inner class Holder(initialState: ViewState) : InternalViewStateHolder {
 
         override val coroutineScope: CoroutineScope
             get() = viewModelScope
@@ -65,6 +71,10 @@ internal class ViewStateViewModel @Inject constructor(
         override val currentState: ViewState
             get() = mutableViewStates.value
 
+        private val operationsStack = mutableListOf<BackOperation>()
+        override val topReturnIntent: ViewIntent?
+            get() = operationsStack.lastOrNull()?.goBackIntent
+
         init {
             viewModelScope.launch {
                 mutableViewIntents.collect { intent ->
@@ -75,27 +85,32 @@ internal class ViewStateViewModel @Inject constructor(
 
         override fun createSubholder(initialState: ViewState) = Holder(initialState)
 
-        override fun pop() {
-            backStack.pop()
+        override fun doGoBack() {
+            val operation = operationsStack.removeAt(operationsStack.lastIndex)
+            backStack.removeOperation(operation.uuid)
+            postIntent(operation.goBackIntent)
         }
+
+        override fun popTopReturnIntent(): ViewIntent = operationsStack.removeAt(operationsStack.lastIndex).goBackIntent
 
         override fun postEffect(effect: ViewEffect) {
             this@ViewStateViewModel.postEffect(effect, this)
         }
 
-        override fun postIntent(intent: ViewIntent) {
+        override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?) {
+            returnIntent?.let { pushReturnIntent(returnIntent) }
             viewModelScope.launch(uiDispatcher) {
                 mutableViewIntents.emit(intent)
             }
         }
 
-        override fun push() {
-            backStack.push(BackStack.Entry(this, viewStates.value))
+        override fun skipStack(conditionWhile: (ViewIntent) -> Boolean) {
+            while(operationsStack.getOrNull(operationsStack.lastIndex)?.let { conditionWhile(it.goBackIntent) } == true) operationsStack.removeAt(operationsStack.lastIndex)
         }
 
         @Composable
         override fun Visualize() {
-            mutableViewStates.collectAsState().value.Visualize(this)
+            mutableViewStates.collectAsState().value.let { state -> visualizers.findProcessor(state).Visualize(state, this) }
         }
 
         fun setState(state: ViewState) {
@@ -103,7 +118,13 @@ internal class ViewStateViewModel @Inject constructor(
         }
 
         private suspend fun processIntent(intent: ViewIntent) {
-            mutableViewStates.emit(intent.reduce(viewStates.value, this))
+            mutableViewStates.emit(reducers.findProcessor(intent).reduce(intent, viewStates.value, this))
+        }
+
+        private fun pushReturnIntent(viewIntent: ViewIntent) {
+            val operation = BackOperation(viewIntent)
+            operationsStack.add(operation)
+            backStack.push(this, operation.uuid)
         }
     }
 }

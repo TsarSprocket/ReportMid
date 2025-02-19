@@ -5,21 +5,40 @@ import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseApi.di.BindingExport
 import com.tsarsprocket.reportmid.baseApi.di.FragmentsCreator
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
+import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinder
+import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinder
+import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
 import dagger.Module
 import dagger.Provides
 import javax.inject.Provider
 
 @Module
-internal interface AggregatorModule {
+internal class AggregatorModule {
 
-    companion object {
+    @Provides
+    @AppScope
+    @Aggregated
+    fun provideFragmentCreators(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out Fragment>, Provider<Fragment>> {
+        return bindingExports.filterIsInstance<FragmentsCreator>()
+            .fold(emptyMap()) { acc, entry -> acc + entry.getFragmentCreators() }
+    }
 
-        @Provides
-        @AppScope
-        @Aggregated
-        fun provideFragmentCreators(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out Fragment>, Provider<Fragment>> {
-            return bindingExports.filterIsInstance<FragmentsCreator>()
-                .fold(emptyMap()) { acc, entry -> acc + entry.getFragmentCreators() }
-        }
+    @Provides
+    @AppScope
+    @Aggregated
+    fun provideViewStateReducers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewIntent>, Provider<Reducer>> {
+        return bindingExports.filterIsInstance<ReducerBinder>()
+            .fold(emptyMap()) { acc, entry -> acc + entry.getReducers() }
+    }
+
+    @Provides
+    @AppScope
+    @Aggregated
+    fun provideVisualizers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewState>, Provider<Visualizer>> {
+        return bindingExports.filterIsInstance<VisualizerBinder>()
+            .fold(emptyMap()) { acc, entry -> acc + entry.getVisualizers() }
     }
 }

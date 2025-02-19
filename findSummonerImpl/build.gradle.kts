@@ -16,6 +16,7 @@ library(
     impl(projects.summonerApi)
     impl(projects.theme)
     impl(projects.utils)
+    impl(projects.navigationMapApi)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.android.processor)
