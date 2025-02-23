@@ -9,8 +9,8 @@ import com.tsarsprocket.reportmid.landingApi.di.LandingApi
 import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
 import com.tsarsprocket.reportmid.stateApi.di.StateApi
 import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
-import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinder
-import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinder
+import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding
+import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
 
 @PerApi
 @Capability(
@@ -29,8 +29,8 @@ import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinder
         VisualizerModule::class,
     ],
     exportBindings = [
-        ReducerBinder::class,
-        VisualizerBinder::class,
+        ReducerBinding::class,
+        VisualizerBinding::class,
     ]
 )
 internal interface LandingCapability

@@ -10,7 +10,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-interface VisualizerBinding {
+interface VisualizerModule {
 
     @Binds
     @PerApi

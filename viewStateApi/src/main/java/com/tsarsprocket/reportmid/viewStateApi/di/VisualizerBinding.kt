@@ -4,6 +4,6 @@ import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
 import javax.inject.Provider
 
-interface VisualizerBinder {
+interface VisualizerBinding {
     fun getVisualizers(): Map<Class<out ViewState>, @JvmSuppressWildcards Provider<Visualizer>>
 }

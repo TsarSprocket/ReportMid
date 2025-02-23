@@ -10,7 +10,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-interface ReducerBinding {
+interface ReducerModule {
 
     @Binds
     @PerApi
