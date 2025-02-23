@@ -11,7 +11,6 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryVi
 import com.tsarsprocket.reportmid.lol.model.GameName
 import com.tsarsprocket.reportmid.lol.model.TagLine
 import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
-import com.tsarsprocket.reportmid.viewStateApi.reducer.handleUnknownIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
@@ -22,12 +21,10 @@ internal class FindSummonerReducer @Inject constructor(
     private val useCase: FindSummonerUseCase,
 ) : Reducer {
 
-    override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
-        return when(intent) {
-            is FindAndConfirmSummonerViewIntent -> confirmFinding(intent, state, stateHolder)
-            is FindSummonerViewIntent -> findSummoner(intent)
-            else -> handleUnknownIntent(intent, state)
-        }
+    override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
+        is FindAndConfirmSummonerViewIntent -> confirmFinding(intent, state, stateHolder)
+        is FindSummonerViewIntent -> findSummoner(intent)
+        else -> super.reduce(intent, state, stateHolder)
     }
 
     private suspend fun confirmFinding(intent: FindAndConfirmSummonerViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {

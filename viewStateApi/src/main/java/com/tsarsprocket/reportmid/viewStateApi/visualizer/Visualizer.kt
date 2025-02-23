@@ -5,11 +5,10 @@ import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 
-fun interface Visualizer {
-    @Composable
-    fun Visualize(state: ViewState, stateHolder: ViewStateHolder)
-}
+interface Visualizer {
 
-fun Visualizer.handleUnknownState(state: ViewState) {
-    logError("Unknown view state of class ${state::class.simpleName}")
+    @Composable
+    fun Visualize(state: ViewState, stateHolder: ViewStateHolder) {
+        logError("Unknown view state of class ${state::class.simpleName}")
+    }
 }

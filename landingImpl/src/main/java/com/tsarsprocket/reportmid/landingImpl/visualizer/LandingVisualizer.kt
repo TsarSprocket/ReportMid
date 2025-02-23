@@ -6,27 +6,23 @@ import com.tsarsprocket.reportmid.landingImpl.view.LandingScreen
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.DataDragonNotLoadedViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.LandingPageViewState
+import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.handleUnknownState
 import javax.inject.Inject
 
 @PerApi
 class LandingVisualizer @Inject constructor() : Visualizer {
 
     @Composable
-    override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) {
-        return when(state) {
-            is InternalLandingViewState -> {
-                when(state) {
-                    is DataDragonNotLoadedViewState -> DataDragonNotLoaded()
-                    is LandingPageViewState -> Landing()
-                }
+    override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {
+        if(state is InternalLandingViewState) { // To make sure all substates are covered
+            when(state) {
+                is DataDragonNotLoadedViewState -> DataDragonNotLoaded()
+                is LandingPageViewState -> Landing()
             }
-
-            else -> handleUnknownState(state)
-        }
+        } else super.Visualize(state, stateHolder)
     }
 
     @Composable

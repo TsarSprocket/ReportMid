@@ -23,12 +23,11 @@ class FindSummonerVisualizer @Inject constructor(
 ) : Visualizer {
 
     @Composable
-    override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) {
-        ReportMidTheme {
-            when(state) {
-                is ConfirmSummonerViewState -> stateHolder.ConfirmSummoner(state)
-                is SummonerDataEntryViewState -> stateHolder.SummonerDataEntry()
-            }
+    override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {
+        when(state) {
+            is ConfirmSummonerViewState -> stateHolder.ConfirmSummoner(state)
+            is SummonerDataEntryViewState -> stateHolder.SummonerDataEntry()
+            else -> super.Visualize(state, stateHolder)
         }
     }
 

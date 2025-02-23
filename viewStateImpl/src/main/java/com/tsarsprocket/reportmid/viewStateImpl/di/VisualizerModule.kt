@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.viewStateImpl.di
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewStateKey
-import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreen
+import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
 import com.tsarsprocket.reportmid.viewStateImpl.visualizer.DefaultVisualizer
 import dagger.Binds
@@ -15,6 +15,6 @@ interface VisualizerModule {
     @Binds
     @PerApi
     @IntoMap
-    @ViewStateKey(EmptyScreen::class)
+    @ViewStateKey(EmptyScreenViewState::class)
     fun bindToEmptyScreen(visualizer: DefaultVisualizer): Visualizer
 }

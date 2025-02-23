@@ -13,7 +13,6 @@ import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.LandingPageViewState
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
-import com.tsarsprocket.reportmid.viewStateApi.reducer.handleUnknownIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.QuitViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -29,24 +28,22 @@ internal class LandingReducer @Inject constructor(
     private val navigation: LandingNavigation,
 ) : Reducer {
 
-    override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
-        return when(intent) {
-            is LandingIntent -> {
-                when(intent) {
-                    is LandingStartLoadViewIntent -> stateHolder.startLoading()
-                    is SummonerFoundViewIntent -> stateHolder.summonerFound(intent, state)
-                    is QuitViewIntent -> stateHolder.quit(state)
-                }
+    override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
+        is LandingIntent -> {
+            when(intent) {
+                is LandingStartLoadViewIntent -> stateHolder.startLoading()
+                is SummonerFoundViewIntent -> stateHolder.summonerFound(intent, state)
+                is QuitViewIntent -> stateHolder.quit(state)
             }
-
-            is InternalLandingIntent -> {
-                when(intent) {
-                    is DataDragonNotLoadedViewIntent -> DataDragonNotLoadedViewState
-                }
-            }
-
-            else -> handleUnknownIntent(intent, state)
         }
+
+        is InternalLandingIntent -> {
+            when(intent) {
+                is DataDragonNotLoadedViewIntent -> DataDragonNotLoadedViewState
+            }
+        }
+
+        else -> super.reduce(intent, state, stateHolder)
     }
 
     private suspend fun ViewStateHolder.startLoading(): ViewState {

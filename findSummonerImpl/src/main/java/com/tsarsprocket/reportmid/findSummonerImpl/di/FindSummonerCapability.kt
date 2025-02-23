@@ -7,6 +7,7 @@ import com.tsarsprocket.reportmid.findSummonerApi.di.FindSummonerApi
 import com.tsarsprocket.reportmid.kspProcessor.annotation.Capability
 import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
 import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
+import com.tsarsprocket.reportmid.viewStateApi.di.EffectHandlerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
 
@@ -14,6 +15,7 @@ import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
 @Capability(
     api = FindSummonerApi::class,
     modules = [
+        EffectHandlerModule::class,
         MainModule::class,
         ReducerModule::class,
         VisualizerModule::class,
@@ -25,6 +27,7 @@ import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
         SummonerApi::class,
     ],
     exportBindings = [
+        EffectHandlerBinding::class,
         ReducerBinding::class,
         VisualizerBinding::class,
     ]

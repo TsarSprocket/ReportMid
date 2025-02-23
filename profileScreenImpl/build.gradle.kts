@@ -10,6 +10,7 @@ library(
     enableCompose = true,
 ) {
     api(projects.profileScreenApi)
+    api(projects.theme)
 
     impl(projects.baseApi)
 

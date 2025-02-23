@@ -11,7 +11,7 @@ import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
-import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreen
+import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
@@ -38,7 +38,7 @@ internal class ViewStateViewModel @Inject constructor(
     private val mutableViewEffects = MutableSharedFlow<suspend (ViewStateFragment) -> Unit>()
     val viewEffects = mutableViewEffects.asSharedFlow()
 
-    private val theHolder = Holder(EmptyScreen)
+    private val theHolder = Holder(EmptyScreenViewState)
     val rootHolder: ViewStateHolder = theHolder
 
     private val backStack = BackStack()
