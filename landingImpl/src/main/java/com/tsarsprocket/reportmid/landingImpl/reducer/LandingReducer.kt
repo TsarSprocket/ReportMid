@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @PerApi
 @Reducer(
-    viewIntents = [
+    intents = [
         LandingStartLoadViewIntent::class,
         SummonerFoundViewIntent::class,
         QuitViewIntent::class,

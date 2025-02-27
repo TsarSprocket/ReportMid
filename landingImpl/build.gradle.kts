@@ -22,7 +22,7 @@ library(
     impl(projects.summonerApi)
     impl(projects.dataDragonApi)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     impl(libs.androidx.core.ktx)

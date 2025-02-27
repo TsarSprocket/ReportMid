@@ -10,7 +10,7 @@ library(
     api(projects.baseApi)
     api(projects.appApi)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     // Dagger

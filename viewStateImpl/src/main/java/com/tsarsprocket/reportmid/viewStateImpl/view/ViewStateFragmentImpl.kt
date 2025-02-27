@@ -81,7 +81,7 @@ internal class ViewStateFragmentImpl @Inject constructor(
 
         viewModel.viewModelScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.viewEffects.collect { effectAction -> effectAction(this@ViewStateFragmentImpl) }
+                viewModel.viewEffectActions.collect { effectAction -> effectAction(this@ViewStateFragmentImpl) }
             }
         }
 

@@ -21,7 +21,7 @@ kotlin {
 }
 
 dependencies {
-    api(projects.kspApi)
+    implementation(projects.kspApi)
     implementation(libs.symbol.processing.api)
     implementation(libs.kotlin.stdlib)
 }

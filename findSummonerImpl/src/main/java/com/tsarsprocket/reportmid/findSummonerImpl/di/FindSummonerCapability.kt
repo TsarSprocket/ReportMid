@@ -15,10 +15,7 @@ import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
 @Capability(
     api = FindSummonerApi::class,
     modules = [
-        EffectHandlerModule::class,
         MainModule::class,
-        ReducerModule::class,
-        VisualizerModule::class,
     ],
     dependencies = [
         AppApi::class,

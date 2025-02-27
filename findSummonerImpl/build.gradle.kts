@@ -21,7 +21,7 @@ library(
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.android.processor)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     impl(libs.androidx.core.ktx)

@@ -13,7 +13,7 @@ library(
     impl(projects.profileScreenApi)
     impl(projects.findSummonerApi)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     kapt(libs.dagger.compiler)

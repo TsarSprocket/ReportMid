@@ -10,7 +10,7 @@ library(
 ) {
     api(projects.utils)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     api(libs.orianna.android) // to be removed after the migration to RIOT API

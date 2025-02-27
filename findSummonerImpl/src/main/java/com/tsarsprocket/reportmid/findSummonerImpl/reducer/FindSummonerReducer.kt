@@ -8,6 +8,7 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewEffect.ShowSnackViewEffec
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.FindAndConfirmSummonerViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
+import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.lol.model.GameName
 import com.tsarsprocket.reportmid.lol.model.TagLine
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
@@ -17,6 +18,11 @@ import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 import javax.inject.Inject
 
 @PerApi
+@Reducer(
+    intents = [
+        FindSummonerViewIntent::class,
+    ],
+)
 internal class FindSummonerReducer @Inject constructor(
     private val useCase: FindSummonerUseCase,
 ) : ViewStateReducer {

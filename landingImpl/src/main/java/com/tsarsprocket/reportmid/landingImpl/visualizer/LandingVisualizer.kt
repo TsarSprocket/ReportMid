@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.landingImpl.visualizer
 
 import androidx.compose.runtime.Composable
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
+import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.landingImpl.view.LandingScreen
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.DataDragonNotLoadedViewState
@@ -9,11 +10,12 @@ import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import javax.inject.Inject
 
 @PerApi
-class LandingVisualizer @Inject constructor() : StateVisualizer {
+@Visualizer
+class LandingVisualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {

@@ -23,7 +23,7 @@ application(
     impl(projects.summonerImpl)
     impl(projects.viewStateImpl)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     // Android

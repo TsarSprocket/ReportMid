@@ -9,18 +9,20 @@ import com.tsarsprocket.reportmid.findSummonerImpl.view.SummonerDataEntryScreen
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.FindAndConfirmSummonerViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
+import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import javax.inject.Inject
 
 @PerApi
+@Visualizer
 class FindSummonerVisualizer @Inject constructor(
     @Navigation(FindSummonerNavigation.TAG)
     private val navigation: FindSummonerNavigation,
-) : StateVisualizer {
+) : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {

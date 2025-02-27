@@ -22,17 +22,22 @@ import com.google.devtools.ksp.symbol.Variance.CONTRAVARIANT
 import com.google.devtools.ksp.symbol.Variance.COVARIANT
 import com.google.devtools.ksp.validate
 import com.tsarsprocket.reportmid.kspApi.annotation.Capability
+import com.tsarsprocket.reportmid.kspApi.annotation.Effect
+import com.tsarsprocket.reportmid.kspApi.annotation.EffectHandler
 import com.tsarsprocket.reportmid.kspApi.annotation.Intent
 import com.tsarsprocket.reportmid.kspApi.annotation.LazyProxy
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
+import com.tsarsprocket.reportmid.kspApi.annotation.State
+import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.kspApi.helper.FindTheOnlyOne
-import com.tsarsprocket.reportmid.kspProcessor.util.BriefProcessee
 import com.tsarsprocket.reportmid.kspProcessor.util.NameInfo
-import com.tsarsprocket.reportmid.kspProcessor.util.ReducerData
-import com.tsarsprocket.reportmid.kspProcessor.util.ViewIntentData
+import com.tsarsprocket.reportmid.kspProcessor.util.ProcesseeData
+import com.tsarsprocket.reportmid.kspProcessor.util.ProcessorData
 import com.tsarsprocket.reportmid.kspProcessor.util.doOnEachAnnotated
 import java.io.BufferedWriter
 import java.util.LinkedList
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 internal class KspProcessor(
     private val codeGenerator: CodeGenerator,
@@ -44,22 +49,88 @@ internal class KspProcessor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         logger.warn("KSP Processor is invoked")
 
-        val viewIntents = mutableListOf<ViewIntentData>()
+        val viewIntents = mutableListOf<ProcesseeData>()
 
-        val viewIntentDeclarations = resolver.doOnEachAnnotated<Intent> { declaration -> viewIntents += extractViewIntentData(declaration) }
+        val viewIntentDeclarations = resolver.doOnEachAnnotated<Intent> { declaration ->
+            viewIntents += extractProcesseeData(
+                declaration = declaration,
+                processeeAnnotationClass = Intent::class,
+                processorFieldName = Intent::reducer.name,
+            ) // which is rather unlikely
+        }
 
-        val reducers = mutableListOf<ReducerData>()
+        val reducers = mutableListOf<ProcessorData>()
 
-        val reducerDeclarations = resolver.doOnEachAnnotated<Reducer> { declaration -> reducers += extractReducers(declaration, viewIntents) }
+        val reducerDeclarations = resolver.doOnEachAnnotated<Reducer> { declaration ->
+            reducers += extractProcessorData(
+                declaration = declaration,
+                implicitProcessees = viewIntents,
+                processorAnnotationClass = Reducer::class,
+                explicitProcesseeListField = Reducer::intents,
+                capabilityField = Reducer::capability,
+            )
+        }
+
+        val viewStates = mutableListOf<ProcesseeData>()
+
+        val viewStateDeclarations = resolver.doOnEachAnnotated<State> { declaration ->
+            viewStates += extractProcesseeData(
+                declaration = declaration,
+                processeeAnnotationClass = State::class,
+                processorFieldName = State::visualizer.name,
+            )
+        }
+
+        val visualizers = mutableListOf<ProcessorData>()
+
+        val visualizerDeclarations = resolver.doOnEachAnnotated<Visualizer> { declaration ->
+            visualizers += extractProcessorData(
+                declaration = declaration,
+                implicitProcessees = viewStates,
+                processorAnnotationClass = Visualizer::class,
+                explicitProcesseeListField = Visualizer::states,
+                capabilityField = Visualizer::capability,
+            )
+        }
+
+        val viewEffects = mutableListOf<ProcesseeData>()
+
+        val viewEffectDeclarations = resolver.doOnEachAnnotated<Effect> { declaration ->
+            viewEffects += extractProcesseeData(
+                declaration = declaration,
+                processeeAnnotationClass = Effect::class,
+                processorFieldName = Effect::handler.name,
+            )
+        }
+
+        val effectHandlers = mutableListOf<ProcessorData>()
+
+        val effectHandlerDeclarations = resolver.doOnEachAnnotated<EffectHandler> { declaration ->
+            effectHandlers += extractProcessorData(
+                declaration = declaration,
+                implicitProcessees = viewEffects,
+                processorAnnotationClass = EffectHandler::class,
+                explicitProcesseeListField = EffectHandler::effects,
+                capabilityField = EffectHandler::capability,
+            )
+        }
 
         val lazyProxyDeclarations = resolver.doOnEachAnnotated<LazyProxy> { declaration -> defineLazyProxy(declaration) }
 
-        val capabilityDeclarations = resolver.doOnEachAnnotated<Capability> { declaration -> defineCapability(declaration, reducers) }
+        val capabilityDeclarations = resolver.doOnEachAnnotated<Capability> { declaration -> defineCapability(declaration, reducers, visualizers, effectHandlers) }
 
-        return (viewIntentDeclarations + reducerDeclarations + lazyProxyDeclarations + capabilityDeclarations).filterNot { it.validate() }.toList()
+        return (viewIntentDeclarations + reducerDeclarations +
+                viewStateDeclarations + visualizerDeclarations +
+                viewEffectDeclarations + effectHandlerDeclarations +
+                lazyProxyDeclarations + capabilityDeclarations).filterNot { it.validate() }.toList()
     }
 
-    private fun defineCapability(capabilityClassDeclaration: KSClassDeclaration, reducers: MutableList<ReducerData>) {
+    private fun defineCapability(
+        capabilityClassDeclaration: KSClassDeclaration,
+        reducers: MutableList<ProcessorData>,
+        visualizers: MutableList<ProcessorData>,
+        effectHandlers: MutableList<ProcessorData>,
+    ) {
         capabilityClassDeclaration.annotations.fold(object {
             var capability: KSAnnotation? = null
             val others = mutableListOf<KSAnnotation>()
@@ -106,16 +177,19 @@ internal class KspProcessor(
                 val otherAnnotationsText =
                     otherAnnotations.joinToString(separator = SPACE) { annotation -> "@${annotation.annotationType.resolveToName()}" } // ToDo: If required, support annotations with arguments
 
-                val reducerModules = reducers.filter { it.capability == null || it.capability == capabilityFQName }.mapNotNull { data ->
-                    if(data.isAssigned) {
-                        logger.error("Ambiguous capability matching for reducer ${data.declaration.qualifiedName?.asString()}")
+                val reducerModules = reducers.filter { it.capability == null || it.capability == capabilityFQName }.mapNotNull { reducerData ->
+                    if(reducerData.isAssigned) {
+                        logger.error("Ambiguous capability matching for reducer ${reducerData.declaration.qualifiedName?.asString()}")
                         null
                     } else {
-                        data.isAssigned = true
-                        generateReducerModuleFile(
-                            packageName = packageName,
-                            reducerData = data,
+                        reducerData.isAssigned = true
+                        generateProcessorModuleFile(
                             capabilityName = capabilityName.asString(),
+                            processorData = reducerData,
+                            packageName = packageName,
+                            keyAnnotationName = VIEW_INTENT_KEY_ANNOTATION_NAME,
+                            processorParamName = REDUCER_PARAM_NAME,
+                            genericProcessorType = VIEW_STATE_REDUCER_GENERIC_NAME,
                         )
                     }
                 }
@@ -123,6 +197,50 @@ internal class KspProcessor(
                 if(reducerModules.isNotEmpty()) {
                     modules += reducerModules
                     exportBindings += REDUCER_BINDING_CLASS_NAME
+                }
+
+                val visualizerModules = visualizers.filter { it.capability == null || it.capability == capabilityFQName }.mapNotNull { visualizerData ->
+                    if(visualizerData.isAssigned) {
+                        logger.error("Ambiguous capability matching for visualizer ${visualizerData.declaration.qualifiedName?.asString()}")
+                        null
+                    } else {
+                        visualizerData.isAssigned = true
+                        generateProcessorModuleFile(
+                            capabilityName = capabilityName.asString(),
+                            processorData = visualizerData,
+                            packageName = packageName,
+                            keyAnnotationName = VIEW_STATE_KEY_ANNOTATION_NAME,
+                            processorParamName = VISUALIZER_PARAM_NAME,
+                            genericProcessorType = VIEW_STATE_VISUALIZER_GENERIC_NAME,
+                        )
+                    }
+                }
+
+                if(visualizerModules.isNotEmpty()) {
+                    modules += visualizerModules
+                    exportBindings += VISUALIZER_BINDING_CLASS_NAME
+                }
+
+                val effectHandlerModules = effectHandlers.filter { it.capability == null || it.capability == capabilityFQName }.mapNotNull { effectHandlerData ->
+                    if(effectHandlerData.isAssigned) {
+                        logger.error("Ambiguous capability matching for effect handler ${effectHandlerData.declaration.qualifiedName?.asString()}")
+                        null
+                    } else {
+                        effectHandlerData.isAssigned = true
+                        generateProcessorModuleFile(
+                            capabilityName = capabilityName.asString(),
+                            processorData = effectHandlerData,
+                            packageName = packageName,
+                            keyAnnotationName = VIEW_EFFECT_KEY_ANNOTATION_NAME,
+                            processorParamName = VIEW_EFFECT_HANDLER_PARAM_NAME,
+                            genericProcessorType = VIEW_EFFECT_HANDLER_GENERIC_NAME,
+                        )
+                    }
+                }
+
+                if(effectHandlerModules.isNotEmpty()) {
+                    modules += effectHandlerModules
+                    exportBindings += VIEW_EFFECT_HANDLER_BINDING_CLASS_NAME
                 }
 
                 generateComponentFile(
@@ -203,65 +321,79 @@ internal class KspProcessor(
         }
     }
 
-    private fun extractViewIntentData(declaration: KSClassDeclaration): ViewIntentData = declaration.annotations.find { ksAnnotation ->
-        ksAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == Intent::class.qualifiedName
-    }?.let { ksAnnotation ->
-        val reducerType = (ksAnnotation.arguments.find { it.name?.asString() == Intent::reducer.name }?.value as? KSType)?.takeIf { it.resolveToName() != FindTheOnlyOne::class.qualifiedName }
-        ViewIntentData(declaration, reducerType?.resolveToName(), declaration.containingFile!!)
-    } ?: throw IllegalStateException("ViewIntent annotation not found") // which is rather unlikely
+    private fun extractProcesseeData(
+        declaration: KSClassDeclaration,
+        processeeAnnotationClass: KClass<*>,
+        processorFieldName: String,
+    ): ProcesseeData {
+        return declaration.annotations.find { ksAnnotation ->
+            ksAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == processeeAnnotationClass.qualifiedName
+        }?.let { ksAnnotation ->
+            val reducerType = (ksAnnotation.arguments.find { it.name?.asString() == processorFieldName }?.value as? KSType)?.takeIf { it.resolveToName() != FindTheOnlyOne::class.qualifiedName }
+            ProcesseeData(declaration, reducerType?.resolveToName(), declaration.containingFile!!)
+        } ?: throw IllegalStateException("${processeeAnnotationClass.simpleName} annotation not found")
+    }
 
-    private fun extractReducers(declaration: KSClassDeclaration, implicitIntents: MutableList<ViewIntentData>): ReducerData {
-        val reducerName = declaration.qualifiedName?.asString()
+    private fun extractProcessorData(
+        declaration: KSClassDeclaration,
+        implicitProcessees: MutableList<ProcesseeData>,
+        processorAnnotationClass: KClass<*>,
+        explicitProcesseeListField: KProperty1<*, Array<KClass<*>>>,
+        capabilityField: KProperty1<*, KClass<*>>,
+    ): ProcessorData {
+        val processorName = declaration.qualifiedName?.asString()
 
         return declaration.annotations.find { ksAnnotation ->
-            ksAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == Reducer::class.qualifiedName
+            ksAnnotation.annotationType.resolve().declaration.qualifiedName?.asString() == processorAnnotationClass.qualifiedName
         }?.let { ksAnnotation ->
-            val explicitIntents = mutableListOf<BriefProcessee>()
+            val explicitProcessees = mutableListOf<NameInfo>()
             var capability: String? = null
 
             ksAnnotation.arguments.onEach { annotation ->
                 when(annotation.name?.asString()) {
-                    Reducer::viewIntents.name -> {
-                        explicitIntents.addAll((annotation.value as List<*>).filterIsInstance<KSType>().map { BriefProcessee(it.declaration.simpleName.asString(), it.resolveToName()) })
+                    explicitProcesseeListField.name -> {
+                        explicitProcessees.addAll((annotation.value as List<*>).filterIsInstance<KSType>().map { processeeType ->
+                            NameInfo(processeeType.declaration.simpleName.asString(), processeeType.resolveToName())
+                        })
                     }
 
-                    Reducer::capability.name -> capability = (annotation.value as KSType).resolveToName().takeIf { it != FindTheOnlyOne::class.qualifiedName }
+                    capabilityField.name -> capability = (annotation.value as KSType).resolveToName().takeIf { it != FindTheOnlyOne::class.qualifiedName }
                 }
             }
 
-            val (combinedIntents, viewIntentFiles) = object {
-                val intents = mutableSetOf<BriefProcessee>()
+            val (combinedProcessees, processeeFiles) = object {
+                val processees = mutableSetOf<NameInfo>()
                 val files = mutableSetOf<KSFile>()
 
-                operator fun component1() = intents.toList()
+                operator fun component1() = processees.toList()
                 operator fun component2() = files.toList()
             }.apply {
-                explicitIntents.onEach { intent ->
-                    if(!intents.contains(intent)) intents.add(intent) else logger.warn("Duplicate view intent $intent in reducer ${declaration.qualifiedName}")
+                explicitProcessees.onEach { explicitOne ->
+                    if(!processees.contains(explicitOne)) processees.add(explicitOne) else logger.warn("Duplicate ${explicitOne.qualifiedName} in reducer ${declaration.qualifiedName}")
                 }
 
-                implicitIntents.onEach { intent ->
+                implicitProcessees.onEach { implicitOne ->
                     when {
-                        intent.fqReducerName == null && !intent.isAssigned ||
-                                intent.fqReducerName == reducerName && !intents.any { declaration.qualifiedName?.asString() == intent.declaration.qualifiedName?.asString() } -> {
-                            intents.add(BriefProcessee(intent.declaration.simpleName.asString(), intent.declaration.qualifiedName?.asString()!!))
-                            files.add(intent.file)
-                            intent.isAssigned = true
+                        implicitOne.fqProcessorName == null && !implicitOne.isAssigned ||
+                                implicitOne.fqProcessorName == processorName && !processees.any { declaration.qualifiedName?.asString() == implicitOne.declaration.qualifiedName?.asString() } -> {
+                            processees.add(NameInfo(implicitOne.declaration.simpleName.asString(), implicitOne.declaration.qualifiedName?.asString()!!))
+                            files.add(implicitOne.file)
+                            implicitOne.isAssigned = true
                         }
 
-                        intent.fqReducerName == null && intent.isAssigned -> {
-                            logger.error("View intent ${intent.declaration.qualifiedName?.asString()} is assigned to multiple reducers")
+                        implicitOne.fqProcessorName == null && implicitOne.isAssigned -> {
+                            logger.error("View intent ${implicitOne.declaration.qualifiedName?.asString()} is implicitly assigned to multiple processors")
                         }
 
-                        intent.fqReducerName == reducerName && intents.any { it.fullName == intent.declaration.qualifiedName?.asString() } -> {
-                            logger.warn("View intent ${intent.declaration.qualifiedName?.asString()} is assigned to reducer $reducerName both explicitly and implicitly")
+                        else -> {
+                            logger.warn("${implicitOne.declaration.qualifiedName?.asString()} is assigned to $processorName both explicitly and implicitly")
                         }
                     }
                 }
             }
 
-            ReducerData(declaration, combinedIntents, capability, viewIntentFiles)
-        } ?: throw IllegalStateException("ViewIntent annotation not found") // which is rather unlikely
+            ProcessorData(declaration, combinedProcessees, capability, processeeFiles)
+        } ?: throw IllegalStateException("${processorAnnotationClass.simpleName} annotation not found") // which is rather unlikely
     }
 
     private fun generateComponentAccessorFile(
@@ -379,12 +511,19 @@ internal class KspProcessor(
         }
     }
 
-    private fun generateReducerModuleFile(packageName: String, reducerData: ReducerData, capabilityName: String): String {
-        return "${capabilityName}${reducerData.declaration.simpleName.asString()}$BINDING_MODULE_POSTFIX".also { moduleName ->
-            val reducerName = reducerData.declaration.qualifiedName?.asString()!!
+    private fun generateProcessorModuleFile(
+        capabilityName: String,
+        processorData: ProcessorData,
+        packageName: String,
+        keyAnnotationName: String,
+        processorParamName: String,
+        genericProcessorType: String,
+    ): String {
+        return "${capabilityName}${processorData.declaration.simpleName.asString()}$BINDING_MODULE_POSTFIX".also { moduleName ->
+            val processorName = processorData.declaration.qualifiedName?.asString()!!
 
             codeGenerator.createNewFile(
-                dependencies = Dependencies(true, reducerData.declaration.containingFile!!, *reducerData.viewIntentFiles.toTypedArray()),
+                dependencies = Dependencies(true, processorData.declaration.containingFile!!, *processorData.processeeFiles.toTypedArray()),
                 packageName = packageName,
                 fileName = moduleName,
             )
@@ -392,30 +531,44 @@ internal class KspProcessor(
                 .use { writer ->
                     writer.write(
                         """
-                        |package $packageName
-                        |
-                        |import com.tsarsprocket.reportmid.baseApi.di.PerApi
-                        |import com.tsarsprocket.reportmid.viewStateApi.di.ViewIntentKey
-                        |import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
-                        |import dagger.Binds
-                        |import dagger.Module
-                        |import dagger.multibindings.IntoMap
-                        |
-                        |@Module
-                        |internal interface $moduleName {${reducerData.viewIntents.joinToString(separator = EMPTY_STRING) { viewIntent -> generateSingleModuleDeclaration(viewIntent, reducerName) }}
-                        |}
-                        |""".trimMargin()
+                            |package $packageName
+                            |
+                            |import com.tsarsprocket.reportmid.baseApi.di.PerApi
+                            |import dagger.Binds
+                            |import dagger.Module
+                            |import dagger.multibindings.IntoMap
+                            |
+                            |@Module
+                            |internal interface $moduleName {${
+                            processorData.processees.joinToString(separator = EMPTY_STRING) { processee ->
+                                generateSingleModuleDeclaration(
+                                    keyAnnotationName = keyAnnotationName,
+                                    processee = processee,
+                                    processorParamName = processorParamName,
+                                    actualProcessorName = processorName,
+                                    generalProcessorType = genericProcessorType,
+                                )
+                            }
+                        }
+                            |}
+                            |""".trimMargin()
                     )
                 }
         }
     }
 
-    private fun generateSingleModuleDeclaration(viewIntent: BriefProcessee, reducerName: String): String {
+    private fun generateSingleModuleDeclaration(
+        keyAnnotationName: String,
+        processee: NameInfo,
+        processorParamName: String,
+        actualProcessorName: String,
+        generalProcessorType: String,
+    ): String {
         return NEW_LINE + NEW_LINE + """|       @Binds
                                         |       @PerApi
                                         |       @IntoMap
-                                        |       @ViewIntentKey(${viewIntent.fullName}::class)
-                                        |       fun bindTo${viewIntent.shortName}(reducer: $reducerName): ViewStateReducer""".trimMargin()
+                                        |       @$keyAnnotationName(${processee.qualifiedName}::class)
+                                        |       fun bindTo${processee.shortName}($processorParamName: $actualProcessorName): $generalProcessorType""".trimMargin()
     }
 
     private fun KSTypeReference.resolveToName(recursionLevel: Int = MAX_RECURSION_DEPTH): String {
@@ -506,6 +659,17 @@ internal class KspProcessor(
         const val NO_API_PROVIDED = "<no_api_provided>"
         const val PROVISION_MODULE_POSTFIX = "ProvisionModule"
         const val REDUCER_BINDING_CLASS_NAME = "com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding"
+        const val REDUCER_PARAM_NAME = "reducer"
         const val SPACE = " "
+        const val VIEW_EFFECT_HANDLER_GENERIC_NAME = "com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler"
+        const val VIEW_EFFECT_HANDLER_PARAM_NAME = "effectHandler"
+        const val VIEW_EFFECT_HANDLER_BINDING_CLASS_NAME = "com.tsarsprocket.reportmid.viewStateApi.di.EffectHandlerBinding"
+        const val VIEW_EFFECT_KEY_ANNOTATION_NAME = "com.tsarsprocket.reportmid.viewStateApi.di.ViewEffectKey"
+        const val VIEW_INTENT_KEY_ANNOTATION_NAME = "com.tsarsprocket.reportmid.viewStateApi.di.ViewIntentKey"
+        const val VIEW_STATE_KEY_ANNOTATION_NAME = "com.tsarsprocket.reportmid.viewStateApi.di.ViewStateKey"
+        const val VIEW_STATE_REDUCER_GENERIC_NAME = "com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer"
+        const val VIEW_STATE_VISUALIZER_GENERIC_NAME = "com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer"
+        const val VISUALIZER_BINDING_CLASS_NAME = "com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding"
+        const val VISUALIZER_PARAM_NAME = "visualizer"
     }
 }

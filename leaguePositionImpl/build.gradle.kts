@@ -11,7 +11,7 @@ library(
     api(projects.lolServicesApi)
     impl(projects.utils)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     // Retrofit

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
+import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
@@ -14,7 +15,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackOperation
 import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateImpl.viewState.InternalViewStateHolder
@@ -32,11 +33,12 @@ import javax.inject.Provider
 internal class ViewStateViewModel @Inject constructor(
     @Ui private val uiDispatcher: CoroutineDispatcher,
     @Aggregated private val reducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards Provider<ViewStateReducer>>,
-    @Aggregated private val visualizers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<StateVisualizer>>
+    @Aggregated private val visualizers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<ViewStateVisualizer>>,
+    @Aggregated private val effectHandlers: Map<Class<out ViewEffect>, @JvmSuppressWildcards Provider<ViewEffectHandler>>,
 ) : ViewModel() {
 
-    private val mutableViewEffects = MutableSharedFlow<suspend (ViewStateFragment) -> Unit>()
-    val viewEffects = mutableViewEffects.asSharedFlow()
+    private val mutableViewEffectActions = MutableSharedFlow<suspend (ViewStateFragment) -> Unit>()
+    val viewEffectActions = mutableViewEffectActions.asSharedFlow()
 
     private val theHolder = Holder(EmptyScreenViewState)
     val rootHolder: ViewStateHolder = theHolder
@@ -55,7 +57,7 @@ internal class ViewStateViewModel @Inject constructor(
 
     private fun postEffect(effect: ViewEffect, holder: ViewStateHolder) {
         viewModelScope.launch(uiDispatcher) {
-            mutableViewEffects.emit { fragment -> effect.handle(fragment, holder) }
+            mutableViewEffectActions.emit { fragment -> effectHandlers.findProcessor(effect).handle(effect, fragment, holder) }
         }
     }
 

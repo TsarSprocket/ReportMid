@@ -12,7 +12,7 @@ library(
     api(projects.appApi)
     api(projects.navigationMapApi)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     // Dagger

@@ -7,10 +7,12 @@ import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
+import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Provider
 
@@ -36,5 +38,8 @@ interface AppApi {
     fun getViewStateReducers(): Map<Class<out ViewIntent>, Provider<ViewStateReducer>>
 
     @Aggregated
-    fun getVisualizers(): Map<Class<out ViewState>, Provider<StateVisualizer>>
+    fun getVisualizers(): Map<Class<out ViewState>, Provider<ViewStateVisualizer>>
+
+    @Aggregated
+    fun getEffectHandlers(): Map<Class<out ViewEffect>, Provider<ViewEffectHandler>>
 }

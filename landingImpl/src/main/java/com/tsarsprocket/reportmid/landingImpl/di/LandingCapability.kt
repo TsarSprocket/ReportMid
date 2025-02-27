@@ -25,7 +25,6 @@ import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
     ],
     modules = [
         MainModule::class,
-        VisualizerModule::class,
     ],
     exportBindings = [
         ReducerBinding::class,

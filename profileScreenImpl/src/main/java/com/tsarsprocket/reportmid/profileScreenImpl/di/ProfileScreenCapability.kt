@@ -9,10 +9,6 @@ import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
 @PerApi
 @Capability(
     api = ProfileScreenApi::class,
-    modules = [
-        ReducerModule::class,
-        VisualizerModule::class,
-    ],
     exportBindings = [
         ReducerBinding::class,
         VisualizerBinding::class,

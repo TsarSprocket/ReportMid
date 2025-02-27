@@ -17,7 +17,7 @@ library(
     impl(libs.androidx.core.ktx)
 
     // KSP
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     // Dagger

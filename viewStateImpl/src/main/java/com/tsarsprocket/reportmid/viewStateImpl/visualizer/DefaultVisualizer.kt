@@ -2,15 +2,21 @@ package com.tsarsprocket.reportmid.viewStateImpl.visualizer
 
 import androidx.compose.runtime.Composable
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
+import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import javax.inject.Inject
 
 @PerApi
-class DefaultVisualizer @Inject constructor() : StateVisualizer {
+@Visualizer(
+    states = [
+        EmptyScreenViewState::class,
+    ],
+)
+class DefaultVisualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {
