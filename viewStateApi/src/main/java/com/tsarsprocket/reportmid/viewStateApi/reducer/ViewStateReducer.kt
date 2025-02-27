@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 
-interface Reducer {
+interface ViewStateReducer {
 
     suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         logError("Unknown view intent of class ${intent::class.simpleName}")

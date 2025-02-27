@@ -4,7 +4,7 @@ import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.profileScreenApi.viewIntent.ShowProfileScreenViewIntent
 import com.tsarsprocket.reportmid.profileScreenImpl.reducer.ProfileScreenReducer
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewIntentKey
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -16,5 +16,5 @@ internal interface ReducerModule {
     @PerApi
     @IntoMap
     @ViewIntentKey(ShowProfileScreenViewIntent::class)
-    fun bindToShowProfileScreenViewIntent(reducer: ProfileScreenReducer): Reducer
+    fun bindToShowProfileScreenViewIntent(reducer: ProfileScreenReducer): ViewStateReducer
 }

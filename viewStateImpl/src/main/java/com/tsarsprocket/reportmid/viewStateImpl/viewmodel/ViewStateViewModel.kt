@@ -7,14 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackOperation
 import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateImpl.viewState.InternalViewStateHolder
@@ -31,8 +31,8 @@ import javax.inject.Provider
 
 internal class ViewStateViewModel @Inject constructor(
     @Ui private val uiDispatcher: CoroutineDispatcher,
-    @Aggregated private val reducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards Provider<Reducer>>,
-    @Aggregated private val visualizers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<Visualizer>>
+    @Aggregated private val reducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards Provider<ViewStateReducer>>,
+    @Aggregated private val visualizers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<StateVisualizer>>
 ) : ViewModel() {
 
     private val mutableViewEffects = MutableSharedFlow<suspend (ViewStateFragment) -> Unit>()

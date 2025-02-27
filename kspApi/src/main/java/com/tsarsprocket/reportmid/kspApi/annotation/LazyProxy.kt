@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.kspProcessor.annotation
+package com.tsarsprocket.reportmid.kspApi.annotation
 
 import kotlin.annotation.AnnotationRetention.SOURCE
 import kotlin.annotation.AnnotationTarget.CLASS

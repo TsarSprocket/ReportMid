@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.viewStateImpl.di
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewEffectKey
-import com.tsarsprocket.reportmid.viewStateApi.effectHandler.EffectHandler
+import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.GoBackViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.QuitViewEffect
 import com.tsarsprocket.reportmid.viewStateImpl.effectHandler.DefaultEffectHandler
@@ -17,11 +17,11 @@ interface EffectHandlerModule {
     @PerApi
     @IntoMap
     @ViewEffectKey(GoBackViewEffect::class)
-    fun bindToGoBackViewEffect(effectHandler: DefaultEffectHandler): EffectHandler
+    fun bindToGoBackViewEffect(effectHandler: DefaultEffectHandler): ViewEffectHandler
 
     @Binds
     @PerApi
     @IntoMap
     @ViewEffectKey(QuitViewEffect::class)
-    fun bindToQuitViewEffect(effectHandler: DefaultEffectHandler): EffectHandler
+    fun bindToQuitViewEffect(effectHandler: DefaultEffectHandler): ViewEffectHandler
 }

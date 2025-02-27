@@ -32,6 +32,7 @@
             <option value="$PROJECT_DIR$/dataDragonRoom" />
             <option value="$PROJECT_DIR$/findSummonerApi" />
             <option value="$PROJECT_DIR$/findSummonerImpl" />
+            <option value="$PROJECT_DIR$/kspApi" />
             <option value="$PROJECT_DIR$/kspProcessor" />
             <option value="$PROJECT_DIR$/landingApi" />
             <option value="$PROJECT_DIR$/landingImpl" />

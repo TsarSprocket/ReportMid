@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.LandingPageViewState
 import com.tsarsprocket.reportmid.landingImpl.visualizer.LandingVisualizer
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewStateKey
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -17,11 +17,11 @@ interface VisualizerModule {
     @PerApi
     @IntoMap
     @ViewStateKey(DataDragonNotLoadedViewState::class)
-    fun bindToDataDragonNotLoadedViewState(visualizer: LandingVisualizer): Visualizer
+    fun bindToDataDragonNotLoadedViewState(visualizer: LandingVisualizer): StateVisualizer
 
     @Binds
     @PerApi
     @IntoMap
     @ViewStateKey(LandingPageViewState::class)
-    fun bindToLandingViewState(visualizer: LandingVisualizer): Visualizer
+    fun bindToLandingViewState(visualizer: LandingVisualizer): StateVisualizer
 }

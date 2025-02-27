@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerView
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.visualizer.FindSummonerVisualizer
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewStateKey
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -17,11 +17,11 @@ internal interface VisualizerModule {
     @PerApi
     @IntoMap
     @ViewStateKey(ConfirmSummonerViewState::class)
-    fun bindToConfirmSummonerViewState(visualizer: FindSummonerVisualizer): Visualizer
+    fun bindToConfirmSummonerViewState(visualizer: FindSummonerVisualizer): StateVisualizer
 
     @Binds
     @PerApi
     @IntoMap
     @ViewStateKey(SummonerDataEntryViewState::class)
-    fun bindToSummonerDataEntryViewState(visualizer: FindSummonerVisualizer): Visualizer
+    fun bindToSummonerDataEntryViewState(visualizer: FindSummonerVisualizer): StateVisualizer
 }

@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.viewStateImpl.di
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewIntentKey
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.QuitViewIntent
 import com.tsarsprocket.reportmid.viewStateImpl.reducer.DefaultReducer
 import dagger.Binds
@@ -16,5 +16,5 @@ interface ReducerModule {
     @PerApi
     @IntoMap
     @ViewIntentKey(QuitViewIntent::class)
-    fun bindToQuitViewIntent(reducer: DefaultReducer): Reducer
+    fun bindToQuitViewIntent(reducer: DefaultReducer): ViewStateReducer
 }

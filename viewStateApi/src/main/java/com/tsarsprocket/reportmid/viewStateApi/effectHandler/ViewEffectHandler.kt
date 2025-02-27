@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 
-interface EffectHandler {
+interface ViewEffectHandler {
 
     suspend fun handle(effect: ViewEffect, fragment: ViewStateFragment, stateHolder: ViewStateHolder): Any? {
         return logError("Unknown view effect of class ${effect::class.simpleName}")

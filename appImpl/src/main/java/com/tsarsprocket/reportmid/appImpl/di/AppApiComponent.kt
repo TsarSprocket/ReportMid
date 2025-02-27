@@ -6,7 +6,7 @@ import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseImpl.di.BaseCapabilityProvisionModule
 import com.tsarsprocket.reportmid.dataDragonImpl.di.DataDragonProvisionModule
 import com.tsarsprocket.reportmid.findSummonerImpl.di.FindSummonerCapabilityProvisionModule
-import com.tsarsprocket.reportmid.kspProcessor.annotation.LazyProxy
+import com.tsarsprocket.reportmid.kspApi.annotation.LazyProxy
 import com.tsarsprocket.reportmid.landingImpl.di.LandingCapabilityProvisionModule
 import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lolServicesImpl.di.LolServicesProvisionModule

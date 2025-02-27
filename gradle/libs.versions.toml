@@ -12,7 +12,7 @@ dagger = "2.55"
 drawerlayout = "1.2.0"
 espresso-core = "3.6.1"
 fragment-ktx = "1.8.6"
-gradle = "8.8.1"
+gradle = "8.8.2"
 gson = "2.11.0"
 junit = "4.13.2"
 kotlin-gradle-plugin = "2.1.10"
@@ -44,6 +44,7 @@ activity-compose = "1.10.0"
 ksp = "2.1.10-1.0.30"
 agp = "8.5.2"
 kotlin = "2.1.10"
+jetbrains-kotlin-jvm = "1.9.24"
 
 [libraries]
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "adapter-rxjava2" }
@@ -118,6 +119,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrains-kotlin-jvm" }
 jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "nav_version" }

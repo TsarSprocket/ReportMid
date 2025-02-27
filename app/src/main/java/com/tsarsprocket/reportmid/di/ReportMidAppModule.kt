@@ -26,7 +26,7 @@ import com.tsarsprocket.reportmid.stateApi.di.StateApi
 import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
 import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
 import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import dagger.Module
 import dagger.Provides
@@ -120,7 +120,7 @@ internal class ReportMidAppModule {
 
     @Provides
     @AppScope
-    fun provideViewStateReducers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewIntent>, Provider<Reducer>> {
+    fun provideViewStateReducers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewIntent>, Provider<ViewStateReducer>> {
         return bindingExports.filterIsInstance<ReducerBinding>()
             .fold(emptyMap()) { acc, entry -> acc + entry.getReducers() }
     }

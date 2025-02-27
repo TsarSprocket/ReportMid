@@ -10,7 +10,7 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerView
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.lol.model.GameName
 import com.tsarsprocket.reportmid.lol.model.TagLine
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @PerApi
 internal class FindSummonerReducer @Inject constructor(
     private val useCase: FindSummonerUseCase,
-) : Reducer {
+) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
         is FindAndConfirmSummonerViewIntent -> confirmFinding(intent, state, stateHolder)

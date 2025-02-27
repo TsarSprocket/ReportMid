@@ -14,7 +14,7 @@ library(
     impl(projects.theme)
     api(projects.viewStateApi)
 
-    impl(projects.kspProcessor)
+    impl(projects.kspApi)
     ksp(projects.kspProcessor)
 
     impl(libs.androidx.core.ktx)

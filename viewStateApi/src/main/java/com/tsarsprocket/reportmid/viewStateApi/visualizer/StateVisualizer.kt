@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
 
-interface Visualizer {
+interface StateVisualizer {
 
     @Composable
     fun Visualize(state: ViewState, stateHolder: ViewStateHolder) {

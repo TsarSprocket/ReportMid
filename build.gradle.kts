@@ -16,12 +16,13 @@ plugins {
     id(libs.plugins.jetbrains.kotlin.kapt.get().pluginId) apply false
     alias(libs.plugins.compose.compiler) apply false
     id(libs.plugins.kotlin.parcelize.get().pluginId) apply false
+    id(libs.plugins.jetbrains.kotlin.jvm.get().pluginId) apply false
 }
 
 buildscript {
     apply(rootProject.file("versions.gradle.kts"))
 
-    val gradleVersion = "8.8.1"
+    val gradleVersion = "8.8.2"
     val kotlinVersion = "2.1.10"
     val navVersion = "2.7.5"
 

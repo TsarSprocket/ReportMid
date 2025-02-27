@@ -6,11 +6,11 @@ import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import javax.inject.Inject
 
 @PerApi
-class DefaultVisualizer @Inject constructor() : Visualizer {
+class DefaultVisualizer @Inject constructor() : StateVisualizer {
 
     @Composable
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {

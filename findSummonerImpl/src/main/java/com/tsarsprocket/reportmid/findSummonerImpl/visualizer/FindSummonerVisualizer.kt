@@ -13,14 +13,14 @@ import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import javax.inject.Inject
 
 @PerApi
 class FindSummonerVisualizer @Inject constructor(
     @Navigation(FindSummonerNavigation.TAG)
     private val navigation: FindSummonerNavigation,
-) : Visualizer {
+) : StateVisualizer {
 
     @Composable
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {

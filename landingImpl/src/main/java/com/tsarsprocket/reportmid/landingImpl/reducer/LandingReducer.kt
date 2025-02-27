@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.landingImpl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
+import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.landingApi.navigation.LandingNavigation
 import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingIntent
 import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingIntent.LandingStartLoadViewIntent
@@ -12,7 +13,7 @@ import com.tsarsprocket.reportmid.landingImpl.viewIntent.InternalLandingIntent.D
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.DataDragonNotLoadedViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.LandingPageViewState
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.QuitViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -22,11 +23,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @PerApi
+@Reducer(
+    viewIntents = [
+        LandingStartLoadViewIntent::class,
+        SummonerFoundViewIntent::class,
+        QuitViewIntent::class,
+    ],
+)
 internal class LandingReducer @Inject constructor(
     private val useCase: LandingUseCase,
     @Navigation(LandingNavigation.TAG)
     private val navigation: LandingNavigation,
-) : Reducer {
+) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
         is LandingIntent -> {

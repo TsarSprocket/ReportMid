@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    id(libs.plugins.jetbrains.kotlin.jvm.get().pluginId)
 }
 
 repositories {
@@ -21,6 +21,7 @@ kotlin {
 }
 
 dependencies {
+    api(projects.kspApi)
     implementation(libs.symbol.processing.api)
     implementation(libs.kotlin.stdlib)
 }

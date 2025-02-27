@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.findSummonerApi.viewIntent.FindSummonerViewInt
 import com.tsarsprocket.reportmid.findSummonerImpl.reducer.FindSummonerReducer
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.FindAndConfirmSummonerViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewIntentKey
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -17,11 +17,11 @@ internal interface ReducerModule {
     @PerApi
     @IntoMap
     @ViewIntentKey(FindAndConfirmSummonerViewIntent::class)
-    fun bindReducerToFindAndConfirmSummonerViewIntent(reducer: FindSummonerReducer): Reducer
+    fun bindReducerToFindAndConfirmSummonerViewIntent(reducer: FindSummonerReducer): ViewStateReducer
 
     @Binds
     @PerApi
     @IntoMap
     @ViewIntentKey(FindSummonerViewIntent::class)
-    fun bindReducerToFindSummonerViewStateReducer(reducer: FindSummonerReducer): Reducer
+    fun bindReducerToFindSummonerViewStateReducer(reducer: FindSummonerReducer): ViewStateReducer
 }

@@ -6,11 +6,11 @@ import com.tsarsprocket.reportmid.profileScreenImpl.viewState.ProfileScreenViewS
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import javax.inject.Inject
 
 @PerApi
-internal class ProfileScreenVisualizer @Inject constructor() : Visualizer {
+internal class ProfileScreenVisualizer @Inject constructor() : StateVisualizer {
 
     @Composable
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {

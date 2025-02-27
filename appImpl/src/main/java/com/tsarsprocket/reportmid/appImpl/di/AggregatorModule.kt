@@ -7,10 +7,10 @@ import com.tsarsprocket.reportmid.baseApi.di.FragmentsCreator
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
-import com.tsarsprocket.reportmid.viewStateApi.reducer.Reducer
+import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
-import com.tsarsprocket.reportmid.viewStateApi.visualizer.Visualizer
+import com.tsarsprocket.reportmid.viewStateApi.visualizer.StateVisualizer
 import dagger.Module
 import dagger.Provides
 import javax.inject.Provider
@@ -29,7 +29,7 @@ internal class AggregatorModule {
     @Provides
     @AppScope
     @Aggregated
-    fun provideViewStateReducers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewIntent>, Provider<Reducer>> {
+    fun provideViewStateReducers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewIntent>, Provider<ViewStateReducer>> {
         return bindingExports.filterIsInstance<ReducerBinding>()
             .fold(emptyMap()) { acc, entry -> acc + entry.getReducers() }
     }
@@ -37,7 +37,7 @@ internal class AggregatorModule {
     @Provides
     @AppScope
     @Aggregated
-    fun provideVisualizers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewState>, Provider<Visualizer>> {
+    fun provideVisualizers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewState>, Provider<StateVisualizer>> {
         return bindingExports.filterIsInstance<VisualizerBinding>()
             .fold(emptyMap()) { acc, entry -> acc + entry.getVisualizers() }
     }
