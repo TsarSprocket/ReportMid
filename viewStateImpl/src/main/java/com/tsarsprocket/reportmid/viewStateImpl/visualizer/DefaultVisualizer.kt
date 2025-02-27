@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @PerApi
 @Visualizer(
-    states = [
+    explicitStates = [
         EmptyScreenViewState::class,
     ],
 )

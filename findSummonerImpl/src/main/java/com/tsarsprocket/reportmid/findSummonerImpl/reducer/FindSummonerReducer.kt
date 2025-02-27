@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @PerApi
 @Reducer(
-    intents = [
+    explicitIntents = [
         FindSummonerViewIntent::class,
     ],
 )

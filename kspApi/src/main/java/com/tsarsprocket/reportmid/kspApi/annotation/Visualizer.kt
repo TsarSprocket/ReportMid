@@ -8,6 +8,6 @@ import kotlin.reflect.KClass
 @Target(CLASS)
 @Retention(SOURCE)
 annotation class Visualizer(
-    val states: Array<KClass<*>> = [],
+    val explicitStates: Array<KClass<*>> = [],
     val capability: KClass<*> = FindTheOnlyOne::class,
 )

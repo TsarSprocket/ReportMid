@@ -66,7 +66,7 @@ internal class KspProcessor(
                 declaration = declaration,
                 implicitProcessees = viewIntents,
                 processorAnnotationClass = Reducer::class,
-                explicitProcesseeListField = Reducer::intents,
+                explicitProcesseeListField = Reducer::explicitIntents,
                 capabilityField = Reducer::capability,
             )
         }
@@ -88,7 +88,7 @@ internal class KspProcessor(
                 declaration = declaration,
                 implicitProcessees = viewStates,
                 processorAnnotationClass = Visualizer::class,
-                explicitProcesseeListField = Visualizer::states,
+                explicitProcesseeListField = Visualizer::explicitStates,
                 capabilityField = Visualizer::capability,
             )
         }
@@ -110,7 +110,7 @@ internal class KspProcessor(
                 declaration = declaration,
                 implicitProcessees = viewEffects,
                 processorAnnotationClass = EffectHandler::class,
-                explicitProcesseeListField = EffectHandler::effects,
+                explicitProcesseeListField = EffectHandler::explicitEffects,
                 capabilityField = EffectHandler::capability,
             )
         }

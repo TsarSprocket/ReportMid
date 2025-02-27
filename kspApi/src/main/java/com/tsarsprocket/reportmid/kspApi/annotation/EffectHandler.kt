@@ -8,6 +8,6 @@ import kotlin.reflect.KClass
 @Target(CLASS)
 @Retention(SOURCE)
 annotation class EffectHandler(
-    val effects: Array<KClass<*>> = [],
+    val explicitEffects: Array<KClass<*>> = [],
     val capability: KClass<*> = FindTheOnlyOne::class,
 )

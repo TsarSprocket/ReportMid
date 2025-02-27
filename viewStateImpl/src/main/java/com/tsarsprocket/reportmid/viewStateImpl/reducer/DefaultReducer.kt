@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @PerApi
 @Reducer(
-    intents = [
+    explicitIntents = [
         QuitViewIntent::class,
     ],
 )

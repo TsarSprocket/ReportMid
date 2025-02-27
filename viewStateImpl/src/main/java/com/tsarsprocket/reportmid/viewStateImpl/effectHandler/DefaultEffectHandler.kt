@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @PerApi
 @EffectHandler(
-    effects = [
+    explicitEffects = [
         GoBackViewEffect::class,
         QuitViewEffect::class,
     ],
