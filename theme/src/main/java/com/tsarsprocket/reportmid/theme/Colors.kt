@@ -15,4 +15,5 @@ val reportMidColorScheme: ColorScheme
         primary = Color(0xFFE6EE9C),
         secondary = Color(0xFF59801A),
         surface = Color(0xFF303030),
+        surfaceContainerLow = Color(0xFF181818),
     )

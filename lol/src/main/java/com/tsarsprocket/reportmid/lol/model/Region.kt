@@ -36,6 +36,8 @@ enum class Region(
     ;
 
     companion object {
+        const val NONEXISTENT_REGION_ID = -1L
+
         val byId = entries.sortedBy { it.id }
         val byTag = entries.associateBy { it.tag }
 

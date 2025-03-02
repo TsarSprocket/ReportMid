@@ -9,6 +9,7 @@ import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol.model.TagLine
+import com.tsarsprocket.reportmid.lol.model.removeWhitespaces
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.getService
 import com.tsarsprocket.reportmid.requestManagerApi.data.Request

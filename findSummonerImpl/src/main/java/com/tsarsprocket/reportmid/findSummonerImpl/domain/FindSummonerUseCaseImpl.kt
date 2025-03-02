@@ -17,7 +17,7 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
     @Io private val ioDispatcher: CoroutineDispatcher,
 ) : FindSummonerUseCase {
 
-    override suspend fun findAccount(gameName: GameName, tagline: TagLine, region: Region) = withContext(ioDispatcher) {
+    override suspend fun findAccount(gameName: GameName, tagline: TagLine, region: Region): AccountData = withContext(ioDispatcher) {
         try {
             summonerRepository.getRiotAccount(gameName, tagline, region).run {
                 AccountData(

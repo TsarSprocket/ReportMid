@@ -6,7 +6,6 @@ import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.findSummonerApi.navigation.FindSummonerNavigation
 import com.tsarsprocket.reportmid.findSummonerImpl.view.ConfirmSummonerScreen
 import com.tsarsprocket.reportmid.findSummonerImpl.view.SummonerDataEntryScreen
-import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.FindAndConfirmSummonerViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
@@ -28,22 +27,14 @@ class FindSummonerVisualizer @Inject constructor(
     override fun Visualize(state: ViewState, stateHolder: ViewStateHolder) = ReportMidTheme {
         when(state) {
             is ConfirmSummonerViewState -> stateHolder.ConfirmSummoner(state)
-            is SummonerDataEntryViewState -> stateHolder.SummonerDataEntry()
+            is SummonerDataEntryViewState -> stateHolder.SummonerDataEntry(state)
             else -> super.Visualize(state, stateHolder)
         }
     }
 
     @Composable
-    private fun ViewStateHolder.SummonerDataEntry() {
-        SummonerDataEntryScreen { gameName, tagLine, region ->
-            postIntent(
-                FindAndConfirmSummonerViewIntent(
-                    gameName = gameName.value,
-                    tagline = tagLine.value,
-                    region = region
-                )
-            )
-        }
+    private fun ViewStateHolder.SummonerDataEntry(state: SummonerDataEntryViewState) {
+        SummonerDataEntryScreen(state)
     }
 
     @Composable

@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.findSummonerImpl.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,66 +37,64 @@ internal fun ConfirmSummonerScreen(
     confirmAction: () -> Unit,
     rejectAction: () -> Unit,
 ) {
-    Scaffold { padding ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(reportMidColorScheme.background),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(2f))
+
+        Image(
+            modifier = Modifier.requiredSize(size = 128.dp),
+            painter = rememberAsyncImagePainter(model = summonerData.iconUrl),
+            contentDescription = null,
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = summonerData.riotId,
+        )
+
+        Spacer(modifier = Modifier.weight(3f))
+
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.weight(2f))
-
-            Image(
-                modifier = Modifier.requiredSize(size = 128.dp),
-                painter = rememberAsyncImagePainter(model = summonerData.iconUrl),
-                contentDescription = null,
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = summonerData.riotId,
+                text = stringResource(id = R.string.confirmationPrompt),
             )
 
-            Spacer(modifier = Modifier.weight(3f))
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Row(
+                modifier = Modifier
+                    .padding(top = 24.dp, bottom = 32.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
             ) {
-
-                Text(
-                    text = stringResource(id = R.string.confirmationPrompt),
-                )
-
-                Row(
-                    modifier = Modifier
-                        .padding(top = 24.dp, bottom = 32.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+                Button(
+                    modifier = Modifier.width(width = 76.dp),
+                    onClick = rejectAction,
+                    colors = ButtonDefaults.buttonColors(contentColor = reportMidColorScheme.onPrimary)
                 ) {
-                    Button(
-                        modifier = Modifier.width(width = 76.dp),
-                        onClick = rejectAction,
-                        colors = ButtonDefaults.buttonColors(contentColor = reportMidColorScheme.onPrimary)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.buttonLabelReject),
-                            color = LocalContentColor.current,
-                        )
-                    }
+                    Text(
+                        text = stringResource(id = R.string.buttonLabelReject),
+                        color = LocalContentColor.current,
+                    )
+                }
 
-                    Button(
-                        modifier = Modifier
-                            .padding(start = 64.dp)
-                            .width(width = 76.dp),
-                        onClick = confirmAction,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.buttonLabelConfirm),
-                            color = LocalContentColor.current,
-                        )
-                    }
+                Button(
+                    modifier = Modifier
+                        .padding(start = 64.dp)
+                        .width(width = 76.dp),
+                    onClick = confirmAction,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.buttonLabelConfirm),
+                        color = LocalContentColor.current,
+                    )
                 }
             }
         }

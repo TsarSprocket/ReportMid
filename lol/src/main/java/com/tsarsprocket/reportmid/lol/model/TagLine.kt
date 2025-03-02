@@ -1,15 +1,14 @@
 package com.tsarsprocket.reportmid.lol.model
 
 @JvmInline
-value class TagLine(val value: String) {
+value class TagLine(override val value: String) : ConstrainableString<TagLine> {
+    override val minLength: Int
+        get() = 3
+    override val maxLength: Int
+        get() = 5
 
-    val isValid: Boolean
-        get() = value.length in GameName.MIN_LENGTH..GameName.MAX_LENGTH && value.all { it.isLetterOrDigit() || it.isWhitespace() }
+    override val isValid: Boolean
+        get() = value.length in minLength..maxLength && value.all { it.isLetterOrDigit() || it.isWhitespace() }
 
-    fun removeWhitespaces() = GameName(value.filterNot { it.isWhitespace() })
-
-    companion object {
-        const val MIN_LENGTH = 3
-        const val MAX_LENGTH = 5
-    }
+    override fun copyWithNewValue(newValue: String): TagLine = TagLine(newValue)
 }

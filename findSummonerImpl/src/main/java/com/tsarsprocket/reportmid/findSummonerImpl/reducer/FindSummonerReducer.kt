@@ -5,12 +5,17 @@ import com.tsarsprocket.reportmid.findSummonerApi.viewIntent.FindSummonerViewInt
 import com.tsarsprocket.reportmid.findSummonerImpl.R
 import com.tsarsprocket.reportmid.findSummonerImpl.domain.FindSummonerUseCase
 import com.tsarsprocket.reportmid.findSummonerImpl.viewEffect.ShowSnackViewEffect
-import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.FindAndConfirmSummonerViewIntent
+import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent
+import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.FindAndConfirmSummonerViewIntent
+import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.GameNameChanged
+import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.RegionSelected
+import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.TagLineChanged
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.lol.model.GameName
 import com.tsarsprocket.reportmid.lol.model.TagLine
+import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -28,8 +33,16 @@ internal class FindSummonerReducer @Inject constructor(
 ) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
-        is FindAndConfirmSummonerViewIntent -> confirmFinding(intent, state, stateHolder)
-        is FindSummonerViewIntent -> findSummoner(intent)
+        is InternalViewIntent -> {
+            when(intent) {
+                is FindAndConfirmSummonerViewIntent -> confirmFinding(intent, state, stateHolder)
+                is GameNameChanged -> (state as SummonerDataEntryViewState).copy(gameName = GameName(intent.newGameName))
+                is TagLineChanged -> (state as SummonerDataEntryViewState).copy(tagLine = TagLine(intent.newTagline))
+                is RegionSelected -> (state as SummonerDataEntryViewState).copy(selectedRegionId = intent.newRegionId)
+            }
+        }
+
+        is FindSummonerViewIntent -> SummonerDataEntryViewState()
         else -> super.reduce(intent, state, stateHolder)
     }
 
@@ -46,10 +59,9 @@ internal class FindSummonerReducer @Inject constructor(
                 }
             }
         } catch(exception: Exception) {
+            logError(exception.localizedMessage.orEmpty(), exception)
             stateHolder.postEffect(ShowSnackViewEffect(R.string.snackCannotFindSummoner))
             state
         }
     }
-
-    private fun findSummoner(intent: FindSummonerViewIntent): SummonerDataEntryViewState = SummonerDataEntryViewState
 }
