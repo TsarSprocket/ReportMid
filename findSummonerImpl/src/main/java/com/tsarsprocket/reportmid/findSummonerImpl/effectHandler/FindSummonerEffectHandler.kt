@@ -6,7 +6,7 @@ import com.tsarsprocket.reportmid.kspApi.annotation.EffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import javax.inject.Inject
 
 @PerApi

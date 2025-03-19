@@ -18,6 +18,7 @@ library(
     ksp(projects.kspProcessor)
 
     impl(libs.androidx.core.ktx)
+    impl(libs.androidx.lifecycle.process)
     impl(libs.kotlin.reflect)
     impl(libs.kotlin.stdlib)
 

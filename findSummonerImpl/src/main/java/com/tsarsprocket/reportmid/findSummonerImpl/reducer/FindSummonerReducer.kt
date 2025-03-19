@@ -19,7 +19,7 @@ import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import javax.inject.Inject
 
 @PerApi
@@ -36,8 +36,8 @@ internal class FindSummonerReducer @Inject constructor(
         is InternalViewIntent -> {
             when(intent) {
                 is FindAndConfirmSummonerViewIntent -> confirmFinding(intent, state, stateHolder)
-                is GameNameChanged -> (state as SummonerDataEntryViewState).copy(gameName = GameName(intent.newGameName))
-                is TagLineChanged -> (state as SummonerDataEntryViewState).copy(tagLine = TagLine(intent.newTagline))
+                is GameNameChanged -> (state as SummonerDataEntryViewState).copy(gameName = intent.newGameName)
+                is TagLineChanged -> (state as SummonerDataEntryViewState).copy(tagLine = intent.newTagline)
                 is RegionSelected -> (state as SummonerDataEntryViewState).copy(selectedRegionId = intent.newRegionId)
             }
         }

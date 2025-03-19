@@ -6,7 +6,7 @@ import com.tsarsprocket.reportmid.landingApi.navigation.LandingNavigation
 import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingIntent
 import com.tsarsprocket.reportmid.profileScreenApi.viewIntent.ShowProfileScreenViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import dagger.Module
 import dagger.Provides
 

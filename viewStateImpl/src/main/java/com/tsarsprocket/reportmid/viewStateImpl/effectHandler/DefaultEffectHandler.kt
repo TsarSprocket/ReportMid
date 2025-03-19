@@ -7,7 +7,7 @@ import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.GoBackViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.QuitViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import javax.inject.Inject
 
 @PerApi

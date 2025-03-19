@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.lolServicesImpl.di
 
 import com.tsarsprocket.reportmid.appApi.di.AppApi
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
-import com.tsarsprocket.reportmid.baseApi.di.BindingExport
+import com.tsarsprocket.reportmid.baseApi.di.qualifiers.BindingExport
 import com.tsarsprocket.reportmid.lolServicesApi.di.LolServicesApi
 import dagger.Binds
 import dagger.Module

@@ -2,7 +2,6 @@ rootProject.name = "ReportMid"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 
-include(":app")
 include(":appApi")
 include(":appImpl")
 include(":baseApi")

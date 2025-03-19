@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.landingApi.navigation
 
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 
 interface LandingNavigation {
 

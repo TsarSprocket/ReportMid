@@ -21,7 +21,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/appApi" />
             <option value="$PROJECT_DIR$/appImpl" />
             <option value="$PROJECT_DIR$/baseApi" />
@@ -62,7 +61,6 @@
             <option value="$PROJECT_DIR$/viewStateImpl" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

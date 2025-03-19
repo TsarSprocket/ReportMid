@@ -470,7 +470,7 @@ internal class KspProcessor(
                     package $packageName
 
                     import com.tsarsprocket.reportmid.baseApi.di.AppScope
-                    import com.tsarsprocket.reportmid.baseApi.di.BindingExport
+                    import com.tsarsprocket.reportmid.baseApi.di.qualifiers.BindingExport
                     import dagger.Binds
                     import dagger.Module
                     import dagger.Provides

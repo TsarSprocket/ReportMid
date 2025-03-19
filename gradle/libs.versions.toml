@@ -12,7 +12,7 @@ dagger = "2.55"
 drawerlayout = "1.2.0"
 espresso-core = "3.6.1"
 fragment-ktx = "1.8.6"
-gradle = "8.8.2"
+gradle = "8.9.0"
 gson = "2.11.0"
 junit = "4.13.2"
 kotlin-gradle-plugin = "2.1.10"
@@ -22,7 +22,7 @@ kotlinx-coroutines-core = "1.8.0-RC2"
 kotlinx-coroutines-rx2 = "1.8.1"
 lifecycle-extensions = "2.2.0"
 legacy-support-v4 = "1.0.0"
-lifecycle-viewmodel-ktx = "2.8.7"
+lifecycle = "2.8.7"
 listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
 logging-interceptor = "4.11.0"
 material = "1.12.0"
@@ -59,9 +59,10 @@ androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycle-extensions" }
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacy-support-v4" }
-androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle-viewmodel-ktx" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-ktx" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "nav_version" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "nav_version" }

@@ -1,10 +1,13 @@
 package com.tsarsprocket.reportmid.appImpl.di
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
-import com.tsarsprocket.reportmid.baseApi.di.BindingExport
 import com.tsarsprocket.reportmid.baseApi.di.FragmentsCreator
+import com.tsarsprocket.reportmid.baseApi.di.ViewModelFactoryCreatorBinding
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
+import com.tsarsprocket.reportmid.baseApi.di.qualifiers.BindingExport
+import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactoryCreator
 import com.tsarsprocket.reportmid.viewStateApi.di.EffectHandlerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
@@ -27,6 +30,14 @@ internal class AggregatorModule {
     fun provideFragmentCreators(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out Fragment>, Provider<Fragment>> {
         return bindingExports.filterIsInstance<FragmentsCreator>()
             .fold(emptyMap()) { acc, entry -> acc + entry.getFragmentCreators() }
+    }
+
+    @Provides
+    @AppScope
+    @Aggregated
+    fun provideViewModelFactoryCreators(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewModel>, Provider<ViewModelFactoryCreator>> {
+        return bindingExports.filterIsInstance<ViewModelFactoryCreatorBinding>()
+            .fold(emptyMap()) { acc, entry -> acc + entry.getViewModelFactoryCreator() }
     }
 
     @Provides

@@ -6,7 +6,7 @@ import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import javax.inject.Inject
 

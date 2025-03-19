@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.baseApi.di
+package com.tsarsprocket.reportmid.baseApi.di.qualifiers
 
 import javax.inject.Qualifier
 import kotlin.annotation.AnnotationRetention.RUNTIME

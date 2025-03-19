@@ -25,7 +25,12 @@ internal interface AppModule {
         @Provides
         @AppScope
         @Ui
-        fun provideUiDespatcher(): CoroutineDispatcher = Dispatchers.Main
+        fun provideUiDispatcher(): CoroutineDispatcher = Dispatchers.Main
+
+        @Provides
+        @AppScope
+        @Ui.Immediate
+        fun provideImmediateUiDispatcher(): CoroutineDispatcher = Dispatchers.Main.immediate
 
         @Provides
         @AppScope

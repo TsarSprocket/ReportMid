@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.stateImpl.di
 
 import com.tsarsprocket.reportmid.appApi.di.AppApi
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
-import com.tsarsprocket.reportmid.baseApi.di.BindingExport
+import com.tsarsprocket.reportmid.baseApi.di.qualifiers.BindingExport
 import com.tsarsprocket.reportmid.stateApi.di.StateApi
 import dagger.Binds
 import dagger.Module

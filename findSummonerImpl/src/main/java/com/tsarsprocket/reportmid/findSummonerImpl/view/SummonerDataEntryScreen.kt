@@ -37,8 +37,8 @@ import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol.model.Region.Companion.NONEXISTENT_REGION_ID
 import com.tsarsprocket.reportmid.lol.model.TagLine
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
-import com.tsarsprocket.reportmid.viewStateApi.viewState.PreviewViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.PreviewViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.coroutines.launch
 
 
@@ -64,7 +64,7 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(state: SummonerDataEntryVie
             ) {
                 OutlinedTextField(
                     modifier = Modifier.weight(0.7f),
-                    value = state.gameName.value,
+                    value = state.gameName,
                     singleLine = true,
                     onValueChange = { newValue -> postIntent(GameNameChanged(newValue)) },
                 )
@@ -76,7 +76,7 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(state: SummonerDataEntryVie
 
                 OutlinedTextField(
                     modifier = Modifier.weight(0.3f),
-                    value = state.tagLine.value,
+                    value = state.tagLine,
                     singleLine = true,
                     onValueChange = { newValue -> postIntent(TagLineChanged(newValue)) },
                 )
@@ -102,13 +102,13 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(state: SummonerDataEntryVie
                 onClick = {
                     postIntent(
                         FindAndConfirmSummonerViewIntent(
-                            gameName = state.gameName.value,
-                            tagline = state.tagLine.value,
+                            gameName = state.gameName,
+                            tagline = state.tagLine,
                             region = Region.getById(state.selectedRegionId)
                         )
                     )
                 },
-                enabled = state.gameName.isValid && state.tagLine.isValid && state.selectedRegionId != NONEXISTENT_REGION_ID
+                enabled = GameName(state.gameName).isValid && TagLine(state.tagLine).isValid && state.selectedRegionId != NONEXISTENT_REGION_ID
             ) {
                 Text(
                     text = stringResource(id = R.string.labelFind)
@@ -162,8 +162,8 @@ internal fun SummonerDataEntryScreenPreview() {
     ReportMidTheme {
         PreviewViewStateHolder.SummonerDataEntryScreen(
             SummonerDataEntryViewState(
-                gameName = GameName("Lorem ipsum"),
-                tagLine = TagLine("dolor"),
+                gameName = "Lorem ipsum",
+                tagLine = "dolor",
             )
         )
     }
