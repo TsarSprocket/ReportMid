@@ -8,7 +8,9 @@ val reportMidTypography: Typography
     @Composable get() = Typography(
         bodyLarge = MaterialTheme.typography.bodyLarge.copy(fontFamily = reportMidFontFamily),
         displayLarge = MaterialTheme.typography.displayMedium.copy(fontFamily = reportMidFontFamily),
+        headlineLarge = MaterialTheme.typography.headlineLarge.copy(fontFamily = reportMidFontFamily),
         labelSmall = MaterialTheme.typography.labelSmall.copy(fontFamily = reportMidFontFamily),
         labelMedium = MaterialTheme.typography.labelMedium.copy(fontFamily = reportMidFontFamily),
         labelLarge = MaterialTheme.typography.labelLarge.copy(fontFamily = reportMidFontFamily),
+        titleLarge = MaterialTheme.typography.titleLarge.copy(fontFamily = reportMidFontFamily),
     )

@@ -30,7 +30,7 @@ interface DataDragon {
     }
 
     companion object {
-        const val BASE_URL = "https://ddragon.leagueoflegends.com/cdn/"
+        const val BASE_URL = "https://ddragon.leagueoflegends.com/"
         const val IMAGE_INFIX = "img/"
         const val PROFILE_IMAGE_INFIX = "${IMAGE_INFIX}profileicon/"
         const val PROFILE_IMAGE_EXT = ".png"

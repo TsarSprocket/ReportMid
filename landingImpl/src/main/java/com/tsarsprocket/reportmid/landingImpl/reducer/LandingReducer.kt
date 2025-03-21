@@ -10,8 +10,10 @@ import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingIntent.SummonerFo
 import com.tsarsprocket.reportmid.landingImpl.domain.LandingUseCase
 import com.tsarsprocket.reportmid.landingImpl.viewIntent.InternalLandingIntent
 import com.tsarsprocket.reportmid.landingImpl.viewIntent.InternalLandingIntent.DataDragonNotLoadedViewIntent
+import com.tsarsprocket.reportmid.landingImpl.viewIntent.InternalLandingIntent.TryReinitialize
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.DataDragonNotLoadedViewState
 import com.tsarsprocket.reportmid.landingImpl.viewState.InternalLandingViewState.LandingPageViewState
+import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.QuitViewEffect
@@ -19,6 +21,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +42,10 @@ internal class LandingReducer @Inject constructor(
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
         is LandingIntent -> {
             when(intent) {
-                is LandingStartLoadViewIntent -> stateHolder.startLoading()
+                is LandingStartLoadViewIntent -> {
+                    stateHolder.startLoading(0); LandingPageViewState
+                }
+
                 is SummonerFoundViewIntent -> stateHolder.summonerFound(intent, state)
                 is QuitViewIntent -> stateHolder.quit(state)
             }
@@ -47,30 +53,42 @@ internal class LandingReducer @Inject constructor(
 
         is InternalLandingIntent -> {
             when(intent) {
-                is DataDragonNotLoadedViewIntent -> DataDragonNotLoadedViewState
+                is DataDragonNotLoadedViewIntent -> DataDragonNotLoadedViewState(isLoading = false)
+                is TryReinitialize -> {
+                    stateHolder.startLoading(MIN_DELAY); DataDragonNotLoadedViewState(isLoading = true)
+                }
             }
         }
 
         else -> super.reduce(intent, state, stateHolder)
     }
 
-    private suspend fun ViewStateHolder.startLoading(): ViewState {
-        coroutineScope {
-            launch {
-                try {
-                    useCase.initializeDataDragon()
-                } catch(exception: Exception) {
-                    postIntent(DataDragonNotLoadedViewIntent)
-                }
+    private fun ViewStateHolder.startLoading(minDelay: Long) {
+        val job = coroutineScope.launch {
+            delay(minDelay)
+        }
 
+        coroutineScope.launch {
+            val isInitialized = try {
+                useCase.initializeDataDragon()
+                true
+            } catch(exception: Exception) {
+                logError("Failed to initialize Data Dragon", exception)
+                false
+            }
+
+            job.join()
+
+            if(isInitialized) {
                 if(useCase.checkAccountExists()) {
                     with(navigation) { proceed() }
                 } else {
                     with(navigation) { findSummoner() }
                 }
+            } else {
+                postIntent(DataDragonNotLoadedViewIntent)
             }
         }
-        return LandingPageViewState
     }
 
     private suspend fun ViewStateHolder.summonerFound(intent: SummonerFoundViewIntent, state: ViewState): ViewState {
@@ -84,4 +102,8 @@ internal class LandingReducer @Inject constructor(
     }
 
     private fun ViewStateHolder.quit(state: ViewState): ViewState = postEffect(QuitViewEffect).run { state }
+
+    private companion object {
+        const val MIN_DELAY = 1500L
+    }
 }

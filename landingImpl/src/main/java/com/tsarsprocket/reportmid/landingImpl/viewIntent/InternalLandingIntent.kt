@@ -9,4 +9,8 @@ internal sealed interface InternalLandingIntent : ViewIntent {
     @Intent
     @Parcelize
     data object DataDragonNotLoadedViewIntent : InternalLandingIntent
+
+    @Intent
+    @Parcelize
+    data object TryReinitialize : InternalLandingIntent
 }

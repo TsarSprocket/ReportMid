@@ -21,6 +21,8 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
         try {
             summonerRepository.getRiotAccount(gameName, tagline, region).run {
                 AccountData(
+                    gameName = gameName,
+                    tagline = tagline,
                     puuid = puuid,
                     region = region,
                     isAlreadyInUse = summonerRepository.isSummonerKnown(PuuidAndRegion(puuid, region))

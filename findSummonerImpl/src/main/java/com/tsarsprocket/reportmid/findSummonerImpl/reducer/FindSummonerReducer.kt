@@ -15,6 +15,7 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryVi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.lol.model.GameName
 import com.tsarsprocket.reportmid.lol.model.TagLine
+import com.tsarsprocket.reportmid.lol.model.removeWhitespaces
 import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
@@ -48,7 +49,11 @@ internal class FindSummonerReducer @Inject constructor(
 
     private suspend fun confirmFinding(intent: FindAndConfirmSummonerViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         return try {
-            val accountData = useCase.findAccount(GameName(intent.gameName), TagLine(intent.tagline), intent.region)
+            val accountData = useCase.findAccount(
+                gameName = GameName(intent.gameName).removeWhitespaces(),
+                tagline = TagLine(intent.tagline).removeWhitespaces(),
+                region = intent.region,
+            )
 
             if(accountData.isAlreadyInUse) {
                 stateHolder.postEffect(ShowSnackViewEffect(R.string.snackSummonerIsAlreadyInUse))

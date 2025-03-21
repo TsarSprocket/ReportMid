@@ -27,16 +27,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.concurrent.Volatile
 
 class DataDragonImpl @Inject constructor(
     private val db: MainStorage,
 ) : DataDragon {
+
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
     private val ddragonService: DataDragonService = retrofit.create(DataDragonService::class.java)
+
+    @Volatile
     override lateinit var tail: Tail
 
     override suspend fun initialize() {

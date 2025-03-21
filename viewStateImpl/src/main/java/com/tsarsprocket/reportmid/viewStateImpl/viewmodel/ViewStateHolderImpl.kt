@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
@@ -101,6 +102,7 @@ internal class ViewStateHolderImpl private constructor(
     }
 
     override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?) {
+        logInfo("ViewIntent posted: $intent")
         returnIntent?.let { pushReturnIntent(returnIntent) }
         coroutineScope.launch(immediateUiDispatcher) {
             mutableViewIntents.emit(intent)
@@ -165,6 +167,7 @@ internal class ViewStateHolderImpl private constructor(
             newState.setParentHolder(this@ViewStateHolderImpl)
             newState.start()
             mutableViewStates.emit(newState)
+            logInfo("View state emitted: $newState")
         }
     }
 

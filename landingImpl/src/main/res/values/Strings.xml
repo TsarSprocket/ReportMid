@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="data_dragon_not_loaded_title">Sorry</string>
+    <string name="data_dragon_not_loaded_message">Cannot load essential data from Riot Games servers. Please check your internet connection and try again.</string>
+    <string name="data_dragon_not_loaded_retry">Try Again</string>
+
+</resources>

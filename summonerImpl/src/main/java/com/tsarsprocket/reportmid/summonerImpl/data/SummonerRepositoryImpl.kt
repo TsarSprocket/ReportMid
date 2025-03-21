@@ -53,7 +53,6 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private val summonerCacheByPuuid = ConcurrentHashMap<PuuidAndRegion, ExpiringValue<Summoner>>()
     private val summonerCacheBySummonerId = ConcurrentHashMap<SummonerIdKey, ExpiringValue<Summoner>>()
-    private val summonerCacheBySummonerName = ConcurrentHashMap<SummonerNameKey, ExpiringValue<Summoner>>()
 
     override suspend fun createMyAccount(puuid: Puuid, region: Region): MyAccount = withContext(ioDispatcher) {
         val knownSummoner = addKnownSummoner(puuid, region)
@@ -129,7 +128,6 @@ class SummonerRepositoryImpl @Inject constructor(
             val expiring = summoner.expiring
             summonerCacheByPuuid[puuidAndRegion] = expiring
             summonerCacheBySummonerId[SummonerIdKey(summoner.riotId, summoner.region)] = expiring
-            summonerCacheBySummonerName[SummonerNameKey(summoner.name, summoner.region)] = expiring
         }
     }
 
@@ -140,19 +138,6 @@ class SummonerRepositoryImpl @Inject constructor(
                 val expiring = summoner.expiring
                 summonerCacheByPuuid[PuuidAndRegion(summoner.puuid, summoner.region)] = expiring
                 summonerCacheBySummonerId[key] = expiring
-                summonerCacheBySummonerName[SummonerNameKey(summoner.name, summoner.region)] = expiring
-            }
-        }
-    }
-
-    override suspend fun requestRemoteSummonerByName(name: String, region: Region): Summoner {
-        val key = SummonerNameKey(name, region)
-        return summonerCacheBySummonerName[key]?.getIfValid(TTL) ?: withContext(computationDispatcher) {
-            fetchSummonerBySummonerName(key).also { summoner ->
-                val expiring = summoner.expiring
-                summonerCacheByPuuid[PuuidAndRegion(summoner.puuid, summoner.region)] = expiring
-                summonerCacheBySummonerId[SummonerIdKey(summoner.riotId, summoner.region)] = expiring
-                summonerCacheBySummonerName[key] = expiring
             }
         }
     }
@@ -255,7 +240,6 @@ class SummonerRepositoryImpl @Inject constructor(
             Summoner(
                 region = region,
                 riotId = riotId,
-                name = name,
                 iconId = profileIconId,
                 puuid = Puuid(puuid),
                 level = summonerLevel,

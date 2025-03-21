@@ -8,7 +8,7 @@ internal sealed interface InternalLandingViewState : ViewState {
 
     @Parcelize
     @State
-    data object DataDragonNotLoadedViewState : InternalLandingViewState
+    data class DataDragonNotLoadedViewState(val isLoading: Boolean) : InternalLandingViewState
 
 
     @Parcelize

@@ -19,7 +19,6 @@ interface SummonerRepository {
     suspend fun getMySummonersForRegion(reg: Region): List<Summoner>
     suspend fun getSummonerInfoById(id: Long): SummonerInfo
     suspend fun isSummonerKnown(puuidAndRegion: PuuidAndRegion): Boolean
-    suspend fun requestRemoteSummonerByName(name: String, region: Region): Summoner
     suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: GameName, tagLine: TagLine, region: Region): Summoner
     suspend fun requestRemoteSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Summoner
     suspend fun requestRemoteSummonerByRiotId(id: String, region: Region): Summoner

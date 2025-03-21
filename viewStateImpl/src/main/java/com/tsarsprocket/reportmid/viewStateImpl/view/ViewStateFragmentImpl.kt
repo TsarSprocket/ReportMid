@@ -52,7 +52,7 @@ internal class ViewStateFragmentImpl @Inject constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(view.layoutParams != null) {
             view.updateLayoutParams<LayoutParams> {
-                height = WRAP_CONTENT
+                height = MATCH_PARENT
                 width = MATCH_PARENT
             }
         } else {
