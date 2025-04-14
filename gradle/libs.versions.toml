@@ -12,8 +12,9 @@ dagger = "2.55"
 drawerlayout = "1.2.0"
 espresso-core = "3.6.1"
 fragment-ktx = "1.8.6"
-gradle = "8.9.0"
+gradle = "8.9.1"
 gson = "2.11.0"
+immutable-collections = "0.3.8"
 junit = "4.13.2"
 kotlin-gradle-plugin = "2.1.10"
 kotlin-reflect = "2.1.10"
@@ -26,6 +27,7 @@ lifecycle = "2.8.7"
 listenablefuture = "9999.0-empty-to-avoid-conflict-with-guava"
 logging-interceptor = "4.11.0"
 material = "1.12.0"
+material-icons-core = "1.7.8"
 mockito-core = "5.3.1"
 mockito-kotlin = "5.1.0"
 multidex = "2.0.1"
@@ -80,6 +82,7 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose"
 compose-runtime = { module = "androidx.compose.runtime:runtime" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "material-icons-core" }
 compose-ui-tooling-main = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converter-gson" }
@@ -94,6 +97,7 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-reflect" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-stdlib" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutable-collections" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 kotlinx-coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2", version.ref = "kotlinx-coroutines-rx2" }
 listenablefuture = { module = "com.google.guava:listenablefuture", version.ref = "listenablefuture" }

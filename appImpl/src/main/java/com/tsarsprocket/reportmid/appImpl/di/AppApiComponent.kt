@@ -10,11 +10,13 @@ import com.tsarsprocket.reportmid.kspApi.annotation.LazyProxy
 import com.tsarsprocket.reportmid.landingImpl.di.LandingCapabilityProvisionModule
 import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeaguePositionProvisionModule
 import com.tsarsprocket.reportmid.lolServicesImpl.di.LolServicesProvisionModule
+import com.tsarsprocket.reportmid.mainScreenImpl.di.MainScreenCapabilityProvisionModule
 import com.tsarsprocket.reportmid.navigationMapImpl.di.NavigationMapCapabilityProvisionModule
-import com.tsarsprocket.reportmid.profileScreenImpl.di.ProfileScreenCapabilityProvisionModule
+import com.tsarsprocket.reportmid.profileOverviewImpl.di.ProfileOverviewCapabilityProvisionModule
 import com.tsarsprocket.reportmid.requestManagerImpl.di.RequestManagerCapabilityProvisionModule
 import com.tsarsprocket.reportmid.stateImpl.di.StateProvisionModule
 import com.tsarsprocket.reportmid.summonerImpl.di.SummonerProvisionModule
+import com.tsarsprocket.reportmid.summonerViewImpl.di.SummonerViewCapabilityProvisionModule
 import com.tsarsprocket.reportmid.viewStateImpl.di.ViewStateCapabilityProvisionModule
 import dagger.Component
 
@@ -32,11 +34,13 @@ import dagger.Component
         LandingCapabilityProvisionModule::class,
         LeaguePositionProvisionModule::class,
         LolServicesProvisionModule::class,
+        MainScreenCapabilityProvisionModule::class,
         NavigationMapCapabilityProvisionModule::class,
-        ProfileScreenCapabilityProvisionModule::class,
+        ProfileOverviewCapabilityProvisionModule::class,
         RequestManagerCapabilityProvisionModule::class,
         StateProvisionModule::class,
         SummonerProvisionModule::class,
+        SummonerViewCapabilityProvisionModule::class,
         ViewStateCapabilityProvisionModule::class,
     ],
 )

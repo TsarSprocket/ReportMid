@@ -26,13 +26,15 @@ interface DataDragon {
         fun getItemById(id: Int): Item
 
         // Image url formatters
+        fun getChampionImageUrl(championName: String): String
         fun getSummonerImageUrl(summonerIconId: Int): String
     }
 
     companion object {
+        private const val IMAGE_INFIX = "img/"
         const val BASE_URL = "https://ddragon.leagueoflegends.com/"
-        const val IMAGE_INFIX = "img/"
-        const val PROFILE_IMAGE_INFIX = "${IMAGE_INFIX}profileicon/"
+        const val CHAMPION_IMAGE_INFIX = "${IMAGE_INFIX}champion/"
         const val PROFILE_IMAGE_EXT = ".png"
+        const val PROFILE_IMAGE_INFIX = "${IMAGE_INFIX}profileicon/"
     }
 }

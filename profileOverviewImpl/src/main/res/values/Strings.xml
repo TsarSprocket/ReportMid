@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="profile_overview_error_text">Please check your Internet connection and try again</string>
+    <string name="profile_overview_error_title">Cannot load summoner\'s profile</string>
+    <string name="profile_overview_error_retry">Try Again</string>
+    <string name="profile_overview_summoner_icon">Summoner\'s icon image</string>
+    <string name="profile_overview_summoner_icon_loading">Summoner\'s icon is loading</string>
+    <string name="profile_overview_summoner_icon_not_loaded">Summoner\'s icon not loaded</string>
+    <string name="profile_overview_summoner_level_label">Level:</string>
+
+</resources>

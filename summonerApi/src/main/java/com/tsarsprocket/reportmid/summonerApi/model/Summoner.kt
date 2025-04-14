@@ -14,7 +14,7 @@ class Summoner(
     val riotId: String,
     val iconId: Int,
     val puuid: Puuid,
-    val level: Long,
+    val level: Int,
     val masteriesProvider: MasteriesProvider,
 ) {
     var id: Long? = null

@@ -5,6 +5,7 @@ import android.os.ParcelUuid
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
@@ -33,6 +34,7 @@ internal class ViewStateHolderImpl private constructor(
     override val globalId: UUID,
     initialState: ViewState,
     private val operationsStack: MutableList<BackOperation>,
+    override val tag: String,
 ) : ViewStateHolder {
 
     @Inject
@@ -50,9 +52,10 @@ internal class ViewStateHolderImpl private constructor(
     override val coroutineScope: CoroutineScope
         get() = viewModel.viewModelScope
 
-
     lateinit var viewModel: ViewStateViewModel
     override var parentHolder: ViewStateHolderImpl? = null
+    override val rootHolder: ViewStateHolderImpl
+        get() = viewModel.rootHolder
 
     private var intentJob: Job? = null
 
@@ -70,10 +73,11 @@ internal class ViewStateHolderImpl private constructor(
         component.inject(this)
     }
 
-    constructor(initialViewState: ViewState) : this(
+    constructor(tag: String, initialViewState: ViewState) : this(
         globalId = UUID.randomUUID(),
         initialState = initialViewState,
         operationsStack = mutableListOf<BackOperation>(),
+        tag = tag,
     )
 
     private constructor(parcel: Parcel) : this(
@@ -83,9 +87,10 @@ internal class ViewStateHolderImpl private constructor(
             ?.filterIsInstance<BackOperation>()
             .orEmpty()
             .toMutableList(),
+        tag = parcel.readString().orEmpty()
     )
 
-    override fun createSubholder(initialState: ViewState) = ViewStateHolderImpl(initialState).apply { setParentHolder(this@ViewStateHolderImpl) }
+    override fun createSubholder(tag: String, initialState: ViewState) = ViewStateHolderImpl(tag, initialState).apply { setParentHolder(this@ViewStateHolderImpl) }
 
     override fun describeContents() = 0
 
@@ -148,8 +153,8 @@ internal class ViewStateHolderImpl private constructor(
     }
 
     @Composable
-    override fun Visualize() {
-        mutableViewStates.collectAsState().value.let { state -> visualizers.findProcessor(state).Visualize(state, this) }
+    override fun Visualize(modifier: Modifier) {
+        mutableViewStates.collectAsState().value.let { state -> visualizers.findProcessor(state).Visualize(modifier, state, this) }
     }
 
     private suspend fun processIntent(intent: ViewIntent) {
@@ -182,6 +187,7 @@ internal class ViewStateHolderImpl private constructor(
             writeParcelable(ParcelUuid(globalId), flags)
             writeParcelable(mutableViewStates.value, flags)
             writeParcelableArray(operationsStack.toTypedArray(), flags)
+            writeString(tag)
         }
     }
 

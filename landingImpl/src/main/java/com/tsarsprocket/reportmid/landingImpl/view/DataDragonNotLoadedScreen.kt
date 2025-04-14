@@ -23,8 +23,8 @@ import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 
 @Composable
-internal fun DataDragonNotLoadedScreen(isLoading: Boolean, onRetry: () -> Unit) {
-    Scaffold { paddingValues ->
+internal fun DataDragonNotLoadedScreen(modifier: Modifier, isLoading: Boolean, onRetry: () -> Unit) {
+    Scaffold(modifier = modifier) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -72,7 +72,7 @@ internal fun DataDragonNotLoadedScreen(isLoading: Boolean, onRetry: () -> Unit) 
 @Composable
 private fun DataDragonNotLoadedScreenPreviewNoLoading() {
     ReportMidTheme {
-        DataDragonNotLoadedScreen(isLoading = false) {}
+        DataDragonNotLoadedScreen(modifier = Modifier, isLoading = false) {}
     }
 }
 
@@ -80,6 +80,6 @@ private fun DataDragonNotLoadedScreenPreviewNoLoading() {
 @Composable
 private fun DataDragonNotLoadedScreenPreviewLoading() {
     ReportMidTheme {
-        DataDragonNotLoadedScreen(isLoading = true) {}
+        DataDragonNotLoadedScreen(modifier = Modifier, isLoading = true) {}
     }
 }

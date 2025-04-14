@@ -19,7 +19,7 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
 
     override suspend fun findAccount(gameName: GameName, tagline: TagLine, region: Region): AccountData = withContext(ioDispatcher) {
         try {
-            summonerRepository.getRiotAccount(gameName, tagline, region).run {
+            summonerRepository.getRiotAccountByGameName(gameName, tagline, region).run {
                 AccountData(
                     gameName = gameName,
                     tagline = tagline,
@@ -40,7 +40,7 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
                 region = region,
                 riotId = riotId,
                 iconUrl = dataDragon.tail.getSummonerImageUrl(iconId),
-                level = level
+                level = level,
             )
         }
     }

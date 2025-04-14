@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.dataDragonImpl.data
 import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.BASE_URL
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.CHAMPION_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_EXT
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Tail
@@ -202,8 +203,9 @@ class DataDragonImpl @Inject constructor(
         override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
         override fun getItemById(id: Int): Item = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
 
+        override fun getChampionImageUrl(championName: String): String = "${getVersionedImageBase()}$CHAMPION_IMAGE_INFIX$championName"
         override fun getSummonerImageUrl(summonerIconId: Int): String = "${getVersionedImageBase()}$PROFILE_IMAGE_INFIX$summonerIconId$PROFILE_IMAGE_EXT"
 
-        private fun getVersionedImageBase(): String = "$BASE_URL$version/"
+        private fun getVersionedImageBase(): String = "${BASE_URL}cdn/$version/"
     }
 }

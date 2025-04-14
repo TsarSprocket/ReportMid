@@ -12,5 +12,5 @@ data class SummonerData(
     val region: Region,
     val riotId: String,
     val iconUrl: String,
-    val level: Long,
+    val level: Int,
 ) : Parcelable

@@ -5,6 +5,7 @@ import com.tsarsprocket.reportmid.lol.model.Puuid
 import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.model.Region
 import com.tsarsprocket.reportmid.lol.model.TagLine
+import com.tsarsprocket.reportmid.summonerApi.model.ChampionMastery
 import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
 import com.tsarsprocket.reportmid.summonerApi.model.RiotAccount
@@ -12,7 +13,8 @@ import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.summonerApi.model.SummonerInfo
 
 interface SummonerRepository {
-    suspend fun getRiotAccount(gameName: GameName, tagLine: TagLine, region: Region): RiotAccount
+    suspend fun getRiotAccountByGameName(gameName: GameName, tagLine: TagLine, region: Region): RiotAccount
+    suspend fun getRiotAccountByPuuid(puuid: Puuid, region: Region): RiotAccount
 
     suspend fun getKnownSummonerId(puuidAndRegion: PuuidAndRegion): Long
     suspend fun getMySummoners(): List<Summoner>
@@ -22,6 +24,8 @@ interface SummonerRepository {
     suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: GameName, tagLine: TagLine, region: Region): Summoner
     suspend fun requestRemoteSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Summoner
     suspend fun requestRemoteSummonerByRiotId(id: String, region: Region): Summoner
+
+    suspend fun requestMasteriesByPuuidAndRegion(puuid: Puuid, region: Region): List<ChampionMastery>
 
     suspend fun createMyAccount(puuid: Puuid, region: Region): MyAccount
     suspend fun deleteMyAccount(myAccount: MyAccount)

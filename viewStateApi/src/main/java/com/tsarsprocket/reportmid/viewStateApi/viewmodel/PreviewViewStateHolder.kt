@@ -3,6 +3,8 @@ package com.tsarsprocket.reportmid.viewStateApi.viewmodel
 import android.annotation.SuppressLint
 import android.os.Parcel
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.QuitViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
@@ -21,10 +23,12 @@ object PreviewViewStateHolder : ViewStateHolder {
     override val currentState: ViewState = EmptyScreenViewState
     override val globalId: UUID = UUID.randomUUID()
     override val parentHolder: ViewStateHolder? = null
+    override val rootHolder: ViewStateHolder = this
+    override val tag: String = EMPTY_STRING
     override val topReturnIntent: ViewIntent? = null
     override val viewStates: StateFlow<ViewState> = MutableStateFlow(currentState)
 
-    override fun createSubholder(initialState: ViewState): ViewStateHolder = this
+    override fun createSubholder(tag: String, initialState: ViewState): ViewStateHolder = this
 
     override fun describeContents() = 0
 
@@ -52,7 +56,7 @@ object PreviewViewStateHolder : ViewStateHolder {
     }
 
     @Composable
-    override fun Visualize() { /* nothing */
+    override fun Visualize(modifier: Modifier) { /* nothing */
     }
 
     override fun writeToParcel(p0: Parcel, p1: Int) { /* Never to be called */

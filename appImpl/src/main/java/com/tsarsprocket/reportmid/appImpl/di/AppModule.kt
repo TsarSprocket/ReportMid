@@ -2,10 +2,10 @@ package com.tsarsprocket.reportmid.appImpl.di
 
 import android.content.Context
 import androidx.room.Room
-import com.tsarsprocket.reportmid.appApi.di.AppContext
 import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.appImpl.application.ReportMidApplication
 import com.tsarsprocket.reportmid.appImpl.room.MainDatabase
+import com.tsarsprocket.reportmid.baseApi.di.AppContext
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io

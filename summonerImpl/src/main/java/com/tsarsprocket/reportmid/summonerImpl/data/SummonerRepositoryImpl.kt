@@ -108,16 +108,30 @@ class SummonerRepositoryImpl @Inject constructor(
         storage.summonerDAO().getByPuuidAndRegionId(puuid = puuidAndRegion.puuid.value, regionId = puuidAndRegion.region.id) != null
     }
 
-    override suspend fun getRiotAccount(gameName: GameName, tagLine: TagLine, region: Region): RiotAccount {
+    override suspend fun getRiotAccountByGameName(gameName: GameName, tagLine: TagLine, region: Region): RiotAccount {
         return withContext(ioDispatcher) {
             serviceFactory.getService<AccountV1Service>(region)
                 .getByRiotId(gameName.removeWhitespaces().value, tagLine.removeWhitespaces().value)
                 .let { dto ->
                     RiotAccount(
-                        Puuid(dto.puuid),
-                        region,
+                        puuid = Puuid(dto.puuid),
+                        region = region,
                         gameName = dto.gameName?.let { GameName(it) } ?: gameName,
                         tagLine = dto.tagLine?.let { TagLine(it) } ?: tagLine,
+                    )
+                }
+        }
+    }
+
+    override suspend fun getRiotAccountByPuuid(puuid: Puuid, region: Region): RiotAccount {
+        return withContext(ioDispatcher) {
+            serviceFactory.getService<AccountV1Service>(region)
+                .getByPuuid(puuid.value).let { dto ->
+                    RiotAccount(
+                        puuid = Puuid(dto.puuid),
+                        region = region,
+                        gameName = GameName(dto.gameName!!),
+                        tagLine = TagLine(dto.tagLine!!),
                     )
                 }
         }
@@ -143,9 +157,13 @@ class SummonerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: GameName, tagLine: TagLine, region: Region): Summoner {
-        return with(getRiotAccount(gameName, tagLine, region)) {
+        return with(getRiotAccountByGameName(gameName, tagLine, region)) {
             requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(puuid, region))
         }
+    }
+
+    override suspend fun requestMasteriesByPuuidAndRegion(puuid: Puuid, region: Region): List<ChampionMastery> {
+        return fetchChampionMasteriesByPuuid(MasteriesPuuidKey(puuid, region))
     }
 
     override suspend fun getMySummoners(): List<Summoner> = withContext(computationDispatcher) {

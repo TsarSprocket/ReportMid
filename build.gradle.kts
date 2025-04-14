@@ -22,7 +22,7 @@ plugins {
 buildscript {
     apply(rootProject.file("versions.gradle.kts"))
 
-    val gradleVersion = "8.9.0"
+    val gradleVersion = "8.9.1"
     val kotlinVersion = "2.1.10"
     val navVersion = "2.7.5"
 

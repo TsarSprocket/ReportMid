@@ -9,41 +9,48 @@ application(
     appId = "com.tsarsprocket.reportmid.app",
     namespace = "com.tsarsprocket.reportmid.appImpl",
 ) {
-    api(projects.appApi)
-    impl(projects.baseImpl)
-    impl(projects.dataDragonImpl)
-    impl(projects.findSummonerImpl)
-    impl(projects.landingImpl)
-    impl(projects.leaguePositionImpl)
-    impl(projects.lolServicesImpl)
-    impl(projects.navigationMapImpl)
-    impl(projects.profileScreenImpl)
-    impl(projects.requestManagerImpl)
-    impl(projects.stateImpl)
-    impl(projects.summonerImpl)
-    impl(projects.viewStateImpl)
+    with(projects) {
+        api(appApi)
 
-    impl(projects.kspApi)
-    ksp(projects.kspProcessor)
+        impl(baseImpl)
+        impl(dataDragonImpl)
+        impl(findSummonerImpl)
+        impl(landingImpl)
+        impl(leaguePositionImpl)
+        impl(lolServicesImpl)
+        impl(mainScreenImpl)
+        impl(navigationMapImpl)
+        impl(profileOverviewImpl)
+        impl(requestManagerImpl)
+        impl(stateImpl)
+        impl(summonerImpl)
+        impl(summonerViewImpl)
+        impl(viewStateImpl)
 
-    // Android
-    impl(libs.androidx.core.ktx)
-    impl(libs.androidx.lifecycle.runtime.ktx)
-    impl(libs.androidx.activity.compose)
-    impl(platform(libs.compose.bom))
-    impl(libs.androidx.ui.main)
-    impl(libs.androidx.ui.graphics)
-    impl(libs.compose.ui.tooling.preview)
-    impl(libs.compose.material3)
-    debug(libs.compose.ui.tooling.main)
-    debug(libs.androidx.ui.test.manifest)
+        impl(kspApi)
+        ksp(kspProcessor)
+    }
 
-    // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    with(libs) {
+        // Android
+        impl(androidx.core.ktx)
+        impl(androidx.lifecycle.runtime.ktx)
+        impl(androidx.activity.compose)
+        impl(platform(compose.bom))
+        impl(androidx.ui.main)
+        impl(androidx.ui.graphics)
+        impl(compose.ui.tooling.preview)
+        impl(compose.material3)
+        debug(compose.ui.tooling.main)
+        debug(androidx.ui.test.manifest)
 
-    // Room
-    api(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
-    api(libs.androidx.room.ktx)
+        // Dagger
+        kapt(dagger.compiler)
+        kapt(dagger.android.processor)
+
+        // Room
+        api(androidx.room.runtime)
+        kapt(androidx.room.compiler)
+        api(androidx.room.ktx)
+    }
 }

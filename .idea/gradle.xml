@@ -38,14 +38,15 @@
             <option value="$PROJECT_DIR$/leaguePositionApi" />
             <option value="$PROJECT_DIR$/leaguePositionImpl" />
             <option value="$PROJECT_DIR$/lol" />
-            <option value="$PROJECT_DIR$/lolResourceLib" />
             <option value="$PROJECT_DIR$/lolRoom" />
             <option value="$PROJECT_DIR$/lolServicesApi" />
             <option value="$PROJECT_DIR$/lolServicesImpl" />
+            <option value="$PROJECT_DIR$/mainScreenApi" />
+            <option value="$PROJECT_DIR$/mainScreenImpl" />
             <option value="$PROJECT_DIR$/navigationMapApi" />
             <option value="$PROJECT_DIR$/navigationMapImpl" />
-            <option value="$PROJECT_DIR$/profileScreenApi" />
-            <option value="$PROJECT_DIR$/profileScreenImpl" />
+            <option value="$PROJECT_DIR$/profileOverviewApi" />
+            <option value="$PROJECT_DIR$/profileOverviewImpl" />
             <option value="$PROJECT_DIR$/requestManagerApi" />
             <option value="$PROJECT_DIR$/requestManagerImpl" />
             <option value="$PROJECT_DIR$/resLib" />
@@ -55,6 +56,8 @@
             <option value="$PROJECT_DIR$/summonerApi" />
             <option value="$PROJECT_DIR$/summonerImpl" />
             <option value="$PROJECT_DIR$/summonerRoom" />
+            <option value="$PROJECT_DIR$/summonerViewApi" />
+            <option value="$PROJECT_DIR$/summonerViewImpl" />
             <option value="$PROJECT_DIR$/theme" />
             <option value="$PROJECT_DIR$/utils" />
             <option value="$PROJECT_DIR$/viewStateApi" />

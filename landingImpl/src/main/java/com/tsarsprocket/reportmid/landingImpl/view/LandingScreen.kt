@@ -27,8 +27,8 @@ import com.tsarsprocket.reportmid.theme.reportMidFontFamily
 
 
 @Composable
-fun LandingScreen() {
-    Scaffold { pagePadding ->
+fun LandingScreen(modifier: Modifier) {
+    Scaffold(modifier = modifier) { pagePadding ->
         Column(
             modifier = Modifier
                 .padding(pagePadding)
@@ -67,6 +67,6 @@ fun LandingScreen() {
 @Composable
 fun LandingPreview() {
     ReportMidTheme {
-        LandingScreen()
+        LandingScreen(Modifier)
     }
 }

@@ -1,16 +1,32 @@
 import com.tsarsprocket.reportmid.gradle.api
+import com.tsarsprocket.reportmid.gradle.debug
 import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.library
 
 library(
     namespace = "com.tsarsprocket.reportmid.utils",
+    enableCompose = true,
 ) {
-    impl(libs.androidx.core.ktx)
-    impl(libs.androidx.appcompat)
+    impl(projects.theme)
 
-    // Material
-    impl(libs.material)
+    with(libs) {
+        impl(androidx.core.ktx)
+        impl(androidx.appcompat)
 
-    // Dagger
-    api(libs.dagger.main)
+        // Material
+        impl(material)
+
+        // Dagger
+        api(dagger.main)
+
+        // Compose
+        impl(platform(compose.bom))
+
+        // Compose Material 3
+        impl(compose.material3)
+
+        // Compose preview support
+        impl(compose.ui.tooling.preview)
+        debug(compose.ui.tooling.main)
+    }
 }

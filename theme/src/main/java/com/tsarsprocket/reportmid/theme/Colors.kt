@@ -12,8 +12,13 @@ val reportMidColorScheme: ColorScheme
         onBackground = Color(0xFFE6EE9C),
         onPrimary = Color(0xE0000000),
         onSurface = Color(0xFFE6EE9C),
+        onSurfaceVariant = Color(0xFF576C88),
         primary = Color(0xFFE6EE9C),
         secondary = Color(0xFF59801A),
         surface = Color(0xFF303030),
+        surfaceVariant = Color(0xFF272730),
+        onTertiaryContainer = Color(0xFF214752),
+        tertiaryContainer = Color(0xFF00212B),
         surfaceContainerLow = Color(0xFF181818),
+        surfaceContainer = Color(0xFF1A1A1A),
     )

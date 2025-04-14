@@ -1,6 +1,8 @@
 package com.tsarsprocket.reportmid.viewStateImpl.viewmodel
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,7 +39,7 @@ internal class ViewStateViewModel @AssistedInject constructor(
 
     private val holders = mutableMapOf<UUID, ViewStateHolderImpl>()
 
-    private val rootHolder: ViewStateHolderImpl = savedStateHandle.get<ViewStateHolderImpl>(KEY_ROOT_HOLDER)!!.apply {
+    val rootHolder: ViewStateHolderImpl = savedStateHandle.get<ViewStateHolderImpl>(KEY_ROOT_HOLDER)!!.apply {
         viewModel = this@ViewStateViewModel
         propagateParentHolder()
         start()
@@ -83,7 +85,7 @@ internal class ViewStateViewModel @AssistedInject constructor(
 
     @Composable
     fun Visualize() {
-        rootHolder.Visualize()
+        rootHolder.Visualize(Modifier.fillMaxSize())
     }
 
     @AssistedFactory

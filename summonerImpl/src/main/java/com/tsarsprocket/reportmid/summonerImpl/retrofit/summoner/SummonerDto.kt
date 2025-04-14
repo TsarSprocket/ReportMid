@@ -7,5 +7,5 @@ data class SummonerDto(
     @SerializedName("revisionDate") val revisionDate: Long,
     @SerializedName("id") val riotId: String,
     @SerializedName("puuid") val puuid: String,
-    @SerializedName("summonerLevel") val summonerLevel: Long,
+    @SerializedName("summonerLevel") val summonerLevel: Int,
 )

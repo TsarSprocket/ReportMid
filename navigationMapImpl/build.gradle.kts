@@ -7,15 +7,21 @@ import com.tsarsprocket.reportmid.gradle.library
 library(
     namespace = "com.tsarsprocket.reportmid.navigationMapImpl",
 ) {
-    api(projects.navigationMapApi)
+    with(projects) {
+        api(navigationMapApi)
 
-    impl(projects.baseApi)
-    impl(projects.profileScreenApi)
-    impl(projects.findSummonerApi)
+        impl(baseApi)
+        impl(findSummonerApi)
+        impl(mainScreenApi)
+        impl(profileOverviewApi)
+        impl(summonerViewApi)
 
-    impl(projects.kspApi)
-    ksp(projects.kspProcessor)
+        impl(kspApi)
+        ksp(kspProcessor)
+    }
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    with(libs) {
+        kapt(dagger.compiler)
+        kapt(dagger.android.processor)
+    }
 }

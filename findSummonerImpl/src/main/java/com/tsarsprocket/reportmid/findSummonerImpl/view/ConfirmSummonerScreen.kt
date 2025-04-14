@@ -33,12 +33,13 @@ import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 
 @Composable
 internal fun ConfirmSummonerScreen(
+    modifier: Modifier,
     summonerData: SummonerData,
     confirmAction: () -> Unit,
     rejectAction: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(reportMidColorScheme.background),
         verticalArrangement = Arrangement.Center,
@@ -107,6 +108,7 @@ internal fun ConfirmSummonerScreen(
 private fun ConfirmSummonerScreenPreview() {
     ReportMidTheme {
         ConfirmSummonerScreen(
+            modifier = Modifier,
             summonerData = SummonerData(
                 puuid = Puuid(EMPTY_STRING),
                 region = Region.RUSSIA,

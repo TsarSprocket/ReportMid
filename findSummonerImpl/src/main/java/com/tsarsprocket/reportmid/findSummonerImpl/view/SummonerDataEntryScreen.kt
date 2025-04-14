@@ -44,8 +44,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ViewStateHolder.SummonerDataEntryScreen(state: SummonerDataEntryViewState) {
-    Scaffold { pagePadding ->
+internal fun ViewStateHolder.SummonerDataEntryScreen(modifier: Modifier, state: SummonerDataEntryViewState) {
+    Scaffold(modifier = modifier) { pagePadding ->
         Column(
             modifier = Modifier
                 .padding(pagePadding)
@@ -161,7 +161,8 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(state: SummonerDataEntryVie
 internal fun SummonerDataEntryScreenPreview() {
     ReportMidTheme {
         PreviewViewStateHolder.SummonerDataEntryScreen(
-            SummonerDataEntryViewState(
+            modifier = Modifier,
+            state = SummonerDataEntryViewState(
                 gameName = "Lorem ipsum",
                 tagLine = "dolor",
             )
