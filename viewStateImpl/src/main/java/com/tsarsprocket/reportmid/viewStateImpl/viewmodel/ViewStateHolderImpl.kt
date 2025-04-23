@@ -11,7 +11,9 @@ import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
+import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
+import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -42,12 +44,16 @@ internal class ViewStateHolderImpl private constructor(
     lateinit var reducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards Provider<ViewStateReducer>>
 
     @Inject
-    @Ui.Immediate
-    lateinit var immediateUiDispatcher: CoroutineDispatcher
+    @Aggregated
+    lateinit var initializers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<ViewStateInitializer>>
 
     @Inject
     @Aggregated
     lateinit var visualizers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<ViewStateVisualizer>>
+
+    @Inject
+    @Ui.Immediate
+    lateinit var immediateUiDispatcher: CoroutineDispatcher
 
     override val coroutineScope: CoroutineScope
         get() = viewModel.viewModelScope
@@ -171,6 +177,7 @@ internal class ViewStateHolderImpl private constructor(
             oldState.stop()
             newState.setParentHolder(this@ViewStateHolderImpl)
             newState.start()
+            initializers.findProcessorOrNull(newState)?.initialize(newState, this)
             mutableViewStates.emit(newState)
             logInfo("View state emitted: $newState")
         }

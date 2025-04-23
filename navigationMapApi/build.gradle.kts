@@ -4,7 +4,11 @@ import com.tsarsprocket.reportmid.gradle.library
 library(
     namespace = "com.tsarsprocket.reportmid.navigationMapApi",
 ) {
-    api(projects.viewStateApi)
-    api(projects.landingApi)
-    api(projects.findSummonerApi)
+    with(projects) {
+        api(findSummonerApi)
+        api(landingApi)
+        api(mainScreenApi)
+        api(summonerViewApi)
+        api(viewStateApi)
+    }
 }

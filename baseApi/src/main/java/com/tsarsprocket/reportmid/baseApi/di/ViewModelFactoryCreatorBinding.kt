@@ -5,5 +5,5 @@ import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactoryCreator
 import javax.inject.Provider
 
 interface ViewModelFactoryCreatorBinding {
-    fun getViewModelFactoryCreator(): Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModelFactoryCreator>>
+    fun getViewModelFactoryCreators(): Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModelFactoryCreator>>
 }

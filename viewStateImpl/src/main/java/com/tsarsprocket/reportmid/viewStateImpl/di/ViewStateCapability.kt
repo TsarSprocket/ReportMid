@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.viewStateImpl.di
 
 import com.tsarsprocket.reportmid.appApi.di.AppApi
 import com.tsarsprocket.reportmid.baseApi.di.BaseApi
-import com.tsarsprocket.reportmid.baseApi.di.FragmentsCreator
+import com.tsarsprocket.reportmid.baseApi.di.FragmentCreatorBinding
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.baseApi.di.ViewModelFactoryCreatorBinding
 import com.tsarsprocket.reportmid.kspApi.annotation.Capability
@@ -25,7 +25,7 @@ import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateHolderImpl
     ],
     exportBindings = [
         EffectHandlerBinding::class,
-        FragmentsCreator::class,
+        FragmentCreatorBinding::class,
         ReducerBinding::class,
         ViewModelFactoryCreatorBinding::class,
         VisualizerBinding::class,

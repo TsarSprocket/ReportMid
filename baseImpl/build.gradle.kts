@@ -7,13 +7,17 @@ import com.tsarsprocket.reportmid.gradle.library
 library(
     namespace = "com.tsarsprocket.reportmid.baseImpl",
 ) {
-    api(projects.baseApi)
-    api(projects.appApi)
+    with(projects) {
+        api(baseApi)
+        api(appApi)
 
-    impl(projects.kspApi)
-    ksp(projects.kspProcessor)
+        impl(kspApi)
+        ksp(kspProcessor)
+    }
 
-    // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    with(libs) {
+        // Dagger
+        kapt(dagger.compiler)
+        kapt(dagger.android.processor)
+    }
 }

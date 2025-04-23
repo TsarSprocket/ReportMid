@@ -12,6 +12,7 @@ import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactoryCreator
 import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
+import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -43,6 +44,9 @@ interface AppApi {
 
     @Aggregated
     fun getViewModelFactoryCreators(): Map<Class<out ViewModel>, Provider<ViewModelFactoryCreator>>
+
+    @Aggregated
+    fun getViewStateInitializers(): Map<Class<out ViewState>, Provider<ViewStateInitializer>>
 
     @Aggregated
     fun getViewStateReducers(): Map<Class<out ViewIntent>, Provider<ViewStateReducer>>

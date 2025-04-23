@@ -3,6 +3,10 @@ package com.tsarsprocket.reportmid.utils.dagger
 import javax.inject.Provider
 
 fun <Event : Any, Processor> Map<Class<out Event>, Provider<Processor>>.findProcessor(event: Event): Processor {
+    return findProcessorOrNull(event) ?: throw ProcessorNotFoundException(event)
+}
+
+fun <Event : Any, Processor> Map<Class<out Event>, Provider<Processor>>.findProcessorOrNull(event: Event): Processor? {
     var classes = listOf<Class<*>>(event.javaClass)
     var nextLevel: MutableList<Class<*>>
 
@@ -20,7 +24,7 @@ fun <Event : Any, Processor> Map<Class<out Event>, Provider<Processor>>.findProc
         classes = nextLevel
     }
 
-    throw ProcessorNotFoundException(event)
+    return null
 }
 
 class ProcessorNotFoundException(val event: Any) : RuntimeException("No processor fount for ${event::class.qualifiedName}")

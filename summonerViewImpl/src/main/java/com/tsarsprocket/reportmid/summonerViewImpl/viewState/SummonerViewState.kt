@@ -11,8 +11,8 @@ import kotlinx.parcelize.Parcelize
 @State
 data class SummonerViewState(
     val profileOverviewStateHolder: ViewStateHolder,
-    private val summonerPuuid: String,
-    private val summonerRegion: Region,
+    val summonerPuuid: String,
+    val summonerRegion: Region,
 ) : ViewState {
 
     override fun setParentHolder(parentHolder: ViewStateHolder) {

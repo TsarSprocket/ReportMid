@@ -43,6 +43,12 @@
             <option value="$PROJECT_DIR$/lolServicesImpl" />
             <option value="$PROJECT_DIR$/mainScreenApi" />
             <option value="$PROJECT_DIR$/mainScreenImpl" />
+            <option value="$PROJECT_DIR$/matchData" />
+            <option value="$PROJECT_DIR$/matchData/api" />
+            <option value="$PROJECT_DIR$/matchData/impl" />
+            <option value="$PROJECT_DIR$/matchHistory" />
+            <option value="$PROJECT_DIR$/matchHistory/api" />
+            <option value="$PROJECT_DIR$/matchHistory/impl" />
             <option value="$PROJECT_DIR$/navigationMapApi" />
             <option value="$PROJECT_DIR$/navigationMapImpl" />
             <option value="$PROJECT_DIR$/profileOverviewApi" />

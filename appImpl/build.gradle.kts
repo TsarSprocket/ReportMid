@@ -15,6 +15,7 @@ application(
         impl(baseImpl)
         impl(dataDragonImpl)
         impl(findSummonerImpl)
+        impl(matchHistory.impl)
         impl(landingImpl)
         impl(leaguePositionImpl)
         impl(lolServicesImpl)

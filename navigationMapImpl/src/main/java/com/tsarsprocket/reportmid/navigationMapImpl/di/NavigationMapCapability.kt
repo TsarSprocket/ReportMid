@@ -10,7 +10,9 @@ import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
     modules = [
         FindSummonerNavigationModule::class,
         LandingNavigationModule::class,
+        MainScreenNavigationModule::class,
         NavigationMapModule::class,
+        SummonerViewNavigationModule::class,
     ],
 )
 internal interface NavigationMapCapability
