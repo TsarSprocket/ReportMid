@@ -12,6 +12,7 @@ library(
 
         impl(baseApi)
         impl(dataDragonApi)
+        impl(lolServicesApi)
         impl(utils)
 
         // KSP
@@ -25,5 +26,9 @@ library(
         // Dagger
         kapt(dagger.compiler)
         kapt(dagger.android.processor)
+
+        // Retrofit
+        impl(libs.retrofit)
+        impl(libs.converter.gson)
     }
 }
