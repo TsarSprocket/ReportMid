@@ -1,10 +1,10 @@
 package com.tsarsprocket.reportmid.dataDragonApi.data
 
-import com.tsarsprocket.reportmid.lol.model.Champion
-import com.tsarsprocket.reportmid.lol.model.Item
-import com.tsarsprocket.reportmid.lol.model.Perk
-import com.tsarsprocket.reportmid.lol.model.RunePath
-import com.tsarsprocket.reportmid.lol.model.SummonerSpell
+import com.tsarsprocket.reportmid.lol.api.model.Champion
+import com.tsarsprocket.reportmid.lol.api.model.Item
+import com.tsarsprocket.reportmid.lol.api.model.Perk
+import com.tsarsprocket.reportmid.lol.api.model.RunePath
+import com.tsarsprocket.reportmid.lol.api.model.SummonerSpell
 
 interface DataDragon {
     val tail: Tail

@@ -32,10 +32,11 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.RegionSelected
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.TagLineChanged
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
-import com.tsarsprocket.reportmid.lol.model.GameName
-import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.lol.model.Region.Companion.NONEXISTENT_REGION_ID
-import com.tsarsprocket.reportmid.lol.model.TagLine
+import com.tsarsprocket.reportmid.lol.api.model.GameName
+import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region.Companion.ID_NONEXISTENT_REGION
+import com.tsarsprocket.reportmid.lol.api.model.RegionInfo
+import com.tsarsprocket.reportmid.lol.api.model.TagLine
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.PreviewViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
@@ -44,7 +45,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ViewStateHolder.SummonerDataEntryScreen(modifier: Modifier, state: SummonerDataEntryViewState) {
+internal fun ViewStateHolder.SummonerDataEntryScreen(
+    modifier: Modifier,
+    state: SummonerDataEntryViewState,
+    regionInfoFactory: RegionInfo.Factory,
+) {
     Scaffold(modifier = modifier) { pagePadding ->
         Column(
             modifier = Modifier
@@ -89,9 +94,9 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(modifier: Modifier, state: 
                 onClick = { showRegionSelector = true },
             ) {
                 Text(
-                    text = try {
-                        Region.getById(state.selectedRegionId).title
-                    } catch(exception: Exception) {
+                    text = if(Region.byId[state.selectedRegionId] != null) {
+                        regionInfoFactory.get(state.selectedRegionId).title
+                    } else {
                         stringResource(id = R.string.regionSelectionPrompt)
                     },
                 )
@@ -104,11 +109,11 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(modifier: Modifier, state: 
                         FindAndConfirmSummonerViewIntent(
                             gameName = state.gameName,
                             tagline = state.tagLine,
-                            region = Region.getById(state.selectedRegionId)
+                            region = Region.getById(state.selectedRegionId),
                         )
                     )
                 },
-                enabled = GameName(state.gameName).isValid && TagLine(state.tagLine).isValid && state.selectedRegionId != NONEXISTENT_REGION_ID
+                enabled = GameName(state.gameName).isValid && TagLine(state.tagLine).isValid && state.selectedRegionId != ID_NONEXISTENT_REGION
             ) {
                 Text(
                     text = stringResource(id = R.string.labelFind)
@@ -129,10 +134,12 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(modifier: Modifier, state: 
                             .padding(bottom = 48.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+
                         Region.entries
                             .filter { region -> region.id != state.selectedRegionId }
-                            .sortedBy { region -> region.title }
-                            .forEachIndexed { index, region ->
+                            .map { region -> regionInfoFactory.get(region.id) }
+                            .sortedBy { regionInfo -> regionInfo.title }
+                            .forEach { regionInfo ->
                                 Text(
                                     modifier = Modifier
                                         .padding(vertical = 8.dp)
@@ -141,11 +148,11 @@ internal fun ViewStateHolder.SummonerDataEntryScreen(modifier: Modifier, state: 
                                                 .invokeOnCompletion {
                                                     if(!regionSelectorState.isVisible) {
                                                         showRegionSelector = false
-                                                        postIntent(RegionSelected(region.id))
+                                                        postIntent(RegionSelected(regionInfo.regionId))
                                                     }
                                                 }
                                         },
-                                    text = region.title
+                                    text = regionInfo.title
                                 )
                             }
                     }
@@ -165,7 +172,10 @@ internal fun SummonerDataEntryScreenPreview() {
             state = SummonerDataEntryViewState(
                 gameName = "Lorem ipsum",
                 tagLine = "dolor",
-            )
+            ),
+            object : RegionInfo.Factory {
+                override fun get(regionId: Int): RegionInfo = error("Should not be called")
+            },
         )
     }
 }

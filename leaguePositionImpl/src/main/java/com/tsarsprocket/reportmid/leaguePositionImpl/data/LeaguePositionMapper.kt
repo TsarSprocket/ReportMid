@@ -3,9 +3,9 @@ package com.tsarsprocket.reportmid.leaguePositionImpl.data
 import com.tsarsprocket.reportmid.baseApi.common.Mapper
 import com.tsarsprocket.reportmid.leaguePositionApi.model.LeaguePosition
 import com.tsarsprocket.reportmid.leaguePositionImpl.retrofit.LeaguePositionDto
-import com.tsarsprocket.reportmid.lol.model.Division
-import com.tsarsprocket.reportmid.lol.model.QueueType
-import com.tsarsprocket.reportmid.lol.model.Tier
+import com.tsarsprocket.reportmid.lol.api.model.Division
+import com.tsarsprocket.reportmid.lol.api.model.QueueType
+import com.tsarsprocket.reportmid.lol.api.model.Tier
 import com.tsarsprocket.reportmid.utils.common.orZero
 import javax.inject.Inject
 

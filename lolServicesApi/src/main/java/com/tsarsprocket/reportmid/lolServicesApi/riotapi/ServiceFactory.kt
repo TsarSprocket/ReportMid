@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.lolServicesApi.riotapi
 
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 
 interface ServiceFactory {
     @Deprecated(message = "Use getService() extension instead", replaceWith = ReplaceWith("getService(region, clazz)"))

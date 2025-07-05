@@ -5,8 +5,8 @@ import com.tsarsprocket.reportmid.leaguePositionApi.data.LeaguePositionRepositor
 import com.tsarsprocket.reportmid.leaguePositionApi.model.LeaguePosition
 import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeagueV4ServiceProvider
 import com.tsarsprocket.reportmid.leaguePositionImpl.retrofit.LeaguePositionDto
-import com.tsarsprocket.reportmid.lol.model.QueueType
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.QueueType
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import javax.inject.Inject
 
 class LeaguePositionRepositoryImpl @Inject constructor(

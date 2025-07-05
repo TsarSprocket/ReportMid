@@ -16,11 +16,15 @@ import com.tsarsprocket.reportmid.gradle.ConfigVersions.VERSION_NAME
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -100,11 +104,21 @@ fun Project.application(
                 excludes += PACKAGING_EXCLUDES
             }
         }
+
+        testOptions {
+            unitTests {
+                isIncludeAndroidResources = true
+            }
+
+            unitTests.all { test ->
+                test.useJUnitPlatform()
+            }
+        }
     }
 
     tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_18.toString()
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_18)
         }
     }
 
@@ -188,12 +202,52 @@ fun Project.library(
         buildFeatures {
             buildConfig = true
         }
+
+        testOptions {
+            unitTests {
+                isIncludeAndroidResources = true
+            }
+
+            unitTests.all { test ->
+                test.useJUnitPlatform()
+            }
+        }
     }
 
     tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_18.toString()
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_18)
         }
+    }
+
+    dependencies {
+        dependenciesConfigurator()
+    }
+}
+
+fun Project.javaLibrary(
+    dependenciesConfigurator: DependencyHandlerScope.() -> Unit = {},
+) {
+    val libs = the<LibrariesForLibs>()
+
+    plugins.apply {
+        apply("java-library")
+        apply(libs.plugins.jetbrains.kotlin.jvm.get().pluginId)
+    }
+
+    configure<JavaPluginExtension> {
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
+    }
+
+    configure<KotlinJvmExtension> {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_18)
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 
     dependencies {

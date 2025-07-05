@@ -12,7 +12,7 @@ interface SummonerDAO {
     suspend fun getById(id: Long): SummonerEntity?
 
     @Query("SELECT * FROM summoners WHERE puuid = :puuid AND region_id = :regionId")
-    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Long): SummonerEntity?
+    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Int): SummonerEntity?
 
     @Query("""
         SELECT s.*
@@ -20,7 +20,7 @@ interface SummonerDAO {
             JOIN my_accounts ma ON s.id = ma.summoner_id
         WHERE s.region_id = :regionId
     """)
-    suspend fun getMySummonersByRegion(regionId: Long): List<SummonerEntity>
+    suspend fun getMySummonersByRegion(regionId: Int): List<SummonerEntity>
 
     @Query("""
         SELECT s.*

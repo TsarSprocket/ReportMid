@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.findSummonerApi.navigation
 
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 
 interface FindSummonerNavigation {

@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.lolServicesImpl.riotapi
 
 import android.content.Context
 import com.tsarsprocket.reportmid.baseApi.di.AppContext
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.CallByType
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.RiotServers
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServerInfo

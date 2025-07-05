@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.profileOverviewImpl.viewState
 
 import android.os.Parcelable
 import com.tsarsprocket.reportmid.kspApi.annotation.State
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize

@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.summonerApi.model
 
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.api.model.Region
 
 interface SummonerInfo {
     val id: Long

@@ -14,7 +14,7 @@ library(
     impl(projects.baseApi)
     impl(projects.appApi)
     impl(projects.findSummonerApi)
-    impl(projects.lol)
+    impl(projects.lol.api)
     impl(projects.navigationMapApi)
     impl(projects.resLib)
     api(projects.theme)

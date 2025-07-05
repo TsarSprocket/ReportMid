@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class CurrentAccountEntity(
-    @ColumnInfo(name = "region_id") var regionId: Long,
+    @ColumnInfo(name = "region_id") var regionId: Int,
     @ColumnInfo(name = "account_id") var accountId: Long
 ) {
     @ColumnInfo( name = "id" ) @PrimaryKey( autoGenerate = true ) var id: Long = 0

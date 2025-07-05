@@ -17,6 +17,7 @@
         </compositeConfiguration>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../Gradle/gradle-8.14.2" />
         <option name="gradleJvm" value="corretto-18" />
         <option name="modules">
           <set>
@@ -38,6 +39,8 @@
             <option value="$PROJECT_DIR$/leaguePositionApi" />
             <option value="$PROJECT_DIR$/leaguePositionImpl" />
             <option value="$PROJECT_DIR$/lol" />
+            <option value="$PROJECT_DIR$/lol/api" />
+            <option value="$PROJECT_DIR$/lol/impl" />
             <option value="$PROJECT_DIR$/lolRoom" />
             <option value="$PROJECT_DIR$/lolServicesApi" />
             <option value="$PROJECT_DIR$/lolServicesImpl" />
@@ -66,6 +69,7 @@
             <option value="$PROJECT_DIR$/summonerViewImpl" />
             <option value="$PROJECT_DIR$/theme" />
             <option value="$PROJECT_DIR$/utils" />
+            <option value="$PROJECT_DIR$/utilsTest" />
             <option value="$PROJECT_DIR$/viewStateApi" />
             <option value="$PROJECT_DIR$/viewStateImpl" />
           </set>

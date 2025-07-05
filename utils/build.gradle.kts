@@ -7,7 +7,10 @@ library(
     namespace = "com.tsarsprocket.reportmid.utils",
     enableCompose = true,
 ) {
-    impl(projects.theme)
+    with(projects) {
+        impl(resLib)
+        impl(theme)
+    }
 
     with(libs) {
         impl(androidx.core.ktx)

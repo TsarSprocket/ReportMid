@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
 )
 data class SummonerEntity(
     @ColumnInfo(name = COLUMN_PUUID) var puuid: String,
-    @ColumnInfo(name = COLUMN_REGION_ID, index = true) var regionId: Long
+    @ColumnInfo(name = COLUMN_REGION_ID, index = true) var regionId: Int
 ) {
     @ColumnInfo( name = "id" ) @PrimaryKey( autoGenerate = true ) var id: Long = 0
 

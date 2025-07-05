@@ -3,8 +3,8 @@ package com.tsarsprocket.reportmid.navigationMapImpl.di
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.findSummonerApi.navigation.FindSummonerNavigation
 import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingIntent
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.viewStateApi.di.ViewIntentKey
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.navigation.ReturnProcessor

@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.summonerViewImpl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.summonerViewApi.viewIntent.SummonerViewIntent
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer

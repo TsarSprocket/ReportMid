@@ -13,7 +13,7 @@ interface CurrentAccountDAO {
     suspend fun getById(id: Long): CurrentAccountEntity?
 
     @Query("SELECT * FROM state_current_accounts WHERE region_id = :regionId")
-    suspend fun getByRegionId(regionId: Long): CurrentAccountEntity?
+    suspend fun getByRegionId(regionId: Int): CurrentAccountEntity?
 
     @Query("SELECT * FROM state_current_accounts WHERE account_id = :myAccId")
     suspend fun getByMyAccountId(myAccId: Long): CurrentAccountEntity?

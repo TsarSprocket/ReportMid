@@ -13,9 +13,9 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.lol.model.GameName
-import com.tsarsprocket.reportmid.lol.model.TagLine
-import com.tsarsprocket.reportmid.lol.model.removeWhitespaces
+import com.tsarsprocket.reportmid.lol.api.model.GameName
+import com.tsarsprocket.reportmid.lol.api.model.TagLine
+import com.tsarsprocket.reportmid.lol.api.model.removeWhitespaces
 import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent

@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.matchData.impl.retrofit
 
 import com.google.gson.annotations.SerializedName
 
-data class ParticipantDto(
+internal data class ParticipantDto(
     @SerializedName("assists") val assists: Int,
     @SerializedName("championId") val championId: Int,
     @SerializedName("deaths") val deaths: Int,

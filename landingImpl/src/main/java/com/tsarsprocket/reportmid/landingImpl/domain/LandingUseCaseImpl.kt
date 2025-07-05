@@ -2,9 +2,9 @@ package com.tsarsprocket.reportmid.landingImpl.domain
 
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.stateApi.data.StateRepository
 import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
 import kotlinx.coroutines.CoroutineDispatcher

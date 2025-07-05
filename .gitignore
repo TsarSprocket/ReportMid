@@ -1,6 +1,7 @@
 *.iml
 .backup
 .gradle
+/app
 /.kotlin
 /local.properties
 /.idea

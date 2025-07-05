@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.summonerImpl.model
 
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.summonerApi.model.SummonerInfo
 import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
 

@@ -12,7 +12,7 @@ library(
     api(projects.appApi)
     impl(projects.dataDragonApi)
     api(projects.findSummonerApi)
-    impl(projects.lol)
+    impl(projects.lol.api)
     impl(projects.summonerApi)
     impl(projects.theme)
     impl(projects.utils)

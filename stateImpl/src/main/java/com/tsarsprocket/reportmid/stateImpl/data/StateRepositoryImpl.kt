@@ -3,7 +3,7 @@ package com.tsarsprocket.reportmid.stateImpl.data
 import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.baseApi.data.NoDataFoundException
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.stateApi.data.MyAccountNotFoundException
 import com.tsarsprocket.reportmid.stateApi.data.StateRepository
 import com.tsarsprocket.reportmid.stateApi.model.CurrentAccount
@@ -46,7 +46,7 @@ class StateRepositoryImpl @Inject constructor(
                 region = region,
                 myAccountId = accountId,
             )
-        } ?: throw MyAccountNotFoundException("region = ${region.title}")
+        } ?: throw MyAccountNotFoundException("region = ${region.name}")
     }
 
     override suspend fun setActiveCurrentAccountId(newCurrentAccountId: Long) {

@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.stateApi.data
 
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.stateApi.model.CurrentAccount
 
 interface StateRepository {

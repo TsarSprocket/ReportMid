@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.profileOverviewImpl.viewIntent
 
 import android.os.Parcelable
 import com.tsarsprocket.reportmid.kspApi.annotation.Intent
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.profileOverviewImpl.domain.MasteryOverview
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import kotlinx.parcelize.Parcelize

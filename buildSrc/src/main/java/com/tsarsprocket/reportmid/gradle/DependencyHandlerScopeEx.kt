@@ -41,7 +41,13 @@ fun DependencyHandlerScope.test(dependencyProvider: Provider<out Dependency>) = 
 
 fun DependencyHandlerScope.test(providerConvertible: ProviderConvertible<out Dependency>) = test(providerConvertible.asProvider())
 
-fun DependencyHandlerScope.androidTest(dep: Dependency) = addDependency(ConfigTypes.ANDROID_TEST, dep)
+fun DependencyHandlerScope.testRuntimeOnly(dependency: Dependency) = addDependency(ConfigTypes.TEST_RUNTIME_ONLY, dependency)
+
+fun DependencyHandlerScope.testRuntimeOnly(dependencyProvider: Provider<out Dependency>) = testRuntimeOnly(dependencyProvider.get())
+
+fun DependencyHandlerScope.testRuntimeOnly(providerConvertible: ProviderConvertible<out Dependency>) = testRuntimeOnly(providerConvertible.asProvider())
+
+fun DependencyHandlerScope.androidTest(dependency: Dependency) = addDependency(ConfigTypes.ANDROID_TEST, dependency)
 
 fun DependencyHandlerScope.androidTest(dependencyProvider: Provider<out Dependency>) = androidTest(dependencyProvider.get())
 

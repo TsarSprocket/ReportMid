@@ -23,7 +23,7 @@ tasks.withType<JavaCompile>().configureEach {
 
 dependencies {
     gradleApi()
-    implementation(libs.gradle)
+    implementation(libs.gradle.android)
     gradleKotlinDsl()
     implementation(libs.kotlin.gradle.plugin)
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))

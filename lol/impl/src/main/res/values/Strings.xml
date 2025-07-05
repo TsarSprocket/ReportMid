@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="lol_impl_game_type_name_aram">ARAM</string>
+    <string name="lol_impl_game_type_name_normal_draft">Normal Draft</string>
+    <string name="lol_impl_game_type_name_unknown">Unknown</string>
+
+    <string name="lol_impl_region_name_nonexistent">Nonexistent</string>
+    <string name="lol_impl_region_name_brazil">Brazil</string>
+    <string name="lol_impl_region_name_europe_north_east">Europe North East</string>
+    <string name="lol_impl_region_name_europe_west">Europe West</string>
+    <string name="lol_impl_region_name_japan">Japan</string>
+    <string name="lol_impl_region_name_korea">Korea</string>
+    <string name="lol_impl_region_name_latin_america_north">Latin America North</string>
+    <string name="lol_impl_region_name_latin_america_south">Latin America South</string>
+    <string name="lol_impl_region_name_north_america">North America</string>
+    <string name="lol_impl_region_name_oceania">Oceania</string>
+    <string name="lol_impl_region_name_russia">Russia</string>
+    <string name="lol_impl_region_name_turkey">Turkey</string>
+
+</resources>

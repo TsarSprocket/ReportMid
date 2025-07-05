@@ -5,6 +5,6 @@ library(
     namespace = "com.tsarsprocket.reportmid.profileOverviewApi",
 ) {
     api(projects.baseApi)
-    api(projects.lol)
+    api(projects.lol.api)
     api(projects.viewStateApi)
 }

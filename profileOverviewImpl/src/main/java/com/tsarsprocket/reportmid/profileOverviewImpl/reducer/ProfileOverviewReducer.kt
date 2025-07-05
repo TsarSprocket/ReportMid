@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.profileOverviewImpl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.profileOverviewApi.viewIntent.ProfileOverviewViewIntent
 import com.tsarsprocket.reportmid.profileOverviewImpl.domain.ProfileOverviewUseCase
 import com.tsarsprocket.reportmid.profileOverviewImpl.viewIntent.ProfileOverviewInternalIntentCluster

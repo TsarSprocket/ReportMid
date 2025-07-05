@@ -1,13 +1,10 @@
 import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.library
 
 library(
     namespace = "com.tsarsprocket.reportmid.baseApi",
 ) {
     api(projects.utils)
-
-    impl(libs.listenablefuture)
 
     api(libs.androidx.core.ktx)
     api(libs.androidx.appcompat)

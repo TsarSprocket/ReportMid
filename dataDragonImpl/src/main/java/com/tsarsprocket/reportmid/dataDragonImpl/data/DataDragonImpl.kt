@@ -15,11 +15,11 @@ import com.tsarsprocket.reportmid.dataDragonRoom.RuneEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.RunePathEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.SummonerSpellEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.VersionEntity
-import com.tsarsprocket.reportmid.lol.model.Champion
-import com.tsarsprocket.reportmid.lol.model.Item
-import com.tsarsprocket.reportmid.lol.model.Perk
-import com.tsarsprocket.reportmid.lol.model.RunePath
-import com.tsarsprocket.reportmid.lol.model.SummonerSpell
+import com.tsarsprocket.reportmid.lol.api.model.Champion
+import com.tsarsprocket.reportmid.lol.api.model.Item
+import com.tsarsprocket.reportmid.lol.api.model.Perk
+import com.tsarsprocket.reportmid.lol.api.model.RunePath
+import com.tsarsprocket.reportmid.lol.api.model.SummonerSpell
 import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import com.tsarsprocket.reportmid.utils.common.logError
 import kotlinx.coroutines.runBlocking
@@ -30,6 +30,9 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.concurrent.Volatile
 
+/**
+ * This one is my legacy code from 2020. I did not rework it 'cause it does what I need. I just brushed it up with some coroutine support
+ */
 class DataDragonImpl @Inject constructor(
     private val db: MainStorage,
 ) : DataDragon {

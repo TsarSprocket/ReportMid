@@ -4,6 +4,8 @@ import com.tsarsprocket.reportmid.gradle.library
 library(
     namespace = "com.tsarsprocket.reportmid.matchData.api",
 ) {
-    api(projects.baseApi)
-    api(projects.lol)
+    with(projects) {
+        api(baseApi)
+        api(lol.api)
+    }
 }

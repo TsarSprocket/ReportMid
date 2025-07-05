@@ -7,5 +7,6 @@ enum class ConfigTypes(val configName: String) {
     KAPT("kapt"),
     KSP("ksp"),
     TEST("testImplementation"),
-    ANDROID_TEST("androidTestImplementation")
+    TEST_RUNTIME_ONLY("testRuntimeOnly"),
+    ANDROID_TEST("androidTestImplementation"),
 }

@@ -1,10 +1,10 @@
 package com.tsarsprocket.reportmid.summonerApi.data
 
-import com.tsarsprocket.reportmid.lol.model.GameName
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.lol.model.TagLine
+import com.tsarsprocket.reportmid.lol.api.model.GameName
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.TagLine
 import com.tsarsprocket.reportmid.summonerApi.model.ChampionMastery
 import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount

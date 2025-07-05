@@ -6,7 +6,7 @@ library(
     namespace = "com.tsarsprocket.reportmid.summonerApi",
 ) {
     api(projects.baseApi)
-    api(projects.lol)
+    api(projects.lol.api)
 
     // Rx
     impl(libs.rxandroid)

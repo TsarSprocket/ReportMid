@@ -4,12 +4,12 @@ import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.baseApi.data.NoDataFoundException
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
-import com.tsarsprocket.reportmid.lol.model.GameName
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.lol.model.Region
-import com.tsarsprocket.reportmid.lol.model.TagLine
-import com.tsarsprocket.reportmid.lol.model.removeWhitespaces
+import com.tsarsprocket.reportmid.lol.api.model.GameName
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.TagLine
+import com.tsarsprocket.reportmid.lol.api.model.removeWhitespaces
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.getService
 import com.tsarsprocket.reportmid.requestManagerApi.data.Request
@@ -170,12 +170,7 @@ class SummonerRepositoryImpl @Inject constructor(
         withContext(ioDispatcher) { storage.summonerDAO().getMySummoners() }
             .map { summonerEntity ->
                 val reg = Region.getById(summonerEntity.regionId)
-                requestRemoteSummonerByPuuidAndRegion(
-                    PuuidAndRegion(
-                        Puuid(summonerEntity.puuid),
-                        Region.getByTag(reg.tag)
-                    )
-                )
+                requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(Puuid(summonerEntity.puuid), reg))
             }
     }
 
@@ -261,7 +256,6 @@ class SummonerRepositoryImpl @Inject constructor(
                 iconId = profileIconId,
                 puuid = Puuid(puuid),
                 level = summonerLevel,
-                masteriesProvider = { fetchChampionMasteriesByPuuid(MasteriesPuuidKey(Puuid(puuid), region)) },
             )
         }
     }

@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.mainScreenImpl.viewState
 
 import com.tsarsprocket.reportmid.kspApi.annotation.State
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.parcelize.Parcelize

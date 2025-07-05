@@ -25,7 +25,7 @@ interface MyAccountDAO {
         WHERE s.puuid = :puuid AND s.region_id = :regionId
         """
     )
-    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Long): MyAccountEntity?
+    suspend fun getByPuuidAndRegionId(puuid: String, regionId: Int): MyAccountEntity?
 
     @Query("""
         SELECT ma.*
@@ -33,7 +33,7 @@ interface MyAccountDAO {
             JOIN summoners AS s ON ma.summoner_id = s.id
         WHERE s.region_id = :regId
     """)
-    suspend fun getByRegion(regId: Long): List<MyAccountEntity>
+    suspend fun getByRegion(regId: Int): List<MyAccountEntity>
 
     @Query("SELECT count(*) FROM my_accounts")
     suspend fun count(): Int

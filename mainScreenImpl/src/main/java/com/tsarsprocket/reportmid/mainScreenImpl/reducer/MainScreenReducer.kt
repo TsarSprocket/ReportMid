@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.mainScreenImpl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.mainScreenApi.constants.SUMMONER_VIEW_TAG
 import com.tsarsprocket.reportmid.mainScreenApi.viewIntent.MainScreenViewIntent
 import com.tsarsprocket.reportmid.mainScreenImpl.viewState.MainScreenViewState

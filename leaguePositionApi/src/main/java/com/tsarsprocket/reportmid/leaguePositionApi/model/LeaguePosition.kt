@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.leaguePositionApi.model
 
-import com.tsarsprocket.reportmid.lol.model.Division
-import com.tsarsprocket.reportmid.lol.model.QueueType
-import com.tsarsprocket.reportmid.lol.model.Tier
+import com.tsarsprocket.reportmid.lol.api.model.Division
+import com.tsarsprocket.reportmid.lol.api.model.QueueType
+import com.tsarsprocket.reportmid.lol.api.model.Tier
 
 data class LeaguePosition(
     val queueType: QueueType,

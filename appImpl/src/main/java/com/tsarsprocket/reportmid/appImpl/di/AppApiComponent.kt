@@ -9,6 +9,7 @@ import com.tsarsprocket.reportmid.findSummonerImpl.di.FindSummonerCapabilityProv
 import com.tsarsprocket.reportmid.kspApi.annotation.LazyProxy
 import com.tsarsprocket.reportmid.landingImpl.di.LandingCapabilityProvisionModule
 import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeaguePositionProvisionModule
+import com.tsarsprocket.reportmid.lol.impl.di.LolCapabilityProvisionModule
 import com.tsarsprocket.reportmid.lolServicesImpl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.mainScreenImpl.di.MainScreenCapabilityProvisionModule
 import com.tsarsprocket.reportmid.navigationMapImpl.di.NavigationMapCapabilityProvisionModule
@@ -33,6 +34,7 @@ import dagger.Component
         FindSummonerCapabilityProvisionModule::class,
         LandingCapabilityProvisionModule::class,
         LeaguePositionProvisionModule::class,
+        LolCapabilityProvisionModule::class,
         LolServicesProvisionModule::class,
         MainScreenCapabilityProvisionModule::class,
         NavigationMapCapabilityProvisionModule::class,

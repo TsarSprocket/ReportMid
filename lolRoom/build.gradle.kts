@@ -6,7 +6,7 @@ import com.tsarsprocket.reportmid.gradle.library
 library(
     namespace = "com.tsarsprocket.reportmid.lolRoom",
 ) {
-    api(projects.lol)
+    api(projects.lol.api)
 
     // Rx
     impl(libs.rxandroid)

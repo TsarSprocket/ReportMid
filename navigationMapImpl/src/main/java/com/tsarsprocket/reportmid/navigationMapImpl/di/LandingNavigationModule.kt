@@ -4,8 +4,8 @@ import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.findSummonerApi.viewIntent.FindSummonerViewIntent
 import com.tsarsprocket.reportmid.landingApi.navigation.LandingNavigation
 import com.tsarsprocket.reportmid.landingApi.viewIntent.LandingIntent
-import com.tsarsprocket.reportmid.lol.model.Puuid
-import com.tsarsprocket.reportmid.lol.model.Region
+import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.mainScreenApi.viewIntent.MainScreenViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder

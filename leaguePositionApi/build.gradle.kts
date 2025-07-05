@@ -5,5 +5,5 @@ library(
     namespace = "com.tsarsprocket.reportmid.leaguePositionApi",
 ) {
     api(projects.baseApi)
-    api(projects.lol)
+    api(projects.lol.api)
 }

@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
-import com.tsarsprocket.reportmid.utils.R
+import com.tsarsprocket.reportmid.resLib.R as ResLibR
 
 
 @Composable
@@ -50,7 +50,7 @@ private fun FailurePreview() {
     ReportMidTheme {
         Failure(
             modifier = Modifier.size(120.dp),
-            iconPainter = painterResource(id = R.drawable.ic_failure),
+            iconPainter = painterResource(id = ResLibR.drawable.ic_failure),
             iconSize = 80.dp,
             description = "Failure",
         )
