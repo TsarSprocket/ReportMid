@@ -1,4 +1,3 @@
-import com.tsarsprocket.reportmid.gradle.androidTest
 import com.tsarsprocket.reportmid.gradle.debug
 import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.library
@@ -11,8 +10,6 @@ library(
     impl(libs.androidx.core.ktx)
     impl(libs.androidx.appcompat)
     impl(libs.material)
-    androidTest(libs.androidx.junit)
-    androidTest(libs.androidx.espresso.core)
 
     // Compose
     impl(platform(libs.compose.bom))

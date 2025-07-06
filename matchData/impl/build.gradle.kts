@@ -43,6 +43,7 @@ library(
 //        test(kotlin("test"))
 
         // JUnit 5
+        test(platform(junit.bom))
         test(junit.jupiter.api)
         testRuntimeOnly(junit.platform.launcher)
         testRuntimeOnly(junit.jupiter.engine)

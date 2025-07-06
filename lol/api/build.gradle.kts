@@ -27,6 +27,7 @@ library(
         test(mockito.kotlin)
 
         // JUnit
+        test(platform(junit.bom))
         test(junit.vintage.api)
         testRuntimeOnly(junit.vintage.engine)
 
