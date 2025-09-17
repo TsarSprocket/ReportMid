@@ -39,11 +39,11 @@ class FindSummonerVisualizer @Inject constructor(
 
     @Composable
     private fun ViewStateHolder.ConfirmSummoner(modifier: Modifier, state: ConfirmSummonerViewState) {
-        with(state.summonerData) {
+        with(state) {
             ConfirmSummonerScreen(
                 modifier = modifier,
-                summonerData = remember { this@with },
-                confirmAction = { with(navigation) { returnSuccess(puuid.value, region) } },
+                state = remember { this@with },
+                confirmAction = { with(navigation) { returnSuccess(puuid, region) } },
                 rejectAction = { with(navigation) { returnCancel() } },
             )
         }

@@ -36,6 +36,7 @@ import com.tsarsprocket.reportmid.utils.compose.Failure
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import com.tsarsprocket.reportmid.resLib.R as ResLib
 
 
 private const val RETRY_ATTEMPT = "retry_attempt"
@@ -89,7 +90,7 @@ private fun IconFailure(size: Dp, onClick: () -> Unit) {
     Failure(
         modifier = Modifier
             .size(size),
-        iconPainter = painterResource(com.tsarsprocket.reportmid.resLib.R.drawable.ic_failure),
+        iconPainter = painterResource(ResLib.drawable.ic_failure),
         iconSize = size * 0.66f,
         description = stringResource(R.string.profile_overview_summoner_icon_not_loaded),
         onClick = onClick,

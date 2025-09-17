@@ -17,7 +17,7 @@ import javax.inject.Provider
 
 @Stable
 interface ViewStateHolder : Parcelable {
-    val coroutineScope: CoroutineScope
+    val viewHolderScope: CoroutineScope
     val currentState: ViewState
     val globalId: UUID
     val parentHolder: ViewStateHolder?
@@ -26,6 +26,7 @@ interface ViewStateHolder : Parcelable {
     val topReturnIntent: ViewIntent?
     val viewStates: StateFlow<ViewState>
     fun createSubholder(tag: String = EMPTY_STRING, initialState: ViewState = EmptyScreenViewState): ViewStateHolder
+    fun initializeCoroutineScope(scope: CoroutineScope)
     fun popTopReturnIntent(): ViewIntent
     fun postIntent(intent: ViewIntent, returnIntent: ViewIntent? = null)
     fun postEffect(effect: ViewEffect)

@@ -67,7 +67,7 @@ internal class LandingReducer @Inject constructor(
     }
 
     private fun ViewStateHolder.startLoading(minDelay: Long) {
-        coroutineScope.launch {
+        viewHolderScope.launch {
             val isInitialized = doAtLeast(minDelay.milliseconds) {
                 try {
                     useCase.initializeDataDragon()

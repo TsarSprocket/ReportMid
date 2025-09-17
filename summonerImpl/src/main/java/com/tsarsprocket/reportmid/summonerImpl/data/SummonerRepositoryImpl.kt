@@ -4,12 +4,9 @@ import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.baseApi.data.NoDataFoundException
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
-import com.tsarsprocket.reportmid.lol.api.model.GameName
 import com.tsarsprocket.reportmid.lol.api.model.Puuid
 import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.api.model.Region
-import com.tsarsprocket.reportmid.lol.api.model.TagLine
-import com.tsarsprocket.reportmid.lol.api.model.removeWhitespaces
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.getService
 import com.tsarsprocket.reportmid.requestManagerApi.data.Request
@@ -33,6 +30,7 @@ import com.tsarsprocket.reportmid.summonerImpl.retrofit.summoner.SummonerV4Servi
 import com.tsarsprocket.reportmid.summonerRoom.FriendEntity
 import com.tsarsprocket.reportmid.summonerRoom.MyAccountEntity
 import com.tsarsprocket.reportmid.summonerRoom.SummonerEntity
+import com.tsarsprocket.reportmid.utils.common.noWhitespaces
 import com.tsarsprocket.reportmid.utils.data.ExpiringValue
 import com.tsarsprocket.reportmid.utils.data.expiring
 import kotlinx.coroutines.CoroutineDispatcher
@@ -52,7 +50,6 @@ class SummonerRepositoryImpl @Inject constructor(
 ) : SummonerRepository {
 
     private val summonerCacheByPuuid = ConcurrentHashMap<PuuidAndRegion, ExpiringValue<Summoner>>()
-    private val summonerCacheBySummonerId = ConcurrentHashMap<SummonerIdKey, ExpiringValue<Summoner>>()
 
     override suspend fun createMyAccount(puuid: Puuid, region: Region): MyAccount = withContext(ioDispatcher) {
         val knownSummoner = addKnownSummoner(puuid, region)
@@ -108,16 +105,16 @@ class SummonerRepositoryImpl @Inject constructor(
         storage.summonerDAO().getByPuuidAndRegionId(puuid = puuidAndRegion.puuid.value, regionId = puuidAndRegion.region.id) != null
     }
 
-    override suspend fun getRiotAccountByGameName(gameName: GameName, tagLine: TagLine, region: Region): RiotAccount {
+    override suspend fun getRiotAccountByGameName(gameName: String, tagLine: String, region: Region): RiotAccount {
         return withContext(ioDispatcher) {
             serviceFactory.getService<AccountV1Service>(region)
-                .getByRiotId(gameName.removeWhitespaces().value, tagLine.removeWhitespaces().value)
+                .getByRiotId(gameName.noWhitespaces, tagLine.noWhitespaces)
                 .let { dto ->
                     RiotAccount(
                         puuid = Puuid(dto.puuid),
                         region = region,
-                        gameName = dto.gameName?.let { GameName(it) } ?: gameName,
-                        tagLine = dto.tagLine?.let { TagLine(it) } ?: tagLine,
+                        gameName = dto.gameName ?: gameName,
+                        tagLine = dto.tagLine ?: tagLine,
                     )
                 }
         }
@@ -130,8 +127,8 @@ class SummonerRepositoryImpl @Inject constructor(
                     RiotAccount(
                         puuid = Puuid(dto.puuid),
                         region = region,
-                        gameName = GameName(dto.gameName!!),
-                        tagLine = TagLine(dto.tagLine!!),
+                        gameName = dto.gameName!!,
+                        tagLine = dto.tagLine!!,
                     )
                 }
         }
@@ -141,22 +138,10 @@ class SummonerRepositoryImpl @Inject constructor(
         return summonerCacheByPuuid[puuidAndRegion]?.getIfValid(TTL) ?: withContext(computationDispatcher) { fetchSummonerByPuuid(puuidAndRegion) }.also { summoner ->
             val expiring = summoner.expiring
             summonerCacheByPuuid[puuidAndRegion] = expiring
-            summonerCacheBySummonerId[SummonerIdKey(summoner.riotId, summoner.region)] = expiring
         }
     }
 
-    override suspend fun requestRemoteSummonerByRiotId(id: String, region: Region): Summoner {
-        val key = SummonerIdKey(id, region)
-        return summonerCacheBySummonerId[key]?.getIfValid(TTL) ?: withContext(computationDispatcher) {
-            fetchSummonerBySummonerId(key).also { summoner ->
-                val expiring = summoner.expiring
-                summonerCacheByPuuid[PuuidAndRegion(summoner.puuid, summoner.region)] = expiring
-                summonerCacheBySummonerId[key] = expiring
-            }
-        }
-    }
-
-    override suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: GameName, tagLine: TagLine, region: Region): Summoner {
+    override suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: String, tagLine: String, region: Region): Summoner {
         return with(getRiotAccountByGameName(gameName, tagLine, region)) {
             requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(puuid, region))
         }
@@ -240,19 +225,10 @@ class SummonerRepositoryImpl @Inject constructor(
         return createSummoner(requestManager.request(SummonerRequestByPuuid(PuuidKey(puuidAndRegion))).summonerDto, puuidAndRegion.region)
     }
 
-    private suspend fun fetchSummonerBySummonerId(key: SummonerIdKey): Summoner {
-        return createSummoner(requestManager.request(SummonerRequestBySummonerId(key)).summonerDto, key.region)
-    }
-
-    private suspend fun fetchSummonerBySummonerName(key: SummonerNameKey): Summoner {
-        return createSummoner(requestManager.request<SummonerRequestResult>(SummonerRequestBySummonerName(key)).summonerDto, key.region)
-    }
-
     private fun createSummoner(dto: SummonerDto, region: Region): Summoner {
         return with(dto) {
             Summoner(
                 region = region,
-                riotId = riotId,
                 iconId = profileIconId,
                 puuid = Puuid(puuid),
                 level = summonerLevel,
@@ -268,16 +244,6 @@ class SummonerRepositoryImpl @Inject constructor(
 
     private data class MasteriesPuuidKey(
         val puuid: Puuid,
-        val region: Region,
-    ) : RequestKey
-
-    private data class SummonerNameKey(
-        val summonerName: String,
-        val region: Region,
-    ) : RequestKey
-
-    private data class SummonerIdKey(
-        val summonerId: String,
         val region: Region,
     ) : RequestKey
 
@@ -299,22 +265,6 @@ class SummonerRepositoryImpl @Inject constructor(
         override suspend fun invoke(): SummonerRequestResult {
             val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.puuidAndRegion.region)
             return SummonerRequestResult(summonerV4Service.getByPuuid(key.puuidAndRegion.puuid.value))
-        }
-    }
-
-    private inner class SummonerRequestBySummonerId(key: SummonerIdKey) : Request<SummonerIdKey, SummonerRequestResult>(key) {
-
-        override suspend fun invoke(): SummonerRequestResult {
-            val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
-            return SummonerRequestResult(summonerV4Service.getBySummonerId(key.summonerId))
-        }
-    }
-
-    private inner class SummonerRequestBySummonerName(key: SummonerNameKey) : Request<SummonerNameKey, SummonerRequestResult>(key) {
-
-        override suspend fun invoke(): SummonerRequestResult {
-            val summonerV4Service = serviceFactory.getService<SummonerV4Service>(key.region)
-            return SummonerRequestResult(summonerV4Service.getBySummonerName(key.summonerName))
         }
     }
 

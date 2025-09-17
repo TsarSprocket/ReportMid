@@ -4,14 +4,10 @@ import com.tsarsprocket.reportmid.lol.api.model.Perk
 
 data class Participant(
     val assists: Int,
-    val championId: Int,
+    val championId: Long,
     val deaths: Int,
-    val item0: Int,
-    val item1: Int,
-    val item2: Int,
-    val item3: Int,
-    val item4: Int,
-    val item5: Int,
+    val items: List<Int?>,
+    val ward: Int?,
     val kills: Int,
     val primaryStyle: RuneStyle,
     val secondaryStyle: RuneStyle,

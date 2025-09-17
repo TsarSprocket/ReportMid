@@ -1,8 +1,10 @@
 package com.tsarsprocket.reportmid.matchData.impl.data
 
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
+import com.tsarsprocket.reportmid.lol.api.model.GameTypeFactory
 import com.tsarsprocket.reportmid.lol.api.model.Perk
 import com.tsarsprocket.reportmid.lol.api.model.Rune
+import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.RuneStyle
@@ -14,21 +16,28 @@ import com.tsarsprocket.reportmid.matchData.impl.retrofit.PerksDto
 import javax.inject.Inject
 
 internal class MatchModelMapper @Inject constructor(
-    private val dataDragon: DataDragon
+    private val dataDragon: DataDragon,
+    private val gameTypeFactory: GameTypeFactory,
 ) {
 
-    fun map(dto: MatchDto): Match {
+    fun map(dto: MatchDto, hasMoreHint: HasMoreHint): Match {
+        var isRemake = false
         var winnerTeamId = IMPOSSIBLE_TEAM_ID
         val teamParticipants = dto.info.teams.map { teamDto -> teamDto.teamId }.associateWith { mutableListOf<Participant>() }
         val participants = dto.info.participants.map { participantDto ->
+            if(participantDto.gameEndedInEarlySurrender) isRemake = true
             mapParticipant(participantDto).also {
                 teamParticipants[participantDto.teamId]?.add(it)
                 if(participantDto.win) winnerTeamId = participantDto.teamId
             }
         }
         return Match(
+            matchId = dto.metadata.matchId,
+            gameType = with(dto.info) { gameTypeFactory.getGameType(gameMode, gameType, mapId, queueId) },
+            isRemake = isRemake,
             teams = teamParticipants.entries.map { (teamId, participants) -> Team(participants, teamId == winnerTeamId) },
             participant = participants,
+            hasMoreHint = hasMoreHint,
         )
     }
 
@@ -50,15 +59,11 @@ internal class MatchModelMapper @Inject constructor(
                 assists = assists,
                 championId = championId,
                 deaths = deaths,
-                item0 = item0,
-                item1 = item1,
-                item2 = item2,
-                item3 = item3,
-                item4 = item4,
-                item5 = item5,
+                items = listOf(item0, item1, item2, item3, item4, item5),
+                ward = item6,
                 kills = kills,
-                primaryStyle = RuneStyle(primaryStyles!!.first().runePath, primaryStyles!!), // primary style must present by the game rules
-                secondaryStyle = RuneStyle(secondaryStyles!!.first().runePath, secondaryStyles!!), // secondary style must present by the game rules
+                primaryStyle = RuneStyle(primaryStyles!!.first().runePath, primaryStyles), // primary style must present by the game rules
+                secondaryStyle = RuneStyle(secondaryStyles!!.first().runePath, secondaryStyles), // secondary style must present by the game rules
                 statPerks = perks.map(),
                 profileIcon = profileIcon,
                 puuid = puuid,

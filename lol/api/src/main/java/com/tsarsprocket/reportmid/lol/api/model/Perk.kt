@@ -23,6 +23,9 @@ open class Perk(
         ATTSPD(5005, "скорость атаки", "perk-images/StatMods/StatModsAttackSpeedIcon.png"),
         CDR(5007, "ускорение умений", "perk-images/StatMods/StatModsCDRScalingIcon.png"),
         ADFORCE(5008, "адаптивная сила", "perk-images/StatMods/StatModsAdaptiveForceIcon.png"),
+        MOVE_SPEED(5010, "скорость передвижения", "perk-images/StatMods/StatModsMovementSpeedIcon.png"),
+        HEALTH_PLUS(5011, "рост здоровья", "perk-images/StatMods/StatModsHealthPlusIcon.png"),
+        TENANCY(5013, "устойчивость", "perk-images/StatMods/StatModsTenacityIcon.png"),
     }
 
     companion object {

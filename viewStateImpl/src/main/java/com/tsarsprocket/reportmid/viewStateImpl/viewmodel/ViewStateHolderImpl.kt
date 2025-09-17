@@ -6,7 +6,6 @@ import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.common.logInfo
@@ -24,6 +23,9 @@ import com.tsarsprocket.reportmid.viewStateImpl.di.component
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,8 +57,7 @@ internal class ViewStateHolderImpl private constructor(
     @Ui.Immediate
     lateinit var immediateUiDispatcher: CoroutineDispatcher
 
-    override val coroutineScope: CoroutineScope
-        get() = viewModel.viewModelScope
+    override lateinit var viewHolderScope: CoroutineScope
 
     lateinit var viewModel: ViewStateViewModel
     override var parentHolder: ViewStateHolderImpl? = null
@@ -96,7 +97,11 @@ internal class ViewStateHolderImpl private constructor(
         tag = parcel.readString().orEmpty()
     )
 
-    override fun createSubholder(tag: String, initialState: ViewState) = ViewStateHolderImpl(tag, initialState).apply { setParentHolder(this@ViewStateHolderImpl) }
+    override fun createSubholder(tag: String, initialState: ViewState): ViewStateHolderImpl {
+        return ViewStateHolderImpl(tag, initialState).apply {
+            setParentHolder(this@ViewStateHolderImpl)
+        }
+    }
 
     override fun describeContents() = 0
 
@@ -104,6 +109,10 @@ internal class ViewStateHolderImpl private constructor(
         val operation = operationsStack.removeAt(operationsStack.lastIndex)
         viewModel.backStack.removeOperation(operation.uuid)
         postIntent(operation.goBackIntent)
+    }
+
+    override fun initializeCoroutineScope(scope: CoroutineScope) {
+        viewHolderScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
     }
 
     override fun popTopReturnIntent(): ViewIntent = operationsStack.removeAt(operationsStack.lastIndex).goBackIntent
@@ -115,7 +124,7 @@ internal class ViewStateHolderImpl private constructor(
     override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?) {
         logInfo("ViewIntent posted: $intent")
         returnIntent?.let { pushReturnIntent(returnIntent) }
-        coroutineScope.launch(immediateUiDispatcher) {
+        viewHolderScope.launch(immediateUiDispatcher) {
             mutableViewIntents.emit(intent)
         }
     }
@@ -127,6 +136,8 @@ internal class ViewStateHolderImpl private constructor(
     override fun setParentHolder(parentHolder: ViewStateHolder) {
         this.parentHolder = parentHolder as ViewStateHolderImpl
         this.viewModel = parentHolder.viewModel
+        if(this::viewHolderScope.isInitialized) viewHolderScope.cancel()
+        initializeCoroutineScope(parentHolder.viewHolderScope)
         propagateParentHolder()
     }
 
@@ -143,8 +154,7 @@ internal class ViewStateHolderImpl private constructor(
 
     override fun start() {
         viewModel.registerHolder(this)
-        intentJob?.cancel()
-        intentJob = coroutineScope.launch {
+        intentJob = viewHolderScope.launch {
             mutableViewIntents.collect { intent ->
                 processIntent(intent)
             }
@@ -153,7 +163,7 @@ internal class ViewStateHolderImpl private constructor(
     }
 
     override fun stop() {
-        intentJob?.cancel()
+        viewHolderScope.coroutineContext.cancelChildren()
         intentJob = null
         viewModel.unregisterHolder(this)
     }

@@ -19,4 +19,4 @@ import com.tsarsprocket.reportmid.viewStateApi.di.ViewStateInitializerBinding
         NavigationMapApi::class,
     ],
 )
-interface SummonerViewCapability
+internal interface SummonerViewCapability

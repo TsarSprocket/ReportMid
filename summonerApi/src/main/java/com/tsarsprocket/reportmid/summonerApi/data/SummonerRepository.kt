@@ -1,10 +1,8 @@
 package com.tsarsprocket.reportmid.summonerApi.data
 
-import com.tsarsprocket.reportmid.lol.api.model.GameName
 import com.tsarsprocket.reportmid.lol.api.model.Puuid
 import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.api.model.Region
-import com.tsarsprocket.reportmid.lol.api.model.TagLine
 import com.tsarsprocket.reportmid.summonerApi.model.ChampionMastery
 import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount
@@ -13,7 +11,7 @@ import com.tsarsprocket.reportmid.summonerApi.model.Summoner
 import com.tsarsprocket.reportmid.summonerApi.model.SummonerInfo
 
 interface SummonerRepository {
-    suspend fun getRiotAccountByGameName(gameName: GameName, tagLine: TagLine, region: Region): RiotAccount
+    suspend fun getRiotAccountByGameName(gameName: String, tagLine: String, region: Region): RiotAccount
     suspend fun getRiotAccountByPuuid(puuid: Puuid, region: Region): RiotAccount
 
     suspend fun getKnownSummonerId(puuidAndRegion: PuuidAndRegion): Long
@@ -21,9 +19,8 @@ interface SummonerRepository {
     suspend fun getMySummonersForRegion(reg: Region): List<Summoner>
     suspend fun getSummonerInfoById(id: Long): SummonerInfo
     suspend fun isSummonerKnown(puuidAndRegion: PuuidAndRegion): Boolean
-    suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: GameName, tagLine: TagLine, region: Region): Summoner
+    suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: String, tagLine: String, region: Region): Summoner
     suspend fun requestRemoteSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Summoner
-    suspend fun requestRemoteSummonerByRiotId(id: String, region: Region): Summoner
 
     suspend fun requestMasteriesByPuuidAndRegion(puuid: Puuid, region: Region): List<ChampionMastery>
 

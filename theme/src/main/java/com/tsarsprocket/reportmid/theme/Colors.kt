@@ -19,6 +19,8 @@ val reportMidColorScheme: ColorScheme
         surfaceVariant = Color(0xFF272730),
         onTertiaryContainer = Color(0xFF214752),
         tertiaryContainer = Color(0xFF00212B),
+        surfaceContainerHigh = Color(0xFF202020),
+        surfaceContainerHighest = Color(0xFF282828),
         surfaceContainerLow = Color(0xFF181818),
         surfaceContainer = Color(0xFF1A1A1A),
     )

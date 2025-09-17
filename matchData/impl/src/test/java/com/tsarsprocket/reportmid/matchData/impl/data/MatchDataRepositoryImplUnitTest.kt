@@ -49,7 +49,7 @@ internal class MatchDataRepositoryImplUnitTest {
 
     @Test
     fun `get match data successfully having empty cache`() = runTest {
-        whenever(matchModelMapper.map(any())).thenReturn(match)
+        whenever(matchModelMapper.map(any(), hasMoreHint)).thenReturn(match)
         whenever(matchIdPage.matchIds).thenReturn(listOfMatchIds)
         wheneverBlocking { requestManager.request(any(), eq(MatchIdPage::class)) }.thenReturn(matchIdPage)
         wheneverBlocking { requestManager.request(any(), eq(MatchDto::class)) }.thenReturn(matchDto)
@@ -58,7 +58,7 @@ internal class MatchDataRepositoryImplUnitTest {
 
         verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && this.region == region && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory).createRequest(eq(MATCH_ID), same(testRegion))
-        verify(matchModelMapper).map(same(matchDto))
+        verify(matchModelMapper).map(same(matchDto), hasMoreHint)
         assert(receivedMatch === match)
     }
 
@@ -71,7 +71,7 @@ internal class MatchDataRepositoryImplUnitTest {
 
         verify(matchIdPageRequestFactory, never()).createRequest(any())
         verify(matchRequestFactory, never()).createRequest(any(), any())
-        verify(matchModelMapper, never()).map(any())
+        verify(matchModelMapper, never()).map(any(), hasMoreHint)
         assert(receivedMatch == match)
     }
 
@@ -85,7 +85,7 @@ internal class MatchDataRepositoryImplUnitTest {
 
         verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && this.region == region && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory, never()).createRequest(any(), any())
-        verify(matchModelMapper, never()).map(any())
+        verify(matchModelMapper, never()).map(any(), hasMoreHint)
     }
 
     @Test
@@ -100,7 +100,7 @@ internal class MatchDataRepositoryImplUnitTest {
 
         verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && this.region == region && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory).createRequest(eq(MATCH_ID), same(testRegion))
-        verify(matchModelMapper, never()).map(any())
+        verify(matchModelMapper, never()).map(any(), hasMoreHint)
     }
 
     companion object {

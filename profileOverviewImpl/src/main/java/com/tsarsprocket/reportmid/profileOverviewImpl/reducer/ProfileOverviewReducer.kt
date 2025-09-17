@@ -13,13 +13,13 @@ import com.tsarsprocket.reportmid.profileOverviewImpl.viewState.ProfileOverviewS
 import com.tsarsprocket.reportmid.profileOverviewImpl.viewState.ProfileOverviewStateCluster.ShowErrorState
 import com.tsarsprocket.reportmid.utils.common.STANDARD_FIRST_DELAY_MILLIS
 import com.tsarsprocket.reportmid.utils.common.STANDARD_RETRY_DELAY_MILLIS
+import com.tsarsprocket.reportmid.utils.common.logDebug
 import com.tsarsprocket.reportmid.utils.coroutines.doAtLeast
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import javax.inject.Inject
@@ -63,24 +63,27 @@ internal class ProfileOverviewReducer @Inject constructor(
     }
 
     private fun ViewStateHolder.loadProfile(puuid: String, region: Region, isRetry: Boolean): ViewState {
-        coroutineScope.launch(CoroutineExceptionHandler { _, _ ->
-            postIntent(ShowErrorViewIntent(puuid, region))
-        }) {
-            val profileOverview = doAtLeast((if(isRetry) STANDARD_RETRY_DELAY_MILLIS else STANDARD_FIRST_DELAY_MILLIS).milliseconds) {
-                profileOverviewUseCase.getOverview(puuid, region)
-            }
-
-            postIntent(
-                with(profileOverview) {
-                    ShowProfileViewIntent(
-                        profileImage = imageUrl,
-                        gameName = gameName,
-                        tagLine = tagLine,
-                        level = level,
-                        masteries = masteries.map { ShowProfileViewIntent.Mastery(it) },
-                    )
+        viewHolderScope.launch {
+            try {
+                val profileOverview = doAtLeast((if(isRetry) STANDARD_RETRY_DELAY_MILLIS else STANDARD_FIRST_DELAY_MILLIS).milliseconds) {
+                    profileOverviewUseCase.getOverview(puuid, region)
                 }
-            )
+
+                postIntent(
+                    with(profileOverview) {
+                        ShowProfileViewIntent(
+                            profileImage = imageUrl,
+                            gameName = gameName,
+                            tagLine = tagLine,
+                            level = level,
+                            masteries = masteries.map { ShowProfileViewIntent.Mastery(it) },
+                        )
+                    }
+                )
+            } catch(exception: Exception) {
+                logDebug("Error loading profile", exception)
+                postIntent(ShowErrorViewIntent(puuid, region))
+            }
         }
 
         return LoadingState

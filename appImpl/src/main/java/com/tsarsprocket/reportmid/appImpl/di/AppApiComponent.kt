@@ -12,6 +12,8 @@ import com.tsarsprocket.reportmid.leaguePositionImpl.di.LeaguePositionProvisionM
 import com.tsarsprocket.reportmid.lol.impl.di.LolCapabilityProvisionModule
 import com.tsarsprocket.reportmid.lolServicesImpl.di.LolServicesProvisionModule
 import com.tsarsprocket.reportmid.mainScreenImpl.di.MainScreenCapabilityProvisionModule
+import com.tsarsprocket.reportmid.matchData.impl.di.MatchDataCapabilityProvisionModule
+import com.tsarsprocket.reportmid.matchHistory.impl.di.MatchHistoryCapabilityProvisionModule
 import com.tsarsprocket.reportmid.navigationMapImpl.di.NavigationMapCapabilityProvisionModule
 import com.tsarsprocket.reportmid.profileOverviewImpl.di.ProfileOverviewCapabilityProvisionModule
 import com.tsarsprocket.reportmid.requestManagerImpl.di.RequestManagerCapabilityProvisionModule
@@ -37,6 +39,8 @@ import dagger.Component
         LolCapabilityProvisionModule::class,
         LolServicesProvisionModule::class,
         MainScreenCapabilityProvisionModule::class,
+        MatchDataCapabilityProvisionModule::class,
+        MatchHistoryCapabilityProvisionModule::class,
         NavigationMapCapabilityProvisionModule::class,
         ProfileOverviewCapabilityProvisionModule::class,
         RequestManagerCapabilityProvisionModule::class,

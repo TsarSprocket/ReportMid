@@ -14,6 +14,8 @@ library(
 
         impl(navigationMapApi)
         impl(profileOverviewApi)
+        impl(resLib)
+        impl(matchHistory.api)
         impl(theme)
 
         impl(kspApi)

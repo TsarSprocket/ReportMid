@@ -2,10 +2,8 @@ package com.tsarsprocket.reportmid.findSummonerImpl.domain
 
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
-import com.tsarsprocket.reportmid.lol.api.model.GameName
 import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.api.model.Region
-import com.tsarsprocket.reportmid.lol.api.model.TagLine
 import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -17,7 +15,7 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
     @Io private val ioDispatcher: CoroutineDispatcher,
 ) : FindSummonerUseCase {
 
-    override suspend fun findAccount(gameName: GameName, tagline: TagLine, region: Region): AccountData = withContext(ioDispatcher) {
+    override suspend fun findAccount(gameName: String, tagline: String, region: Region): AccountData = withContext(ioDispatcher) {
         try {
             summonerRepository.getRiotAccountByGameName(gameName, tagline, region).run {
                 AccountData(
@@ -36,9 +34,10 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
     override suspend fun getSummonerData(accountData: AccountData): SummonerData = withContext(ioDispatcher) {
         summonerRepository.requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(accountData.puuid, accountData.region)).run {
             SummonerData(
-                puuid = puuid,
+                puuid = puuid.value,
                 region = region,
-                riotId = riotId,
+                gameName = accountData.gameName,
+                tagLine = accountData.tagline,
                 iconUrl = dataDragon.tail.getSummonerImageUrl(iconId),
                 level = level,
             )

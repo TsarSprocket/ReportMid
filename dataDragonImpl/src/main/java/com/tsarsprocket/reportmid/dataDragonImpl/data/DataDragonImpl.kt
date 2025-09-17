@@ -4,6 +4,7 @@ import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.BASE_URL
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.CHAMPION_IMAGE_INFIX
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.ITEM_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_EXT
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Tail
@@ -138,7 +139,7 @@ class DataDragonImpl @Inject constructor(
         }
 
         val itemEntities = lstRetroItems.data.entries.map { (key, data) ->
-            ItemEntity(langId, key.toInt(), data.name, data.image.full)
+            ItemEntity(langId, key, data.name, data.image.full)
                 .also { @Temporary runBlocking { db.itemDao().insert(it) } }
         }
 
@@ -199,6 +200,8 @@ class DataDragonImpl @Inject constructor(
         private val summSpellRegistry: Map<Long, SummonerSpell> = summonerSpells.associateBy { it.key }
         private val itemRegistry: Map<Int, Item> = items.associateBy { it.riotId }
 
+        private val versionedImageBase: String
+            get() = "${BASE_URL}cdn/$version"
 
         override fun getRunePathById(id: Int): RunePath = runePathRegistry[id] ?: throw RuntimeException("Rune path with unknown id=$id is requested")
         override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
@@ -206,9 +209,8 @@ class DataDragonImpl @Inject constructor(
         override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
         override fun getItemById(id: Int): Item = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
 
-        override fun getChampionImageUrl(championName: String): String = "${getVersionedImageBase()}$CHAMPION_IMAGE_INFIX$championName"
-        override fun getSummonerImageUrl(summonerIconId: Int): String = "${getVersionedImageBase()}$PROFILE_IMAGE_INFIX$summonerIconId$PROFILE_IMAGE_EXT"
-
-        private fun getVersionedImageBase(): String = "${BASE_URL}cdn/$version/"
+        override fun getChampionImageUrl(championName: String): String = "$versionedImageBase/$CHAMPION_IMAGE_INFIX/$championName"
+        override fun getItemImageUrl(item: Item): String = "$versionedImageBase/$ITEM_IMAGE_INFIX/${item.imageName}"
+        override fun getSummonerImageUrl(summonerIconId: Int): String = "$versionedImageBase/$PROFILE_IMAGE_INFIX/$summonerIconId$PROFILE_IMAGE_EXT"
     }
 }

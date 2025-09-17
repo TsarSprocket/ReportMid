@@ -13,8 +13,10 @@ library(
         api(matchHistory.api)
         api(theme)
 
+        impl(appApi)
         impl(baseApi)
         impl(dataDragonApi)
+        impl(matchData.api)
         impl(resLib)
         impl(summonerApi)
         impl(utils)

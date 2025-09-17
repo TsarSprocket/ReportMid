@@ -41,6 +41,7 @@ internal class ViewStateViewModel @AssistedInject constructor(
 
     val rootHolder: ViewStateHolderImpl = savedStateHandle.get<ViewStateHolderImpl>(KEY_ROOT_HOLDER)!!.apply {
         viewModel = this@ViewStateViewModel
+        initializeCoroutineScope(viewModelScope)
         propagateParentHolder()
         start()
     }

@@ -24,8 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.tsarsprocket.reportmid.findSummonerImpl.R
-import com.tsarsprocket.reportmid.findSummonerImpl.domain.SummonerData
-import com.tsarsprocket.reportmid.lol.api.model.Puuid
+import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
@@ -34,7 +33,7 @@ import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 @Composable
 internal fun ConfirmSummonerScreen(
     modifier: Modifier,
-    summonerData: SummonerData,
+    state: ConfirmSummonerViewState,
     confirmAction: () -> Unit,
     rejectAction: () -> Unit,
 ) {
@@ -49,14 +48,14 @@ internal fun ConfirmSummonerScreen(
 
         Image(
             modifier = Modifier.requiredSize(size = 128.dp),
-            painter = rememberAsyncImagePainter(model = summonerData.iconUrl),
+            painter = rememberAsyncImagePainter(model = state.iconUrl),
             contentDescription = null,
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = summonerData.riotId,
+            text = state.playerName,
         )
 
         Spacer(modifier = Modifier.weight(3f))
@@ -109,10 +108,10 @@ private fun ConfirmSummonerScreenPreview() {
     ReportMidTheme {
         ConfirmSummonerScreen(
             modifier = Modifier,
-            summonerData = SummonerData(
-                puuid = Puuid(EMPTY_STRING),
+            state = ConfirmSummonerViewState(
+                puuid = EMPTY_STRING,
                 region = Region.RUSSIA,
-                riotId = "Lorem#ipsum",
+                playerName = "Lorem#ipsum",
                 iconUrl = "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/a/a7/MalzaharSquare.png/revision/latest?cb=20170802052150",
                 level = 0,
             ),

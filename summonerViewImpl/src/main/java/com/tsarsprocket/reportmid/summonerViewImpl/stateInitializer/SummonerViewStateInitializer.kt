@@ -10,7 +10,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import javax.inject.Inject
 
 @PerApi
-class SummonerViewStateInitializer @Inject constructor(
+internal class SummonerViewStateInitializer @Inject constructor(
     @Navigation(SummonerViewNavigation.TAG)
     private val navigation: SummonerViewNavigation
 ) : ViewStateInitializer {

@@ -33,8 +33,8 @@ internal class ProfileOverviewUseCaseImpl @Inject constructor(
             }
 
         return ProfileOverviewModel(
-            gameName = account.gameName.value,
-            tagLine = account.tagLine.value,
+            gameName = account.gameName,
+            tagLine = account.tagLine,
             imageUrl = dataDragon.tail.getSummonerImageUrl(summoner.iconId),
             level = summoner.level,
             masteries = masteries,

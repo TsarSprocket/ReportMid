@@ -10,7 +10,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-interface SummonerViewStateInitializerBindingModule {
+internal interface SummonerViewStateInitializerBindingModule {
 
     @Binds
     @PerApi

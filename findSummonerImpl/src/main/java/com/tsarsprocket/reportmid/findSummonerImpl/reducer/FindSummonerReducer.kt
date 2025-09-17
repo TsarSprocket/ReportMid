@@ -10,13 +10,10 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.GameNameChanged
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.RegionSelected
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.TagLineChanged
-import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.lol.api.model.GameName
-import com.tsarsprocket.reportmid.lol.api.model.TagLine
-import com.tsarsprocket.reportmid.lol.api.model.removeWhitespaces
 import com.tsarsprocket.reportmid.utils.common.logError
+import com.tsarsprocket.reportmid.utils.common.noWhitespaces
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -31,6 +28,7 @@ import javax.inject.Inject
 )
 internal class FindSummonerReducer @Inject constructor(
     private val useCase: FindSummonerUseCase,
+    private val summonerDataMapper: SummonerDataMapper,
 ) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState = when(intent) {
@@ -50,8 +48,8 @@ internal class FindSummonerReducer @Inject constructor(
     private suspend fun confirmFinding(intent: FindAndConfirmSummonerViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         return try {
             val accountData = useCase.findAccount(
-                gameName = GameName(intent.gameName).removeWhitespaces(),
-                tagline = TagLine(intent.tagline).removeWhitespaces(),
+                gameName = intent.gameName.noWhitespaces,
+                tagline = intent.tagline.noWhitespaces,
                 region = intent.region,
             )
 
@@ -60,7 +58,7 @@ internal class FindSummonerReducer @Inject constructor(
                 state
             } else {
                 (state as SummonerDataEntryViewState).run {
-                    ConfirmSummonerViewState(useCase.getSummonerData(accountData))
+                    summonerDataMapper.map(useCase.getSummonerData(accountData))
                 }
             }
         } catch(exception: Exception) {

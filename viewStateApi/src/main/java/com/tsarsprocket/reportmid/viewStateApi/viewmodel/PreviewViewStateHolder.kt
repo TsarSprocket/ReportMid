@@ -19,7 +19,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 @SuppressLint("ParcelCreator") // Never supposed to be parcelled
 object PreviewViewStateHolder : ViewStateHolder {
 
-    override val coroutineScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext)
+    override val viewHolderScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext)
     override val currentState: ViewState = EmptyScreenViewState
     override val globalId: UUID = UUID.randomUUID()
     override val parentHolder: ViewStateHolder? = null
@@ -31,6 +31,8 @@ object PreviewViewStateHolder : ViewStateHolder {
     override fun createSubholder(tag: String, initialState: ViewState): ViewStateHolder = this
 
     override fun describeContents() = 0
+    override fun initializeCoroutineScope(scope: CoroutineScope) { /* nothing */
+    }
 
     override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?) { /* nothing */
     }
