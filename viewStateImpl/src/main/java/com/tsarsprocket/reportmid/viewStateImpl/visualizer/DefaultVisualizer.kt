@@ -33,6 +33,8 @@ class DefaultVisualizer @Inject constructor() : ViewStateVisualizer {
         SideEffect {
             stateHolder.postIntent(state.intent)
         }
+
+        Box(modifier)
     }
 
     @Composable

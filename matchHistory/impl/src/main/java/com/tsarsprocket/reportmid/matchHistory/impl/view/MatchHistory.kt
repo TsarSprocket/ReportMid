@@ -80,8 +80,8 @@ private fun MatchItem(item: MatchInfo) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier.height(IntrinsicSize.Max),
-            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(IntrinsicSize.Max),
         ) {
             with(item) {
                 WinIndicator(
@@ -89,24 +89,33 @@ private fun MatchItem(item: MatchInfo) {
                     gameOutcome = gameOutcome,
                 )
 
-                PlayerChampion(info = self)
+                Row(
+                    modifier = Modifier
+                        .height(IntrinsicSize.Max)
+                        .padding(start = 16.dp, top = 8.dp, end = 24.dp, bottom = 8.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    PlayerChampion(info = self)
 
-                GameOverview(
-                    gameType = gameType,
-                    kills = kills,
-                    deaths = deaths,
-                    assists = assists,
-                )
+                    GameOverview(
+                        gameType = gameType,
+                        kills = kills,
+                        deaths = deaths,
+                        assists = assists,
+                    )
 
-                PlayerItems(
-                    items = items,
-                    ward = ward,
-                )
+                    PlayerItems(
+                        items = items,
+                        ward = ward,
+                    )
 
-                OtherPlayers(
-                    teammates = teammates,
-                    enemies = enemies,
-                )
+                    OtherPlayers(
+                        teammates = teammates,
+                        enemies = enemies,
+                    )
+                }
             }
         }
     }
@@ -264,14 +273,14 @@ private fun ShowLoadingMoreItem(itemsInList: Int, isLoading: Boolean, onMoreToSh
         if(!isLoading) onMoreToShow()
     }
 
-    Card(
+    Box(
         modifier = Modifier.fillMaxWidth(),
     ) {
         CircularProgressIndicator(
             modifier = Modifier
-                .padding(4.dp)
-                .size(48.dp)
-                .align(Alignment.CenterHorizontally),
+                .padding(16.dp)
+                .size(32.dp)
+                .align(Alignment.Center),
         )
     }
 }
