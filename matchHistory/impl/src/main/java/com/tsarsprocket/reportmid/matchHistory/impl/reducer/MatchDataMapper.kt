@@ -10,7 +10,9 @@ import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.REMAKE
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.WIN
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
+import com.tsarsprocket.reportmid.utils.math.isEven
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import javax.inject.Inject
 
@@ -29,8 +31,8 @@ internal class MatchDataMapper @Inject constructor(
         assists = from.me.assists.toString(),
         items = mapItems(from.me.items),
         ward = mapSingleItem(from.me.ward),
-        teammates = mapTeamPlayers(from.myTeam.players, from.me.puuid),
-        enemies = mapTeamPlayers(from.enemyTeam.players, from.me.puuid),
+        teammates = mapTeamPlayers(from.myTeam.players, false),
+        enemies = mapTeamPlayers(from.enemyTeam.players, true),
     )
 
     private fun mapItems(items: List<Int?>): ImmutableList<ImmutableList<ItemInfo>> {
@@ -52,13 +54,30 @@ internal class MatchDataMapper @Inject constructor(
         )
     }
 
-    private fun mapTeamPlayers(data: List<PlayerData>, myPuuid: String): ImmutableList<ChampionInfo> {
-        return data.filter { it.puuid != myPuuid }.map {
-            ChampionInfo(
-                icon = it.championIcon,
-                name = it.championName,
+    private fun mapTeamPlayers(
+        data: List<PlayerData>,
+        isStarting0thColumn: Boolean,
+    ): ImmutableList<ImmutableList<ChampionInfo>> {
+
+        fun mapPlayer(player: PlayerData): ChampionInfo {
+            return ChampionInfo(
+                icon = player.championIcon,
+                name = player.championName
             )
-        }.toPersistentList()
+        }
+
+        val column0 = mutableListOf<ChampionInfo>()
+        val column1 = mutableListOf<ChampionInfo>()
+
+        data.forEachIndexed { index, player ->
+            if(index.isEven == isStarting0thColumn) {
+                column0.add(mapPlayer(player))
+            } else {
+                column1.add(mapPlayer(player))
+            }
+        }
+
+        return persistentListOf(column0.toPersistentList(), column1.toPersistentList())
     }
 
     private fun mapSingleItem(itemId: Int?): ItemInfo = if(itemId != null) {

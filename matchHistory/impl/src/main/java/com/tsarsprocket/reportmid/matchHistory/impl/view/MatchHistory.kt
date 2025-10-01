@@ -1,28 +1,26 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,12 +45,13 @@ import kotlinx.collections.immutable.persistentListOf
 import com.tsarsprocket.reportmid.resLib.R as ResLib
 
 private const val GAME_OVERVIEW_SPACING = 8
-private const val ITEM_ICON_SIZE = 24
+private const val ITEM_ICON_SIZE = 18
 private const val ITEM_SPACING = 2
-private const val OTHER_PLAYER_ICON_SIZE = 18
-private const val OTHER_PLAYERS_SPACING = 1
-private const val PLAYER_ICON_SIZE = 64
+private const val PLAYER_ICON_SIZE = 40
 private const val SPACING_AROUND_SLASH = 4
+private const val TEAMMATE_ICON_SIZE = 18
+private const val TEAMS_SPACING = 2
+private const val TEAMS_INTERSPACING = 8
 private const val WIN_INDICATOR_WIDTH = 16
 
 @Composable
@@ -76,46 +75,45 @@ internal fun MatchHistory(
 
 @Composable
 private fun MatchItem(item: MatchInfo) {
+    val backgroundColor = when(item.gameOutcome) {
+        GameOutcome.WIN -> ReportMidSpecialColors.win
+        GameOutcome.LOSE -> ReportMidSpecialColors.lose
+        GameOutcome.REMAKE -> ReportMidSpecialColors.remake
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor.compositeOver(CardDefaults.cardColors().containerColor)
+        )
     ) {
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max),
-        ) {
-            with(item) {
-                WinIndicator(
-                    modifier = Modifier.fillMaxHeight(),
-                    gameOutcome = gameOutcome,
+        with(item) {
+            Row(
+                modifier = Modifier
+                    .height(IntrinsicSize.Max)
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                PlayerChampion(info = self)
+
+                GameOverview(
+                    gameType = gameType,
+                    kills = kills,
+                    deaths = deaths,
+                    assists = assists,
                 )
 
-                Row(
-                    modifier = Modifier
-                        .height(IntrinsicSize.Max)
-                        .padding(start = 16.dp, top = 8.dp, end = 24.dp, bottom = 8.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    PlayerChampion(info = self)
+                PlayerItems(
+                    items = items,
+                    ward = ward,
+                )
 
-                    GameOverview(
-                        gameType = gameType,
-                        kills = kills,
-                        deaths = deaths,
-                        assists = assists,
-                    )
-
-                    PlayerItems(
-                        items = items,
-                        ward = ward,
-                    )
-
-                    OtherPlayers(
-                        teammates = teammates,
-                        enemies = enemies,
-                    )
-                }
+                Teams(
+                    teammates = teammates,
+                    enemies = enemies,
+                )
             }
         }
     }
@@ -151,7 +149,7 @@ fun GameOverview(gameType: String, kills: String, deaths: String, assists: Strin
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val textStyle = reportMidTypography.bodySmall
+        val textStyle = reportMidTypography.bodyMedium
 
         Text(
             text = gameType,
@@ -193,44 +191,43 @@ fun GameOverview(gameType: String, kills: String, deaths: String, assists: Strin
 }
 
 @Composable
-private fun OtherPlayers(teammates: ImmutableList<ChampionInfo>, enemies: ImmutableList<ChampionInfo>) {
+private fun Teams(teammates: ImmutableList<ImmutableList<ChampionInfo>>, enemies: ImmutableList<ImmutableList<ChampionInfo>>) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(OTHER_PLAYERS_SPACING.dp),
+        horizontalArrangement = Arrangement.spacedBy(TEAMS_INTERSPACING.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(OTHER_PLAYERS_SPACING.dp),
-        ) {
-            teammates.forEach { teammate ->
-                SubcomposeAsyncImage(
-                    modifier = Modifier.size(OTHER_PLAYER_ICON_SIZE.dp),
-                    model = teammate.icon,
-                    contentDescription = teammate.name,
-                    loading = {
-                        SkeletonRectangle(
-                            modifier = Modifier.size(OTHER_PLAYER_ICON_SIZE.dp),
-                            cornerSize = 1.dp
-                        )
-                    },
-                    error = {
-                        Failure(
-                            modifier = Modifier.size(OTHER_PLAYER_ICON_SIZE.dp),
-                            iconPainter = painterResource(ResLib.drawable.ic_failure),
-                            iconSize = OTHER_PLAYER_ICON_SIZE.dp * 0.66f,
-                            description = teammate.name,
-                        )
+        listOf(teammates, enemies).forEach { team ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(TEAMS_SPACING.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                team.forEach { teamColumn ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(TEAMS_SPACING.dp),
+                    ) {
+                        teamColumn.forEach { player ->
+                            SubcomposeAsyncImage(
+                                modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
+                                model = player.icon,
+                                contentDescription = player.name,
+                                loading = {
+                                    SkeletonRectangle(
+                                        modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
+                                        cornerSize = 1.dp
+                                    )
+                                },
+                                error = {
+                                    Failure(
+                                        modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
+                                        iconPainter = painterResource(ResLib.drawable.ic_failure),
+                                        iconSize = TEAMMATE_ICON_SIZE.dp * 0.66f,
+                                        description = player.name,
+                                    )
+                                }
+                            )
+                        }
                     }
-                )
-            }
-        }
-
-        Column {
-            enemies.forEach { enemy ->
-                AsyncImage(
-                    modifier = Modifier.size(OTHER_PLAYER_ICON_SIZE.dp),
-                    model = enemy.icon,
-                    contentDescription = enemy.name,
-                )
+                }
             }
         }
     }
@@ -283,21 +280,6 @@ private fun ShowLoadingMoreItem(itemsInList: Int, isLoading: Boolean, onMoreToSh
                 .align(Alignment.Center),
         )
     }
-}
-
-@Composable
-private fun WinIndicator(gameOutcome: GameOutcome, modifier: Modifier) {
-    val color = when(gameOutcome) {
-        GameOutcome.WIN -> ReportMidSpecialColors.win
-        GameOutcome.LOSE -> ReportMidSpecialColors.lose
-        GameOutcome.REMAKE -> ReportMidSpecialColors.remake
-    }
-
-    Box(
-        modifier = modifier
-            .width(WIN_INDICATOR_WIDTH.dp)
-            .background(shape = RoundedCornerShape(ITEM_SPACING.dp), color = color)
-    )
 }
 
 //  Preview ///////////////////////////////////////////////////////////////////

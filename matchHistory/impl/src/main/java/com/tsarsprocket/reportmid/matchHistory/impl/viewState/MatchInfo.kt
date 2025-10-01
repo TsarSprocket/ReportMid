@@ -14,6 +14,6 @@ internal class MatchInfo(
     val assists: String,
     val items: ImmutableList<ImmutableList<ItemInfo>>, // rows, then columns
     val ward: ItemInfo,
-    val teammates: ImmutableList<ChampionInfo>,
-    val enemies: ImmutableList<ChampionInfo>,
+    val teammates: ImmutableList<ImmutableList<ChampionInfo>>, // columns, then rows
+    val enemies: ImmutableList<ImmutableList<ChampionInfo>>, // columns, then rows
 ) : ItemToShow, Parcelable
