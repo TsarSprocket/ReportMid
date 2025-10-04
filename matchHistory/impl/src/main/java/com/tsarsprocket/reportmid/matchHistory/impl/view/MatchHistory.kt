@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.view
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,23 +38,24 @@ import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ShowingMatchHistoryState
 import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
+import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 import com.tsarsprocket.reportmid.utils.compose.Failure
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import com.tsarsprocket.reportmid.lol.api.R as RLolApi
 import com.tsarsprocket.reportmid.resLib.R as ResLib
 
-private const val GAME_OVERVIEW_SPACING = 8
 private const val ITEM_ICON_SIZE = 18
-private const val ITEM_SPACING = 2
+private const val ITEM_SPACING = 4
 private const val PLAYER_ICON_SIZE = 40
 private const val SPACING_AROUND_SLASH = 4
 private const val TEAMMATE_ICON_SIZE = 18
 private const val TEAMS_SPACING = 2
-private const val TEAMS_INTERSPACING = 8
-private const val WIN_INDICATOR_WIDTH = 16
+private const val TEAMS_HORIZONTAL_INTERSPACING = 4
+private const val TEAMS_VERTICAL_INTERSPACING = 6
 
 @Composable
 internal fun MatchHistory(
@@ -100,6 +103,7 @@ private fun MatchItem(item: MatchInfo) {
 
                 GameOverview(
                     gameType = gameType,
+                    outcome = gameOutcome,
                     kills = kills,
                     deaths = deaths,
                     assists = assists,
@@ -110,10 +114,11 @@ private fun MatchItem(item: MatchInfo) {
                     ward = ward,
                 )
 
-                Teams(
-                    teammates = teammates,
-                    enemies = enemies,
-                )
+                if(isSummonerRift) {
+                    SummonerRiftTeams(teams)
+                } else {
+                    GeneralTeams(teams)
+                }
             }
         }
     }
@@ -138,16 +143,19 @@ private fun GameItem(modifier: Modifier, item: ItemInfo) {
         }
 
         is ItemInfo.Empty -> {
-            Spacer(modifier)
+            Box(
+                modifier = modifier
+                    .border(width = 1.dp, color = reportMidColorScheme.secondary)
+            )
         }
     }
 }
 
 @Composable
-fun GameOverview(gameType: String, kills: String, deaths: String, assists: String) {
+fun GameOverview(gameType: String, kills: String, deaths: String, assists: String, outcome: GameOutcome) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceEvenly,
     ) {
         val textStyle = reportMidTypography.bodyMedium
 
@@ -157,7 +165,16 @@ fun GameOverview(gameType: String, kills: String, deaths: String, assists: Strin
             textAlign = TextAlign.Center,
         )
 
-        Spacer(Modifier.height(GAME_OVERVIEW_SPACING.dp))
+        val outcomeText = when(outcome) {
+            GameOutcome.WIN -> RLolApi.string.lol_api_game_outcome_win
+            GameOutcome.LOSE -> RLolApi.string.lol_api_game_outcome_defeat
+            GameOutcome.REMAKE -> RLolApi.string.lol_api_game_outcome_remake
+        }
+
+        Text(
+            text = stringResource(outcomeText),
+            style = textStyle,
+        )
 
         Row {
             Text(
@@ -191,12 +208,12 @@ fun GameOverview(gameType: String, kills: String, deaths: String, assists: Strin
 }
 
 @Composable
-private fun Teams(teammates: ImmutableList<ImmutableList<ChampionInfo>>, enemies: ImmutableList<ImmutableList<ChampionInfo>>) {
+private fun GeneralTeams(teams: ImmutableList<ImmutableList<ImmutableList<ChampionInfo?>>>) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(TEAMS_INTERSPACING.dp),
+        horizontalArrangement = Arrangement.spacedBy(TEAMS_HORIZONTAL_INTERSPACING.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        listOf(teammates, enemies).forEach { team ->
+        teams.forEach { team ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(TEAMS_SPACING.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -206,24 +223,9 @@ private fun Teams(teammates: ImmutableList<ImmutableList<ChampionInfo>>, enemies
                         verticalArrangement = Arrangement.spacedBy(TEAMS_SPACING.dp),
                     ) {
                         teamColumn.forEach { player ->
-                            SubcomposeAsyncImage(
+                            SinglePlayer(
                                 modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
-                                model = player.icon,
-                                contentDescription = player.name,
-                                loading = {
-                                    SkeletonRectangle(
-                                        modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
-                                        cornerSize = 1.dp
-                                    )
-                                },
-                                error = {
-                                    Failure(
-                                        modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
-                                        iconPainter = painterResource(ResLib.drawable.ic_failure),
-                                        iconSize = TEAMMATE_ICON_SIZE.dp * 0.66f,
-                                        description = player.name,
-                                    )
-                                }
+                                player = player,
                             )
                         }
                     }
@@ -246,6 +248,7 @@ private fun PlayerChampion(info: ChampionInfo) {
 private fun PlayerItems(items: ImmutableList<ImmutableList<ItemInfo>>, ward: ItemInfo) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(ITEM_SPACING.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -282,6 +285,74 @@ private fun ShowLoadingMoreItem(itemsInList: Int, isLoading: Boolean, onMoreToSh
     }
 }
 
+@Composable
+private fun SinglePlayer(
+    modifier: Modifier,
+    player: ChampionInfo?
+) {
+    if(player != null) {
+        SubcomposeAsyncImage(
+            modifier = modifier,
+            model = player.icon,
+            contentDescription = player.name,
+            loading = {
+                SkeletonRectangle(
+                    modifier = modifier,
+                    cornerSize = 1.dp
+                )
+            },
+            error = {
+                Failure(
+                    modifier = modifier,
+                    iconPainter = painterResource(ResLib.drawable.ic_failure),
+                    iconSize = TEAMMATE_ICON_SIZE.dp * 0.66f,
+                    description = player.name,
+                )
+            }
+        )
+    } else {
+        Spacer(modifier)
+    }
+}
+
+@Composable
+private fun SingleSummonerRiftTeam(modifier: Modifier, team: ImmutableList<ImmutableList<ChampionInfo?>>) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(TEAMS_SPACING.dp),
+    ) {
+        team.forEach { teamColumn ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(TEAMS_SPACING.dp),
+            ) {
+                teamColumn.forEach { player ->
+                    SinglePlayer(
+                        modifier = Modifier.size(TEAMMATE_ICON_SIZE.dp),
+                        player = player,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SummonerRiftTeams(teams: ImmutableList<ImmutableList<ImmutableList<ChampionInfo?>>>) {
+    Box {
+        // Blue team
+        teams.forEachIndexed { index, team ->
+            SingleSummonerRiftTeam(
+                modifier = Modifier
+                    .padding(
+                        start = ((TEAMMATE_ICON_SIZE + TEAMS_SPACING + TEAMS_HORIZONTAL_INTERSPACING) * index).dp,
+                        top = (TEAMS_VERTICAL_INTERSPACING * (teams.size - index - 1)).dp,
+                    ),
+                team = team,
+            )
+        }
+    }
+}
+
 //  Preview ///////////////////////////////////////////////////////////////////
 
 @Preview
@@ -301,6 +372,7 @@ fun MatchHistoryPreview() {
                             name = "Malzahar",
                         ),
                         gameType = "NORMAL DRAFT",
+                        isSummonerRift = false,
                         kills = "0",
                         deaths = "3",
                         assists = "15",
@@ -309,8 +381,7 @@ fun MatchHistoryPreview() {
                             icon = EMPTY_STRING,
                             name = EMPTY_STRING,
                         ),
-                        teammates = persistentListOf(),
-                        enemies = persistentListOf(),
+                        teams = persistentListOf(),
                     ),
                     MatchInfo(
                         GameOutcome.LOSE,
@@ -319,6 +390,7 @@ fun MatchHistoryPreview() {
                             name = "Malzahar",
                         ),
                         gameType = "NORMAL RANKED",
+                        isSummonerRift = false,
                         kills = "3",
                         deaths = "1",
                         assists = "5",
@@ -327,8 +399,7 @@ fun MatchHistoryPreview() {
                             icon = EMPTY_STRING,
                             name = EMPTY_STRING,
                         ),
-                        teammates = persistentListOf(),
-                        enemies = persistentListOf(),
+                        teams = persistentListOf(),
                     )
                 ),
                 isLoading = false,

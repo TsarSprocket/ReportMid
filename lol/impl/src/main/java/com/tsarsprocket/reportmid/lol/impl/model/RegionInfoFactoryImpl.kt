@@ -24,18 +24,18 @@ internal class RegionInfoFactoryImpl @Inject constructor(
 
     private val byRegion by lazy {
         listOf(
-            RegionInfo(BRAZIL.id, appContext.getString(R.string.lol_impl_region_name_brazil)),
-            RegionInfo(EUROPE_NORTH_EAST.id, appContext.getString(R.string.lol_impl_region_name_europe_north_east)),
-            RegionInfo(EUROPE_WEST.id, appContext.getString(R.string.lol_impl_region_name_europe_west)),
-            RegionInfo(JAPAN.id, appContext.getString(R.string.lol_impl_region_name_japan)),
-            RegionInfo(KOREA.id, appContext.getString(R.string.lol_impl_region_name_korea)),
-            RegionInfo(LATIN_AMERICA_NORTH.id, appContext.getString(R.string.lol_impl_region_name_latin_america_north)),
-            RegionInfo(LATIN_AMERICA_SOUTH.id, appContext.getString(R.string.lol_impl_region_name_latin_america_south)),
-            RegionInfo(NORTH_AMERICA.id, appContext.getString(R.string.lol_impl_region_name_north_america)),
-            RegionInfo(OCEANIA.id, appContext.getString(R.string.lol_impl_region_name_oceania)),
-            RegionInfo(RUSSIA.id, appContext.getString(R.string.lol_impl_region_name_russia)),
-            RegionInfo(TURKEY.id, appContext.getString(R.string.lol_impl_region_name_turkey)),
-        ).associateBy { it.regionId }.withDefault { RegionInfo(ID_NONEXISTENT_REGION, appContext.getString(R.string.lol_impl_region_name_nonexistent)) }
+            RegionInfo(BRAZIL.id, appContext.getString(R.string.lol_api_region_name_brazil)),
+            RegionInfo(EUROPE_NORTH_EAST.id, appContext.getString(R.string.lol_api_region_name_europe_north_east)),
+            RegionInfo(EUROPE_WEST.id, appContext.getString(R.string.lol_api_region_name_europe_west)),
+            RegionInfo(JAPAN.id, appContext.getString(R.string.lol_api_region_name_japan)),
+            RegionInfo(KOREA.id, appContext.getString(R.string.lol_api_region_name_korea)),
+            RegionInfo(LATIN_AMERICA_NORTH.id, appContext.getString(R.string.lol_api_region_name_latin_america_north)),
+            RegionInfo(LATIN_AMERICA_SOUTH.id, appContext.getString(R.string.lol_api_region_name_latin_america_south)),
+            RegionInfo(NORTH_AMERICA.id, appContext.getString(R.string.lol_api_region_name_north_america)),
+            RegionInfo(OCEANIA.id, appContext.getString(R.string.lol_api_region_name_oceania)),
+            RegionInfo(RUSSIA.id, appContext.getString(R.string.lol_api_region_name_russia)),
+            RegionInfo(TURKEY.id, appContext.getString(R.string.lol_api_region_name_turkey)),
+        ).associateBy { it.regionId }.withDefault { RegionInfo(ID_NONEXISTENT_REGION, appContext.getString(R.string.lol_api_region_name_nonexistent)) }
     }
 
     override fun get(regionId: Int): RegionInfo = byRegion[regionId]!!

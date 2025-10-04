@@ -5,7 +5,7 @@ fun interface GameTypeFactory {
     fun getGameType(
         gameMode: String,
         gameType: String,
-        mapId: String,
+        mapId: Int,
         queueId: Int,
     ): GameType
 }

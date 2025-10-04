@@ -9,11 +9,11 @@ internal class MatchInfo(
     val gameOutcome: GameOutcome,
     val self: ChampionInfo,
     val gameType: String,
+    val isSummonerRift: Boolean,
     val kills: String,
     val deaths: String,
     val assists: String,
     val items: ImmutableList<ImmutableList<ItemInfo>>, // rows, then columns
     val ward: ItemInfo,
-    val teammates: ImmutableList<ImmutableList<ChampionInfo>>, // columns, then rows
-    val enemies: ImmutableList<ImmutableList<ChampionInfo>>, // columns, then rows
+    val teams: ImmutableList<ImmutableList<ImmutableList<ChampionInfo?>>>,
 ) : ItemToShow, Parcelable

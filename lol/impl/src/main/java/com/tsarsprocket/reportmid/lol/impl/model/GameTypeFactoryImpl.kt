@@ -1,9 +1,14 @@
 package com.tsarsprocket.reportmid.lol.impl.model
 
 import android.content.Context
+import android.util.Log
 import com.tsarsprocket.reportmid.baseApi.di.AppContext
+import com.tsarsprocket.reportmid.lol.api.model.GAME_MODE_CLASSIC
+import com.tsarsprocket.reportmid.lol.api.model.GAME_TYPE_MATCHED
 import com.tsarsprocket.reportmid.lol.api.model.GameType
 import com.tsarsprocket.reportmid.lol.api.model.GameTypeFactory
+import com.tsarsprocket.reportmid.lol.api.model.QUEUE_ID_NORMAL_DRAFT
+import com.tsarsprocket.reportmid.lol.api.model.QUEUE_ID_SOLOQ
 import com.tsarsprocket.reportmid.lol.impl.R
 import javax.inject.Inject
 
@@ -11,7 +16,7 @@ internal class GameTypeFactoryImpl @Inject constructor(
     @AppContext appContext: Context,
 ) : GameTypeFactory {
 
-    private val gameTypeDescriptions: Map<String?, Map<String?, Map<String?, Map<Int?, String>>>> = mutableMapOf<String?, MutableMap<String?, MutableMap<String?, MutableMap<Int?, String>>>>().apply {
+    private val gameTypeDescriptions: Map<String?, Map<String?, Map<Int?, Map<Int?, String>>>> = mutableMapOf<String?, MutableMap<String?, MutableMap<Int?, MutableMap<Int?, String>>>>().apply {
         PATTERNS.forEach { pattern ->
             getOrPut(pattern.gameMode) { mutableMapOf() }
                 .getOrPut(pattern.gameType) { mutableMapOf() }
@@ -19,7 +24,10 @@ internal class GameTypeFactoryImpl @Inject constructor(
         }
     }
 
-    override fun getGameType(gameMode: String, gameType: String, mapId: String, queueId: Int): GameType {
+    override fun getGameType(gameMode: String, gameType: String, mapId: Int, queueId: Int): GameType {
+        // For game type discovery
+        Log.d("GAME_TYPE", "Mage mode: $gameMode, type: $gameType, map: $mapId, queue: $queueId")
+
         return GameType(
             gameMode = gameMode,
             gameType = gameType,
@@ -36,21 +44,16 @@ internal class GameTypeFactoryImpl @Inject constructor(
     }
 
     private companion object {
-        const val GAME_TYPE_CUSTOM = "CUSTOM_GAME"
-        const val GAME_TYPE_MATCHED = "MATCHED_GAME"
-        const val GAME_TYPE_TUTORIAL = "TUTORIAL_GAME"
-        const val QUEUE_TYPE_ARAM = "ARAM"
-        const val QUEUE_TYPE_NORMAL = "NORMAL"
 
         val PATTERNS = listOf(
-            TypePattern(GAME_TYPE_MATCHED, QUEUE_TYPE_ARAM, null, null, R.string.lol_impl_game_type_name_aram),
-            TypePattern(GAME_TYPE_MATCHED, QUEUE_TYPE_NORMAL, null, null, R.string.lol_impl_game_type_name_normal_draft),
+            TypePattern(GAME_MODE_CLASSIC, GAME_TYPE_MATCHED, null, QUEUE_ID_NORMAL_DRAFT, R.string.lol_api_game_type_name_normal_draft),
+            TypePattern(GAME_MODE_CLASSIC, GAME_TYPE_MATCHED, null, QUEUE_ID_SOLOQ, R.string.lol_api_game_type_name_soloq),
             // TODO: Add more patterns
 
             // Ensures it always returns something
-            TypePattern(null, null, null, null, R.string.lol_impl_game_type_name_unknown),
+            TypePattern(null, null, null, null, R.string.lol_api_game_type_name_unknown),
         )
     }
 }
 
-private fun <K, V, M> Map<K?, M>.evaluateWithFallback(key: K, evaluator: M.() -> V?): V? = this[key].let { if(it != null) it.evaluator() else this[null]?.evaluator() }
+private fun <K, V, M> Map<K?, M>.evaluateWithFallback(key: K, evaluator: M.() -> V?): V? = this[key].let { it?.evaluator() ?: this[null]?.evaluator() }

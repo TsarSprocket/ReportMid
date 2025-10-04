@@ -7,9 +7,8 @@ internal data class MatchData(
     val gameType: GameType,
     val isRemake: Boolean,
     val isWin: Boolean,
-    val allPlayers: List<PlayerData>,
     val me: PlayerData,
     val myTeam: TeamData,
-    val enemyTeam: TeamData,
+    val teams: List<TeamData>,
     val isNotTheLast: Boolean,
 )

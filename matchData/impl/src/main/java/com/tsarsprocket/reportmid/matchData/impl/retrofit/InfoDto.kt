@@ -7,7 +7,7 @@ internal data class InfoDto(
     @SerializedName("gameStartTimestamp") val gameStartTimestamp: Long,
     @SerializedName("gameMode") val gameMode: String,
     @SerializedName("gameType") val gameType: String,
-    @SerializedName("mapId") val mapId: String,
+    @SerializedName("mapId") val mapId: Int,
     @SerializedName("participants") val participants: List<ParticipantDto>,
     @SerializedName("platformId") val platformId: String,
     @SerializedName("queueId") val queueId: Int,
