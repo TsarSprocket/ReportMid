@@ -8,5 +8,4 @@ data class Match(
     val isRemake: Boolean,
     val teams: List<Team>,
     val participant: List<Participant>,
-    val hasMoreHint: HasMoreHint,
 )

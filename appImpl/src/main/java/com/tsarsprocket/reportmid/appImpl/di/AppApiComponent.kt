@@ -40,6 +40,7 @@ import dagger.Component
         LolServicesProvisionModule::class,
         MainScreenCapabilityProvisionModule::class,
         MatchDataCapabilityProvisionModule::class,
+        MatchDetailsCapabilityProvisionModule::class,
         MatchHistoryCapabilityProvisionModule::class,
         NavigationMapCapabilityProvisionModule::class,
         ProfileOverviewCapabilityProvisionModule::class,

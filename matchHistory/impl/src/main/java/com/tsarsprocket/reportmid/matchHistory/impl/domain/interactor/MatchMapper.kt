@@ -3,7 +3,7 @@ package com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint.NO_CHANCE
-import com.tsarsprocket.reportmid.matchData.api.data.model.Match
+import com.tsarsprocket.reportmid.matchData.api.data.model.MatchWithMeta
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.Team
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchData
@@ -18,7 +18,8 @@ internal class MatchMapper @Inject constructor(
 
     private val dragonTail by lazy { dataDragon.tail }
 
-    fun map(match: Match, playerPuuid: String): MatchData {
+    fun map(matchWithMeta: MatchWithMeta, playerPuuid: String): MatchData {
+        val match = matchWithMeta.match
         val (me, myTeam, teams) = mapTeams(match.teams, playerPuuid)
 
         return MatchData(
@@ -29,7 +30,7 @@ internal class MatchMapper @Inject constructor(
             me = me,
             myTeam = myTeam,
             teams = teams,
-            isNotTheLast = match.hasMoreHint != NO_CHANCE,
+            isNotTheLast = matchWithMeta.hasMoreHint != NO_CHANCE,
         )
     }
 

@@ -1,0 +1,21 @@
+package com.tsarsprocket.reportmid.matchDetails.impl.domain.interactor
+
+import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
+import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.matchData.api.data.MatchDataRepository
+import com.tsarsprocket.reportmid.matchDetails.impl.domain.model.MatchDetailsData
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+internal class MatchDetailsInteractorImpl @Inject constructor(
+    private val repository: MatchDataRepository,
+    private val mapper: MatchToMatchDetailsDataMapper,
+    @Computation
+    private val dispatcher: CoroutineDispatcher,
+) : MatchDetailsInteractor {
+
+    override suspend fun getMatchDetails(matchId: String, region: Region): MatchDetailsData = withContext(dispatcher) {
+        mapper.map(repository.getMatch(matchId, region))
+    }
+}

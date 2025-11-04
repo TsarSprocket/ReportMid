@@ -4,7 +4,6 @@ import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.model.GameTypeFactory
 import com.tsarsprocket.reportmid.lol.api.model.Perk
 import com.tsarsprocket.reportmid.lol.api.model.Rune
-import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.RuneStyle
@@ -20,7 +19,7 @@ internal class MatchModelMapper @Inject constructor(
     private val gameTypeFactory: GameTypeFactory,
 ) {
 
-    fun map(dto: MatchDto, hasMoreHint: HasMoreHint): Match {
+    fun map(dto: MatchDto): Match {
         var isRemake = false
         var winnerTeamId = IMPOSSIBLE_TEAM_ID
         val teamParticipants = dto.info.teams.map { teamDto -> teamDto.teamId }.associateWith { mutableListOf<Participant>() }
@@ -37,7 +36,6 @@ internal class MatchModelMapper @Inject constructor(
             isRemake = isRemake,
             teams = teamParticipants.entries.map { (teamId, participants) -> Team(participants, teamId == winnerTeamId) },
             participant = participants,
-            hasMoreHint = hasMoreHint,
         )
     }
 

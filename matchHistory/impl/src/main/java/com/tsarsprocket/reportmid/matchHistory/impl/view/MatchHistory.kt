@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.tsarsprocket.reportmid.lol.api.model.Region
-import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ChampionInfo
+import com.tsarsprocket.reportmid.lol.api.presentation_model.ChampionInfo
+import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome
-import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.LoadingMoreItem
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ShowingMatchHistoryState

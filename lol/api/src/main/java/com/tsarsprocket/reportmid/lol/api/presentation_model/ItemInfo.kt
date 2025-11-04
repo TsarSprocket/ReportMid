@@ -1,9 +1,9 @@
-package com.tsarsprocket.reportmid.matchHistory.impl.viewState
+package com.tsarsprocket.reportmid.lol.api.presentation_model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-internal sealed interface ItemInfo : Parcelable {
+sealed interface ItemInfo : Parcelable {
 
     @Parcelize
     data class Known(

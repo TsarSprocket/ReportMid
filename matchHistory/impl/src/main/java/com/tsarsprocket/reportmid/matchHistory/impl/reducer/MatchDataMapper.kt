@@ -2,15 +2,15 @@ package com.tsarsprocket.reportmid.matchHistory.impl.reducer
 
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.model.ITEM_ID_EMPTY
+import com.tsarsprocket.reportmid.lol.api.presentation_model.ChampionInfo
+import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.PlayerData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.TeamData
-import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ChampionInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.LOSE
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.REMAKE
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.WIN
-import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

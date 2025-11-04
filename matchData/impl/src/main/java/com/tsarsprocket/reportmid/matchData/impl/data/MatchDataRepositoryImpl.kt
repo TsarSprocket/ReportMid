@@ -8,6 +8,7 @@ import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint
 import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint.NO_CHANCE
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.api.data.model.MatchNotFoundException
+import com.tsarsprocket.reportmid.matchData.api.data.model.MatchWithMeta
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPage
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPageKey
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.MatchDto
@@ -44,7 +45,7 @@ internal class MatchDataRepositoryImpl @Inject constructor(
      * @param position the position of the match in the list of matches
      * @throws MatchNotFoundException if the match is not found
      */
-    override suspend fun getMatch(puuid: String, region: Region, position: Int): Match = withContext(dispatcher) {
+    override suspend fun getMatch(puuid: String, region: Region, position: Int): MatchWithMeta = withContext(dispatcher) {
         val matchIdPageKey = MatchIdPageKey(puuid, region, position / PAGE_SIZE)
         val matchIdsPage = matchIdPageCache.getOrPut(matchIdPageKey) {
             requestManager.request<MatchIdPage>(matchIdPageRequestFactory.createRequest(matchIdPageKey)).matchIds
@@ -59,10 +60,12 @@ internal class MatchDataRepositoryImpl @Inject constructor(
             positionOnPage < matchIdsPage.size - 1 -> HasMoreHint.DEFINITELY // We are not at the end of the page yet
             else -> HasMoreHint.LIKELY // The page is full but we are at the end of it - who knows if there are more
         }
-        matchModelCache.getOrPut(matchId) {
-            matchModelMapper.map(requestManager.request<MatchDto>(matchRequestFactory.createRequest(matchId, region)), hasMoreHint)
-        }!!
+        MatchWithMeta(match = getMatch(matchId, region), hasMoreHint = hasMoreHint)
     }
+
+    override suspend fun getMatch(matchId: String, region: Region): Match = matchModelCache.getOrPut(matchId) {
+        matchModelMapper.map(requestManager.request<MatchDto>(matchRequestFactory.createRequest(matchId, region)))
+    }!!
 
     companion object {
         const val MAX_PAGE_CACHE_SIZE = 100L

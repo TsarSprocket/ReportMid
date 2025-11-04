@@ -49,6 +49,9 @@
             <option value="$PROJECT_DIR$/matchData" />
             <option value="$PROJECT_DIR$/matchData/api" />
             <option value="$PROJECT_DIR$/matchData/impl" />
+            <option value="$PROJECT_DIR$/matchDetails" />
+            <option value="$PROJECT_DIR$/matchDetails/api" />
+            <option value="$PROJECT_DIR$/matchDetails/impl" />
             <option value="$PROJECT_DIR$/matchHistory" />
             <option value="$PROJECT_DIR$/matchHistory/api" />
             <option value="$PROJECT_DIR$/matchHistory/impl" />

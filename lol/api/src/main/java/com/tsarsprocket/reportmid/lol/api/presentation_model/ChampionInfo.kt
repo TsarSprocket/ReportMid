@@ -1,10 +1,10 @@
-package com.tsarsprocket.reportmid.matchHistory.impl.viewState
+package com.tsarsprocket.reportmid.lol.api.presentation_model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal data class ChampionInfo(
+data class ChampionInfo(
     val icon: String,
     val name: String,
 ) : Parcelable
