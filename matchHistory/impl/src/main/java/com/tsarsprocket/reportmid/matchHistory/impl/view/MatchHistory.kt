@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.compose.SubcomposeAsyncImage
 import com.tsarsprocket.reportmid.lol.api.model.Region
 import com.tsarsprocket.reportmid.lol.api.presentation_model.ChampionInfo
 import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
@@ -42,6 +41,7 @@ import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 import com.tsarsprocket.reportmid.utils.compose.Failure
+import com.tsarsprocket.reportmid.utils.compose.ReloadableImage
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -291,22 +291,22 @@ private fun SinglePlayer(
     player: ChampionInfo?
 ) {
     if(player != null) {
-        SubcomposeAsyncImage(
+        ReloadableImage(
             modifier = modifier,
-            model = player.icon,
+            url = player.icon,
             contentDescription = player.name,
-            loading = {
+            loading = { modifier, _ ->
                 SkeletonRectangle(
                     modifier = modifier,
                     cornerSize = 1.dp
                 )
             },
-            error = {
+            error = { modifier, _, onClick ->
                 Failure(
                     modifier = modifier,
                     iconPainter = painterResource(ResLib.drawable.ic_failure),
-                    iconSize = TEAMMATE_ICON_SIZE.dp * 0.66f,
                     description = player.name,
+                    onClick = onClick,
                 )
             }
         )

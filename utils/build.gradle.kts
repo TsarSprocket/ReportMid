@@ -31,5 +31,8 @@ library(
         // Compose preview support
         impl(compose.ui.tooling.preview)
         debug(compose.ui.tooling.main)
+
+        // Coil
+        impl(coil)
     }
 }

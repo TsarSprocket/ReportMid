@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.matchDetails.impl.viewState
 
 import android.os.Parcelable
 import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize
 
 
@@ -11,12 +12,13 @@ internal data class PlayerInfo(
     val nameWithTag: String,
     val summonerLevel: Int,
     val championIcon: String,
+    val championName: String,
     val championLevel: Int,
     val kills: Int,
     val deaths: Int,
     val assists: Int,
     val runes: RuneSetInfo,
-    val summonerSpells: List<String>,
-    val items: List<ItemInfo>,
+    val summonerSpells: ImmutableList<SummonerSpellInfo>,
+    val items: ImmutableList<ItemInfo>,
     val ward: ItemInfo,
 ) : Parcelable

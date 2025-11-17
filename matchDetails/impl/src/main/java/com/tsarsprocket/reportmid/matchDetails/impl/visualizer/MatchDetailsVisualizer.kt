@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.matchDetails.impl.visualizer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.AbstractMatchDetailsState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.LoadingState
@@ -10,9 +11,11 @@ import com.tsarsprocket.reportmid.matchDetails.impl.viewState.NotLoadedState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
+import javax.inject.Inject
 
+@PerApi
 @Visualizer
-internal class MatchDetailsVisualizer : ViewStateVisualizer {
+internal class MatchDetailsVisualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(

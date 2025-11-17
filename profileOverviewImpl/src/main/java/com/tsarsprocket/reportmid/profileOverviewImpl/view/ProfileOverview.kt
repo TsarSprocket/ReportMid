@@ -11,13 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -25,22 +20,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.SubcomposeAsyncImage
-import coil.request.ImageRequest
 import com.tsarsprocket.reportmid.profileOverviewImpl.R
 import com.tsarsprocket.reportmid.profileOverviewImpl.viewState.ProfileOverviewStateCluster.ProfileState
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 import com.tsarsprocket.reportmid.utils.common.HASH
 import com.tsarsprocket.reportmid.utils.compose.Failure
+import com.tsarsprocket.reportmid.utils.compose.ReloadableImage
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import com.tsarsprocket.reportmid.resLib.R as ResLib
 
-
-private const val RETRY_ATTEMPT = "retry_attempt"
-private const val SUMMONER_ICON_SIZE = 48
 
 @Composable
 internal fun ProfileOverview(
@@ -86,12 +77,10 @@ internal fun ProfileOverview(
 }
 
 @Composable
-private fun IconFailure(size: Dp, onClick: () -> Unit) {
+private fun IconFailure(modifier: Modifier, onClick: () -> Unit) {
     Failure(
-        modifier = Modifier
-            .size(size),
+        modifier = modifier,
         iconPainter = painterResource(ResLib.drawable.ic_failure),
-        iconSize = size * 0.66f,
         description = stringResource(R.string.profile_overview_summoner_icon_not_loaded),
         onClick = onClick,
     )
@@ -125,28 +114,23 @@ private fun Masteries(modifier: Modifier, masteries: ImmutableList<ProfileState.
     Row(
         modifier = modifier.fillMaxWidth(),
     ) {
+        val iconModifier = Modifier.size(iconSize)
+
         masteries.forEach { mastery ->
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = CenterHorizontally,
             ) {
-                var retryCount by remember { mutableIntStateOf(0) }
-
-                SubcomposeAsyncImage(
-                    modifier = Modifier.size(iconSize),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(mastery.championImageUrl)
-                        .setParameter(RETRY_ATTEMPT, retryCount)
-                        .build(),
+                ReloadableImage(
+                    modifier = iconModifier,
+                    url = mastery.championImageUrl,
                     contentDescription = mastery.championName,
-                    loading = {
-                        SkeletonRectangle(modifier = Modifier.size(iconSize))
+                    loading = { modifier, _ ->
+                        SkeletonRectangle(modifier = modifier)
                     },
-                    error = {
-                        IconFailure(iconSize) {
-                            ++retryCount
-                        }
-                    }
+                    error = { modifier, _, onClick ->
+                        IconFailure(modifier, onClick = onClick)
+                    },
                 )
 
                 Text(
@@ -198,23 +182,18 @@ private fun SummonerIcon(
     size: Dp,
     icon: String,
 ) {
-    var retryCount by remember { mutableIntStateOf(0) }
+    val modifier = Modifier.size(size)
 
-    SubcomposeAsyncImage(
-        modifier = Modifier.size(size),
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(icon)
-            .setParameter(RETRY_ATTEMPT, retryCount)
-            .build(),
+    ReloadableImage(
+        modifier = modifier,
+        url = icon,
         contentDescription = stringResource(R.string.profile_overview_summoner_icon),
-        loading = {
-            SkeletonRectangle(Modifier.size(size))
+        loading = { modifier, _ ->
+            SkeletonRectangle(modifier)
         },
-        error = {
-            IconFailure(size) {
-                ++retryCount
-            }
-        }
+        error = { modifier, _, onClick ->
+            IconFailure(modifier = modifier, onClick = onClick)
+        },
     )
 }
 

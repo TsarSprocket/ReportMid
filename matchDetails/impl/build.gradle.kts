@@ -7,6 +7,7 @@ import com.tsarsprocket.reportmid.gradle.library
 
 library(
     namespace = "com.tsarsprocket.reportmid.matchDetails.impl",
+    enableCompose = true,
 ) {
     with(projects) {
         api(matchDetails.api)
@@ -14,6 +15,8 @@ library(
         impl(appApi)
         impl(matchData.api)
         impl(kspApi)
+        impl(resLib)
+        impl(theme)
         impl(viewStateApi)
 
         // KSP
