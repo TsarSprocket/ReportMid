@@ -13,6 +13,7 @@ library(
         api(matchDetails.api)
 
         impl(appApi)
+        impl(dataDragonApi)
         impl(matchData.api)
         impl(kspApi)
         impl(resLib)

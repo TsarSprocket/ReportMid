@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.findSummonerImpl.viewState
 
 import com.tsarsprocket.reportmid.kspApi.annotation.State
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import kotlinx.parcelize.Parcelize
 

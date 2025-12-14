@@ -1,10 +1,11 @@
 package com.tsarsprocket.reportmid.dataDragonApi.data
 
-import com.tsarsprocket.reportmid.lol.api.model.Champion
-import com.tsarsprocket.reportmid.lol.api.model.Item
-import com.tsarsprocket.reportmid.lol.api.model.Perk
-import com.tsarsprocket.reportmid.lol.api.model.RunePath
-import com.tsarsprocket.reportmid.lol.api.model.SummonerSpell
+import com.tsarsprocket.reportmid.lol.api.domain.model.Champion
+import com.tsarsprocket.reportmid.lol.api.domain.model.Item
+import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
+import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
+import com.tsarsprocket.reportmid.lol.api.domain.model.RunePath
+import com.tsarsprocket.reportmid.lol.api.domain.model.SummonerSpell
 
 interface DataDragon {
     val tail: Tail
@@ -28,15 +29,18 @@ interface DataDragon {
         // Image url formatters
         fun getChampionImageUrl(championName: String): String
         fun getItemImageUrl(item: Item): String
+        fun getRuneImageUrl(rune: Rune): String
         fun getSummonerImageUrl(summonerIconId: Int): String
+        fun getSummonerSpellImageUrl(imageName: String): String
     }
 
     companion object {
-        private const val IMAGE_INFIX = "img"
+        const val IMAGE_INFIX = "img"
         const val BASE_URL = "https://ddragon.leagueoflegends.com/"
-        const val CHAMPION_IMAGE_INFIX = "${IMAGE_INFIX}/champion"
-        const val ITEM_IMAGE_INFIX = "${IMAGE_INFIX}/item"
+        const val CHAMPION_IMAGE_INFIX = "champion"
+        const val ITEM_IMAGE_INFIX = "item"
         const val PROFILE_IMAGE_EXT = ".png"
-        const val PROFILE_IMAGE_INFIX = "${IMAGE_INFIX}/profileicon"
+        const val PROFILE_IMAGE_INFIX = "profileicon"
+        const val SUMMONER_SPELL_INFIX = "spell"
     }
 }

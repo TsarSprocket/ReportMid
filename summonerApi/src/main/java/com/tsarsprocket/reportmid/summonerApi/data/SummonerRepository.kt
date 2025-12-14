@@ -1,8 +1,8 @@
 package com.tsarsprocket.reportmid.summonerApi.data
 
-import com.tsarsprocket.reportmid.lol.api.model.Puuid
-import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.domain.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.summonerApi.model.ChampionMastery
 import com.tsarsprocket.reportmid.summonerApi.model.Friend
 import com.tsarsprocket.reportmid.summonerApi.model.MyAccount

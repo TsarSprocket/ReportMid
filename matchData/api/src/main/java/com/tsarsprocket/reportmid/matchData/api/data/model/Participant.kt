@@ -1,10 +1,12 @@
 package com.tsarsprocket.reportmid.matchData.api.data.model
 
-import com.tsarsprocket.reportmid.lol.api.model.Perk
+import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
+import com.tsarsprocket.reportmid.lol.api.domain.model.RuneStyle
 
 data class Participant(
     val assists: Int,
     val championId: Long,
+    val championLevel: Int,
     val deaths: Int,
     val items: List<Int?>,
     val ward: Int?,

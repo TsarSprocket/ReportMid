@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.view
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,9 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.tsarsprocket.reportmid.lol.api.model.Region
-import com.tsarsprocket.reportmid.lol.api.presentation_model.ChampionInfo
-import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.lol.api.presentation.model.ChampionInfo
+import com.tsarsprocket.reportmid.lol.api.presentation.model.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.LoadingMoreItem
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
@@ -62,6 +63,7 @@ internal fun MatchHistory(
     modifier: Modifier,
     state: ShowingMatchHistoryState,
     onMoreToShow: () -> Unit,
+    onMatchClicked: (String) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -69,7 +71,7 @@ internal fun MatchHistory(
     ) {
         items(state.itemsInList) { index ->
             when(val item = state.getItemToShow(index)) {
-                is MatchInfo -> MatchItem(item)
+                is MatchInfo -> MatchItem(item) { onMatchClicked(item.matchId) }
                 LoadingMoreItem -> if(state.canLoadMore) ShowLoadingMoreItem(state.itemsInList, state.isLoading, onMoreToShow)
             }
         }
@@ -77,7 +79,7 @@ internal fun MatchHistory(
 }
 
 @Composable
-private fun MatchItem(item: MatchInfo) {
+private fun MatchItem(item: MatchInfo, onClick: () -> Unit) {
     val backgroundColor = when(item.gameOutcome) {
         GameOutcome.WIN -> ReportMidSpecialColors.win
         GameOutcome.LOSE -> ReportMidSpecialColors.lose
@@ -85,7 +87,9 @@ private fun MatchItem(item: MatchInfo) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor.compositeOver(CardDefaults.cardColors().containerColor)
         )
@@ -366,7 +370,8 @@ fun MatchHistoryPreview() {
                 region = Region.EUROPE_WEST,
                 matches = persistentListOf(
                     MatchInfo(
-                        GameOutcome.WIN,
+                        matchId = EMPTY_STRING,
+                        gameOutcome = GameOutcome.WIN,
                         self = ChampionInfo(
                             icon = EMPTY_STRING,
                             name = "Malzahar",
@@ -384,7 +389,8 @@ fun MatchHistoryPreview() {
                         teams = persistentListOf(),
                     ),
                     MatchInfo(
-                        GameOutcome.LOSE,
+                        matchId = EMPTY_STRING,
+                        gameOutcome = GameOutcome.LOSE,
                         self = ChampionInfo(
                             icon = EMPTY_STRING,
                             name = "Malzahar",
@@ -406,6 +412,7 @@ fun MatchHistoryPreview() {
                 canLoadMore = true,
             ),
             onMoreToShow = {},
+            onMatchClicked = {},
         )
     }
 }

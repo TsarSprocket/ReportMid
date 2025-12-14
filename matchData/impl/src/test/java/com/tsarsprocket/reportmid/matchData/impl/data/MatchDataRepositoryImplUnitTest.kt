@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.matchData.impl.data
 
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPage
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPageKey
@@ -56,10 +56,10 @@ internal class MatchDataRepositoryImplUnitTest {
 
         val receivedMatch = matchDataRepository.getMatch(PUUID, testRegion, POSITION)
 
-        verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && this.region == region && pageNo == POSITION / PAGE_SIZE })
+        verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && region == testRegion && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory).createRequest(eq(MATCH_ID), same(testRegion))
         verify(matchModelMapper).map(same(matchDto))
-        assert(receivedMatch === match)
+        assert(receivedMatch.match === match)
     }
 
     @Test
@@ -72,7 +72,7 @@ internal class MatchDataRepositoryImplUnitTest {
         verify(matchIdPageRequestFactory, never()).createRequest(any())
         verify(matchRequestFactory, never()).createRequest(any(), any())
         verify(matchModelMapper, never()).map(any())
-        assert(receivedMatch == match)
+        assert(receivedMatch.match === match)
     }
 
     @Test
@@ -83,7 +83,7 @@ internal class MatchDataRepositoryImplUnitTest {
             matchDataRepository.getMatch(PUUID, testRegion, POSITION)
         }
 
-        verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && this.region == region && pageNo == POSITION / PAGE_SIZE })
+        verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && region == testRegion && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory, never()).createRequest(any(), any())
         verify(matchModelMapper, never()).map(any())
     }
@@ -98,7 +98,7 @@ internal class MatchDataRepositoryImplUnitTest {
             matchDataRepository.getMatch(PUUID, testRegion, POSITION)
         }
 
-        verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && this.region == region && pageNo == POSITION / PAGE_SIZE })
+        verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && region == testRegion && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory).createRequest(eq(MATCH_ID), same(testRegion))
         verify(matchModelMapper, never()).map(any())
     }

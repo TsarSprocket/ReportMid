@@ -1,7 +1,8 @@
 package com.tsarsprocket.reportmid.matchDetails.impl.viewState
 
 import android.os.Parcelable
-import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
+import com.tsarsprocket.reportmid.lol.api.presentation.model.ItemInfo
+import com.tsarsprocket.reportmid.lol.api.presentation.model.SummonerSpellInfo
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize
 

@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.findSummonerImpl.domain
 
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 
 internal interface FindSummonerUseCase {
     suspend fun findAccount(gameName: String, tagline: String, region: Region): AccountData

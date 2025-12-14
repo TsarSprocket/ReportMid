@@ -7,9 +7,9 @@ import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.summonerViewImpl.view.SummonerView
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowMatchHistory
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowProfile
-import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState
-import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState.ActivePage.MATCH_HISTORY
-import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState.ActivePage.PROFILE
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_HISTORY
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.PROFILE
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.InternalSummonerViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
@@ -20,12 +20,12 @@ import javax.inject.Inject
 internal class SummonerViewVisualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
-    override fun Visualize(modifier: Modifier, state: ViewState, stateHolder: ViewStateHolder) = if(state is SummonerViewState) {
+    override fun Visualize(modifier: Modifier, state: ViewState, stateHolder: ViewStateHolder) = if(state is InternalSummonerViewState) {
         stateHolder.ShowSummonerView(modifier, state)
     } else super.Visualize(modifier, state, stateHolder)
 
     @Composable
-    private fun ViewStateHolder.ShowSummonerView(modifier: Modifier, state: SummonerViewState) {
+    private fun ViewStateHolder.ShowSummonerView(modifier: Modifier, state: InternalSummonerViewState) {
         SummonerView(
             modifier = modifier,
             selected = state.activePage,

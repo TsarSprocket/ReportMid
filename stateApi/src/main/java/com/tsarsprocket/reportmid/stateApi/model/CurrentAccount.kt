@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.stateApi.model
 
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 
 data class CurrentAccount(
     val id: Long,

@@ -8,6 +8,8 @@ library(
         api(findSummonerApi)
         api(landingApi)
         api(mainScreenApi)
+        api(matchDetails.api)
+        api(matchHistory.api)
         api(summonerViewApi)
         api(viewStateApi)
     }

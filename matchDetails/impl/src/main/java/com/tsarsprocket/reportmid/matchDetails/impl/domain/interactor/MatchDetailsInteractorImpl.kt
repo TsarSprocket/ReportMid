@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.matchDetails.impl.domain.interactor
 
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.MatchDataRepository
 import com.tsarsprocket.reportmid.matchDetails.impl.domain.model.MatchDetailsData
 import kotlinx.coroutines.CoroutineDispatcher

@@ -11,10 +11,7 @@ library(
         api(navigationMapApi)
 
         impl(baseApi)
-        impl(findSummonerApi)
-        impl(mainScreenApi)
         impl(profileOverviewApi)
-        impl(summonerViewApi)
 
         impl(kspApi)
         ksp(kspProcessor)

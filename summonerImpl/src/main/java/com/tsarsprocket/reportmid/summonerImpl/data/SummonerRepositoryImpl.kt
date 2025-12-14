@@ -4,9 +4,9 @@ import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.baseApi.data.NoDataFoundException
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
-import com.tsarsprocket.reportmid.lol.api.model.Puuid
-import com.tsarsprocket.reportmid.lol.api.model.PuuidAndRegion
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.domain.model.PuuidAndRegion
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.getService
 import com.tsarsprocket.reportmid.requestManagerApi.data.Request

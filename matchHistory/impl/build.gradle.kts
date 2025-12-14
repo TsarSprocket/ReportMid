@@ -17,6 +17,7 @@ library(
         impl(baseApi)
         impl(dataDragonApi)
         impl(matchData.api)
+        impl(navigationMapApi)
         impl(resLib)
         impl(summonerApi)
         impl(utils)

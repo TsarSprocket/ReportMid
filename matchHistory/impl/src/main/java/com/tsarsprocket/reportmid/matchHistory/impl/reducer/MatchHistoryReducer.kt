@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.matchHistory.impl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchHistory.api.viewIntent.MatchHistoryIntent
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor.MatchHistoryInteractor
 import com.tsarsprocket.reportmid.matchHistory.impl.viewIntent.LoadMoreIntent

@@ -1,12 +1,12 @@
 package com.tsarsprocket.reportmid.matchData.impl.data
 
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
-import com.tsarsprocket.reportmid.lol.api.model.GameTypeFactory
-import com.tsarsprocket.reportmid.lol.api.model.Perk
-import com.tsarsprocket.reportmid.lol.api.model.Rune
+import com.tsarsprocket.reportmid.lol.api.domain.GameTypeFactory
+import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
+import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
+import com.tsarsprocket.reportmid.lol.api.domain.model.RuneStyle
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
-import com.tsarsprocket.reportmid.matchData.api.data.model.RuneStyle
 import com.tsarsprocket.reportmid.matchData.api.data.model.Team
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.MatchDto
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.ParticipantDto
@@ -33,6 +33,7 @@ internal class MatchModelMapper @Inject constructor(
         return Match(
             matchId = dto.metadata.matchId,
             gameType = with(dto.info) { gameTypeFactory.getGameType(gameMode, gameType, mapId, queueId) },
+            duration = dto.info.gameDuration,
             isRemake = isRemake,
             teams = teamParticipants.entries.map { (teamId, participants) -> Team(participants, teamId == winnerTeamId) },
             participant = participants,
@@ -55,6 +56,7 @@ internal class MatchModelMapper @Inject constructor(
         return with(dto) {
             Participant(
                 assists = assists,
+                championLevel = champLevel,
                 championId = championId,
                 deaths = deaths,
                 items = listOf(item0, item1, item2, item3, item4, item5),

@@ -4,12 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
+import com.tsarsprocket.reportmid.matchHistory.api.navigation.MatchHistoryNavigation
 import com.tsarsprocket.reportmid.matchHistory.impl.view.Loading
 import com.tsarsprocket.reportmid.matchHistory.impl.view.MatchHistory
 import com.tsarsprocket.reportmid.matchHistory.impl.viewIntent.LoadMoreIntent
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.InternalMatchHistoryState
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.LoadingMatchHistoryState
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ShowingMatchHistoryState
+import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
@@ -17,7 +19,10 @@ import javax.inject.Inject
 
 @PerApi
 @Visualizer
-internal class MatchHistoryVisualizer @Inject constructor() : ViewStateVisualizer {
+internal class MatchHistoryVisualizer @Inject constructor(
+    @param:Navigation(MatchHistoryNavigation.TAG)
+    private val navigation: MatchHistoryNavigation,
+) : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(modifier: Modifier, state: ViewState, stateHolder: ViewStateHolder) {
@@ -41,8 +46,12 @@ internal class MatchHistoryVisualizer @Inject constructor() : ViewStateVisualize
         MatchHistory(
             modifier = modifier,
             state = state,
-        ) {
-            postIntent(LoadMoreIntent)
-        }
+            onMoreToShow = {
+                postIntent(LoadMoreIntent)
+            },
+            onMatchClicked = { matchId ->
+                with(navigation) { showMatchDetails(region = state.region, matchId = matchId) }
+            },
+        )
     }
 }

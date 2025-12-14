@@ -4,9 +4,11 @@ import com.tsarsprocket.reportmid.appApi.room.MainStorage
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.BASE_URL
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.CHAMPION_IMAGE_INFIX
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.ITEM_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_EXT
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_INFIX
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.SUMMONER_SPELL_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Tail
 import com.tsarsprocket.reportmid.dataDragonImpl.retrofit.DataDragonService
 import com.tsarsprocket.reportmid.dataDragonRoom.ChampionEntity
@@ -16,11 +18,12 @@ import com.tsarsprocket.reportmid.dataDragonRoom.RuneEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.RunePathEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.SummonerSpellEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.VersionEntity
-import com.tsarsprocket.reportmid.lol.api.model.Champion
-import com.tsarsprocket.reportmid.lol.api.model.Item
-import com.tsarsprocket.reportmid.lol.api.model.Perk
-import com.tsarsprocket.reportmid.lol.api.model.RunePath
-import com.tsarsprocket.reportmid.lol.api.model.SummonerSpell
+import com.tsarsprocket.reportmid.lol.api.domain.model.Champion
+import com.tsarsprocket.reportmid.lol.api.domain.model.Item
+import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
+import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
+import com.tsarsprocket.reportmid.lol.api.domain.model.RunePath
+import com.tsarsprocket.reportmid.lol.api.domain.model.SummonerSpell
 import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import com.tsarsprocket.reportmid.utils.common.logError
 import kotlinx.coroutines.runBlocking
@@ -128,8 +131,15 @@ class DataDragonImpl @Inject constructor(
         }
 
         val summonerSpellEntities = lstRetroSummonerSpells.data.values.map { retroSpell ->
-            SummonerSpellEntity(langId, retroSpell.id, retroSpell.key.toLong(), retroSpell.image.full)
-                .also { spellEnt -> @Temporary runBlocking { db.summonerSpellDao().insert(spellEnt) } }
+            SummonerSpellEntity(
+                language_id = langId,
+                strId = retroSpell.id,
+                key = retroSpell.key.toLong(),
+                name = retroSpell.name,
+                imageName = retroSpell.image.full
+            ).also { spellEnt ->
+                @Temporary runBlocking { db.summonerSpellDao().insert(spellEnt) }
+            }
         }
 
         val lstRetroItems = try {
@@ -173,12 +183,25 @@ class DataDragonImpl @Inject constructor(
     ): Tail {
         val runePaths = runePathEntities.associate { ent -> RunePath(ent.riot_id, ent.key, ent.name, ent.iconPath).let { ent.id to it } }
 
-        val runes = runeEntities.mapNotNull { runePaths[it.runePathId]?.createRune(it.riotId, it.key, it.name, it.slotNo, it.iconPath) } +
-                Perk.getBasicPerks()
+        val runes = runeEntities.mapNotNull {
+            runePaths[it.runePathId]?.createRune(
+                id = it.riotId,
+                key = it.key,
+                name = it.name,
+                slotNo = it.slotNo,
+                iconPath = it.iconPath,
+            )
+        } + Perk.getBasicPerks()
 
         val champs = championEntities.map { Champion(it.riotId, it.name, it.iconName) }
 
-        val summonerSpells = summonerSpellEntities.map { SummonerSpell(it.key, it.imageName) }
+        val summonerSpells = summonerSpellEntities.map { entity ->
+            SummonerSpell(
+                key = entity.key,
+                name = entity.name,
+                iconName = entity.imageName,
+            )
+        }
 
         val items = itemEntities.map { Item(it.riotId, it.name, it.imageName) }
 
@@ -201,7 +224,9 @@ class DataDragonImpl @Inject constructor(
         private val itemRegistry: Map<Int, Item> = items.associateBy { it.riotId }
 
         private val versionedImageBase: String
-            get() = "${BASE_URL}cdn/$version"
+            get() = "${BASE_URL}cdn/$version/$IMAGE_INFIX"
+        private val unversionedImageBase: String
+            get() = "${BASE_URL}cdn/$IMAGE_INFIX"
 
         override fun getRunePathById(id: Int): RunePath = runePathRegistry[id] ?: throw RuntimeException("Rune path with unknown id=$id is requested")
         override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
@@ -211,6 +236,8 @@ class DataDragonImpl @Inject constructor(
 
         override fun getChampionImageUrl(championName: String): String = "$versionedImageBase/$CHAMPION_IMAGE_INFIX/$championName"
         override fun getItemImageUrl(item: Item): String = "$versionedImageBase/$ITEM_IMAGE_INFIX/${item.imageName}"
+        override fun getRuneImageUrl(rune: Rune): String = "$unversionedImageBase/${rune.iconPath}"
         override fun getSummonerImageUrl(summonerIconId: Int): String = "$versionedImageBase/$PROFILE_IMAGE_INFIX/$summonerIconId$PROFILE_IMAGE_EXT"
+        override fun getSummonerSpellImageUrl(imageName: String): String = "$versionedImageBase/$SUMMONER_SPELL_INFIX/$imageName"
     }
 }

@@ -11,6 +11,7 @@ library(
 
         impl(appApi)
         impl(baseApi)
+        impl(dataDragonApi)
         impl(utils)
 
         impl(kspApi)

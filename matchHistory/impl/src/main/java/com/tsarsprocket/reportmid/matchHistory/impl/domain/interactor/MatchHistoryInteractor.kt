@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor
 
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchesData
 
 internal interface MatchHistoryInteractor {

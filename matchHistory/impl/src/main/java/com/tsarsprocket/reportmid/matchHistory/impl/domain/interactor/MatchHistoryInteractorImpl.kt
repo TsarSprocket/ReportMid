@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor
 
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.MatchDataRepository
 import com.tsarsprocket.reportmid.matchData.api.data.model.MatchNotFoundException
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchesData

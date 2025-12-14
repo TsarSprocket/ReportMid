@@ -10,7 +10,7 @@ import com.tsarsprocket.reportmid.findSummonerImpl.view.SummonerDataEntryScreen
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
-import com.tsarsprocket.reportmid.lol.api.model.RegionInfo
+import com.tsarsprocket.reportmid.lol.api.domain.model.RegionInfo
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @PerApi
 @Visualizer
 class FindSummonerVisualizer @Inject constructor(
-    @Navigation(FindSummonerNavigation.TAG)
+    @param:Navigation(FindSummonerNavigation.TAG)
     private val navigation: FindSummonerNavigation,
     private val regionFactory: RegionInfo.Factory,
 ) : ViewStateVisualizer {

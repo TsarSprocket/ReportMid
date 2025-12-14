@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.tsarsprocket.reportmid.findSummonerImpl.R
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.ConfirmSummonerViewState
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING

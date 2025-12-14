@@ -11,6 +11,7 @@ import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
         FindSummonerNavigationModule::class,
         LandingNavigationModule::class,
         MainScreenNavigationModule::class,
+        MatchHistoryNavigationModule::class,
         NavigationMapModule::class,
         SummonerViewNavigationModule::class,
     ],

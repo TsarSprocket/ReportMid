@@ -38,7 +38,7 @@ import kotlin.time.Duration.Companion.milliseconds
 )
 internal class LandingReducer @Inject constructor(
     private val useCase: LandingUseCase,
-    @Navigation(LandingNavigation.TAG)
+    @param:Navigation(LandingNavigation.TAG)
     private val navigation: LandingNavigation,
 ) : ViewStateReducer {
 

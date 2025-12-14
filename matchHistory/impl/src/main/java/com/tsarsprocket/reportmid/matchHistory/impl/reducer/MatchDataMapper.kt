@@ -1,9 +1,9 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.reducer
 
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
-import com.tsarsprocket.reportmid.lol.api.model.ITEM_ID_EMPTY
-import com.tsarsprocket.reportmid.lol.api.presentation_model.ChampionInfo
-import com.tsarsprocket.reportmid.lol.api.presentation_model.ItemInfo
+import com.tsarsprocket.reportmid.lol.api.presentation.ItemInfoMapper
+import com.tsarsprocket.reportmid.lol.api.presentation.model.ChampionInfo
+import com.tsarsprocket.reportmid.lol.api.presentation.model.ItemInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.PlayerData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.TeamData
@@ -21,6 +21,7 @@ import kotlin.math.sqrt
 
 internal class MatchDataMapper @Inject constructor(
     dataDragon: DataDragon,
+    private val itemInfoMapper: ItemInfoMapper,
 ) {
 
     private val tail by lazy { dataDragon.tail }
@@ -29,6 +30,7 @@ internal class MatchDataMapper @Inject constructor(
         val isSummonerRift = from.gameType.isSummonerRift
 
         return MatchInfo(
+            matchId = from.matchId,
             gameOutcome = mapOutcome(from),
             self = mapSelf(from),
             gameType = from.gameType.name,
@@ -37,14 +39,14 @@ internal class MatchDataMapper @Inject constructor(
             deaths = from.me.deaths.toString(),
             assists = from.me.assists.toString(),
             items = mapItems(from.me.items),
-            ward = mapSingleItem(from.me.ward),
+            ward = itemInfoMapper.mapById(from.me.ward),
             teams = mapTeams(from.teams, isSummonerRift),
         )
     }
 
     private fun mapItems(items: List<Int?>): ImmutableList<ImmutableList<ItemInfo>> {
-        return items.chunked(COLUMNS_IN_ROW).map {
-            it.map(::mapSingleItem).toPersistentList()
+        return items.chunked(COLUMNS_IN_ROW).map { itemsRow ->
+            itemsRow.map { itemId -> itemInfoMapper.mapById(itemId) }.toPersistentList()
         }.toPersistentList()
     }
 
@@ -145,24 +147,7 @@ internal class MatchDataMapper @Inject constructor(
      * For ARAM etc teams should be shown face-to-face, i.e. the column order of the first one should be mirrored
      */
     private fun mapTwoTeamsMirrored(firstTeam: List<PlayerData>, secondTeam: List<PlayerData>): ImmutableList<ImmutableList<ImmutableList<ChampionInfo?>>> {
-        return persistentListOf(mapTeamSquared(firstTeam, isReversed = true), mapTeamSquared(firstTeam, isReversed = false))
-    }
-
-    private fun mapSingleItem(itemId: Int?): ItemInfo {
-        return if(itemId != null && itemId != ITEM_ID_EMPTY) {
-            try {
-                tail.getItemById(itemId).let { item ->
-                    ItemInfo.Known(
-                        icon = tail.getItemImageUrl(item),
-                        name = item.name,
-                    )
-                }
-            } catch(_: Exception) {
-                ItemInfo.Unknown
-            }
-        } else {
-            ItemInfo.Empty
-        }
+        return persistentListOf(mapTeamSquared(firstTeam, isReversed = true), mapTeamSquared(secondTeam, isReversed = false))
     }
 
     private fun PlayerData.toChampionInfo(): ChampionInfo = ChampionInfo(

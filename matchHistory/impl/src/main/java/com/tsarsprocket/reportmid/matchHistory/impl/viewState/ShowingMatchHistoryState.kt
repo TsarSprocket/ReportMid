@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.viewState
 
 import com.tsarsprocket.reportmid.kspApi.annotation.State
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize

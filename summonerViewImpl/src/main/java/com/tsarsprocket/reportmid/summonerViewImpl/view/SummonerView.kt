@@ -11,9 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState
-import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState.ActivePage.MATCH_HISTORY
-import com.tsarsprocket.reportmid.summonerViewImpl.viewState.SummonerViewState.ActivePage.PROFILE
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_HISTORY
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.PROFILE
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 import com.tsarsprocket.reportmid.resLib.R as ResLib
@@ -21,7 +21,7 @@ import com.tsarsprocket.reportmid.resLib.R as ResLib
 @Composable
 internal fun SummonerView(
     modifier: Modifier,
-    selected: SummonerViewState.ActivePage,
+    selected: ActivePage,
     selectProfile: () -> Unit,
     selectMatchHistory: () -> Unit,
     content: @Composable (Modifier) -> Unit,

@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.findSummonerImpl.domain
 
-import com.tsarsprocket.reportmid.lol.api.model.Puuid
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Puuid
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 
 internal data class AccountData(
     val gameName: String,

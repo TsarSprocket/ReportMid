@@ -32,11 +32,11 @@ import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.RegionSelected
 import com.tsarsprocket.reportmid.findSummonerImpl.viewIntent.InternalViewIntent.TagLineChanged
 import com.tsarsprocket.reportmid.findSummonerImpl.viewState.SummonerDataEntryViewState
-import com.tsarsprocket.reportmid.lol.api.model.Region
-import com.tsarsprocket.reportmid.lol.api.model.Region.Companion.ID_NONEXISTENT_REGION
-import com.tsarsprocket.reportmid.lol.api.model.RegionInfo
-import com.tsarsprocket.reportmid.lol.api.model.isGameNameValid
-import com.tsarsprocket.reportmid.lol.api.model.isTagLineValid
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region.Companion.ID_NONEXISTENT_REGION
+import com.tsarsprocket.reportmid.lol.api.domain.model.RegionInfo
+import com.tsarsprocket.reportmid.lol.api.domain.model.isGameNameValid
+import com.tsarsprocket.reportmid.lol.api.domain.model.isTagLineValid
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.PreviewViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder

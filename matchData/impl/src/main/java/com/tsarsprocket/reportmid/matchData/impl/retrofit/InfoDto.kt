@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.matchData.impl.retrofit
 import com.google.gson.annotations.SerializedName
 
 internal data class InfoDto(
+    @SerializedName("gameDuration") val gameDuration: Long,
     @SerializedName("gameEndTimestamp") val gameEndTimestamp: Long,
     @SerializedName("gameStartTimestamp") val gameStartTimestamp: Long,
     @SerializedName("gameMode") val gameMode: String,

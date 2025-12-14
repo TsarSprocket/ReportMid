@@ -13,6 +13,7 @@ class SummonerSpellEntity(
     @ColumnInfo(name = "language_id", index = true) var language_id: Long,
     @ColumnInfo(name = "str_id") var strId: String,
     @ColumnInfo(name = "key") var key: Long,
+    @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "image_name") var imageName: String,
 ) {
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") var id: Long = 0

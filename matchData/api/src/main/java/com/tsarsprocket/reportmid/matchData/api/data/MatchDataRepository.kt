@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.matchData.api.data
 
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.api.data.model.MatchNotFoundException
 import com.tsarsprocket.reportmid.matchData.api.data.model.MatchWithMeta

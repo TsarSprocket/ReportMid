@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.matchData.impl.data
 
 import com.mayakapps.kache.InMemoryKache
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Computation
-import com.tsarsprocket.reportmid.lol.api.model.Region
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.MatchDataRepository
 import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint
 import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint.NO_CHANCE
@@ -25,7 +25,7 @@ internal class MatchDataRepositoryImpl @Inject constructor(
     private val matchIdPageRequestFactory: MatchIdPageRequest.Factory,
     private val matchRequestFactory: MatchRequest.Factory,
     private val matchModelMapper: MatchModelMapper,
-    @Computation private val dispatcher: CoroutineDispatcher,
+    @param:Computation private val dispatcher: CoroutineDispatcher,
 ) : MatchDataRepository {
 
     @VisibleForTesting

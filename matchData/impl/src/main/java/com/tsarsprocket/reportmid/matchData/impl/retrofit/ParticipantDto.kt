@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 internal data class ParticipantDto(
     @SerializedName("assists") val assists: Int,
+    @SerializedName("champLevel") val champLevel: Int,
     @SerializedName("championId") val championId: Long,
     @SerializedName("deaths") val deaths: Int,
     @SerializedName("gameEndedInEarlySurrender") val gameEndedInEarlySurrender: Boolean,

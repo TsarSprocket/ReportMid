@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.domain.model
 
-import com.tsarsprocket.reportmid.lol.api.model.GameType
+import com.tsarsprocket.reportmid.lol.api.domain.model.GameType
 
 internal data class MatchData(
     val matchId: String,

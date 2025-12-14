@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @PerApi
 class MainScreenStateInitializer @Inject constructor(
-    @Navigation(MainScreenNavigation.TAG)
+    @param:Navigation(MainScreenNavigation.TAG)
     private val navigation: MainScreenNavigation
 ) : ViewStateInitializer {
 
