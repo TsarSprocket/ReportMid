@@ -46,13 +46,13 @@ import com.tsarsprocket.reportmid.resLib.R as ResLibR
 
 private const val CHAMPION_ICON_SIZE = 48
 private const val DIVIDER_HORIZONTAL_PADDING = 16
-private const val ITEM_SIZE = 12
-private const val ITEMS_SPACING = 2
+private const val ITEM_SIZE = 18
+private const val ITEMS_SPACING = 4
 private const val NUMBER_OF_ITEM_COLUMNS = 3
-private const val PRIMARY_RUNE_SIZE = 12
+private const val PRIMARY_RUNE_SIZE = 14
 private const val RUNE_SPACING = 2
-private const val SECONDARY_RUNE_SIZE = 8
-private const val SUMMONER_SPELL_SIZE = 12
+private const val SECONDARY_RUNE_SIZE = 10
+private const val SUMMONER_SPELL_SIZE = 16
 
 @Composable
 internal fun MatchDetails(

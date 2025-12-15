@@ -24,7 +24,6 @@ import com.tsarsprocket.reportmid.matchDetails.impl.viewState.RuneSetInfo
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.TeamInfo
 import kotlinx.collections.immutable.toPersistentList
 import javax.inject.Inject
-import kotlin.math.round
 
 @PerApi
 internal class MatchDetailsDataToStateMapper @Inject constructor(
@@ -85,7 +84,7 @@ internal class MatchDetailsDataToStateMapper @Inject constructor(
         )
     }
 
-    fun formatGameDuration(duration: Long): String = DateUtils.formatElapsedTime(round(duration / 1000f).toLong())
+    fun formatGameDuration(duration: Long): String = DateUtils.formatElapsedTime(duration)
 
     fun Rune.toRuneInfo(): RuneInfo = RuneInfo(
         icon = dragonTail.getRuneImageUrl(this),

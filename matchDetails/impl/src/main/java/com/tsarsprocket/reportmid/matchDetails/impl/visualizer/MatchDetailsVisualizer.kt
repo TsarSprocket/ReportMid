@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
+import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.matchDetails.impl.view.Loading
+import com.tsarsprocket.reportmid.matchDetails.impl.view.MatchDetails
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.AbstractMatchDetailsState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.MatchDetailsState
@@ -36,14 +39,22 @@ internal class MatchDetailsVisualizer @Inject constructor() : ViewStateVisualize
         }
     }
 
-    @Composable
-    fun ViewStateHolder.ShowLoading(modifier: Modifier, state: LoadingState) {
+    fun navigateToSummoner(puuid: String, region: Region) {
         TODO("Not yet implemented")
     }
 
     @Composable
+    fun ViewStateHolder.ShowLoading(modifier: Modifier, state: LoadingState) {
+        Loading(modifier)
+    }
+
+    @Composable
     fun ViewStateHolder.ShowMatchDetails(modifier: Modifier, state: MatchDetailsState) {
-        TODO("Not yet implemented")
+        MatchDetails(
+            modifier = modifier,
+            state = state,
+            onPlayerClick = { puuid -> navigateToSummoner(puuid, state.region) }
+        )
     }
 
     @Composable
