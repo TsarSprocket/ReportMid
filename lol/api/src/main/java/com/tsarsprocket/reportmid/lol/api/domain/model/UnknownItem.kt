@@ -1,5 +1,3 @@
 package com.tsarsprocket.reportmid.lol.api.domain.model
 
-interface Item {
-    val riotId: Int
-}
+data class UnknownItem(override val riotId: Int) : Item

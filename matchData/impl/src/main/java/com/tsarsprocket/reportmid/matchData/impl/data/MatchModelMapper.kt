@@ -69,6 +69,7 @@ internal class MatchModelMapper @Inject constructor(
                 puuid = puuid,
                 riotIdGameName = riotIdGameName,
                 riotIdTagline = riotIdTagline,
+                summonerLevel = summonerLevel,
                 summoner1Id = summoner1Id,
                 summoner2Id = summoner2Id,
                 teamPosition = teamPosition,

@@ -18,6 +18,7 @@ data class Participant(
     val puuid: String,
     val riotIdGameName: String,
     val riotIdTagline: String,
+    val summonerLevel: Int,
     val summoner1Id: Int,
     val summoner2Id: Int,
     val teamPosition: String,

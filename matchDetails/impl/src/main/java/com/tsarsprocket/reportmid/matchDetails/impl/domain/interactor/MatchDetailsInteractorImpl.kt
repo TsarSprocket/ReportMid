@@ -11,11 +11,11 @@ import javax.inject.Inject
 internal class MatchDetailsInteractorImpl @Inject constructor(
     private val repository: MatchDataRepository,
     private val mapper: MatchToMatchDetailsDataMapper,
-    @Computation
+    @param:Computation
     private val dispatcher: CoroutineDispatcher,
 ) : MatchDetailsInteractor {
 
     override suspend fun getMatchDetails(matchId: String, region: Region): MatchDetailsData = withContext(dispatcher) {
-        mapper.map(repository.getMatch(matchId, region))
+        mapper.map(repository.getMatch(matchId, region), region)
     }
 }

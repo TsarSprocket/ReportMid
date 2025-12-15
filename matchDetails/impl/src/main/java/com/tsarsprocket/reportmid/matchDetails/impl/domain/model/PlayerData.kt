@@ -17,6 +17,6 @@ internal data class PlayerData(
     val primaryRunes: RuneStyle,
     val secondaryRunes: RuneStyle,
     val summonerSpells: List<SummonerSpell>,
-    val items: List<Item>,
-    val ward: Item,
+    val items: List<Item?>,
+    val ward: Item?,
 )

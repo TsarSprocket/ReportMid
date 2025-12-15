@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.dataDragonApi.data
 
 import com.tsarsprocket.reportmid.lol.api.domain.model.Champion
-import com.tsarsprocket.reportmid.lol.api.domain.model.Item
+import com.tsarsprocket.reportmid.lol.api.domain.model.KnownItem
 import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
 import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
 import com.tsarsprocket.reportmid.lol.api.domain.model.RunePath
@@ -19,16 +19,16 @@ interface DataDragon {
         val perks: List<Perk>
         val champs: List<Champion>
         val summonerSpells: List<SummonerSpell>
-        val items: List<Item>
+        val items: List<KnownItem>
         fun getRunePathById(id: Int): RunePath
         fun getPerkById(id: Int): Perk
         fun getChampionById(id: Long): Champion
         fun getSummonerSpellById(id: Long): SummonerSpell
-        fun getItemById(id: Int): Item
+        fun getItemById(itemId: Int): KnownItem
 
         // Image url formatters
         fun getChampionImageUrl(championName: String): String
-        fun getItemImageUrl(item: Item): String
+        fun getItemImageUrl(item: KnownItem): String
         fun getRuneImageUrl(rune: Rune): String
         fun getSummonerImageUrl(summonerIconId: Int): String
         fun getSummonerSpellImageUrl(imageName: String): String

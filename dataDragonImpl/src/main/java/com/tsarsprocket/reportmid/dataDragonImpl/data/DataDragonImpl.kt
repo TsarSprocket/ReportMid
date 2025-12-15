@@ -10,6 +10,7 @@ import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFIL
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.PROFILE_IMAGE_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Companion.SUMMONER_SPELL_INFIX
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon.Tail
+import com.tsarsprocket.reportmid.dataDragonApi.data.ItemIsUnknownException
 import com.tsarsprocket.reportmid.dataDragonImpl.retrofit.DataDragonService
 import com.tsarsprocket.reportmid.dataDragonRoom.ChampionEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.ItemEntity
@@ -19,7 +20,7 @@ import com.tsarsprocket.reportmid.dataDragonRoom.RunePathEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.SummonerSpellEntity
 import com.tsarsprocket.reportmid.dataDragonRoom.VersionEntity
 import com.tsarsprocket.reportmid.lol.api.domain.model.Champion
-import com.tsarsprocket.reportmid.lol.api.domain.model.Item
+import com.tsarsprocket.reportmid.lol.api.domain.model.KnownItem
 import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
 import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
 import com.tsarsprocket.reportmid.lol.api.domain.model.RunePath
@@ -203,7 +204,7 @@ class DataDragonImpl @Inject constructor(
             )
         }
 
-        val items = itemEntities.map { Item(it.riotId, it.name, it.imageName) }
+        val items = itemEntities.map { KnownItem(it.riotId, it.name, it.imageName) }
 
         return TailImpl(ver, lang, runePaths.values.toList(), runes, champs, summonerSpells, items)
     }
@@ -215,13 +216,13 @@ class DataDragonImpl @Inject constructor(
         override val perks: List<Perk>,
         override val champs: List<Champion>,
         override val summonerSpells: List<SummonerSpell>,
-        override val items: List<Item>,
+        override val items: List<KnownItem>,
     ) : Tail {
         private val runePathRegistry: Map<Int, RunePath> = runePaths.associateBy { it.id }
         private val perkRegistry: Map<Int, Perk> = perks.associateBy { it.id }
         private val champRegistry: Map<Long, Champion> = champs.associateBy { it.id }
         private val summSpellRegistry: Map<Long, SummonerSpell> = summonerSpells.associateBy { it.key }
-        private val itemRegistry: Map<Int, Item> = items.associateBy { it.riotId }
+        private val itemRegistry: Map<Int, KnownItem> = items.associateBy { it.riotId }
 
         private val versionedImageBase: String
             get() = "${BASE_URL}cdn/$version/$IMAGE_INFIX"
@@ -232,10 +233,11 @@ class DataDragonImpl @Inject constructor(
         override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
         override fun getChampionById(id: Long): Champion = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
         override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
-        override fun getItemById(id: Int): Item = itemRegistry[id] ?: throw RuntimeException("Item with unknown id=$id is requested")
+        override fun getItemById(itemId: Int): KnownItem = itemRegistry[itemId] ?: throw ItemIsUnknownException(itemId)
+
 
         override fun getChampionImageUrl(championName: String): String = "$versionedImageBase/$CHAMPION_IMAGE_INFIX/$championName"
-        override fun getItemImageUrl(item: Item): String = "$versionedImageBase/$ITEM_IMAGE_INFIX/${item.imageName}"
+        override fun getItemImageUrl(item: KnownItem): String = "$versionedImageBase/$ITEM_IMAGE_INFIX/${item.imageName}"
         override fun getRuneImageUrl(rune: Rune): String = "$unversionedImageBase/${rune.iconPath}"
         override fun getSummonerImageUrl(summonerIconId: Int): String = "$versionedImageBase/$PROFILE_IMAGE_INFIX/$summonerIconId$PROFILE_IMAGE_EXT"
         override fun getSummonerSpellImageUrl(imageName: String): String = "$versionedImageBase/$SUMMONER_SPELL_INFIX/$imageName"

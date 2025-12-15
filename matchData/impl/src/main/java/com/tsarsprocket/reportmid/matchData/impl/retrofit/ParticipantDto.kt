@@ -21,6 +21,7 @@ internal data class ParticipantDto(
     @SerializedName("puuid") val puuid: String,
     @SerializedName("riotIdGameName") val riotIdGameName: String,
     @SerializedName("riotIdTagline") val riotIdTagline: String,
+    @SerializedName("summonerLevel") val summonerLevel: Int,
     @SerializedName("summoner1Id") val summoner1Id: Int,
     @SerializedName("summoner2Id") val summoner2Id: Int,
     @SerializedName("teamId") val teamId: Int,
