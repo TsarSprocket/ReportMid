@@ -15,8 +15,10 @@ library(
         impl(appApi)
         impl(dataDragonApi)
         impl(matchData.api)
+        impl(navigationMapApi)
         impl(kspApi)
         impl(resLib)
+        impl(summonerViewApi)
         impl(theme)
         impl(viewStateApi)
 

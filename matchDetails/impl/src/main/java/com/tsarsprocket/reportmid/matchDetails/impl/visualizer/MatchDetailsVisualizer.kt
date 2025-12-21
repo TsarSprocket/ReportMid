@@ -5,12 +5,16 @@ import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.matchDetails.api.viewIntent.MatchDetailsIntent
+import com.tsarsprocket.reportmid.matchDetails.impl.view.ErrorNotLoaded
 import com.tsarsprocket.reportmid.matchDetails.impl.view.Loading
 import com.tsarsprocket.reportmid.matchDetails.impl.view.MatchDetails
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.AbstractMatchDetailsState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.MatchDetailsState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.NotLoadedState
+import com.tsarsprocket.reportmid.summonerViewApi.navigation.OngoingSummonerViewNavigation
+import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
@@ -18,7 +22,10 @@ import javax.inject.Inject
 
 @PerApi
 @Visualizer
-internal class MatchDetailsVisualizer @Inject constructor() : ViewStateVisualizer {
+internal class MatchDetailsVisualizer @Inject constructor(
+    @param:Navigation(OngoingSummonerViewNavigation.TAG)
+    private val navigation: OngoingSummonerViewNavigation
+) : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(
@@ -39,12 +46,12 @@ internal class MatchDetailsVisualizer @Inject constructor() : ViewStateVisualize
         }
     }
 
-    fun navigateToSummoner(puuid: String, region: Region) {
-        TODO("Not yet implemented")
+    fun ViewStateHolder.navigateToSummoner(puuid: String, region: Region) {
+        with(navigation) { showProfileForSummoner(summonerPuuid = puuid, summonerRegion = region) }
     }
 
     @Composable
-    fun ViewStateHolder.ShowLoading(modifier: Modifier, state: LoadingState) {
+    fun ShowLoading(modifier: Modifier, state: LoadingState) {
         Loading(modifier)
     }
 
@@ -59,6 +66,8 @@ internal class MatchDetailsVisualizer @Inject constructor() : ViewStateVisualize
 
     @Composable
     fun ViewStateHolder.ShowNotLoaded(modifier: Modifier, state: NotLoadedState) {
-        TODO("Not yet implemented")
+        ErrorNotLoaded(modifier = modifier) {
+            postIntent(MatchDetailsIntent(matchId = state.matchId, region = state.region))
+        }
     }
 }

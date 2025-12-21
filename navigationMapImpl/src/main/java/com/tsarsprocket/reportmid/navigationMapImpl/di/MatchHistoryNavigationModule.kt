@@ -24,7 +24,7 @@ class MatchHistoryNavigationModule {
 
             targetHolder.postIntent(
                 intent = MatchDetailsIntent(matchId = matchId, region = region),
-                returnIntent = (targetHolder.viewStates.value as SummonerViewStateReturnPoint).getReturnIntent(),
+                returnIntent = targetHolder.viewStates.value.getRestoreStateIntent(),
             )
         }
     }

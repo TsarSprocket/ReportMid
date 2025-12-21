@@ -5,4 +5,8 @@
     <string name="match_details_game_outcome_remake">Remake</string>
     <string name="match_details_game_outcome_win">Win</string>
 
+    <string name="match_details_error_not_loaded_title">Could not load game data</string>
+    <string name="match_details_error_not_loaded_message">Please check your Internet connection and try again</string>
+    <string name="match_details_error_not_loaded_button">Try again</string>
+
 </resources>

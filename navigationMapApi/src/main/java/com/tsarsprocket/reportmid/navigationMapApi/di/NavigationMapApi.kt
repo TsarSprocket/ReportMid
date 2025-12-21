@@ -4,7 +4,8 @@ import com.tsarsprocket.reportmid.findSummonerApi.navigation.FindSummonerNavigat
 import com.tsarsprocket.reportmid.landingApi.navigation.LandingNavigation
 import com.tsarsprocket.reportmid.mainScreenApi.navigation.MainScreenNavigation
 import com.tsarsprocket.reportmid.matchHistory.api.navigation.MatchHistoryNavigation
-import com.tsarsprocket.reportmid.summonerViewApi.navigation.SummonerViewNavigation
+import com.tsarsprocket.reportmid.summonerViewApi.navigation.OngoingSummonerViewNavigation
+import com.tsarsprocket.reportmid.summonerViewApi.navigation.StartSummonerViewNavigation
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 
@@ -21,8 +22,11 @@ interface NavigationMapApi {
 
     fun getStartViewIntentCreator(): ViewIntent
 
-    @Navigation(SummonerViewNavigation.TAG)
-    fun getSummonerViewNavigation(): SummonerViewNavigation
+    @Navigation(StartSummonerViewNavigation.TAG)
+    fun getStartSummonerViewNavigation(): StartSummonerViewNavigation
+
+    @Navigation(OngoingSummonerViewNavigation.TAG)
+    fun getOngoingSummonerViewNavigation(): OngoingSummonerViewNavigation
 
     @Navigation(MatchHistoryNavigation.TAG)
     fun getMatchHistoryNavigation(): MatchHistoryNavigation

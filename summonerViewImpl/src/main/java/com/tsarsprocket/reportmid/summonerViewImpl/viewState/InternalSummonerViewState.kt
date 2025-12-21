@@ -22,7 +22,7 @@ internal data class InternalSummonerViewState(
     val activePage: ActivePage,
 ) : ViewState, SummonerViewStateReturnPoint {
 
-    override fun getReturnIntent(): ViewIntent = ReturnToSummoner(
+    override fun getRestoreStateIntent(): ViewIntent = ReturnToSummoner(
         puuid = summonerPuuid,
         region = summonerRegion,
         activePage = activePage,

@@ -8,4 +8,4 @@ import kotlinx.parcelize.Parcelize
  * 2) Put on back stack to quit if the user navigates back
  */
 @Parcelize
-data object QuitViewIntent : ViewIntent
+data object QuitViewIntent : GeneralPurposeViewIntent

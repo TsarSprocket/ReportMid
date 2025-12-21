@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.summonerViewImpl.stateInitializer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
-import com.tsarsprocket.reportmid.summonerViewApi.navigation.SummonerViewNavigation
+import com.tsarsprocket.reportmid.summonerViewApi.navigation.StartSummonerViewNavigation
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.InternalSummonerViewState
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
@@ -11,8 +11,8 @@ import javax.inject.Inject
 
 @PerApi
 internal class SummonerViewStateInitializer @Inject constructor(
-    @param:Navigation(SummonerViewNavigation.TAG)
-    private val navigation: SummonerViewNavigation
+    @param:Navigation(StartSummonerViewNavigation.TAG)
+    private val navigation: StartSummonerViewNavigation
 ) : ViewStateInitializer {
 
     override fun initialize(state: ViewState, holder: ViewStateHolder) {
