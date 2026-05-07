@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
@@ -11,8 +12,8 @@ plugins {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "${JavaVersion.VERSION_18}"
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_18)
     }
 }
 

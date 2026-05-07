@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.matchData.impl.retrofit
+package com.tsarsprocket.reportmid.matchData.impl.retrofit.dto
 
 import com.google.gson.annotations.SerializedName
 

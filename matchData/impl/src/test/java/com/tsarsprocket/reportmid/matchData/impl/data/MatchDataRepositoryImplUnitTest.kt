@@ -4,7 +4,7 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPage
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPageKey
-import com.tsarsprocket.reportmid.matchData.impl.retrofit.MatchDto
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
 import com.tsarsprocket.reportmid.requestManagerApi.data.RequestManager
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 import com.tsarsprocket.reportmid.utilsTest.MainTestDispatcherExtension

@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid.lol.api.domain.model
 
+// TODO: Pending re-work – separate api/impl
 class RunePath(
     val id: Int,
     val key: String,

@@ -8,10 +8,10 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.RuneStyle
 import com.tsarsprocket.reportmid.matchData.api.data.model.Match
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.Team
-import com.tsarsprocket.reportmid.matchData.impl.retrofit.MatchDto
-import com.tsarsprocket.reportmid.matchData.impl.retrofit.ParticipantDto
-import com.tsarsprocket.reportmid.matchData.impl.retrofit.PerkStyleSelectionDto
-import com.tsarsprocket.reportmid.matchData.impl.retrofit.PerksDto
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.ParticipantDto
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.PerkStyleSelectionDto
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.PerksDto
 import javax.inject.Inject
 
 internal class MatchModelMapper @Inject constructor(

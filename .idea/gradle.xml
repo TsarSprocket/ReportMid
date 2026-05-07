@@ -27,6 +27,9 @@
             <option value="$PROJECT_DIR$/baseApi" />
             <option value="$PROJECT_DIR$/baseImpl" />
             <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/currentGameData" />
+            <option value="$PROJECT_DIR$/currentGameData/api" />
+            <option value="$PROJECT_DIR$/currentGameData/impl" />
             <option value="$PROJECT_DIR$/dataDragonApi" />
             <option value="$PROJECT_DIR$/dataDragonImpl" />
             <option value="$PROJECT_DIR$/dataDragonRoom" />

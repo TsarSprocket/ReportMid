@@ -182,7 +182,7 @@ class DataDragonImpl @Inject constructor(
         summonerSpellEntities: List<SummonerSpellEntity>,
         itemEntities: List<ItemEntity>,
     ): Tail {
-        val runePaths = runePathEntities.associate { ent -> RunePath(ent.riot_id, ent.key, ent.name, ent.iconPath).let { ent.id to it } }
+        val runePaths = runePathEntities.associate { entity -> RunePath(entity.riot_id, entity.key, entity.name, entity.iconPath).let { entity.id to it } }
 
         val runes = runeEntities.mapNotNull {
             runePaths[it.runePathId]?.createRune(

@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.matchData.impl.retrofit
 
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.CallByType
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServerInfo
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

@@ -4,8 +4,8 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.getService
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchKey
-import com.tsarsprocket.reportmid.matchData.impl.retrofit.MatchDto
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.MatchV5
+import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
 import com.tsarsprocket.reportmid.requestManagerApi.data.Request
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
