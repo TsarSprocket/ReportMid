@@ -59,10 +59,11 @@ internal class CurrentGameMapper @Inject constructor(
 
     private fun mapRunes(perks: PerksDto): Runes {
         val perkIds = perks.perkIds
+        val allRunesCount = PRIMARY_RUNES_COUNT + SECONDARY_RUNES_COUNT
         return Runes(
             primaryRunes = perkIds.take(PRIMARY_RUNES_COUNT).map { tail.getPerkById(it.toInt()) as Rune },
-            secondaryRunes = perkIds.subList(SECONDARY_RUNES_START_INDEX, SECONDARY_RUNES_END_INDEX).map { tail.getPerkById(it.toInt()) as Rune },
-            statPerks = perkIds.drop(STAT_PERKS_START_INDEX).map { tail.getPerkById(it.toInt()) }
+            secondaryRunes = perkIds.subList(PRIMARY_RUNES_COUNT, allRunesCount).map { tail.getPerkById(it.toInt()) as Rune },
+            statPerks = perkIds.drop(allRunesCount).map { tail.getPerkById(it.toInt()) }
         )
     }
 
@@ -85,8 +86,6 @@ internal class CurrentGameMapper @Inject constructor(
 
     private companion object {
         private const val PRIMARY_RUNES_COUNT = 4
-        private const val SECONDARY_RUNES_START_INDEX = 4
-        private const val SECONDARY_RUNES_END_INDEX = 6
-        private const val STAT_PERKS_START_INDEX = 6
+        private const val SECONDARY_RUNES_COUNT = 2
     }
 }
