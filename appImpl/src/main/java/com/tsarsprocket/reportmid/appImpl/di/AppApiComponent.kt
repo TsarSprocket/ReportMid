@@ -15,6 +15,7 @@ import com.tsarsprocket.reportmid.mainScreenImpl.di.MainScreenCapabilityProvisio
 import com.tsarsprocket.reportmid.matchData.impl.di.MatchDataCapabilityProvisionModule
 import com.tsarsprocket.reportmid.matchDetails.impl.di.MatchDetailsCapabilityProvisionModule
 import com.tsarsprocket.reportmid.matchHistory.impl.di.MatchHistoryCapabilityProvisionModule
+import com.tsarsprocket.reportmid.matchUpView.impl.di.MatchUpViewCapabilityProvisionModule
 import com.tsarsprocket.reportmid.navigationMapImpl.di.NavigationMapCapabilityProvisionModule
 import com.tsarsprocket.reportmid.profileOverviewImpl.di.ProfileOverviewCapabilityProvisionModule
 import com.tsarsprocket.reportmid.requestManagerImpl.di.RequestManagerCapabilityProvisionModule
@@ -43,6 +44,7 @@ import dagger.Component
         MatchDataCapabilityProvisionModule::class,
         MatchDetailsCapabilityProvisionModule::class,
         MatchHistoryCapabilityProvisionModule::class,
+        MatchUpViewCapabilityProvisionModule::class,
         NavigationMapCapabilityProvisionModule::class,
         ProfileOverviewCapabilityProvisionModule::class,
         RequestManagerCapabilityProvisionModule::class,

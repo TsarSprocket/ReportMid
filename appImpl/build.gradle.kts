@@ -23,6 +23,7 @@ application(
         impl(matchData.impl)
         impl(matchDetails.impl)
         impl(matchHistory.impl)
+        impl(matchUpView.impl)
         impl(navigationMapImpl)
         impl(profileOverviewImpl)
         impl(requestManagerImpl)
