@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @State
-internal data class MatchUpFoundViewState(
+internal data class ShowViewState(
     val puuid: String,
     val region: Region,
-) : InternalMatchUpViewState
+) : InternalViewState

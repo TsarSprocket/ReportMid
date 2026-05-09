@@ -1,11 +1,12 @@
-package com.tsarsprocket.reportmid.currentGameData.api.data.model
+package com.tsarsprocket.reportmid.matchUpView.impl.domain.model
 
+import com.tsarsprocket.reportmid.lol.api.domain.model.Champion
 import com.tsarsprocket.reportmid.lol.api.domain.model.Runes
 import com.tsarsprocket.reportmid.lol.api.domain.model.SummonerSpell
 
-data class CurrentGameParticipant(
+internal data class Participant(
     val puuid: String,
-    val championId: Long,
+    val champion: Champion,
     val profileIcon: String,
     val isBot: Boolean,
     val runes: Runes,

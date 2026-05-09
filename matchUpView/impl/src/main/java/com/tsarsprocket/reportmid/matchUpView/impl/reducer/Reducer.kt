@@ -15,7 +15,7 @@ import javax.inject.Inject
         MatchUpViewIntent::class,
     ]
 )
-internal class MatchUpViewReducer @Inject constructor() : ViewStateReducer {
+internal class Reducer @Inject constructor() : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         TODO("Not yet implemented")

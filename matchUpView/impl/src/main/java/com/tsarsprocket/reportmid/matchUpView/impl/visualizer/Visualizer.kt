@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @PerApi
 @Visualizer
-internal class MatchUpViewVisualizer @Inject constructor() : ViewStateVisualizer {
+internal class Visualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
     override fun Visualize(modifier: Modifier, state: ViewState, stateHolder: ViewStateHolder) {

@@ -13,6 +13,8 @@ library(
 
         impl(appApi)
         impl(baseApi)
+        impl(currentGameData.api)
+        impl(dataDragonApi)
         impl(viewStateApi)
 
         // KSP

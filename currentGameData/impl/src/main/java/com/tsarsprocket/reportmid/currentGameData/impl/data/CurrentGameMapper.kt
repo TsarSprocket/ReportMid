@@ -4,7 +4,6 @@ import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.currentGameData.api.data.model.CurrentGame
 import com.tsarsprocket.reportmid.currentGameData.api.data.model.CurrentGameParticipant
 import com.tsarsprocket.reportmid.currentGameData.api.data.model.CurrentTeam
-import com.tsarsprocket.reportmid.currentGameData.api.data.model.Runes
 import com.tsarsprocket.reportmid.currentGameData.impl.retrofit.dto.BannedChampionDto
 import com.tsarsprocket.reportmid.currentGameData.impl.retrofit.dto.CurrentGameInfoDto
 import com.tsarsprocket.reportmid.currentGameData.impl.retrofit.dto.CurrentGameParticipantDto
@@ -14,6 +13,7 @@ import com.tsarsprocket.reportmid.currentGameData.impl.retrofit.dto.SpectatorRes
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.domain.GameTypeFactory
 import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
+import com.tsarsprocket.reportmid.lol.api.domain.model.Runes
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
