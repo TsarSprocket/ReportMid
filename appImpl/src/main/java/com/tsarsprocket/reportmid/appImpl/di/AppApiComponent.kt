@@ -4,6 +4,7 @@ import com.tsarsprocket.reportmid.appApi.di.AppApi
 import com.tsarsprocket.reportmid.appImpl.activity.MainActivity
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseImpl.di.BaseCapabilityProvisionModule
+import com.tsarsprocket.reportmid.currentGameData.impl.di.CurrentGameDataCapabilityProvisionModule
 import com.tsarsprocket.reportmid.dataDragonImpl.di.DataDragonProvisionModule
 import com.tsarsprocket.reportmid.findSummonerImpl.di.FindSummonerCapabilityProvisionModule
 import com.tsarsprocket.reportmid.kspApi.annotation.LazyProxy
@@ -34,6 +35,7 @@ import dagger.Component
         // Provision modules
         AppProvisionModule::class,
         BaseCapabilityProvisionModule::class,
+        CurrentGameDataCapabilityProvisionModule::class,
         DataDragonProvisionModule::class,
         FindSummonerCapabilityProvisionModule::class,
         LandingCapabilityProvisionModule::class,

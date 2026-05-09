@@ -17,4 +17,4 @@ import com.tsarsprocket.reportmid.matchUpView.api.di.MatchUpViewApi
         MainModule::class,
     ]
 )
-internal interface Capability
+internal interface MatchUpViewCapability

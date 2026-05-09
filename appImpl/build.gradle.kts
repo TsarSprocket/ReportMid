@@ -13,6 +13,7 @@ application(
         api(appApi)
 
         impl(baseImpl)
+        impl(currentGameData.impl)
         impl(dataDragonImpl)
         impl(findSummonerImpl)
         impl(landingImpl)
