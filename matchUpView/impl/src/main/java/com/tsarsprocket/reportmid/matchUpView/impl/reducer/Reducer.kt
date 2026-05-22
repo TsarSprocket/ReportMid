@@ -3,6 +3,11 @@ package com.tsarsprocket.reportmid.matchUpView.impl.reducer
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpViewIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.domain.Interactor
+import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.CurrentMatchUp
+import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.NoMatchUpFound
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ErrorViewState
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundViewState
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -15,9 +20,26 @@ import javax.inject.Inject
         MatchUpViewIntent::class,
     ]
 )
-internal class Reducer @Inject constructor() : ViewStateReducer {
+internal class Reducer @Inject constructor(
+    private val interactor: Interactor,
+    private val mapper: Mapper,
+) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
-        TODO("Not yet implemented")
+        return when(intent) {
+            is MatchUpViewIntent -> loadMatchUp(intent)
+            else -> super.reduce(intent, state, stateHolder)
+        }
+    }
+
+    private suspend fun loadMatchUp(intent: MatchUpViewIntent): ViewState {
+        return try {
+            when(val result = interactor.getCurrentMatchUp(intent.puuid, intent.region)) {
+                is CurrentMatchUp -> mapper.map(result)
+                NoMatchUpFound -> NotFoundViewState(intent.puuid, intent.region)
+            }
+        } catch(exception: Exception) {
+            ErrorViewState(intent.puuid, intent.region, exception.message ?: "Unknown error")
+        }
     }
 }
