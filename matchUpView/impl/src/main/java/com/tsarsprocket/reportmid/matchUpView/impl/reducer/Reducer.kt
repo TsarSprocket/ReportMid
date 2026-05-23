@@ -6,7 +6,9 @@ import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpViewIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.Interactor
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.CurrentMatchUp
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.NoMatchUpFound
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpViewIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ErrorViewState
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.LoadingViewState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundViewState
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
@@ -27,12 +29,13 @@ internal class Reducer @Inject constructor(
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         return when(intent) {
-            is MatchUpViewIntent -> loadMatchUp(intent)
+            is MatchUpViewIntent -> LoadingViewState(intent.puuid, intent.region)
+            is LoadMatchUpViewIntent -> loadMatchUp(intent)
             else -> super.reduce(intent, state, stateHolder)
         }
     }
 
-    private suspend fun loadMatchUp(intent: MatchUpViewIntent): ViewState {
+    private suspend fun loadMatchUp(intent: LoadMatchUpViewIntent): ViewState {
         return try {
             when(val result = interactor.getCurrentMatchUp(intent.puuid, intent.region)) {
                 is CurrentMatchUp -> mapper.map(result)
