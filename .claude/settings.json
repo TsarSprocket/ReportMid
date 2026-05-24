@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$j = [Console]::In.ReadToEnd() | ConvertFrom-Json; if ($j.tool_input.file_path) { git add ($j.tool_input.file_path) }",
+            "shell": "powershell"
+          }
+        ]
+      }
+    ]
+  }
+}
