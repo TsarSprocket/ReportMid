@@ -6,7 +6,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @State
-internal data class NotFoundViewState(
+internal data class MatchUpState(
     val puuid: String,
     val region: Region,
+    val teams: List<TeamInfo>,
 ) : InternalViewState

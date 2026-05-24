@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Intent
-internal data class LoadMatchUpViewIntent(
+internal data class LoadMatchUpIntent(
     val puuid: String,
     val region: Region,
-) : InternalViewIntent
+) : InternalIntent

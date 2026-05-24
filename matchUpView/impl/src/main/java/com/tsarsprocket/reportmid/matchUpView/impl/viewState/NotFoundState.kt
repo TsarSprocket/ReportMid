@@ -6,8 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @State
-internal data class ErrorViewState(
+internal data class NotFoundState(
     val puuid: String,
     val region: Region,
-    val errorMessage: String,
 ) : InternalViewState

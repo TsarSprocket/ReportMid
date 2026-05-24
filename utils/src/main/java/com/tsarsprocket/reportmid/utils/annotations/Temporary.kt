@@ -38,4 +38,4 @@ import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
     TYPE_PARAMETER,
     VALUE_PARAMETER,
 )
-annotation class Temporary
+annotation class Temporary(val comment: String = "")

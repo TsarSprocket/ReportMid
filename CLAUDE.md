@@ -115,3 +115,24 @@ processor generates the Dagger binding modules. The `@Capability` annotation tie
 ## Riot API Key
 
 The API key is stored at `lolServicesApi/src/main/res/raw/riot_api_key.txt`. Do not commit a real production key.
+
+## Coding Rules
+
+- **File naming must follow the primary class name.** When the main (or only) class, interface, or object in a file is renamed, the file must be renamed to match at the same time. Create the new
+  correctly-named file with the moved content, then delete the old file (use `Remove-Item` via the shell — do not leave an empty stub behind).
+
+- **Composable previews live in the same file as the composable, at the very end.** Order within the file: public composable → private helpers → preview. The preview is separated from the preceding
+  code by **two** blank lines (not one). The preview function is named `<ComposableName>Preview`. Example:
+  ```kotlin
+  @Composable
+  internal fun Loading(...) { ... }
+
+  private fun helper() { ... }
+
+
+  @Preview
+  @Composable
+  private fun LoadingPreview() {
+      Loading(...)
+  }
+  ```

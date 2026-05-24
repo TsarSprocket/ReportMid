@@ -15,6 +15,7 @@ library(
         impl(baseApi)
         impl(currentGameData.api)
         impl(dataDragonApi)
+        impl(theme)
         impl(utils)
         impl(viewStateApi)
 
@@ -30,6 +31,7 @@ library(
 
         // Compose
         impl(platform(compose.bom))
+        impl(compose.foundation)
         impl(compose.runtime)
         impl(compose.material3)
         impl(compose.ui.tooling.preview)

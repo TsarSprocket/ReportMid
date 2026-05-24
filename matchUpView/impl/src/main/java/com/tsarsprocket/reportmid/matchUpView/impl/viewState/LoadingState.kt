@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @State
-internal data class ShowViewState(
+internal data class LoadingState(
     val puuid: String,
     val region: Region,
 ) : InternalViewState

@@ -2,14 +2,14 @@ package com.tsarsprocket.reportmid.matchUpView.impl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
-import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpViewIntent
+import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.Interactor
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.CurrentMatchUp
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.NoMatchUpFound
-import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpViewIntent
-import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ErrorViewState
-import com.tsarsprocket.reportmid.matchUpView.impl.viewState.LoadingViewState
-import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundViewState
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ErrorState
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.LoadingState
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundState
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @PerApi
 @Reducer(
     explicitIntents = [
-        MatchUpViewIntent::class,
+        MatchUpIntent::class,
     ]
 )
 internal class Reducer @Inject constructor(
@@ -29,20 +29,20 @@ internal class Reducer @Inject constructor(
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         return when(intent) {
-            is MatchUpViewIntent -> LoadingViewState(intent.puuid, intent.region)
-            is LoadMatchUpViewIntent -> loadMatchUp(intent)
+            is MatchUpIntent -> LoadingState(intent.puuid, intent.region)
+            is LoadMatchUpIntent -> loadMatchUp(intent)
             else -> super.reduce(intent, state, stateHolder)
         }
     }
 
-    private suspend fun loadMatchUp(intent: LoadMatchUpViewIntent): ViewState {
+    private suspend fun loadMatchUp(intent: LoadMatchUpIntent): ViewState {
         return try {
             when(val result = interactor.getCurrentMatchUp(intent.puuid, intent.region)) {
-                is CurrentMatchUp -> mapper.map(result)
-                NoMatchUpFound -> NotFoundViewState(intent.puuid, intent.region)
+                is CurrentMatchUp -> mapper.map(result, intent.puuid, intent.region)
+                NoMatchUpFound -> NotFoundState(intent.puuid, intent.region)
             }
         } catch(exception: Exception) {
-            ErrorViewState(intent.puuid, intent.region, exception.message ?: "Unknown error")
+            ErrorState(intent.puuid, intent.region, exception.message ?: "Unknown error")
         }
     }
 }

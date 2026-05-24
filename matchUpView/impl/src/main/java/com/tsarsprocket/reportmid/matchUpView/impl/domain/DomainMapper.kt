@@ -24,14 +24,15 @@ internal class DomainMapper @Inject constructor(
         return CurrentMatchUp(
             gameType = currentGame.gameType,
             gameStartTime = currentGame.gameStartTime,
-            teams = currentGame.teams.map { mapTeam(it) },
+            teams = currentGame.teams.map { team -> mapTeam(team) },
         )
     }
 
-    private fun mapTeam(teams: CurrentTeam): Team {
+    private fun mapTeam(team: CurrentTeam): Team {
         return Team(
-            participants = teams.participants.map { mapParticipant(it) },
-            bannedChampionIds = teams.bannedChampionIds,
+            id = team.teamId,
+            participants = team.participants.map { mapParticipant(it) },
+            bannedChampionIds = team.bannedChampionIds,
         )
     }
 
