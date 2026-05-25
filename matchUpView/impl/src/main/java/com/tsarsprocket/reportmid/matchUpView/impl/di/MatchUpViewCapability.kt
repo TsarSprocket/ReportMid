@@ -6,6 +6,7 @@ import com.tsarsprocket.reportmid.currentGameData.api.di.CurrentGameDataApi
 import com.tsarsprocket.reportmid.dataDragonApi.di.DataDragonApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Capability
 import com.tsarsprocket.reportmid.matchUpView.api.di.MatchUpViewApi
+import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
 
 @PerApi
 @Capability(
@@ -14,6 +15,7 @@ import com.tsarsprocket.reportmid.matchUpView.api.di.MatchUpViewApi
         AppApi::class,
         CurrentGameDataApi::class,
         DataDragonApi::class,
+        SummonerApi::class,
     ],
     modules = [
         MainModule::class,

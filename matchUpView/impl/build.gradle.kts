@@ -15,6 +15,7 @@ library(
         impl(baseApi)
         impl(currentGameData.api)
         impl(dataDragonApi)
+        impl(summonerApi)
         impl(theme)
         impl(utils)
         impl(viewStateApi)

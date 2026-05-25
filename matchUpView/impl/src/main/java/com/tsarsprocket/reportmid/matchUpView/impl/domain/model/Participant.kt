@@ -6,6 +6,8 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.SummonerSpell
 
 internal data class Participant(
     val puuid: String,
+    val gameName: String?,
+    val tagLine: String?,
     val champion: Champion,
     val profileIcon: String,
     val isBot: Boolean,
