@@ -121,6 +121,12 @@ The API key is stored at `lolServicesApi/src/main/res/raw/riot_api_key.txt`. Do 
 - **File naming must follow the primary class name.** When the main (or only) class, interface, or object in a file is renamed, the file must be renamed to match at the same time. Create the new
   correctly-named file with the moved content, then delete the old file (use `Remove-Item` via the shell — do not leave an empty stub behind).
 
+- **`Modifier` is the first parameter of a composable when it is the primary modifier.** "Primary" means it controls the layout/appearance of the composable's root element. Default value is `Modifier`. Example:
+  ```kotlin
+  @Composable
+  internal fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo) { ... }
+  ```
+
 - **Composable previews live in the same file as the composable, at the very end.** Order within the file: public composable → private helpers → preview. The preview is separated from the preceding
   code by **two** blank lines (not one). The preview function is named `<ComposableName>Preview`. Example:
   ```kotlin

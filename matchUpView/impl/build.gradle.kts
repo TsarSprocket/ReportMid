@@ -15,6 +15,7 @@ library(
         impl(baseApi)
         impl(currentGameData.api)
         impl(dataDragonApi)
+        impl(resLib)
         impl(summonerApi)
         impl(theme)
         impl(utils)
@@ -36,5 +37,8 @@ library(
         impl(compose.runtime)
         impl(compose.material3)
         impl(compose.ui.tooling.preview)
+
+        // Coil – required to resolve SubcomposeAsyncImageScope / State types in ReloadableImage lambdas
+        impl(coil)
     }
 }

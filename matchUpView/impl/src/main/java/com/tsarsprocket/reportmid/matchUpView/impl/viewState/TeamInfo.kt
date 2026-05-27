@@ -6,4 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 internal data class TeamInfo(
     val isBlueSide: Boolean,
+    val participants: List<ParticipantInfo>,
 ) : Parcelable
