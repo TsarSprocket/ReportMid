@@ -21,6 +21,7 @@ object PreviewViewStateHolder : ViewStateHolder {
 
     override val viewHolderScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext)
     override val currentState: ViewState = EmptyScreenViewState
+    override val stateCoroutineScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext)
     override val globalId: UUID = UUID.randomUUID()
     override val parentHolder: ViewStateHolder? = null
     override val rootHolder: ViewStateHolder = this

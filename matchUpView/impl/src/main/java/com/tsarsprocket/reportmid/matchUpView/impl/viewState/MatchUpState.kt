@@ -9,5 +9,5 @@ import kotlinx.parcelize.Parcelize
 internal data class MatchUpState(
     val puuid: String,
     val region: Region,
-    val teams: List<TeamInfo>,
+    val teams: Map<Int, TeamInfo>,
 ) : InternalViewState

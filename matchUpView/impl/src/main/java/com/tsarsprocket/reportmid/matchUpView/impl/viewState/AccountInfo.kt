@@ -4,8 +4,6 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-internal data class TeamInfo(
-    val id: Int,
-    val isBlueSide: Boolean,
-    val participants: Map<String, ParticipantInfo>,
+internal data class AccountInfo(
+    val name: String,
 ) : Parcelable

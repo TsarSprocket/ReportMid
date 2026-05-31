@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.matchUpView.impl.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -21,21 +21,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.matchUpView.impl.R
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ParticipantInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.TeamInfo
 import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
+import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import com.tsarsprocket.reportmid.utils.compose.Failure
 import com.tsarsprocket.reportmid.utils.compose.ReloadableImage
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
+import com.tsarsprocket.reportmid.viewStateApi.view.Loadable
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.PreviewViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewState.LoadablePart
 import kotlinx.coroutines.launch
 import com.tsarsprocket.reportmid.resLib.R as ResLibR
 
@@ -45,7 +53,7 @@ private const val SPELL_ICON_SIZE_DP = 20
 
 @Composable
 internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewStateHolder) {
-    val teams = state.teams
+    val teams = state.teams.values.toList()
     val pagerState = rememberPagerState { teams.size }
     val coroutineScope = rememberCoroutineScope()
 
@@ -55,19 +63,21 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
             modifier = Modifier.weight(1f),
         ) { page ->
             val team = teams[page]
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(team.color),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                items(team.participants) { participant ->
+                team.participants.values.forEach { participant ->
                     ParticipantRow(
                         participant = participant,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
-                    )
+                    ) { puuid ->
+                        stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid))
+                    }
                 }
             }
         }
@@ -90,7 +100,7 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
 }
 
 @Composable
-private fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo) {
+private fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo, reloadTrigger: (String) -> Unit) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -101,9 +111,33 @@ private fun ParticipantRow(modifier: Modifier = Modifier, participant: Participa
             modifier = Modifier.size(CHAMPION_ICON_SIZE_DP.dp),
         )
 
-        Text(
-            text = participant.summonerDisplayName,
-            style = reportMidTypography.bodyMedium,
+        Loadable(
+            part = participant.account,
+            loading = { modifier ->
+                with(LocalDensity.current) {
+                    SkeletonRectangle(
+                        modifier.size(width = 120.sp.toDp(), height = 24.sp.toDp())
+                    )
+                }
+            },
+            success = { modifier, accountInfo ->
+                Text(
+                    modifier = modifier,
+                    text = accountInfo.name,
+                    style = reportMidTypography.bodyMedium,
+                )
+            },
+            failure = { modifier, reloader ->
+                Text(
+                    modifier = modifier.clickable(onClick = reloader),
+                    text = stringResource(R.string.match_up_view_name_not_loaded),
+                    style = reportMidTypography.bodyMedium,
+                    color = reportMidColorScheme.error
+                )
+            },
+            loadTrigger = {
+                reloadTrigger(participant.puuid)
+            }
         )
 
         RuneIcons(
@@ -185,25 +219,27 @@ private fun MatchUpPreview() {
         state = MatchUpState(
             puuid = "preview-puuid",
             region = Region.EUROPE_WEST,
-            teams = listOf(
-                TeamInfo(
+            teams = mapOf(
+                100 to TeamInfo(
+                    id = 100,
                     isBlueSide = true,
-                    participants = listOf(
-                        previewParticipant("Faker#T1"),
-                        previewParticipant("Caps#EUW"),
-                        previewParticipant("Rekkles#NA1"),
-                        previewParticipant("Jankos#EUW"),
-                        previewParticipant("Mikyx#EUW"),
+                    participants = mapOf(
+                        "puuid-1" to previewParticipant("puuid-1", "Faker#T1"),
+                        "puuid-2" to previewParticipant("puuid-2", "Caps#EUW"),
+                        "puuid-3" to previewParticipant("puuid-3", "Rekkles#NA1"),
+                        "puuid-4" to previewParticipant("puuid-4", "Jankos#EUW"),
+                        "puuid-5" to previewParticipant("puuid-5", "Mikyx#EUW"),
                     ),
                 ),
-                TeamInfo(
+                200 to TeamInfo(
+                    id = 200,
                     isBlueSide = false,
-                    participants = listOf(
-                        previewParticipant("Uzi#KR1"),
-                        previewParticipant("Rookie#LPL"),
-                        previewParticipant("TheShy#LPL"),
-                        previewParticipant("Karsa#LPL"),
-                        previewParticipant("Ming#LPL"),
+                    participants = mapOf(
+                        "puuid-6" to previewParticipant("puuid-6", "Uzi#KR1"),
+                        "puuid-7" to previewParticipant("puuid-7", "Rookie#LPL"),
+                        "puuid-8" to previewParticipant("puuid-8", "TheShy#LPL"),
+                        "puuid-9" to previewParticipant("puuid-9", "Karsa#LPL"),
+                        "puuid-10" to previewParticipant("puuid-10", "Ming#LPL"),
                     ),
                 ),
             ),
@@ -212,9 +248,10 @@ private fun MatchUpPreview() {
     )
 }
 
-private fun previewParticipant(name: String) = ParticipantInfo(
+private fun previewParticipant(puuid: String, name: String) = ParticipantInfo(
+    puuid = puuid,
     championImageUrl = "",
-    summonerDisplayName = name,
+    account = LoadablePart.Loading,
     primaryRuneImageUrls = listOf("", "", "", ""),
     secondaryRuneImageUrls = listOf("", ""),
     summonerSpell1ImageUrl = "",

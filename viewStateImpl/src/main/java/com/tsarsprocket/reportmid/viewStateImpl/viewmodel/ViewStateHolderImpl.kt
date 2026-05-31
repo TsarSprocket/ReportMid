@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.common.logInfo
+import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
@@ -23,7 +24,6 @@ import com.tsarsprocket.reportmid.viewStateImpl.di.component
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -73,6 +73,11 @@ internal class ViewStateHolderImpl private constructor(
     override val currentState: ViewState
         get() = mutableViewStates.value
 
+    private var _stateCoroutineScope: CoroutineScope? = null
+    // Use stateCoroutineScope for state-scoped operations
+    override val stateCoroutineScope: CoroutineScope
+        get() = _stateCoroutineScope ?: SupervisorChildCoroutineScope(viewHolderScope).also { _stateCoroutineScope = it }
+
     override val topReturnIntent: ViewIntent?
         get() = operationsStack.lastOrNull()?.goBackIntent
 
@@ -83,7 +88,7 @@ internal class ViewStateHolderImpl private constructor(
     constructor(tag: String, initialViewState: ViewState) : this(
         globalId = UUID.randomUUID(),
         initialState = initialViewState,
-        operationsStack = mutableListOf<BackOperation>(),
+        operationsStack = mutableListOf(),
         tag = tag,
     )
 
@@ -112,7 +117,7 @@ internal class ViewStateHolderImpl private constructor(
     }
 
     override fun initializeCoroutineScope(scope: CoroutineScope) {
-        viewHolderScope = CoroutineScope(scope.coroutineContext + SupervisorJob())
+        viewHolderScope = SupervisorChildCoroutineScope(scope)
     }
 
     override fun popTopReturnIntent(): ViewIntent = operationsStack.removeAt(operationsStack.lastIndex).goBackIntent
@@ -185,6 +190,10 @@ internal class ViewStateHolderImpl private constructor(
 
         if(newState !== oldState) {
             oldState.stop()
+            _stateCoroutineScope?.run {
+                cancel()
+                _stateCoroutineScope = null
+            }
             newState.setParentHolder(this@ViewStateHolderImpl)
             newState.start()
             initializers.findProcessorOrNull(newState)?.initialize(newState, this)

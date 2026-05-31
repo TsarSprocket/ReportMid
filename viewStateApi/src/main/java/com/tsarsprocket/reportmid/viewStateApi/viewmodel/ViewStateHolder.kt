@@ -19,6 +19,7 @@ import javax.inject.Provider
 interface ViewStateHolder : Parcelable {
     val viewHolderScope: CoroutineScope
     val currentState: ViewState
+    val stateCoroutineScope: CoroutineScope
     val globalId: UUID
     val parentHolder: ViewStateHolder?
     val rootHolder: ViewStateHolder

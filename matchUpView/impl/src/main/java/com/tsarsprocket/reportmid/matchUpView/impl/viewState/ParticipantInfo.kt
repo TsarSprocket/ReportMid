@@ -1,14 +1,52 @@
 package com.tsarsprocket.reportmid.matchUpView.impl.viewState
 
+import android.os.Parcel
 import android.os.Parcelable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.tsarsprocket.reportmid.viewStateApi.viewState.LoadablePart
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
+@Stable
 @Parcelize
-internal data class ParticipantInfo(
+internal class ParticipantInfo(
+    val puuid: String,
     val championImageUrl: String,
-    val summonerDisplayName: String,
+    account: LoadablePart<AccountInfo>,
     val primaryRuneImageUrls: List<String>,
     val secondaryRuneImageUrls: List<String>,
     val summonerSpell1ImageUrl: String,
     val summonerSpell2ImageUrl: String,
-) : Parcelable
+) : Parcelable {
+
+    @IgnoredOnParcel
+    var account: LoadablePart<AccountInfo> by mutableStateOf(account)
+
+    companion object : Parceler<ParticipantInfo> {
+
+        @Suppress("DEPRECATION")
+        override fun create(parcel: Parcel): ParticipantInfo = ParticipantInfo(
+            puuid = parcel.readString()!!,
+            championImageUrl = parcel.readString()!!,
+            account = parcel.readParcelable(LoadablePart::class.java.classLoader)!!,
+            primaryRuneImageUrls = parcel.createStringArrayList()!!,
+            secondaryRuneImageUrls = parcel.createStringArrayList()!!,
+            summonerSpell1ImageUrl = parcel.readString()!!,
+            summonerSpell2ImageUrl = parcel.readString()!!,
+        )
+
+        override fun ParticipantInfo.write(parcel: Parcel, flags: Int) {
+            parcel.writeString(puuid)
+            parcel.writeString(championImageUrl)
+            parcel.writeParcelable(account, flags)
+            parcel.writeStringList(primaryRuneImageUrls)
+            parcel.writeStringList(secondaryRuneImageUrls)
+            parcel.writeString(summonerSpell1ImageUrl)
+            parcel.writeString(summonerSpell2ImageUrl)
+        }
+    }
+}

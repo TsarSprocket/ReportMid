@@ -9,6 +9,7 @@ val reportMidColorScheme: ColorScheme
     @Composable
     get() = lightColorScheme(
         background = Color(0xFF303030),
+        error = Color(0xFF804040),
         onBackground = Color(0xFFE6EE9C),
         onPrimary = Color(0xE0000000),
         onSurface = Color(0xFFE6EE9C),
