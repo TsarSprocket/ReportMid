@@ -7,9 +7,14 @@ import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.Interactor
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.CurrentMatchUp
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.NoMatchUpFound
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.InternalIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.ParticipantAccountFailedToLoadIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.ParticipantAccountLoadedIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingSummonerInfoIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SummonerInfoFailedToLoadIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SummonerInfoLoadedIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ErrorState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
@@ -33,41 +38,68 @@ internal class Reducer @Inject constructor(
     private val interactor: Interactor,
     private val matchUpMapper: MatchUpMapper,
     private val accountMapper: AccountMapper,
+    private val summonerMapper: SummonerMapper,
 ) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
-        return when(intent) {
+        return when (intent ) {
             is MatchUpIntent -> LoadingState(intent.puuid, intent.region)
-            is LoadMatchUpIntent -> loadMatchUp(intent, stateHolder)
-            is ParticipantAccountLoadedIntent -> {
-                val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
-                if(participant != null) {
-                    participant.account = LoadablePart.Loaded(intent.accountInfo)
-                } else {
-                    logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to set loaded account info to")
-                }
-                state
-            }
 
-            is ParticipantAccountFailedToLoadIntent -> {
-                val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
+            is InternalIntent -> when(intent) {
+                is LoadMatchUpIntent -> loadMatchUp(intent, stateHolder)
+
+                is StartLoadingParticipantAccountIntent -> with (intent) {
+                    startAccountLoadingForParticipant(teamId, puuid, region, stateHolder)
+                    state
+                }
+
+                is ParticipantAccountLoadedIntent -> {
+                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
+                    if(participant != null) {
+                        participant.account = LoadablePart.Loaded(intent.accountInfo)
+                    } else {
+                        logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to set loaded account info to")
+                    }
+                    state
+                }
+
+                is ParticipantAccountFailedToLoadIntent -> {
+                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
                     if(participant != null) {
                         participant.account = LoadablePart.Failed
                     } else {
                         logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to mark account info as failed")
                     }
-                state
+                    state
+                }
+
+                is StartLoadingSummonerInfoIntent -> with(intent) {
+                    startSummonerInfoLoadingForParticipant(teamId, puuid, region, stateHolder)
+                    state
+                }
+
+                is SummonerInfoLoadedIntent -> {
+                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
+                    if(participant != null) {
+                        participant.summoner = LoadablePart.Loaded(intent.summonerInfo)
+                    } else {
+                        logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to set loaded summoner info to")
+                    }
+                    state
+                }
+
+                is SummonerInfoFailedToLoadIntent -> {
+                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
+                    if(participant != null) {
+                        participant.summoner = LoadablePart.Failed
+                    } else {
+                        logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to mark summoner info as failed")
+                    }
+                    state
+                }
             }
 
-            else -> super.reduce(intent, state, stateHolder)
-        }
-    }
-
-    private fun initiateAccountsLoading(matchUpState: MatchUpState, stateHolder: ViewStateHolder) {
-        matchUpState.teams.forEach { (teamId, team) ->
-            team.participants.keys.forEach { puuid ->
-                startAccountLoadingForParticipant(teamId, puuid, matchUpState.region, stateHolder)
-            }
+            else ->super.reduce(intent, state, stateHolder)
         }
     }
 
@@ -99,14 +131,49 @@ internal class Reducer @Inject constructor(
         }
     }
 
+    private fun startSummonerInfoLoadingForParticipant(
+        teamId: Int,
+        puuid: String,
+        region: Region,
+        stateHolder: ViewStateHolder,
+    ) {
+        stateHolder.viewHolderScope.launch {
+            try {
+                val summoner = interactor.getSummoner(puuid, region)
+                stateHolder.postIntent(
+                    SummonerInfoLoadedIntent(
+                        summonerInfo = summonerMapper.map(summoner),
+                        teamId = teamId,
+                        puuid = puuid,
+                    )
+                )
+            } catch(e: Exception) {
+                logError("Exception while loading matchup participant (teamId=$teamId, puuid=$puuid) summoner info", e)
+                stateHolder.postIntent(
+                    SummonerInfoFailedToLoadIntent(
+                        teamId = teamId,
+                        puuid = puuid,
+                    )
+                )
+            }
+        }
+    }
+
     private suspend fun loadMatchUp(intent: LoadMatchUpIntent, stateHolder: ViewStateHolder): ViewState {
         return try {
             when(val result = interactor.getCurrentMatchUp(intent.puuid, intent.region)) {
                 is CurrentMatchUp -> {
-                    val matchUpState = matchUpMapper.map(result, intent.puuid, intent.region) { teamId, puuid ->
-                        startAccountLoadingForParticipant(teamId, puuid, intent.region, stateHolder)
-                    }
-                    initiateAccountsLoading(matchUpState, stateHolder)
+                    val matchUpState = matchUpMapper.map(
+                        result,
+                        intent.puuid,
+                        intent.region,
+                        accountLoadTrigger = { teamId, puuid ->
+                            startAccountLoadingForParticipant(teamId, puuid, intent.region, stateHolder)
+                        },
+                        summonerLoadTrigger = { teamId, puuid ->
+                            startSummonerInfoLoadingForParticipant(teamId, puuid, intent.region, stateHolder)
+                        },
+                    )
                     matchUpState
                 }
 

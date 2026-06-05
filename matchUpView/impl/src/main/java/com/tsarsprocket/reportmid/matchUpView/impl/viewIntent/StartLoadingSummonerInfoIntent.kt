@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Intent
-data class StartLoadingParticipantAccountIntent(
+data class StartLoadingSummonerInfoIntent(
     val teamId: Int,
     val puuid: String,
     val region: Region,

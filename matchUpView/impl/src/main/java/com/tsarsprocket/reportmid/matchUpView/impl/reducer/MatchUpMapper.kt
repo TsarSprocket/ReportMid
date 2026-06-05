@@ -23,23 +23,36 @@ internal class MatchUpMapper @Inject constructor(
 
     private val tail by lazy { dataDragon.tail }
 
-    fun map(from: CurrentMatchUp, puuid: String, region: Region, accountLoadTrigger: AccountLoadTrigger): MatchUpState {
+    fun map(
+        from: CurrentMatchUp,
+        puuid: String,
+        region: Region,
+        accountLoadTrigger: AccountLoadTrigger,
+        summonerLoadTrigger: SummonerLoadTrigger,
+    ): MatchUpState {
         return MatchUpState(
             puuid = puuid,
             region = region,
-            teams = from.teams.associate { it.id to mapTeam(it, accountLoadTrigger) },
+            teams = from.teams.associate { it.id to mapTeam(it, accountLoadTrigger, summonerLoadTrigger) },
         )
     }
 
-    private fun mapTeam(from: Team, accountLoadTrigger: AccountLoadTrigger): TeamInfo {
+    private fun mapTeam(from: Team, accountLoadTrigger: AccountLoadTrigger, summonerLoadTrigger: SummonerLoadTrigger): TeamInfo {
         return TeamInfo(
             id = from.id,
             isBlueSide = from.id == BLUE_TEAM_ID,
-            participants = from.participants.associate { it.puuid to mapParticipant(it) { puuid -> accountLoadTrigger(from.id, puuid) } },
+            participants = from.participants.associate { it.puuid to mapParticipant(it,
+                { puuid -> accountLoadTrigger(from.id, puuid) },
+                { puuid -> summonerLoadTrigger(from.id, puuid) },
+            ) },
         )
     }
 
-    private fun mapParticipant(from: Participant, accountLoadTrigger: (String) -> Unit): ParticipantInfo {
+    private fun mapParticipant(
+        from: Participant,
+        accountLoadTrigger: (String) -> Unit,
+        summonerLoadTrigger: (String) -> Unit,
+    ): ParticipantInfo {
         return ParticipantInfo(
             puuid = from.puuid,
             championImageUrl = tail.getChampionImageUrl(from.champion.iconName),
@@ -47,6 +60,12 @@ internal class MatchUpMapper @Inject constructor(
                 LoadablePart.Loaded(AccountInfo(appContext.getString(R.string.match_up_view_bot_player_name)))
             } else {
                 accountLoadTrigger(from.puuid)
+                LoadablePart.Loading
+            },
+            summoner = if (from.isBot) {
+                LoadablePart.Loading
+            } else {
+                summonerLoadTrigger(from.puuid)
                 LoadablePart.Loading
             },
             primaryRuneImageUrls = from.runes.primaryRunes.map { tail.getRuneImageUrl(it) },
@@ -57,6 +76,10 @@ internal class MatchUpMapper @Inject constructor(
     }
 
     fun interface AccountLoadTrigger {
+        operator fun invoke(teamId: Int, puuid: String)
+    }
+
+    fun interface SummonerLoadTrigger {
         operator fun invoke(teamId: Int, puuid: String)
     }
 

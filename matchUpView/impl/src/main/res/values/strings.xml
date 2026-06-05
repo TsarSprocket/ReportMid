@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="match_up_view_bot_player_name">Bot</string>
-    <string name="match_up_view_name_not_loaded">Bot</string>
+    <string name="match_up_view_not_loaded">n/a</string>
+    <string name="match_up_view_summoner_level_label">Level: </string>
 </resources>

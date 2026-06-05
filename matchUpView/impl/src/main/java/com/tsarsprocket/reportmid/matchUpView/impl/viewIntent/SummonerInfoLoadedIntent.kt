@@ -1,13 +1,13 @@
 package com.tsarsprocket.reportmid.matchUpView.impl.viewIntent
 
 import com.tsarsprocket.reportmid.kspApi.annotation.Intent
-import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.SummonerInfo
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Intent
-data class StartLoadingParticipantAccountIntent(
+internal data class SummonerInfoLoadedIntent(
+    val summonerInfo: SummonerInfo,
     val teamId: Int,
     val puuid: String,
-    val region: Region,
 ) : InternalIntent

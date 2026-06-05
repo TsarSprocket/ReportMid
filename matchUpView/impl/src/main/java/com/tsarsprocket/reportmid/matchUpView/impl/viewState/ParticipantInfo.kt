@@ -17,6 +17,7 @@ internal class ParticipantInfo(
     val puuid: String,
     val championImageUrl: String,
     account: LoadablePart<AccountInfo>,
+    summoner: LoadablePart<SummonerInfo>,
     val primaryRuneImageUrls: List<String>,
     val secondaryRuneImageUrls: List<String>,
     val summonerSpell1ImageUrl: String,
@@ -26,6 +27,9 @@ internal class ParticipantInfo(
     @IgnoredOnParcel
     var account: LoadablePart<AccountInfo> by mutableStateOf(account)
 
+    @IgnoredOnParcel
+    var summoner: LoadablePart<SummonerInfo> by mutableStateOf(summoner)
+
     companion object : Parceler<ParticipantInfo> {
 
         @Suppress("DEPRECATION")
@@ -33,6 +37,7 @@ internal class ParticipantInfo(
             puuid = parcel.readString()!!,
             championImageUrl = parcel.readString()!!,
             account = parcel.readParcelable(LoadablePart::class.java.classLoader)!!,
+            summoner = parcel.readParcelable(LoadablePart::class.java.classLoader)!!,
             primaryRuneImageUrls = parcel.createStringArrayList()!!,
             secondaryRuneImageUrls = parcel.createStringArrayList()!!,
             summonerSpell1ImageUrl = parcel.readString()!!,
@@ -43,6 +48,7 @@ internal class ParticipantInfo(
             parcel.writeString(puuid)
             parcel.writeString(championImageUrl)
             parcel.writeParcelable(account, flags)
+            parcel.writeParcelable(summoner, flags)
             parcel.writeStringList(primaryRuneImageUrls)
             parcel.writeStringList(secondaryRuneImageUrls)
             parcel.writeString(summonerSpell1ImageUrl)

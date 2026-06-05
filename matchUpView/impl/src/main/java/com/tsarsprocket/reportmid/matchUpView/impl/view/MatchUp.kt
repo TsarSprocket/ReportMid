@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SecondaryTabRow
@@ -30,8 +28,10 @@ import androidx.compose.ui.unit.sp
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchUpView.impl.R
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ParticipantInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.SummonerInfo as SummonerInfoState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.TeamInfo
 import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
@@ -50,6 +50,7 @@ import com.tsarsprocket.reportmid.resLib.R as ResLibR
 private const val CHAMPION_ICON_SIZE_DP = 48
 private const val RUNE_ICON_SIZE_DP = 16
 private const val SPELL_ICON_SIZE_DP = 20
+private const val SUMMONER_LEVEL_MIN_WIDTH_SP = 24
 
 @Composable
 internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewStateHolder) {
@@ -76,7 +77,7 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
                     ) { puuid ->
-                        stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid))
+                        stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid, state.region))
                     }
                 }
             }
@@ -111,33 +112,10 @@ private fun ParticipantRow(modifier: Modifier = Modifier, participant: Participa
             modifier = Modifier.size(CHAMPION_ICON_SIZE_DP.dp),
         )
 
-        Loadable(
-            part = participant.account,
-            loading = { modifier ->
-                with(LocalDensity.current) {
-                    SkeletonRectangle(
-                        modifier.size(width = 120.sp.toDp(), height = 24.sp.toDp())
-                    )
-                }
-            },
-            success = { modifier, accountInfo ->
-                Text(
-                    modifier = modifier,
-                    text = accountInfo.name,
-                    style = reportMidTypography.bodyMedium,
-                )
-            },
-            failure = { modifier, reloader ->
-                Text(
-                    modifier = modifier.clickable(onClick = reloader),
-                    text = stringResource(R.string.match_up_view_name_not_loaded),
-                    style = reportMidTypography.bodyMedium,
-                    color = reportMidColorScheme.error
-                )
-            },
-            loadTrigger = {
-                reloadTrigger(participant.puuid)
-            }
+        SummonerInfo(
+            account = participant.account,
+            summoner = participant.summoner,
+            onLoadTrigger = { reloadTrigger(participant.puuid) },
         )
 
         RuneIcons(
@@ -148,6 +126,86 @@ private fun ParticipantRow(modifier: Modifier = Modifier, participant: Participa
         SummonerSpellIcons(
             spell1Url = participant.summonerSpell1ImageUrl,
             spell2Url = participant.summonerSpell2ImageUrl,
+        )
+    }
+}
+
+@Composable
+private fun SummonerInfo(account: LoadablePart<AccountInfo>, summoner: LoadablePart<SummonerInfoState>, onLoadTrigger: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        SummonerName(account = account, onLoadTrigger = onLoadTrigger)
+        SummonerLevel(summoner = summoner)
+    }
+}
+
+@Composable
+private fun SummonerName(account: LoadablePart<AccountInfo>, onLoadTrigger: () -> Unit) {
+    Loadable(
+        part = account,
+        loading = { modifier ->
+            with(LocalDensity.current) {
+                SkeletonRectangle(
+                    modifier.size(width = 120.sp.toDp(), height = 16.sp.toDp())
+                )
+            }
+        },
+        success = { modifier, accountInfo ->
+            Text(
+                modifier = modifier,
+                text = accountInfo.name,
+                style = reportMidTypography.bodySmall,
+            )
+        },
+        failure = { modifier, reloader ->
+            Text(
+                modifier = modifier.clickable(onClick = reloader),
+                text = stringResource(R.string.match_up_view_not_loaded),
+                style = reportMidTypography.bodySmall,
+                color = reportMidColorScheme.error,
+            )
+        },
+        loadTrigger = onLoadTrigger,
+    )
+}
+
+@Composable
+private fun SummonerLevel(summoner: LoadablePart<SummonerInfoState>) {
+    Row {
+        Text(
+            text = stringResource(R.string.match_up_view_summoner_level_label),
+            style = reportMidTypography.bodySmall,
+        )
+        Loadable(
+            part = summoner,
+            loading = { modifier ->
+                with(LocalDensity.current) {
+                    SkeletonRectangle(
+                        modifier.size(
+                            width = SUMMONER_LEVEL_MIN_WIDTH_SP.sp.toDp(),
+                            height = reportMidTypography.bodySmall.fontSize.toDp(),
+                        )
+                    )
+                }
+            },
+            success = { modifier, summonerInfo ->
+                Text(
+                    modifier = modifier,
+                    text = summonerInfo.level,
+                    style = reportMidTypography.bodySmall,
+                )
+            },
+            failure = { modifier, _ ->
+                Text(
+                    modifier = modifier,
+                    text = stringResource(R.string.match_up_view_not_loaded),
+                    style = reportMidTypography.bodySmall,
+                    color = reportMidColorScheme.error,
+                )
+            },
+            loadTrigger = {},
         )
     }
 }
@@ -252,6 +310,7 @@ private fun previewParticipant(puuid: String, name: String) = ParticipantInfo(
     puuid = puuid,
     championImageUrl = "",
     account = LoadablePart.Loading,
+    summoner = LoadablePart.Loading,
     primaryRuneImageUrls = listOf("", "", "", ""),
     secondaryRuneImageUrls = listOf("", ""),
     summonerSpell1ImageUrl = "",
