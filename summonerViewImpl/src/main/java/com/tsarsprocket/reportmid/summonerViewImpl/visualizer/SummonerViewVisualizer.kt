@@ -6,8 +6,10 @@ import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.summonerViewImpl.view.SummonerView
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowMatchHistory
+import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowMatchUp
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowProfile
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_HISTORY
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_UP
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.PROFILE
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.InternalSummonerViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -30,10 +32,12 @@ internal class SummonerViewVisualizer @Inject constructor() : ViewStateVisualize
             modifier = modifier,
             selected = state.activePage,
             selectProfile = { postIntent(ShowProfile) },
+            selectMatchUp = { postIntent(ShowMatchUp) },
             selectMatchHistory = { postIntent(ShowMatchHistory) },
         ) { innerModifier ->
             when(state.activePage) {
                 PROFILE -> state.profileOverviewStateHolder.Visualize(innerModifier)
+                MATCH_UP -> state.matchUpStateHolder.Visualize(innerModifier)
                 MATCH_HISTORY -> state.matchHistoryStateHolder.Visualize(innerModifier)
             }
         }

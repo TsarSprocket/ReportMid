@@ -2,7 +2,7 @@ package com.tsarsprocket.reportmid.viewStateImpl.visualizer
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
@@ -30,7 +30,7 @@ class DefaultVisualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
     private fun LazyScreen(modifier: Modifier, state: LazyViewState, stateHolder: ViewStateHolder) {
-        SideEffect {
+        LaunchedEffect(state) {
             stateHolder.postIntent(state.intent)
         }
 

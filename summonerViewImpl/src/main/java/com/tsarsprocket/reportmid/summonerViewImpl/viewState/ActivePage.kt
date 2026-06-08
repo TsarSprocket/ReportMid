@@ -1,3 +1,3 @@
 package com.tsarsprocket.reportmid.summonerViewImpl.viewState
 
-enum class ActivePage { PROFILE, MATCH_HISTORY }
+enum class ActivePage { PROFILE, MATCH_UP, MATCH_HISTORY }

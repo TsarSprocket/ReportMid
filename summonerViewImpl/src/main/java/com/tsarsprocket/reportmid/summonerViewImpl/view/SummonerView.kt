@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_HISTORY
+import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_UP
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.PROFILE
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
@@ -23,6 +24,7 @@ internal fun SummonerView(
     modifier: Modifier,
     selected: ActivePage,
     selectProfile: () -> Unit,
+    selectMatchUp: () -> Unit,
     selectMatchHistory: () -> Unit,
     content: @Composable (Modifier) -> Unit,
 ) {
@@ -48,6 +50,24 @@ internal fun SummonerView(
                 label = {
                     Text(
                         text = "Profile",
+                        color = reportMidColorScheme.primary,
+                        style = reportMidTypography.bodyMedium,
+                    )
+                }
+            )
+
+            NavigationBarItem(
+                selected = selected == MATCH_UP,
+                onClick = selectMatchUp,
+                icon = {
+                    Icon(
+                        painter = painterResource(ResLib.drawable.ic_match_up),
+                        contentDescription = null,
+                    )
+                },
+                label = {
+                    Text(
+                        text = "Match Up",
                         color = reportMidColorScheme.primary,
                         style = reportMidTypography.bodyMedium,
                     )

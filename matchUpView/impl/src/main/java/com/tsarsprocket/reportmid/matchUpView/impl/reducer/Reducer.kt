@@ -180,6 +180,7 @@ internal class Reducer @Inject constructor(
                 NoMatchUpFound -> NotFoundState(intent.puuid, intent.region)
             }
         } catch(exception: Exception) {
+            logError("Error loading matchup for puuid=${intent.puuid}, region=${intent.region}", exception)
             ErrorState(intent.puuid, intent.region, exception.message ?: "Unknown error")
         }
     }

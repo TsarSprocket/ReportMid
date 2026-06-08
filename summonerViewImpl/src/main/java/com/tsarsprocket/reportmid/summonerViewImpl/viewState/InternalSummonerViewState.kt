@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.summonerViewImpl.viewState
 import com.tsarsprocket.reportmid.kspApi.annotation.State
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchHistory.api.viewIntent.MatchHistoryIntent
+import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpIntent
 import com.tsarsprocket.reportmid.profileOverviewApi.viewIntent.ProfileOverviewViewIntent
 import com.tsarsprocket.reportmid.summonerViewApi.viewState.SummonerViewStateReturnPoint
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ReturnToSummoner
@@ -16,6 +17,7 @@ import kotlinx.parcelize.Parcelize
 @State
 internal data class InternalSummonerViewState(
     val profileOverviewStateHolder: ViewStateHolder,
+    val matchUpStateHolder: ViewStateHolder,
     val matchHistoryStateHolder: ViewStateHolder,
     val summonerPuuid: String,
     val summonerRegion: Region,
@@ -30,13 +32,19 @@ internal data class InternalSummonerViewState(
 
     override fun setParentHolder(parentHolder: ViewStateHolder) {
         profileOverviewStateHolder.setParentHolder(parentHolder)
+        matchUpStateHolder.setParentHolder(parentHolder)
         matchHistoryStateHolder.setParentHolder(parentHolder)
     }
 
     override fun start() {
+        // TODO: Change to navigation
         profileOverviewStateHolder.apply {
             start()
             postIntent(ProfileOverviewViewIntent(summonerPuuid, summonerRegion))
+        }
+        matchUpStateHolder.apply {
+            start()
+            postIntent(LazyViewIntent(MatchUpIntent(summonerPuuid, summonerRegion)))
         }
         matchHistoryStateHolder.apply {
             start()
@@ -45,7 +53,8 @@ internal data class InternalSummonerViewState(
     }
 
     override fun stop() {
-        profileOverviewStateHolder.stop()
         matchHistoryStateHolder.stop()
+        matchUpStateHolder.stop()
+        profileOverviewStateHolder.stop()
     }
 }

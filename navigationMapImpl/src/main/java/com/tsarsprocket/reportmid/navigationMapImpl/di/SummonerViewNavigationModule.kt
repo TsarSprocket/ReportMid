@@ -17,7 +17,7 @@ class SummonerViewNavigationModule {
     @Provides
     @PerApi
     @Navigation(StartSummonerViewNavigation.TAG)
-    fun provideSummonerViewNavigation(): StartSummonerViewNavigation = object : StartSummonerViewNavigation {
+    fun provideStartSummonerViewNavigation(): StartSummonerViewNavigation = object : StartSummonerViewNavigation {
 
         override fun ViewStateHolder.startProfileOverview(summonerPuuid: String, summonerRegion: Region) {
             postIntent(ProfileOverviewViewIntent(summonerPuuid, summonerRegion))

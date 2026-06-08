@@ -3,6 +3,6 @@ package com.tsarsprocket.reportmid.viewStateApi.viewIntent
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class LazyViewIntent(
+data class LazyViewIntent(
     val intent: ViewIntent,
 ) : GeneralPurposeViewIntent

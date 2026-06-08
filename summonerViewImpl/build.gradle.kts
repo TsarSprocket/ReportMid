@@ -12,10 +12,11 @@ library(
     with(projects) {
         api(summonerViewApi)
 
+        impl(matchHistory.api)
+        impl(matchUpView.api)
         impl(navigationMapApi)
         impl(profileOverviewApi)
         impl(resLib)
-        impl(matchHistory.api)
         impl(theme)
 
         impl(kspApi)
