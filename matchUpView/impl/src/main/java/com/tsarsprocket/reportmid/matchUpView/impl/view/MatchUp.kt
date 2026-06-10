@@ -31,6 +31,7 @@ import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingPartic
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ParticipantInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.RuneIconInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.SummonerInfo as SummonerInfoState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.TeamInfo
 import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
@@ -48,6 +49,7 @@ import kotlinx.coroutines.launch
 import com.tsarsprocket.reportmid.resLib.R as ResLibR
 
 private const val CHAMPION_ICON_SIZE_DP = 48
+private const val PRIMARY_RUNE_ICON_SIZE_DP = 20
 private const val RUNE_ICON_SIZE_DP = 16
 private const val SPELL_ICON_SIZE_DP = 20
 private const val SUMMONER_LEVEL_MIN_WIDTH_SP = 24
@@ -119,8 +121,8 @@ private fun ParticipantRow(modifier: Modifier = Modifier, participant: Participa
         )
 
         RuneIcons(
-            primaryUrls = participant.primaryRuneImageUrls,
-            secondaryUrls = participant.secondaryRuneImageUrls,
+            primaryRune = participant.primaryRune,
+            secondaryRuneStyle = participant.secondaryRuneStyle,
         )
 
         SummonerSpellIcons(
@@ -211,24 +213,21 @@ private fun SummonerLevel(summoner: LoadablePart<SummonerInfoState>) {
 }
 
 @Composable
-private fun RuneIcons(primaryUrls: List<String>, secondaryUrls: List<String>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            primaryUrls.forEach { url ->
-                GameImage(
-                    url = url,
-                    modifier = Modifier.size(RUNE_ICON_SIZE_DP.dp),
-                )
-            }
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            secondaryUrls.forEach { url ->
-                GameImage(
-                    url = url,
-                    modifier = Modifier.size(RUNE_ICON_SIZE_DP.dp),
-                )
-            }
-        }
+private fun RuneIcons(primaryRune: RuneIconInfo, secondaryRuneStyle: RuneIconInfo) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        GameImage(
+            url = primaryRune.imageUrl,
+            contentDescription = primaryRune.title,
+            modifier = Modifier.size(PRIMARY_RUNE_ICON_SIZE_DP.dp),
+        )
+        GameImage(
+            url = secondaryRuneStyle.imageUrl,
+            contentDescription = secondaryRuneStyle.title,
+            modifier = Modifier.size(RUNE_ICON_SIZE_DP.dp),
+        )
     }
 }
 
@@ -247,11 +246,11 @@ private fun SummonerSpellIcons(spell1Url: String, spell2Url: String) {
 }
 
 @Composable
-private fun GameImage(modifier: Modifier = Modifier, url: String) {
+private fun GameImage(modifier: Modifier = Modifier, url: String, contentDescription: String? = null) {
     ReloadableImage(
         url = url,
         modifier = modifier,
-        contentDescription = null,
+        contentDescription = contentDescription,
         loading = { mod, _ ->
             SkeletonRectangle(modifier = mod, cornerSize = 1.dp)
         },
@@ -311,8 +310,8 @@ private fun previewParticipant(puuid: String, name: String) = ParticipantInfo(
     championImageUrl = "",
     account = LoadablePart.Loading,
     summoner = LoadablePart.Loading,
-    primaryRuneImageUrls = listOf("", "", "", ""),
-    secondaryRuneImageUrls = listOf("", ""),
+    primaryRune = RuneIconInfo("", ""),
+    secondaryRuneStyle = RuneIconInfo("", ""),
     summonerSpell1ImageUrl = "",
     summonerSpell2ImageUrl = "",
 )

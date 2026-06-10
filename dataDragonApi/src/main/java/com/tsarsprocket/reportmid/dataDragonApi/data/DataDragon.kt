@@ -30,6 +30,7 @@ interface DataDragon {
         fun getChampionImageUrl(championName: String): String
         fun getItemImageUrl(item: KnownItem): String
         fun getRuneImageUrl(rune: Rune): String
+        fun getRunePathImageUrl(runePath: RunePath): String
         fun getSummonerImageUrl(summonerIconId: Int): String
         fun getSummonerSpellImageUrl(imageName: String): String
     }

@@ -239,6 +239,7 @@ class DataDragonImpl @Inject constructor(
         override fun getChampionImageUrl(championName: String): String = "$versionedImageBase/$CHAMPION_IMAGE_INFIX/$championName"
         override fun getItemImageUrl(item: KnownItem): String = "$versionedImageBase/$ITEM_IMAGE_INFIX/${item.imageName}"
         override fun getRuneImageUrl(rune: Rune): String = "$unversionedImageBase/${rune.iconPath}"
+        override fun getRunePathImageUrl(runePath: RunePath): String = "$unversionedImageBase/${runePath.iconPath}"
         override fun getSummonerImageUrl(summonerIconId: Int): String = "$versionedImageBase/$PROFILE_IMAGE_INFIX/$summonerIconId$PROFILE_IMAGE_EXT"
         override fun getSummonerSpellImageUrl(imageName: String): String = "$versionedImageBase/$SUMMONER_SPELL_INFIX/$imageName"
     }

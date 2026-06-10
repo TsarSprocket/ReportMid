@@ -11,6 +11,7 @@ import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.Team
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ParticipantInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.RuneIconInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.TeamInfo
 import com.tsarsprocket.reportmid.viewStateApi.viewState.LoadablePart
 import javax.inject.Inject
@@ -68,8 +69,14 @@ internal class MatchUpMapper @Inject constructor(
                 summonerLoadTrigger(from.puuid)
                 LoadablePart.Loading
             },
-            primaryRuneImageUrls = from.runes.primaryRunes.map { tail.getRuneImageUrl(it) },
-            secondaryRuneImageUrls = from.runes.secondaryRunes.map { tail.getRuneImageUrl(it) },
+            primaryRune = RuneIconInfo(
+                imageUrl = tail.getRuneImageUrl(from.runes.rune),
+                title = from.runes.rune.name,
+            ),
+            secondaryRuneStyle = RuneIconInfo(
+                imageUrl = tail.getRunePathImageUrl(from.runes.secondaryStyle),
+                title = from.runes.secondaryStyle.name,
+            ),
             summonerSpell1ImageUrl = tail.getSummonerSpellImageUrl(from.summonerSpell1.iconName),
             summonerSpell2ImageUrl = tail.getSummonerSpellImageUrl(from.summonerSpell2.iconName),
         )

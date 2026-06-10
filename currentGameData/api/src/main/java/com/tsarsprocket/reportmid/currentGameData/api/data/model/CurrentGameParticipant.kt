@@ -1,6 +1,6 @@
 package com.tsarsprocket.reportmid.currentGameData.api.data.model
 
-import com.tsarsprocket.reportmid.lol.api.domain.model.Runes
+import com.tsarsprocket.reportmid.lol.api.domain.model.CurrentRunes
 import com.tsarsprocket.reportmid.lol.api.domain.model.SummonerSpell
 
 data class CurrentGameParticipant(
@@ -8,7 +8,7 @@ data class CurrentGameParticipant(
     val championId: Long,
     val profileIcon: String,
     val isBot: Boolean,
-    val runes: Runes,
+    val runes: CurrentRunes,
     val summonerSpell1: SummonerSpell,
     val summonerSpell2: SummonerSpell,
 )

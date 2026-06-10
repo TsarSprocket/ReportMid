@@ -12,8 +12,8 @@ import com.tsarsprocket.reportmid.currentGameData.impl.retrofit.dto.PerksDto
 import com.tsarsprocket.reportmid.currentGameData.impl.retrofit.dto.SpectatorResponse
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.domain.GameTypeFactory
+import com.tsarsprocket.reportmid.lol.api.domain.model.CurrentRunes
 import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
-import com.tsarsprocket.reportmid.lol.api.domain.model.Runes
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -57,13 +57,11 @@ internal class CurrentGameMapper @Inject constructor(
         )
     }
 
-    private fun mapRunes(perks: PerksDto): Runes {
-        val perkIds = perks.perkIds
-        val allRunesCount = PRIMARY_RUNES_COUNT + SECONDARY_RUNES_COUNT
-        return Runes(
-            primaryRunes = perkIds.take(PRIMARY_RUNES_COUNT).map { tail.getPerkById(it.toInt()) as Rune },
-            secondaryRunes = perkIds.subList(PRIMARY_RUNES_COUNT, allRunesCount).map { tail.getPerkById(it.toInt()) as Rune },
-            statPerks = perkIds.drop(allRunesCount).map { tail.getPerkById(it.toInt()) }
+    private fun mapRunes(perks: PerksDto): CurrentRunes {
+        return CurrentRunes(
+            rune = tail.getPerkById(perks.perkIds[0].toInt()) as Rune,
+            primaryStyle = tail.getRunePathById(perks.perkStyle.toInt()),
+            secondaryStyle = tail.getRunePathById(perks.perkSubStyle.toInt()),
         )
     }
 
@@ -84,8 +82,4 @@ internal class CurrentGameMapper @Inject constructor(
         }
     }
 
-    private companion object {
-        private const val PRIMARY_RUNES_COUNT = 4
-        private const val SECONDARY_RUNES_COUNT = 2
-    }
 }

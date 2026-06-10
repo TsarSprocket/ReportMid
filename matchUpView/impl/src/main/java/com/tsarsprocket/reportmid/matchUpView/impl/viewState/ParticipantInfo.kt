@@ -18,8 +18,8 @@ internal class ParticipantInfo(
     val championImageUrl: String,
     account: LoadablePart<AccountInfo>,
     summoner: LoadablePart<SummonerInfo>,
-    val primaryRuneImageUrls: List<String>,
-    val secondaryRuneImageUrls: List<String>,
+    val primaryRune: RuneIconInfo,
+    val secondaryRuneStyle: RuneIconInfo,
     val summonerSpell1ImageUrl: String,
     val summonerSpell2ImageUrl: String,
 ) : Parcelable {
@@ -38,8 +38,8 @@ internal class ParticipantInfo(
             championImageUrl = parcel.readString()!!,
             account = parcel.readParcelable(LoadablePart::class.java.classLoader)!!,
             summoner = parcel.readParcelable(LoadablePart::class.java.classLoader)!!,
-            primaryRuneImageUrls = parcel.createStringArrayList()!!,
-            secondaryRuneImageUrls = parcel.createStringArrayList()!!,
+            primaryRune = parcel.readParcelable(RuneIconInfo::class.java.classLoader)!!,
+            secondaryRuneStyle = parcel.readParcelable(RuneIconInfo::class.java.classLoader)!!,
             summonerSpell1ImageUrl = parcel.readString()!!,
             summonerSpell2ImageUrl = parcel.readString()!!,
         )
@@ -49,8 +49,8 @@ internal class ParticipantInfo(
             parcel.writeString(championImageUrl)
             parcel.writeParcelable(account, flags)
             parcel.writeParcelable(summoner, flags)
-            parcel.writeStringList(primaryRuneImageUrls)
-            parcel.writeStringList(secondaryRuneImageUrls)
+            parcel.writeParcelable(primaryRune, flags)
+            parcel.writeParcelable(secondaryRuneStyle, flags)
             parcel.writeString(summonerSpell1ImageUrl)
             parcel.writeString(summonerSpell2ImageUrl)
         }
