@@ -3,6 +3,7 @@ package com.tsarsprocket.reportmid.matchUpView.impl.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,11 +31,15 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchUpView.impl.R
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.BotPlayerInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.KnownPlayerInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ParticipantInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.PlayerInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.RuneIconInfo
-import com.tsarsprocket.reportmid.matchUpView.impl.viewState.SummonerInfo as SummonerInfoState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.TeamInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.UnknownPlayerInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.SummonerInfo as SummonerInfoState
 import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
@@ -49,10 +55,12 @@ import kotlinx.coroutines.launch
 import com.tsarsprocket.reportmid.resLib.R as ResLibR
 
 private const val CHAMPION_ICON_SIZE_DP = 48
-private const val PRIMARY_RUNE_ICON_SIZE_DP = 20
+private const val PRIMARY_RUNE_ICON_SIZE_DP = 28
 private const val RUNE_ICON_SIZE_DP = 16
 private const val SPELL_ICON_SIZE_DP = 20
 private const val SUMMONER_LEVEL_MIN_WIDTH_SP = 24
+private const val SUMMONER_NAME_PLACEHOLDER_WIDTH_SP = 120
+
 
 @Composable
 internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewStateHolder) {
@@ -69,18 +77,20 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(team.color),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                    .background(team.color)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                val rowModifier = Modifier
+                    .fillMaxWidth()
                 team.participants.values.forEach { participant ->
                     ParticipantRow(
+                        modifier = rowModifier,
                         participant = participant,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                    ) { puuid ->
-                        stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid, state.region))
-                    }
+                        onReload = { puuid ->
+                            stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid, state.region))
+                        },
+                    )
                 }
             }
         }
@@ -103,21 +113,15 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
 }
 
 @Composable
-private fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo, reloadTrigger: (String) -> Unit) {
+private fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo, onReload: (String) -> Unit) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         GameImage(
             url = participant.championImageUrl,
             modifier = Modifier.size(CHAMPION_ICON_SIZE_DP.dp),
-        )
-
-        SummonerInfo(
-            account = participant.account,
-            summoner = participant.summoner,
-            onLoadTrigger = { reloadTrigger(participant.puuid) },
         )
 
         RuneIcons(
@@ -129,18 +133,53 @@ private fun ParticipantRow(modifier: Modifier = Modifier, participant: Participa
             spell1Url = participant.summonerSpell1ImageUrl,
             spell2Url = participant.summonerSpell2ImageUrl,
         )
+
+        PlayerInfoSection(
+            modifier = Modifier.padding(start = 8.dp),
+            player = participant.player,
+            onReload = onReload,
+        )
     }
 }
 
 @Composable
-private fun SummonerInfo(account: LoadablePart<AccountInfo>, summoner: LoadablePart<SummonerInfoState>, onLoadTrigger: () -> Unit) {
+private fun PlayerInfoSection(modifier: Modifier = Modifier, player: PlayerInfo, onReload: (String) -> Unit) {
+    when(player) {
+        is KnownPlayerInfo -> KnownPlayerSection(modifier = modifier, player = player, onReload = onReload)
+        is UnknownPlayerInfo -> UnknownPlayerSection(modifier = modifier)
+        is BotPlayerInfo -> BotPlayerSection(modifier = modifier)
+    }
+}
+
+@Composable
+private fun KnownPlayerSection(modifier: Modifier = Modifier, player: KnownPlayerInfo, onReload: (String) -> Unit) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
+        horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        SummonerName(account = account, onLoadTrigger = onLoadTrigger)
-        SummonerLevel(summoner = summoner)
+        SummonerName(account = player.account, onLoadTrigger = { onReload(player.puuid) })
+        SummonerLevel(summoner = player.summoner)
     }
+}
+
+@Composable
+private fun UnknownPlayerSection(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.match_up_view_hidden_player_name),
+        style = reportMidTypography.bodySmall,
+        fontStyle = FontStyle.Italic,
+    )
+}
+
+@Composable
+private fun BotPlayerSection(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.match_up_view_bot_player_name),
+        style = reportMidTypography.bodySmall,
+    )
 }
 
 @Composable
@@ -150,7 +189,10 @@ private fun SummonerName(account: LoadablePart<AccountInfo>, onLoadTrigger: () -
         loading = { modifier ->
             with(LocalDensity.current) {
                 SkeletonRectangle(
-                    modifier.size(width = 120.sp.toDp(), height = 16.sp.toDp())
+                    modifier.size(
+                        width = SUMMONER_NAME_PLACEHOLDER_WIDTH_SP.sp.toDp(),
+                        height = reportMidTypography.bodySmall.lineHeight.toDp(),
+                    )
                 )
             }
         },
@@ -175,11 +217,14 @@ private fun SummonerName(account: LoadablePart<AccountInfo>, onLoadTrigger: () -
 
 @Composable
 private fun SummonerLevel(summoner: LoadablePart<SummonerInfoState>) {
-    Row {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = stringResource(R.string.match_up_view_summoner_level_label),
             style = reportMidTypography.bodySmall,
         )
+
         Loadable(
             part = summoner,
             loading = { modifier ->
@@ -187,7 +232,7 @@ private fun SummonerLevel(summoner: LoadablePart<SummonerInfoState>) {
                     SkeletonRectangle(
                         modifier.size(
                             width = SUMMONER_LEVEL_MIN_WIDTH_SP.sp.toDp(),
-                            height = reportMidTypography.bodySmall.fontSize.toDp(),
+                            height = reportMidTypography.bodySmall.lineHeight.toDp(),
                         )
                     )
                 }
@@ -233,7 +278,7 @@ private fun RuneIcons(primaryRune: RuneIconInfo, secondaryRuneStyle: RuneIconInf
 
 @Composable
 private fun SummonerSpellIcons(spell1Url: String, spell2Url: String) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         GameImage(
             url = spell1Url,
             modifier = Modifier.size(SPELL_ICON_SIZE_DP.dp),
@@ -281,22 +326,22 @@ private fun MatchUpPreview() {
                     id = 100,
                     isBlueSide = true,
                     participants = mapOf(
-                        "puuid-1" to previewParticipant("puuid-1", "Faker#T1"),
-                        "puuid-2" to previewParticipant("puuid-2", "Caps#EUW"),
-                        "puuid-3" to previewParticipant("puuid-3", "Rekkles#NA1"),
-                        "puuid-4" to previewParticipant("puuid-4", "Jankos#EUW"),
-                        "puuid-5" to previewParticipant("puuid-5", "Mikyx#EUW"),
+                        "puuid-1" to previewKnownParticipant("puuid-1", "Faker#T1"),
+                        "puuid-2" to previewKnownParticipant("puuid-2", "Caps#EUW"),
+                        "puuid-3" to previewKnownParticipant("puuid-3", "Rekkles#NA1"),
+                        "bot_3" to previewBotParticipant(),
+                        "unknown_4" to previewUnknownParticipant(),
                     ),
                 ),
                 200 to TeamInfo(
                     id = 200,
                     isBlueSide = false,
                     participants = mapOf(
-                        "puuid-6" to previewParticipant("puuid-6", "Uzi#KR1"),
-                        "puuid-7" to previewParticipant("puuid-7", "Rookie#LPL"),
-                        "puuid-8" to previewParticipant("puuid-8", "TheShy#LPL"),
-                        "puuid-9" to previewParticipant("puuid-9", "Karsa#LPL"),
-                        "puuid-10" to previewParticipant("puuid-10", "Ming#LPL"),
+                        "puuid-6" to previewKnownParticipant("puuid-6", "Uzi#KR1"),
+                        "puuid-7" to previewKnownParticipant("puuid-7", "Rookie#LPL"),
+                        "puuid-8" to previewKnownParticipant("puuid-8", "TheShy#LPL"),
+                        "puuid-9" to previewKnownParticipant("puuid-9", "Karsa#LPL"),
+                        "puuid-10" to previewKnownParticipant("puuid-10", "Ming#LPL"),
                     ),
                 ),
             ),
@@ -305,11 +350,31 @@ private fun MatchUpPreview() {
     )
 }
 
-private fun previewParticipant(puuid: String, name: String) = ParticipantInfo(
-    puuid = puuid,
+private fun previewKnownParticipant(puuid: String, name: String) = ParticipantInfo(
+    player = KnownPlayerInfo(
+        puuid = puuid,
+        account = LoadablePart.Loaded(AccountInfo(name)),
+        summoner = LoadablePart.Loading,
+    ),
     championImageUrl = "",
-    account = LoadablePart.Loading,
-    summoner = LoadablePart.Loading,
+    primaryRune = RuneIconInfo("", ""),
+    secondaryRuneStyle = RuneIconInfo("", ""),
+    summonerSpell1ImageUrl = "",
+    summonerSpell2ImageUrl = "",
+)
+
+private fun previewBotParticipant() = ParticipantInfo(
+    player = BotPlayerInfo,
+    championImageUrl = "",
+    primaryRune = RuneIconInfo("", ""),
+    secondaryRuneStyle = RuneIconInfo("", ""),
+    summonerSpell1ImageUrl = "",
+    summonerSpell2ImageUrl = "",
+)
+
+private fun previewUnknownParticipant() = ParticipantInfo(
+    player = UnknownPlayerInfo,
+    championImageUrl = "",
     primaryRune = RuneIconInfo("", ""),
     secondaryRuneStyle = RuneIconInfo("", ""),
     summonerSpell1ImageUrl = "",

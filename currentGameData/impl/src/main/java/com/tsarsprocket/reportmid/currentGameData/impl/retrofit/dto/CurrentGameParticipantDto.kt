@@ -8,7 +8,7 @@ internal data class CurrentGameParticipantDto(
     @SerializedName("profileIconId") val profileIconId: Int,
     @SerializedName("bot") val bot: Boolean,
     @SerializedName("teamId") val teamId: Int,
-    @SerializedName("puuid") val puuid: String,
+    @SerializedName("puuid") val puuid: String?,
     @SerializedName("spell1Id") val spell1Id: Long,
     @SerializedName("spell2Id") val spell2Id: Long,
 )

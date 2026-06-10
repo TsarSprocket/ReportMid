@@ -2,5 +2,6 @@
 <resources>
     <string name="match_up_view_bot_player_name">Bot</string>
     <string name="match_up_view_not_loaded">n/a</string>
-    <string name="match_up_view_summoner_level_label">Level: </string>
+    <string name="match_up_view_summoner_level_label">Level:&#32;</string>
+    <string name="match_up_view_hidden_player_name">Streamer Mode</string>
 </resources>

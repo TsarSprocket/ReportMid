@@ -16,6 +16,7 @@ import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingSummon
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SummonerInfoFailedToLoadIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SummonerInfoLoadedIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ErrorState
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.KnownPlayerInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundState
@@ -54,9 +55,9 @@ internal class Reducer @Inject constructor(
                 }
 
                 is ParticipantAccountLoadedIntent -> {
-                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
-                    if(participant != null) {
-                        participant.account = LoadablePart.Loaded(intent.accountInfo)
+                    val player = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)?.player as? KnownPlayerInfo
+                    if(player != null) {
+                        player.account = LoadablePart.Loaded(intent.accountInfo)
                     } else {
                         logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to set loaded account info to")
                     }
@@ -64,9 +65,9 @@ internal class Reducer @Inject constructor(
                 }
 
                 is ParticipantAccountFailedToLoadIntent -> {
-                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
-                    if(participant != null) {
-                        participant.account = LoadablePart.Failed
+                    val player = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)?.player as? KnownPlayerInfo
+                    if(player != null) {
+                        player.account = LoadablePart.Failed
                     } else {
                         logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to mark account info as failed")
                     }
@@ -79,9 +80,9 @@ internal class Reducer @Inject constructor(
                 }
 
                 is SummonerInfoLoadedIntent -> {
-                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
-                    if(participant != null) {
-                        participant.summoner = LoadablePart.Loaded(intent.summonerInfo)
+                    val player = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)?.player as? KnownPlayerInfo
+                    if(player != null) {
+                        player.summoner = LoadablePart.Loaded(intent.summonerInfo)
                     } else {
                         logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to set loaded summoner info to")
                     }
@@ -89,9 +90,9 @@ internal class Reducer @Inject constructor(
                 }
 
                 is SummonerInfoFailedToLoadIntent -> {
-                    val participant = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)
-                    if(participant != null) {
-                        participant.summoner = LoadablePart.Failed
+                    val player = (state as? MatchUpState)?.teams[intent.teamId]?.participants?.get(intent.puuid)?.player as? KnownPlayerInfo
+                    if(player != null) {
+                        player.summoner = LoadablePart.Failed
                     } else {
                         logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to mark summoner info as failed")
                     }

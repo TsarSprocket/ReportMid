@@ -1,25 +1,23 @@
 package com.tsarsprocket.reportmid.matchUpView.impl.reducer
 
-import android.content.Context
-import com.tsarsprocket.reportmid.baseApi.di.AppContext
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
-import com.tsarsprocket.reportmid.matchUpView.impl.R
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.CurrentMatchUp
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.Participant
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.Team
-import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.BotPlayerInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.KnownPlayerInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.ParticipantInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.PlayerInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.RuneIconInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.TeamInfo
+import com.tsarsprocket.reportmid.matchUpView.impl.viewState.UnknownPlayerInfo
 import com.tsarsprocket.reportmid.viewStateApi.viewState.LoadablePart
 import javax.inject.Inject
 
 internal class MatchUpMapper @Inject constructor(
     dataDragon: DataDragon,
-    @param:AppContext
-    private val appContext: Context,
 ) {
 
     private val tail by lazy { dataDragon.tail }
@@ -42,10 +40,13 @@ internal class MatchUpMapper @Inject constructor(
         return TeamInfo(
             id = from.id,
             isBlueSide = from.id == BLUE_TEAM_ID,
-            participants = from.participants.associate { it.puuid to mapParticipant(it,
-                { puuid -> accountLoadTrigger(from.id, puuid) },
-                { puuid -> summonerLoadTrigger(from.id, puuid) },
-            ) },
+            participants = from.participants.mapIndexed { index, participant ->
+                val info = mapParticipant(participant,
+                    { puuid -> accountLoadTrigger(from.id, puuid) },
+                    { puuid -> summonerLoadTrigger(from.id, puuid) },
+                )
+                (participant.puuid ?: "synthetic_$index") to info
+            }.toMap(),
         )
     }
 
@@ -53,33 +54,37 @@ internal class MatchUpMapper @Inject constructor(
         from: Participant,
         accountLoadTrigger: (String) -> Unit,
         summonerLoadTrigger: (String) -> Unit,
-    ): ParticipantInfo {
-        return ParticipantInfo(
-            puuid = from.puuid,
-            championImageUrl = tail.getChampionImageUrl(from.champion.iconName),
-            account = if (from.isBot) {
-                LoadablePart.Loaded(AccountInfo(appContext.getString(R.string.match_up_view_bot_player_name)))
-            } else {
-                accountLoadTrigger(from.puuid)
-                LoadablePart.Loading
-            },
-            summoner = if (from.isBot) {
-                LoadablePart.Loading
-            } else {
-                summonerLoadTrigger(from.puuid)
-                LoadablePart.Loading
-            },
-            primaryRune = RuneIconInfo(
-                imageUrl = tail.getRuneImageUrl(from.runes.rune),
-                title = from.runes.rune.name,
-            ),
-            secondaryRuneStyle = RuneIconInfo(
-                imageUrl = tail.getRunePathImageUrl(from.runes.secondaryStyle),
-                title = from.runes.secondaryStyle.name,
-            ),
-            summonerSpell1ImageUrl = tail.getSummonerSpellImageUrl(from.summonerSpell1.iconName),
-            summonerSpell2ImageUrl = tail.getSummonerSpellImageUrl(from.summonerSpell2.iconName),
-        )
+    ): ParticipantInfo = ParticipantInfo(
+        player = mapPlayer(from, accountLoadTrigger, summonerLoadTrigger),
+        championImageUrl = tail.getChampionImageUrl(from.champion.iconName),
+        primaryRune = RuneIconInfo(
+            imageUrl = tail.getRuneImageUrl(from.runes.rune),
+            title = from.runes.rune.name,
+        ),
+        secondaryRuneStyle = RuneIconInfo(
+            imageUrl = tail.getRunePathImageUrl(from.runes.secondaryStyle),
+            title = from.runes.secondaryStyle.name,
+        ),
+        summonerSpell1ImageUrl = tail.getSummonerSpellImageUrl(from.summonerSpell1.iconName),
+        summonerSpell2ImageUrl = tail.getSummonerSpellImageUrl(from.summonerSpell2.iconName),
+    )
+
+    private fun mapPlayer(
+        from: Participant,
+        accountLoadTrigger: (String) -> Unit,
+        summonerLoadTrigger: (String) -> Unit,
+    ): PlayerInfo = when {
+        from.isBot -> BotPlayerInfo
+        from.puuid == null -> UnknownPlayerInfo
+        else -> {
+            accountLoadTrigger(from.puuid)
+            summonerLoadTrigger(from.puuid)
+            KnownPlayerInfo(
+                puuid = from.puuid,
+                account = LoadablePart.Loading,
+                summoner = LoadablePart.Loading,
+            )
+        }
     }
 
     fun interface AccountLoadTrigger {

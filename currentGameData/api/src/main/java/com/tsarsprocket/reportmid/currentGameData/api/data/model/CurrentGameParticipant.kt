@@ -4,7 +4,7 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.CurrentRunes
 import com.tsarsprocket.reportmid.lol.api.domain.model.SummonerSpell
 
 data class CurrentGameParticipant(
-    val puuid: String,
+    val puuid: String?,
     val championId: Long,
     val profileIcon: String,
     val isBot: Boolean,
