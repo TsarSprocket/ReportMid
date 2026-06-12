@@ -16,6 +16,7 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchUpView.impl.R
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SetSelectedTeamIndexIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.BotPlayerInfo
@@ -65,8 +67,12 @@ private const val SUMMONER_NAME_PLACEHOLDER_WIDTH_SP = 120
 @Composable
 internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewStateHolder) {
     val teams = state.teams.values.toList()
-    val pagerState = rememberPagerState { teams.size }
+    val pagerState = rememberPagerState(initialPage = state.selectedTeamIndex) { teams.size }
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(pagerState.currentPage) {
+        stateHolder.postIntent(SetSelectedTeamIndexIntent(pagerState.currentPage))
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         HorizontalPager(
@@ -321,6 +327,7 @@ private fun MatchUpPreview() {
         state = MatchUpState(
             puuid = "preview-puuid",
             region = Region.EUROPE_WEST,
+            initialSelectedTeamIndex = 1,
             teams = mapOf(
                 100 to TeamInfo(
                     id = 100,

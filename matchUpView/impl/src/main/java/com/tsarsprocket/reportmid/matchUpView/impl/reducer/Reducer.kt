@@ -11,6 +11,7 @@ import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.InternalIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.ParticipantAccountFailedToLoadIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.ParticipantAccountLoadedIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SetSelectedTeamIndexIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingSummonerInfoIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SummonerInfoFailedToLoadIntent
@@ -48,6 +49,11 @@ internal class Reducer @Inject constructor(
 
             is InternalIntent -> when(intent) {
                 is LoadMatchUpIntent -> loadMatchUp(intent, stateHolder)
+
+                is SetSelectedTeamIndexIntent -> {
+                    (state as? MatchUpState)?.selectedTeamIndex = intent.index
+                    state
+                }
 
                 is StartLoadingParticipantAccountIntent -> with (intent) {
                     startAccountLoadingForParticipant(teamId, puuid, region, stateHolder)

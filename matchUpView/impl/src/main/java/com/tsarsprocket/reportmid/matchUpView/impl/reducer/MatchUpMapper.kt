@@ -29,10 +29,15 @@ internal class MatchUpMapper @Inject constructor(
         accountLoadTrigger: AccountLoadTrigger,
         summonerLoadTrigger: SummonerLoadTrigger,
     ): MatchUpState {
+        val teams = from.teams.associate { it.id to mapTeam(it, accountLoadTrigger, summonerLoadTrigger) }
+        val teamsList = teams.values.toList()
+        val puuidTeamIndex = teamsList.indexOfFirst { it.participants.containsKey(puuid) }
+        val initialSelectedTeamIndex = if (puuidTeamIndex == 0) 1 else 0
         return MatchUpState(
             puuid = puuid,
             region = region,
-            teams = from.teams.associate { it.id to mapTeam(it, accountLoadTrigger, summonerLoadTrigger) },
+            teams = teams,
+            initialSelectedTeamIndex = initialSelectedTeamIndex,
         )
     }
 
