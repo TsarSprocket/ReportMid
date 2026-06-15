@@ -127,6 +127,8 @@ The API key is stored at `lolServicesApi/src/main/res/raw/riot_api_key.txt`. Do 
   internal fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo) { ... }
   ```
 
+- **Prefer intention-revealing functions over general constructions when they improve clarity without adding unnecessary complexity.** Use named stdlib functions/properties instead of equivalent raw index arithmetic or boolean expressions when the former makes intent clearer. Examples: `first()` over `[0]`, `last()` over `[size-1]`, `lastIndex` over `size-1`, `isEmpty()` over `size == 0`, `getValue(key)` over `map[key]!!`, `indices` over `0 until size`. Apply the same principle to domain code — extract a named property or extension when an expression requires knowledge of a convention to understand.
+
 - **Composable previews live in the same file as the composable, at the very end.** Order within the file: public composable → private helpers → preview. The preview is separated from the preceding
   code by **two** blank lines (not one). The preview function is named `<ComposableName>Preview`. Example:
   ```kotlin

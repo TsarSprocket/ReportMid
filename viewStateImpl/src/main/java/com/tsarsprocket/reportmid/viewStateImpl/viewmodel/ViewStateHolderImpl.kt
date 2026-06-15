@@ -8,8 +8,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
+import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
+import kotlinx.coroutines.CancellationException
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
@@ -181,12 +183,19 @@ internal class ViewStateHolderImpl private constructor(
     private suspend fun processIntent(intent: ViewIntent) {
         val oldState = viewStates.value
 
-        val newState = reducers.findProcessor(intent)
-            .reduce(
-                intent = intent,
-                state = oldState,
-                stateHolder = this
-            )
+        val newState = try {
+            reducers.findProcessor(intent)
+                .reduce(
+                    intent = intent,
+                    state = oldState,
+                    stateHolder = this
+                )
+        } catch(e: CancellationException) {
+            throw e
+        } catch(e: Exception) {
+            logError("Unhandled exception processing intent ${intent::class.simpleName}", e)
+            return
+        }
 
         if(newState !== oldState) {
             oldState.stop()

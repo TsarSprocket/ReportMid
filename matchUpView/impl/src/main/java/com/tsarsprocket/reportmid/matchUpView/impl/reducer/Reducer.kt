@@ -23,6 +23,7 @@ import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundState
 import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
+import kotlinx.coroutines.CancellationException
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.LoadablePart
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -186,6 +187,8 @@ internal class Reducer @Inject constructor(
 
                 NoMatchUpFound -> NotFoundState(intent.puuid, intent.region)
             }
+        } catch(e: CancellationException) {
+            throw e
         } catch(exception: Exception) {
             logError("Error loading matchup for puuid=${intent.puuid}, region=${intent.region}", exception)
             ErrorState(intent.puuid, intent.region, exception.message ?: "Unknown error")
