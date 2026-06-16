@@ -2,7 +2,6 @@ package com.tsarsprocket.reportmid.matchUpView.impl.viewState
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,7 +10,6 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
-@Stable
 @Parcelize
 internal class KnownPlayerInfo(
     val puuid: String,

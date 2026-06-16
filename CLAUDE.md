@@ -144,3 +144,5 @@ The API key is stored at `lolServicesApi/src/main/res/raw/riot_api_key.txt`. Do 
       Loading(...)
   }
   ```
+
+- **Git branch naming.** Prefix bugfix branches with `bugfix/`; prefix all other branches (features, refactors, chores, etc.) with `change/`.
