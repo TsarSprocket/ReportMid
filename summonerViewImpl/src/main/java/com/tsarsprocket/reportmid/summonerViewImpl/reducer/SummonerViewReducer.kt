@@ -33,9 +33,9 @@ class SummonerViewReducer @Inject constructor() : ViewStateReducer {
             is SummonerViewIntent -> stateHolder.initializeSummonerView(puuid = intent.puuid, region = intent.region, activePage = PROFILE)
             is InternalSummonerViewIntent -> when(intent) {
                 is ReturnToSummoner -> stateHolder.initializeSummonerView(puuid = intent.puuid, region = intent.region, activePage = intent.activePage)
-                ShowProfile -> (state as? InternalSummonerViewState)?.copy(activePage = PROFILE) ?: state
-                ShowMatchUp -> (state as? InternalSummonerViewState)?.copy(activePage = MATCH_UP) ?: state
-                ShowMatchHistory -> (state as? InternalSummonerViewState)?.copy(activePage = MATCH_HISTORY) ?: state
+                ShowProfile -> state.apply { (this as? InternalSummonerViewState)?.activePage = PROFILE }
+                ShowMatchUp -> state.apply { (this as? InternalSummonerViewState)?.activePage = MATCH_UP }
+                ShowMatchHistory -> state.apply { (this as? InternalSummonerViewState)?.activePage = MATCH_HISTORY }
             }
             else -> super.reduce(intent, state, stateHolder)
         }
@@ -47,6 +47,6 @@ class SummonerViewReducer @Inject constructor() : ViewStateReducer {
         matchHistoryStateHolder = createSubholder(),
         summonerPuuid = puuid,
         summonerRegion = region,
-        activePage = activePage,
+        initialActivePage = activePage,
     )
 }
