@@ -77,13 +77,121 @@ processor generates the Dagger binding modules. The `@Capability` annotation tie
 
 **Flow for adding a new screen (capability):**
 
-1. Create `<Feature>Api` module — define the public `ViewIntent` (must be `@Parcelize`), and the Dagger `@Component` interface.
+1. Create `<Feature>Api` module — define the public `ViewIntent` (must be `@Parcelize`), and the Dagger `@Component` interface. If the screen needs to navigate out, also declare a `<Feature>Navigation` interface here (see Navigation section).
 2. Create `<Feature>Impl` module — define:
     - `InternalViewState` sealed class hierarchy (view states)
     - `Reducer` implementing `ViewStateReducer`, annotated `@Reducer(explicitIntents = [PublicViewIntent::class])`
     - `Visualizer` implementing `ViewStateVisualizer`, annotated `@Visualizer`
     - `<Feature>Capability` interface annotated `@Capability(api = ..., dependencies = [...], modules = [...])`
 3. Add `<Feature>CapabilityProvisionModule` to `AppApiComponent` in `:appImpl`.
+4. If the screen has a navigation interface, wire it following the steps in the Navigation section.
+
+### Navigation
+
+#### Design principle
+
+Capabilities must not reference each other's types directly. When a capability needs to trigger a transition, it declares a **navigation interface** in its own `*Api` module and calls it. All wiring — which intent actually gets posted to which holder — lives exclusively in `navigationMapImpl`. Any code that directly posts another capability's `ViewIntent` violates this principle and is tech debt to be corrected.
+
+#### Structure
+
+**Navigation interface** (declared in `<Feature>Api`):
+
+```kotlin
+interface LandingNavigation {
+    fun ViewStateHolder.findSummoner()
+    fun ViewStateHolder.proceed(puuid: Puuid, region: Region)
+
+    companion object { const val TAG = "landing_navigation_tag" }
+}
+```
+
+Rules:
+- Methods are extensions on `ViewStateHolder` (the calling holder is implicitly available).
+- Methods return `Unit`; suspend is allowed but rare.
+- `TAG` in the companion object is the unique Dagger qualifier label.
+
+**`@Navigation` qualifier** (`viewStateApi/.../navigation/Navigation.kt`) — a Dagger `@Qualifier` taking `label: String`. Ties a TAG to an injection site.
+
+**`NavigationMapApi`** (`navigationMapApi/.../NavigationMapApi.kt`) — aggregates every navigation interface, each method annotated `@Navigation(TAG)`:
+
+```kotlin
+interface NavigationMapApi {
+    @Navigation(LandingNavigation.TAG)
+    fun getLandingNavigation(): LandingNavigation
+    // one entry per navigation interface
+}
+```
+
+**`NavigationMapCapability`** (`navigationMapImpl/.../NavigationMapCapability.kt`) — a `@Capability`-annotated interface listing all navigation `@Module`s. KSP generates a Dagger component that implements both `NavigationMapCapability` and `NavigationMapApi`.
+
+**Navigation modules** (`navigationMapImpl/.../di/`) — one `@Module` per navigation interface, each providing a concrete anonymous-object implementation qualified with `@Navigation(TAG)`.
+
+#### Navigation patterns
+
+**1. Direct transition** — post a `ViewIntent` to the calling holder:
+
+```kotlin
+override fun ViewStateHolder.proceed(puuid: Puuid, region: Region) =
+    postIntent(MainScreenViewIntent(puuid.value, region))
+```
+
+**2. Call-and-return** — launch a sub-flow and get a typed result back.
+
+*Forward leg:* pass a `returnIntent` token when calling the sub-flow:
+```kotlin
+override fun ViewStateHolder.findSummoner() =
+    postIntent(FindSummonerViewIntent, returnIntent = LandingIntent.QuitViewIntent)
+```
+The token is pushed onto the holder's `operationsStack` as a `BackOperation`.
+
+*Return leg:* the sub-capability calls `postReturnIntent`:
+```kotlin
+// ViewStateHolder.kt extension
+fun <M> ViewStateHolder.postReturnIntent(
+    processors: Map<Class<out ViewIntent>, Provider<M>>,
+    producer: M.() -> ViewIntent,
+) {
+    postIntent(processors.findProcessor(popTopReturnIntent()).producer())
+}
+```
+`popTopReturnIntent()` removes the token; `findProcessor` does a BFS through the token's class hierarchy to find the right processor; `producer` converts the result into a concrete intent that the *caller's* reducer handles.
+
+*Processor map:* a Dagger multibinding keyed by `@ViewIntentKey` + `@ReturnProcessor(IntentMapper::class)` maps the token type to a caller-specific mapper interface. Register one `@IntoMap` entry per possible caller:
+
+```kotlin
+@IntoMap
+@ViewIntentKey(LandingIntent::class)       // covers all LandingIntent subtypes via BFS
+@ReturnProcessor(FindSummonerResultProcessor::class)
+fun provideLandingProcessor() = object : FindSummonerResultProcessor {
+    override fun getCancelIntent() = LandingIntent.QuitViewIntent
+    override fun getSuccessIntent(puuid: String, region: Region) =
+        LandingIntent.SummonerFoundViewIntent(Puuid(puuid), region)
+}
+```
+
+**3. Hierarchical navigation** — post an intent to a specific *ancestor* holder rather than the current one.
+
+Walk `parentHolder` by state type (using a marker interface such as `SummonerViewStateReturnPoint`) or by tag string (`getTagged(tag)`):
+
+```kotlin
+val target = generateSequence(seed = this) { it.parentHolder }
+    .find { it.viewStates.value is SummonerViewStateReturnPoint }
+
+target.postIntent(
+    intent = MatchDetailsIntent(matchId, region),
+    returnIntent = target.viewStates.value.getRestoreStateIntent(),
+)
+```
+
+The `returnIntent` is produced by the *target's own current state* so returning from the sub-screen restores it exactly.
+
+#### Adding navigation to a new screen
+
+1. Declare the navigation interface in `<Feature>Api` (companion `TAG`, extension methods on `ViewStateHolder`).
+2. Add a method annotated `@Navigation(FeatureNavigation.TAG)` to `NavigationMapApi`.
+3. Create `<Feature>NavigationModule` in `navigationMapImpl/di/`, implement the interface, add the module to `NavigationMapCapability`.
+4. Add `NavigationMapApi::class` to the capability's `dependencies` in `<Feature>Impl`.
+5. Inject with `@param:Navigation(FeatureNavigation.TAG)` in the reducer or visualizer that needs it.
 
 ### Data Layer
 
@@ -107,10 +215,15 @@ processor generates the Dagger binding modules. The `@Capability` annotation tie
 | `buildSrc/src/.../ConfigVersions.kt`                | Centralized SDK versions, minSdk, targetSdk                    |
 | `kspProcessor/.../KspProcessor.kt`                  | Custom KSP processor generating Dagger boilerplate             |
 | `kspApi/src/.../annotation/`                        | Annotations consumed by the KSP processor                      |
-| `viewStateApi/src/.../viewmodel/ViewStateHolder.kt` | Core MVI runtime interface                                     |
-| `viewStateImpl/src/.../ViewStateHolderImpl.kt`      | MVI runtime implementation                                     |
-| `appImpl/src/.../di/AppApiComponent.kt`             | Root Dagger component wiring all modules                       |
-| `appImpl/src/.../di/AggregatorModule.kt`            | Aggregates all multibinding maps (reducers, visualizers, etc.) |
+| `viewStateApi/src/.../viewmodel/ViewStateHolder.kt`   | Core MVI runtime interface                                     |
+| `viewStateImpl/src/.../ViewStateHolderImpl.kt`        | MVI runtime implementation                                     |
+| `appImpl/src/.../di/AppApiComponent.kt`               | Root Dagger component wiring all modules                       |
+| `appImpl/src/.../di/AggregatorModule.kt`              | Aggregates all multibinding maps (reducers, visualizers, etc.) |
+| `viewStateApi/src/.../navigation/Navigation.kt`       | `@Navigation` Dagger qualifier                                 |
+| `viewStateApi/src/.../navigation/ReturnProcessor.kt`  | `@ReturnProcessor` qualifier for call-and-return maps          |
+| `navigationMapApi/src/.../NavigationMapApi.kt`        | Aggregated navigation interface (all `@Navigation` bindings)   |
+| `navigationMapImpl/src/.../NavigationMapCapability.kt`| `@Capability` wiring all navigation modules                    |
+| `navigationMapImpl/src/.../di/`                       | One `@Module` per navigation interface — all inter-cap wiring  |
 
 ## Riot API Key
 
@@ -146,3 +259,5 @@ The API key is stored at `lolServicesApi/src/main/res/raw/riot_api_key.txt`. Do 
   ```
 
 - **Git branch naming.** Prefix bugfix branches with `bugfix/`; prefix all other branches (features, refactors, chores, etc.) with `change/`.
+
+- **Never post another capability's `ViewIntent` directly.** All inter-capability navigation must go through a navigation interface declared in the source capability's `*Api` module and implemented in `navigationMapImpl`. Existing violations of this rule are tech debt — do not add new ones.
