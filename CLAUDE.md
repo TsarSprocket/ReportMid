@@ -43,15 +43,178 @@ only depend on `*Api` modules.
 
 These helpers live in `buildSrc/src/main/java/com/tsarsprocket/reportmid/gradle/ProjectEx.kt` and handle all plugin wiring, SDK versions, and test options automatically.
 
+### Capability Modules
+
+A **capability** is the primary unit of feature decomposition. Each capability is a group of 2–3 Gradle library modules that share a parent directory:
+
+```
+<capabilityName>/
+├── api/     — public contract (required)
+├── impl/    — implementation (required; depends on api/)
+└── room/    — Room schema (optional; legacy pattern — see below)
+```
+
+Older capabilities predate the nested layout and use flat names (`summonerApi/`, `summonerImpl/`, `summonerRoom/`) instead, but the internal structure and rules are the same.
+
+#### I. API Module
+
+**Purpose:** The public contract — everything other modules are allowed to see.
+
+**Package root:** `com.tsarsprocket.reportmid.<capabilityName>.api`
+
+**Mandatory contents in `di/`:**
+
+```kotlin
+// <capabilityName>/api/src/main/java/.../api/di/<CapabilityName>Api.kt
+interface MatchDataApi {
+    fun getMatchDataRepository(): MatchDataRepository
+}
+```
+
+This is the single entry point other capabilities use to consume this capability. Screen-only capabilities with nothing public to expose still need an empty marker interface (`interface MatchUpViewApi`).
+
+Other packages in the api module are optional and public:
+- `data/model/` — domain model classes
+- `navigation/` — navigation interface, if the screen needs to navigate out (see Navigation section)
+- `viewIntent/` — public `ViewIntent` classes (must be `@Parcelize`)
+
+**`build.gradle.kts` — api dependencies only; no `impl()` here:**
+
+```kotlin
+library(namespace = "com.tsarsprocket.reportmid.<capabilityName>.api") {
+    with(projects) {
+        api(baseApi)       // always
+        api(lol.api)       // any dep whose types appear in the public interface
+        api(viewStateApi)  // only for screen capabilities exposing ViewIntents
+    }
+}
+```
+
+#### II. Impl Module
+
+**Purpose:** All implementation details. Everything not part of the api contract must be `internal`.
+
+**Package root:** `com.tsarsprocket.reportmid.<capabilityName>.impl`
+
+**Directory layout:**
+
+```
+<capabilityName>/impl/src/main/java/.../<capabilityName>/impl/
+├── di/
+│   ├── <CapabilityName>Capability.kt   ← @Capability interface (required)
+│   └── <CapabilityName>Module.kt       ← @Module binding impls to api interfaces (required)
+├── data/                               ← repositories, mappers, caches
+├── retrofit/                           ← Retrofit service + DTOs (if Riot API is used)
+│   └── dto/
+├── domain/                             ← domain logic (optional)
+├── viewIntent/                         ← internal intents (screen capabilities)
+├── viewState/                          ← view state sealed hierarchy (screen capabilities)
+├── reducer/                            ← @Reducer class (screen capabilities)
+└── visualizer/                         ← @Visualizer class (screen capabilities)
+```
+
+**The `@Capability` interface** — the KSP trigger that causes the processor to generate a Dagger component and a provision module:
+
+```kotlin
+// <capabilityName>/impl/.../di/<CapabilityName>Capability.kt
+@PerApi
+@Capability(
+    api = MatchDataApi::class,         // the *Api interface from the api module
+    dependencies = [
+        AppApi::class,                 // add when @Aggregated multibindings are needed
+        DataDragonApi::class,          // any other capability api needed here
+        LolServicesApi::class,
+    ],
+    modules = [
+        MatchDataModule::class,        // all @Module classes local to this impl
+    ],
+    // exportBindings = [...]          // rare: contributes to @BindingExport multibinding
+)
+internal interface MatchDataCapability
+```
+
+KSP generates `<CapabilityName>Component` (implements the api interface) and `<CapabilityName>CapabilityProvisionModule` (used in `AppApiComponent`).
+
+**The `@Module`** — binds impl classes to their api interfaces:
+
+```kotlin
+@Module
+internal interface MatchDataModule {
+    @Binds @PerApi
+    fun bindMatchDataRepository(impl: MatchDataRepositoryImpl): MatchDataRepository
+}
+```
+
+**`build.gradle.kts`:**
+
+```kotlin
+library(
+    namespace = "com.tsarsprocket.reportmid.<capabilityName>.impl",
+    enableCompose = true,   // only for screen capabilities
+) {
+    with(projects) {
+        api(<capabilityName>.api)   // re-export the api module
+        impl(appApi)                // when @Aggregated maps are needed
+        impl(baseApi)               // always
+        impl(kspApi)                // always — provides @Capability, @Reducer, @Visualizer
+        ksp(kspProcessor)           // always — triggers code generation
+        // impl(<other>.api) for each capability dependency listed in @Capability
+    }
+    with(libs) {
+        kapt(dagger.compiler)
+        kapt(dagger.android.processor)
+        // Compose, Retrofit, test deps as needed
+    }
+}
+```
+
+#### III. Room Module (legacy / optional)
+
+Room modules are **not** capabilities. They are standalone library modules holding Room `@Entity`, `@Dao`, and a `*StoragePart` interface that groups DAOs. They are imported into `appImpl`'s `MainDatabase` to compose the full app database schema. The corresponding `*Impl` module for the same feature consumes the room module via `impl(projects.<name>Room)`.
+
+```
+<capabilityName>Room/src/main/java/.../<capabilityName>Room/
+├── <Name>Entity.kt              ← @Entity
+├── <Name>DAO.kt                 ← @Dao
+└── <Name>StoragePart.kt         ← interface { fun <name>DAO(): <Name>DAO }
+```
+
+The `StoragePart` interface is implemented by `MainDatabase` in `appImpl`. New capabilities should prefer using existing room modules or other persistence strategies rather than introducing new room modules.
+
+#### IV. Wiring a New Capability into appImpl
+
+After creating the api and impl modules:
+
+1. **`settings.gradle.kts`** — register both modules:
+   ```kotlin
+   include(":capabilityName:api")
+   include(":capabilityName:impl")
+   ```
+2. **`AppApiComponent.kt`** — add the generated `<CapabilityName>CapabilityProvisionModule::class` to the `@Component(modules = [...])` list.
+3. If the capability uses `AppApi::class` as a dependency, verify that the `@Aggregated` map it needs (reducers, visualizers, etc.) is already provided by `AggregatorModule`. If a new map type is introduced, add it there and export it via the app api.
+
+#### V. Using Another Capability's Logic
+
+To consume functionality from another capability:
+
+1. Add the target's `*Api` interface to `@Capability(dependencies = [...])`.
+2. Add `impl(projects.<targetCapability>.api)` to `build.gradle.kts`.
+3. Inject the api interface through Dagger in the impl class that needs it.
+
+To access app-wide aggregated functionality (reducer map, visualizer map, etc.):
+
+1. Add `AppApi::class` to `@Capability(dependencies = [...])`.
+2. Inject the `@Aggregated`-qualified map. The `AggregatorModule` in `appImpl` assembles these maps from all `@BindingExport` contributions across every capability.
+
 ### Dependency Injection (Dagger 2 + KSP codegen)
 
-Each feature module declares a **Capability** (annotated with `@Capability`), which the custom KSP processor (`kspProcessor`) uses to generate:
+Each feature module declares a **Capability** (annotated with `@Capability` in the impl module's `di/` package — see Capability Modules section above), which the custom KSP processor (`kspProcessor`) uses to generate:
 
-- A Dagger `@Component` interface (`<Name>Component`)
-- A `@Module` that provisions the component lazily (`<Name>ProvisionModule`)
+- A Dagger `@Component` interface (`<Name>Component`) that implements the `*Api` interface
+- A `@Module` that provisions the component lazily (`<Name>CapabilityProvisionModule`)
 - A `component.kt` accessor for in-module use
 
-The root DI graph lives in `:appImpl` — `AppApiComponent` aggregates all `*ProvisionModule`s. All feature components are wired as lazy proxies so they're initialized only on first use.
+The root DI graph lives in `:appImpl` — `AppApiComponent` lists every `*CapabilityProvisionModule` in its `@Component(modules = [...])`. All feature components are wired as lazy proxies so they are initialized only on first use.
 
 **Key DI annotations:**
 | Annotation | Location | Meaning |
@@ -77,13 +240,14 @@ processor generates the Dagger binding modules. The `@Capability` annotation tie
 
 **Flow for adding a new screen (capability):**
 
-1. Create `<Feature>Api` module — define the public `ViewIntent` (must be `@Parcelize`), and the Dagger `@Component` interface. If the screen needs to navigate out, also declare a `<Feature>Navigation` interface here (see Navigation section).
-2. Create `<Feature>Impl` module — define:
-    - `InternalViewState` sealed class hierarchy (view states)
-    - `Reducer` implementing `ViewStateReducer`, annotated `@Reducer(explicitIntents = [PublicViewIntent::class])`
-    - `Visualizer` implementing `ViewStateVisualizer`, annotated `@Visualizer`
-    - `<Feature>Capability` interface annotated `@Capability(api = ..., dependencies = [...], modules = [...])`
-3. Add `<Feature>CapabilityProvisionModule` to `AppApiComponent` in `:appImpl`.
+1. Create `<Feature>Api` module — public `ViewIntent` (must be `@Parcelize`), empty `<Feature>Api` marker interface in `di/`, and optionally a `<Feature>Navigation` interface if the screen navigates out (see Navigation section).
+2. Create `<Feature>Impl` module — follow the impl module structure in the Capability Modules section:
+    - `InternalViewState` sealed class hierarchy in `viewState/`
+    - `Reducer` in `reducer/`, annotated `@Reducer(explicitIntents = [PublicViewIntent::class])`
+    - `Visualizer` in `visualizer/`, annotated `@Visualizer`
+    - `<Feature>Capability` interface in `di/` with `@Capability(api = ..., dependencies = [...], modules = [...])`
+    - `<Feature>Module` in `di/` binding any impl classes to api interfaces
+3. Register both modules in `settings.gradle.kts` and add `<Feature>CapabilityProvisionModule` to `AppApiComponent` in `:appImpl`.
 4. If the screen has a navigation interface, wire it following the steps in the Navigation section.
 
 ### Navigation
