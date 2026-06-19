@@ -19,6 +19,8 @@ internal sealed interface ProfileOverviewInternalIntentCluster : ViewIntent {
     @Intent
     @Parcelize
     data class ShowProfileViewIntent(
+        val puuid: String,
+        val region: Region,
         val profileImage: String,
         val gameName: String,
         val tagLine: String,

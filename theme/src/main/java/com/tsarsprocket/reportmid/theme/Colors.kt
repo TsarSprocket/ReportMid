@@ -12,6 +12,7 @@ val reportMidColorScheme: ColorScheme
         error = Color(0xFF804040),
         onBackground = Color(0xFFE6EE9C),
         onPrimary = Color(0xE0000000),
+        onSecondary = Color(0xE0000000),
         onSurface = Color(0xFFE6EE9C),
         onSurfaceVariant = Color(0xFF576C88),
         primary = Color(0xFFE6EE9C),
