@@ -17,6 +17,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +30,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.utils.common.REFRESH_DISABLED_DURATION_MS
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import com.tsarsprocket.reportmid.matchUpView.impl.R
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SetSelectedTeamIndexIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
@@ -47,6 +52,7 @@ import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
 import com.tsarsprocket.reportmid.utils.annotations.Temporary
 import com.tsarsprocket.reportmid.utils.compose.Failure
+import com.tsarsprocket.reportmid.utils.compose.screens.DefaultRefreshPanel
 import com.tsarsprocket.reportmid.utils.compose.ReloadableImage
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
 import com.tsarsprocket.reportmid.viewStateApi.view.Loadable
@@ -69,52 +75,69 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
     val teams = state.teams.values.toList()
     val pagerState = rememberPagerState(initialPage = state.selectedTeamIndex) { teams.size }
     val coroutineScope = rememberCoroutineScope()
+    val (refreshDisabledDuration, refreshDisabledPercent) = remember(state.lastLoadedAt) {
+        val remainingMillis = (state.lastLoadedAt + REFRESH_DISABLED_DURATION_MS) - System.currentTimeMillis()
+        if (remainingMillis > 0) {
+            remainingMillis.milliseconds to (remainingMillis.toFloat() / REFRESH_DISABLED_DURATION_MS).coerceAtMost(1f)
+        } else {
+            Duration.ZERO to 0f
+        }
+    }
 
     LaunchedEffect(pagerState.currentPage) {
         stateHolder.postIntent(SetSelectedTeamIndexIntent(pagerState.currentPage))
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.weight(1f),
-        ) { page ->
-            val team = teams[page]
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(team.color)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f),
+            ) { page ->
+                val team = teams[page]
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(team.color)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    val rowModifier = Modifier
+                        .fillMaxWidth()
+                    team.participants.values.forEach { participant ->
+                        ParticipantRow(
+                            modifier = rowModifier,
+                            participant = participant,
+                            onReload = { puuid ->
+                                stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid, state.region))
+                            },
+                        )
+                    }
+                }
+            }
+
+            SecondaryTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                containerColor = Color.Transparent,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                val rowModifier = Modifier
-                    .fillMaxWidth()
-                team.participants.values.forEach { participant ->
-                    ParticipantRow(
-                        modifier = rowModifier,
-                        participant = participant,
-                        onReload = { puuid ->
-                            stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid, state.region))
-                        },
+                teams.forEachIndexed { index, team ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                        modifier = Modifier.background(team.color),
+                        text = { Text(@Temporary("Change to icons") if(team.isBlueSide) "blue" else "red") },
                     )
                 }
             }
         }
 
-        SecondaryTabRow(
-            selectedTabIndex = pagerState.currentPage,
-            containerColor = Color.Transparent,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            teams.forEachIndexed { index, team ->
-                Tab(
-                    selected = pagerState.currentPage == index,
-                    onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                    modifier = Modifier.background(team.color),
-                    text = { Text(@Temporary("Change to icons") if(team.isBlueSide) "blue" else "red") },
-                )
-            }
-        }
+        DefaultRefreshPanel(
+            modifier = Modifier.fillMaxSize(),
+            initiallyDisabledDuration = refreshDisabledDuration,
+            initiallyDisabledPercent = refreshDisabledPercent,
+            onRefreshPressed = { stateHolder.postIntent(LoadMatchUpIntent(state.puuid, state.region)) },
+        )
     }
 }
 

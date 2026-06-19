@@ -11,6 +11,7 @@ import kotlinx.parcelize.Parcelize
 internal data class ShowingMatchHistoryState(
     override val puuid: String,
     override val region: Region,
+    val lastLoadedAt: Long = System.currentTimeMillis(),
     val matches: ImmutableList<MatchInfo> = persistentListOf(),
     val isLoading: Boolean,
     val canLoadMore: Boolean = true,

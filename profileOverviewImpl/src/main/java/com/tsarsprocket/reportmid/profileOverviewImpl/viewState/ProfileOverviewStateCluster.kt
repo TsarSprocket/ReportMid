@@ -19,6 +19,9 @@ internal sealed interface ProfileOverviewStateCluster : ViewState {
     @State
     @Parcelize
     data class ProfileState(
+        val puuid: String,
+        val region: Region,
+        val lastLoadedAt: Long = System.currentTimeMillis(),
         val icon: String,
         val name: String,
         val tagLine: String,

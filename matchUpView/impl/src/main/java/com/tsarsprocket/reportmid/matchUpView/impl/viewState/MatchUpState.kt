@@ -17,6 +17,7 @@ internal class MatchUpState(
     val region: Region,
     val teams: Map<Int, TeamInfo>,
     initialSelectedTeamIndex: Int,
+    val lastLoadedAt: Long = System.currentTimeMillis(),
 ) : InternalViewState {
 
     @IgnoredOnParcel
@@ -36,11 +37,13 @@ internal class MatchUpState(
                 }
             }
             val selectedTeamIndex = parcel.readInt()
+            val lastLoadedAt = parcel.readLong()
             return MatchUpState(
                 puuid = puuid,
                 region = region,
                 teams = teams,
                 initialSelectedTeamIndex = selectedTeamIndex,
+                lastLoadedAt = lastLoadedAt,
             )
         }
 
@@ -53,6 +56,7 @@ internal class MatchUpState(
                 parcel.writeParcelable(team, flags)
             }
             parcel.writeInt(selectedTeamIndex)
+            parcel.writeLong(lastLoadedAt)
         }
     }
 }

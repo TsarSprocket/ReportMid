@@ -47,6 +47,8 @@ internal class ProfileOverviewReducer @Inject constructor(
 
     private fun showProfile(intent: ShowProfileViewIntent): ProfileState {
         return ProfileState(
+            puuid = intent.puuid,
+            region = intent.region,
             icon = intent.profileImage,
             name = intent.gameName,
             tagLine = intent.tagLine,
@@ -72,6 +74,8 @@ internal class ProfileOverviewReducer @Inject constructor(
                 postIntent(
                     with(profileOverview) {
                         ShowProfileViewIntent(
+                            puuid = puuid,
+                            region = region,
                             profileImage = imageUrl,
                             gameName = gameName,
                             tagLine = tagLine,

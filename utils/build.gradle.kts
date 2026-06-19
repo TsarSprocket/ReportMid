@@ -27,6 +27,7 @@ library(
 
         // Compose Material 3
         impl(compose.material3)
+        impl(compose.material.icons.core)
 
         // Compose preview support
         impl(compose.ui.tooling.preview)

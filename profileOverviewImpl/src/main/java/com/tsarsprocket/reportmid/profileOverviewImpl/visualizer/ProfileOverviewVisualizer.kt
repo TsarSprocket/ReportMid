@@ -26,7 +26,7 @@ internal class ProfileOverviewVisualizer @Inject constructor() : ViewStateVisual
         when(state) {
             is ShowErrorState -> stateHolder.ShowProfileOverviewError(modifier, state)
             is LoadingState -> ProfileOverviewLoading(modifier)
-            is ProfileState -> ProfileOverview(modifier, state)
+            is ProfileState -> ProfileOverview(modifier, state, stateHolder)
         }
     } else super.Visualize(modifier, state, stateHolder)
 

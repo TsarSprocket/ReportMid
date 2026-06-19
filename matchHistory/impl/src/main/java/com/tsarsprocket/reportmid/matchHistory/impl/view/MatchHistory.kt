@@ -20,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
@@ -40,10 +41,17 @@ import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
 import com.tsarsprocket.reportmid.theme.reportMidColorScheme
 import com.tsarsprocket.reportmid.theme.reportMidTypography
+import com.tsarsprocket.reportmid.matchHistory.api.viewIntent.MatchHistoryIntent
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
+import com.tsarsprocket.reportmid.utils.common.REFRESH_DISABLED_DURATION_MS
 import com.tsarsprocket.reportmid.utils.compose.Failure
 import com.tsarsprocket.reportmid.utils.compose.ReloadableImage
 import com.tsarsprocket.reportmid.utils.compose.SkeletonRectangle
+import com.tsarsprocket.reportmid.utils.compose.screens.DefaultRefreshPanel
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.PreviewViewStateHolder
+import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import com.tsarsprocket.reportmid.lol.api.R as RLolApi
@@ -62,19 +70,38 @@ private const val TEAMS_VERTICAL_INTERSPACING = 6
 internal fun MatchHistory(
     modifier: Modifier,
     state: ShowingMatchHistoryState,
+    stateHolder: ViewStateHolder,
     onMoreToShow: () -> Unit,
     onMatchClicked: (String) -> Unit,
 ) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        items(state.itemsInList) { index ->
-            when(val item = state.getItemToShow(index)) {
-                is MatchInfo -> MatchItem(item) { onMatchClicked(item.matchId) }
-                LoadingMoreItem -> if(state.canLoadMore) ShowLoadingMoreItem(state.itemsInList, state.isLoading, onMoreToShow)
+    val (refreshDisabledDuration, refreshDisabledPercent) = remember(state.lastLoadedAt) {
+        val remainingMillis = (state.lastLoadedAt + REFRESH_DISABLED_DURATION_MS) - System.currentTimeMillis()
+        if (remainingMillis > 0) {
+            remainingMillis.milliseconds to (remainingMillis.toFloat() / REFRESH_DISABLED_DURATION_MS).coerceAtMost(1f)
+        } else {
+            Duration.ZERO to 0f
+        }
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(state.itemsInList) { index ->
+                when(val item = state.getItemToShow(index)) {
+                    is MatchInfo -> MatchItem(item) { onMatchClicked(item.matchId) }
+                    LoadingMoreItem -> if(state.canLoadMore) ShowLoadingMoreItem(state.itemsInList, state.isLoading, onMoreToShow)
+                }
             }
         }
+
+        DefaultRefreshPanel(
+            modifier = Modifier.fillMaxSize(),
+            initiallyDisabledDuration = refreshDisabledDuration,
+            initiallyDisabledPercent = refreshDisabledPercent,
+            onRefreshPressed = { stateHolder.postIntent(MatchHistoryIntent(state.puuid, state.region)) },
+        )
     }
 }
 
@@ -366,6 +393,7 @@ fun MatchHistoryPreview() {
         MatchHistory(
             modifier = Modifier,
             state = ShowingMatchHistoryState(
+                lastLoadedAt = 0L,
                 puuid = EMPTY_STRING,
                 region = Region.EUROPE_WEST,
                 matches = persistentListOf(
@@ -411,6 +439,7 @@ fun MatchHistoryPreview() {
                 isLoading = false,
                 canLoadMore = true,
             ),
+            stateHolder = PreviewViewStateHolder,
             onMoreToShow = {},
             onMatchClicked = {},
         )

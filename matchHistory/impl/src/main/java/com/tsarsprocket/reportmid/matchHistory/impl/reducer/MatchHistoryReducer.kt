@@ -34,7 +34,13 @@ internal class MatchHistoryReducer @Inject constructor(
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         return when {
             intent is MatchHistoryIntent -> stateHolder.loadMatchHistory(intent.puuid, intent.region)
-            intent is ShowHistoryDataIntent && state is InternalMatchHistoryState -> showHistoryData(state.puuid, state.region, intent.listOfMatchInfos, intent.hasMoreToLoad)
+            intent is ShowHistoryDataIntent && state is InternalMatchHistoryState -> showHistoryData(
+                puuid = state.puuid,
+                region = state.region,
+                lastLoadedAt = (state as? ShowingMatchHistoryState)?.lastLoadedAt ?: System.currentTimeMillis(),
+                listOfMatchInfos = intent.listOfMatchInfos,
+                hasMoreToLoad = intent.hasMoreToLoad,
+            )
             intent is LoadMoreIntent && state is ShowingMatchHistoryState -> stateHolder.loadMoreHistory(state)
             else -> super.reduce(intent, state, stateHolder)
         }
@@ -66,10 +72,11 @@ internal class MatchHistoryReducer @Inject constructor(
         )
     }
 
-    private fun showHistoryData(puuid: String, region: Region, listOfMatchInfos: ImmutableList<MatchInfo>, hasMoreToLoad: Boolean): ViewState {
+    private fun showHistoryData(puuid: String, region: Region, lastLoadedAt: Long, listOfMatchInfos: ImmutableList<MatchInfo>, hasMoreToLoad: Boolean): ViewState {
         return ShowingMatchHistoryState(
             puuid = puuid,
             region = region,
+            lastLoadedAt = lastLoadedAt,
             matches = listOfMatchInfos,
             isLoading = false,
             canLoadMore = hasMoreToLoad,

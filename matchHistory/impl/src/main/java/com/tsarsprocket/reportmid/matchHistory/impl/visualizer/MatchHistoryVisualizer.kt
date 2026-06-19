@@ -46,6 +46,7 @@ internal class MatchHistoryVisualizer @Inject constructor(
         MatchHistory(
             modifier = modifier,
             state = state,
+            stateHolder = this,
             onMoreToShow = {
                 postIntent(LoadMoreIntent)
             },
