@@ -30,11 +30,18 @@ adb shell stop
 adb shell start
 Write-Host "   Waiting for boot to complete..." -ForegroundColor DarkCyan
 adb wait-for-device
-adb shell "while [ \`$(getprop sys.boot_completed) != '1' ]; do sleep 1; done"
+do { Start-Sleep -Seconds 2; $booted = (adb shell getprop sys.boot_completed).Trim() } while ($booted -ne '1')
+Start-Sleep -Seconds 2
 Write-Host "   Boot complete." -ForegroundColor DarkGreen
 
 Write-Host "6. Configuring proxy to $PC_IP`:$PROXY_PORT..." -ForegroundColor Cyan
 adb shell "settings put global http_proxy $PC_IP`:$PROXY_PORT"
+$confirmed = (adb shell "settings get global http_proxy").Trim()
+if ($confirmed -ne "$PC_IP`:$PROXY_PORT") {
+    Write-Host "   Retrying proxy configuration..." -ForegroundColor Yellow
+    Start-Sleep -Seconds 3
+    adb shell "settings put global http_proxy $PC_IP`:$PROXY_PORT"
+}
 
 Write-Host "--- All done ---" -ForegroundColor Green
 Write-Host "Launch the app. Proxy will be cleared automatically when you close the mitmweb terminal."
