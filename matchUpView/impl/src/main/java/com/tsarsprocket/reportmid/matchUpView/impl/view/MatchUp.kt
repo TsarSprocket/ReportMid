@@ -124,6 +124,7 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
                 teams.forEachIndexed { index, team ->
                     Tab(
                         selected = pagerState.currentPage == index,
+                        enabled = pagerState.currentPage != index,
                         onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
                         modifier = Modifier.background(team.color),
                         text = { Text(@Temporary("Change to icons") if(team.isBlueSide) "blue" else "red") },
