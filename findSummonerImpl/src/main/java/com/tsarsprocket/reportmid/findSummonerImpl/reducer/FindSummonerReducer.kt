@@ -18,6 +18,7 @@ import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
+import kotlinx.coroutines.CancellationException
 import javax.inject.Inject
 
 @PerApi
@@ -61,6 +62,8 @@ internal class FindSummonerReducer @Inject constructor(
                     summonerDataMapper.map(useCase.getSummonerData(accountData))
                 }
             }
+        } catch(e: CancellationException) {
+            throw e
         } catch(exception: Exception) {
             logError(exception.localizedMessage.orEmpty(), exception)
             stateHolder.postEffect(ShowSnackViewEffect(R.string.snackCannotFindSummoner))

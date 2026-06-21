@@ -6,7 +6,9 @@ import com.tsarsprocket.reportmid.requestManagerApi.data.Request
 import com.tsarsprocket.reportmid.requestManagerApi.data.RequestKey
 import com.tsarsprocket.reportmid.requestManagerApi.data.RequestResult
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
@@ -19,6 +21,7 @@ internal class RequestManagerImpl @Inject constructor(
 ) : com.tsarsprocket.reportmid.requestManagerApi.data.RequestManager {
 
     private val requestMap: ConcurrentHashMap<RequestKey, RequestInfo> = ConcurrentHashMap()
+    private val requestScope = CoroutineScope(SupervisorJob() + ioDispatcher)
 
     override suspend fun <R : RequestResult> request(
         request: Request<*, R>,
@@ -26,7 +29,13 @@ internal class RequestManagerImpl @Inject constructor(
     ): R = withContext(ioDispatcher) {
         clazz.cast(requestMap[request.key]?.run {
             deferredValue.await()
-        } ?: RequestInfo(request, async { request().also { requestMap.remove(request.key) } }).run {
+        } ?: RequestInfo(request, requestScope.async {
+            try {
+                request()
+            } finally {
+                requestMap.remove(request.key)
+            }
+        }).run {
             requestMap[request.key] = this
             deferredValue.await()
         })

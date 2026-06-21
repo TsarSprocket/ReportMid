@@ -136,6 +136,8 @@ internal class Reducer @Inject constructor(
                         puuid = puuid,
                     )
                 )
+            } catch(e: CancellationException) {
+                throw e
             } catch(e: Exception) {
                 logError("Exception while loading matchup participant (teamId=$teamId, puuid=$puuid) account", e)
                 stateHolder.postIntent(
@@ -164,6 +166,8 @@ internal class Reducer @Inject constructor(
                         puuid = puuid,
                     )
                 )
+            } catch(e: CancellationException) {
+                throw e
             } catch(e: Exception) {
                 logError("Exception while loading matchup participant (teamId=$teamId, puuid=$puuid) summoner info", e)
                 stateHolder.postIntent(
