@@ -10,6 +10,7 @@ library(
         api(mainScreenApi)
         api(matchDetails.api)
         api(matchHistory.api)
+        api(matchUpView.api)
         api(summonerViewApi)
         api(viewStateApi)
     }

@@ -35,6 +35,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import com.tsarsprocket.reportmid.matchUpView.impl.R
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.NavigateToSummonerViewIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SetSelectedTeamIndexIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.StartLoadingParticipantAccountIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.AccountInfo
@@ -105,9 +106,13 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
                     val rowModifier = Modifier
                         .fillMaxWidth()
                     team.participants.values.forEach { participant ->
+                        val player = participant.player
                         ParticipantRow(
                             modifier = rowModifier,
                             participant = participant,
+                            onNavigate = if (player is KnownPlayerInfo) {
+                                { stateHolder.postIntent(NavigateToSummonerViewIntent(player.puuid, state.region)) }
+                            } else null,
                             onReload = { puuid ->
                                 stateHolder.postIntent(StartLoadingParticipantAccountIntent(team.id, puuid, state.region))
                             },
@@ -143,9 +148,9 @@ internal fun MatchUp(modifier: Modifier, state: MatchUpState, stateHolder: ViewS
 }
 
 @Composable
-private fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo, onReload: (String) -> Unit) {
+private fun ParticipantRow(modifier: Modifier = Modifier, participant: ParticipantInfo, onNavigate: (() -> Unit)? = null, onReload: (String) -> Unit) {
     Row(
-        modifier = modifier,
+        modifier = modifier.let { if (onNavigate != null) it.clickable { onNavigate() } else it },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {

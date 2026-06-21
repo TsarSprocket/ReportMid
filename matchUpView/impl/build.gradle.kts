@@ -15,6 +15,7 @@ library(
         impl(baseApi)
         impl(currentGameData.api)
         impl(dataDragonApi)
+        impl(navigationMapApi)
         impl(resLib)
         impl(summonerApi)
         impl(theme)

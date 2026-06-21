@@ -3,12 +3,14 @@ package com.tsarsprocket.reportmid.matchUpView.impl.reducer
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.matchUpView.api.navigation.MatchUpViewNavigation
 import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.Interactor
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.CurrentMatchUp
 import com.tsarsprocket.reportmid.matchUpView.impl.domain.model.NoMatchUpFound
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.InternalIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.LoadMatchUpIntent
+import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.NavigateToSummonerViewIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.ParticipantAccountFailedToLoadIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.ParticipantAccountLoadedIntent
 import com.tsarsprocket.reportmid.matchUpView.impl.viewIntent.SetSelectedTeamIndexIntent
@@ -22,6 +24,7 @@ import com.tsarsprocket.reportmid.matchUpView.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.MatchUpState
 import com.tsarsprocket.reportmid.matchUpView.impl.viewState.NotFoundState
 import com.tsarsprocket.reportmid.utils.common.logError
+import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import kotlinx.coroutines.CancellationException
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
@@ -42,6 +45,7 @@ internal class Reducer @Inject constructor(
     private val matchUpMapper: MatchUpMapper,
     private val accountMapper: AccountMapper,
     private val summonerMapper: SummonerMapper,
+    @param:Navigation(MatchUpViewNavigation.TAG) private val navigation: MatchUpViewNavigation,
 ) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
@@ -103,6 +107,11 @@ internal class Reducer @Inject constructor(
                     } else {
                         logError("Cannot find matchup participant (team=${intent.teamId}, puuid=${intent.puuid}) to mark summoner info as failed")
                     }
+                    state
+                }
+
+                is NavigateToSummonerViewIntent -> {
+                    with(navigation) { stateHolder.showSummonerInfo(intent.puuid, intent.region) }
                     state
                 }
             }
