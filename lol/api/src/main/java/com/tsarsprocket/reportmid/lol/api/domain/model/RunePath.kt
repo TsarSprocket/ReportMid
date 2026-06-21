@@ -36,5 +36,10 @@ class RunePath(
     override fun equals(other: Any?): Boolean = if(other is RunePath) id == other.id else false
 
     override fun hashCode() = id
+
+    companion object {
+        val UNKNOWN_PATH = RunePath(0, "", "", "")
+        val UNKNOWN_RUNE: Rune = UNKNOWN_PATH.createRune(0, "", "", 0, "")
+    }
 }
 

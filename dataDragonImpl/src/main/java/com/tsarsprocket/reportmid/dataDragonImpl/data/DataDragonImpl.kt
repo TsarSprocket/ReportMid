@@ -230,7 +230,7 @@ class DataDragonImpl @Inject constructor(
             get() = "${BASE_URL}cdn/$IMAGE_INFIX"
 
         override fun getRunePathById(id: Int): RunePath = runePathRegistry[id] ?: throw RuntimeException("Rune path with unknown id=$id is requested")
-        override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: throw RuntimeException("Rune with unknown id=$id is requested")
+        override fun getPerkById(id: Int): Perk = perkRegistry[id] ?: if (id == 0) RunePath.UNKNOWN_RUNE else throw RuntimeException("Rune with unknown id=$id is requested")
         override fun getChampionById(id: Long): Champion = champRegistry[id] ?: throw RuntimeException("Champion with unknown id=$id is requested")
         override fun getSummonerSpellById(id: Long): SummonerSpell = summSpellRegistry[id] ?: throw RuntimeException("Summoner spell with unknown id=$id is requested")
         override fun getItemById(itemId: Int): KnownItem = itemRegistry[itemId] ?: throw ItemIsUnknownException(itemId)

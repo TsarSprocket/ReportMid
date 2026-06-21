@@ -15,6 +15,9 @@ import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
 import com.tsarsprocket.reportmid.requestManagerApi.data.RequestManager
 import com.tsarsprocket.reportmid.requestManagerApi.data.request
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
@@ -31,11 +34,13 @@ internal class MatchDataRepositoryImpl @Inject constructor(
     @VisibleForTesting
     internal val matchIdPageCache = InMemoryKache<MatchIdPageKey, List<String>>(MAX_PAGE_CACHE_SIZE) {
         expireAfterWriteDuration = PAGE_EXPIRATION_MINUTES.minutes
+        creationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
 
     @VisibleForTesting
     internal val matchModelCache = InMemoryKache<String, Match>(MAX_PAGE_CACHE_SIZE) {
         expireAfterWriteDuration = MATCH_EXPIRATION_MINUTES.minutes
+        creationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
 
     /**
@@ -49,7 +54,7 @@ internal class MatchDataRepositoryImpl @Inject constructor(
         val matchIdPageKey = MatchIdPageKey(puuid, region, position / PAGE_SIZE)
         val matchIdsPage = matchIdPageCache.getOrPut(matchIdPageKey) {
             requestManager.request<MatchIdPage>(matchIdPageRequestFactory.createRequest(matchIdPageKey)).matchIds
-        }!!
+        } ?: throw MatchNotFoundException()
         val positionOnPage = position % PAGE_SIZE
 
         if(positionOnPage >= matchIdsPage.size) throw MatchNotFoundException()
@@ -65,7 +70,7 @@ internal class MatchDataRepositoryImpl @Inject constructor(
 
     override suspend fun getMatch(matchId: String, region: Region): Match = matchModelCache.getOrPut(matchId) {
         matchModelMapper.map(requestManager.request<MatchDto>(matchRequestFactory.createRequest(matchId, region)))
-    }!!
+    } ?: throw MatchNotFoundException()
 
     companion object {
         const val MAX_PAGE_CACHE_SIZE = 100L
