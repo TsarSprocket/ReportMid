@@ -20,6 +20,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import javax.inject.Inject
@@ -84,6 +85,8 @@ internal class ProfileOverviewReducer @Inject constructor(
                         )
                     }
                 )
+            } catch(exception: CancellationException) {
+                throw exception
             } catch(exception: Exception) {
                 logDebug("Error loading profile", exception)
                 postIntent(ShowErrorViewIntent(puuid, region))

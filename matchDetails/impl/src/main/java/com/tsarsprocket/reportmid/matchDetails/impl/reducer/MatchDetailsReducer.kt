@@ -10,6 +10,7 @@ import com.tsarsprocket.reportmid.matchDetails.impl.viewIntent.LoadMatchDataInte
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.NotLoadedState
 import com.tsarsprocket.reportmid.utils.common.logError
+import kotlinx.coroutines.CancellationException
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -46,6 +47,8 @@ internal class MatchDetailsReducer @Inject constructor(
 
     private suspend fun ViewStateHolder.loadMatchDetails(matchId: String, region: Region): ViewState = try {
         mapper.map(interactor.getMatchDetails(matchId, region))
+    } catch(e: CancellationException) {
+        throw e
     } catch(exception: Exception) {
         logError("Error getting match data for match_id = $matchId, region = ${region.name}", exception)
         NotLoadedState(matchId, region)

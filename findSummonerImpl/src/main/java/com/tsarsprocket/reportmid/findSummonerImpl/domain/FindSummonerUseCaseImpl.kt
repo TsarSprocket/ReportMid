@@ -5,6 +5,7 @@ import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.domain.model.PuuidAndRegion
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,6 +27,8 @@ internal class FindSummonerUseCaseImpl @Inject constructor(
                     isAlreadyInUse = summonerRepository.isSummonerKnown(PuuidAndRegion(puuid, region))
                 )
             }
+        } catch(exception: CancellationException) {
+            throw exception
         } catch(exception: Exception) {
             throw AccountNotFoundException()
         }

@@ -23,6 +23,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewEffect.QuitViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -72,6 +73,8 @@ internal class LandingReducer @Inject constructor(
                 try {
                     useCase.initializeDataDragon()
                     true
+                } catch(exception: CancellationException) {
+                    throw exception
                 } catch(exception: Exception) {
                     logError("Failed to initialize Data Dragon", exception)
                     false
