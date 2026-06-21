@@ -4,6 +4,7 @@ import com.tsarsprocket.reportmid.findSummonerApi.navigation.FindSummonerNavigat
 import com.tsarsprocket.reportmid.landingApi.navigation.LandingNavigation
 import com.tsarsprocket.reportmid.mainScreenApi.navigation.MainScreenNavigation
 import com.tsarsprocket.reportmid.matchHistory.api.navigation.MatchHistoryNavigation
+import com.tsarsprocket.reportmid.matchUpView.api.navigation.MatchUpViewNavigation
 import com.tsarsprocket.reportmid.summonerViewApi.navigation.OngoingSummonerViewNavigation
 import com.tsarsprocket.reportmid.summonerViewApi.navigation.StartSummonerViewNavigation
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
@@ -30,4 +31,7 @@ interface NavigationMapApi {
 
     @Navigation(MatchHistoryNavigation.TAG)
     fun getMatchHistoryNavigation(): MatchHistoryNavigation
+
+    @Navigation(MatchUpViewNavigation.TAG)
+    fun getMatchUpViewNavigation(): MatchUpViewNavigation
 }

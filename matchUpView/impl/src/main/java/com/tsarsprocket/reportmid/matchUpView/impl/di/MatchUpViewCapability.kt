@@ -6,6 +6,7 @@ import com.tsarsprocket.reportmid.currentGameData.api.di.CurrentGameDataApi
 import com.tsarsprocket.reportmid.dataDragonApi.di.DataDragonApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Capability
 import com.tsarsprocket.reportmid.matchUpView.api.di.MatchUpViewApi
+import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
 import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
 
 @PerApi
@@ -15,6 +16,7 @@ import com.tsarsprocket.reportmid.summonerApi.di.SummonerApi
         AppApi::class,
         CurrentGameDataApi::class,
         DataDragonApi::class,
+        NavigationMapApi::class,
         SummonerApi::class,
     ],
     modules = [
