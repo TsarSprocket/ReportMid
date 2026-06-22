@@ -11,6 +11,7 @@ import com.tsarsprocket.reportmid.matchHistory.impl.viewState.InternalMatchHisto
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.LoadingMatchHistoryState
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ShowingMatchHistoryState
+import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -19,6 +20,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @PerApi
 @Reducer(
@@ -32,39 +34,54 @@ internal class MatchHistoryReducer @Inject constructor(
 ) : ViewStateReducer {
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
-        return when {
-            intent is MatchHistoryIntent -> stateHolder.loadMatchHistory(intent.puuid, intent.region)
-            intent is ShowHistoryDataIntent && state is InternalMatchHistoryState -> showHistoryData(
+        return when(intent) {
+            is MatchHistoryIntent -> stateHolder.loadMatchHistory(intent.puuid, intent.region)
+            is ShowHistoryDataIntent if state is InternalMatchHistoryState -> showHistoryData(
                 puuid = state.puuid,
                 region = state.region,
                 lastLoadedAt = (state as? ShowingMatchHistoryState)?.lastLoadedAt ?: System.currentTimeMillis(),
                 listOfMatchInfos = intent.listOfMatchInfos,
                 hasMoreToLoad = intent.hasMoreToLoad,
             )
-            intent is LoadMoreIntent && state is ShowingMatchHistoryState -> stateHolder.loadMoreHistory(state)
+
+            is LoadMoreIntent if state is ShowingMatchHistoryState -> stateHolder.loadMoreHistory(state)
             else -> super.reduce(intent, state, stateHolder)
         }
     }
 
     private fun ViewStateHolder.loadMatchHistory(puuid: String, region: Region): ViewState {
         viewHolderScope.launch {
-            val data = matchHistoryInteractor.getMatchData(puuid, region, 0, CHUNK_SIZE)
+            try {
+                val data = matchHistoryInteractor.getMatchData(puuid, region, 0, CHUNK_SIZE)
 
-            postIntent(ShowHistoryDataIntent(data.matches.map { matchDataMapper.map(it) }.toPersistentList(), data.hasMoreToLoad))
+                postIntent(ShowHistoryDataIntent(data.matches.map { matchDataMapper.map(it) }.toPersistentList(), data.hasMoreToLoad))
+            } catch(ex: CancellationException) {
+                throw ex
+            } catch(ex: Exception) {
+                logError("Error loading matches", ex)
+                // TODO: Implement failure-to-reload state
+            }
         }
         return LoadingMatchHistoryState(puuid, region)
     }
 
     private fun ViewStateHolder.loadMoreHistory(state: ShowingMatchHistoryState): ViewState {
         viewHolderScope.launch {
-            val data = matchHistoryInteractor.getMatchData(state.puuid, state.region, state.matches.size, CHUNK_SIZE)
+            try {
+                val data = matchHistoryInteractor.getMatchData(state.puuid, state.region, state.matches.size, CHUNK_SIZE)
 
-            postIntent(
-                ShowHistoryDataIntent(
-                    listOfMatchInfos = (state.matches + data.matches.map { matchDataMapper.map(it) }).toPersistentList(),
-                    hasMoreToLoad = data.hasMoreToLoad,
+                postIntent(
+                    ShowHistoryDataIntent(
+                        listOfMatchInfos = (state.matches + data.matches.map { matchDataMapper.map(it) }).toPersistentList(),
+                        hasMoreToLoad = data.hasMoreToLoad,
+                    )
                 )
-            )
+            } catch(ex: CancellationException) {
+                throw ex
+            } catch(ex: Exception) {
+                logError("Error loading more matches", ex)
+                // TODO: Implement state with faild-and-reload bottom item
+            }
         }
 
         return state.copy(

@@ -8,6 +8,7 @@ import com.tsarsprocket.reportmid.lolServicesApi.riotapi.RiotServers
 import com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServerInfo
 import com.tsarsprocket.reportmid.lolServicesImpl.BuildConfig
 import com.tsarsprocket.reportmid.lolServicesImpl.R
+import com.tsarsprocket.reportmid.lolServicesImpl.di.RequestRatePolicyFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,16 +16,18 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.InputStreamReader
 import java.util.Collections
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
 
 internal class ServiceFactoryImpl @Inject constructor(
-    @AppContext
+    @param:AppContext
     private val context: Context,
+    requestRatePolicyFactory: RequestRatePolicyFactory,
 ) : com.tsarsprocket.reportmid.lolServicesApi.riotapi.ServiceFactory {
+
     private val okClient = OkHttpClient.Builder()
-        .addInterceptor(RequestRatePolicy(20, 1, TimeUnit.SECONDS))
-        .addInterceptor(RequestRatePolicy(100, 2, TimeUnit.MINUTES))
+        .addInterceptor(requestRatePolicyFactory.create(FINE_GRAIN_RATE, FINE_GRAIN_INTERVAL_MILLIS))
+        .addInterceptor(requestRatePolicyFactory.create(COARSE_GRAIN_RATE, COARSE_GRAIN_INTERVAL_MILLIS))
         .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.valueOf(BuildConfig.OKHTTP_LOGGING) })
         .addInterceptor { chain ->
             chain.proceed(
@@ -70,5 +73,9 @@ internal class ServiceFactoryImpl @Inject constructor(
 
     private companion object {
         const val RIOT_APY_KEY_HEADER = "X-Riot-Token"
+        const val FINE_GRAIN_INTERVAL_MILLIS = 1_000L
+        const val FINE_GRAIN_RATE = 20
+        const val COARSE_GRAIN_INTERVAL_MILLIS = 2 * 60_000L
+        const val COARSE_GRAIN_RATE = 100
     }
 }
