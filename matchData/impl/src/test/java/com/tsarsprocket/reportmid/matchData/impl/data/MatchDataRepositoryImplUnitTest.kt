@@ -41,8 +41,8 @@ internal class MatchDataRepositoryImplUnitTest {
 
     @BeforeEach
     fun setup() {
-        whenever(matchIdPageRequestFactory.createRequest(any())).thenReturn(matchIdPageRequest)
-        whenever(matchRequestFactory.createRequest(any(), any())).thenReturn(matchRequest)
+        whenever { matchIdPageRequestFactory.createRequest(any()) }.thenReturn(matchIdPageRequest)
+        whenever { matchRequestFactory.createRequest(any(), any()) }.thenReturn(matchRequest)
 
         matchDataRepository = MatchDataRepositoryImpl(requestManager, matchIdPageRequestFactory, matchRequestFactory, matchModelMapper, mainTestDispatcherExtension.dispatcher)
     }
