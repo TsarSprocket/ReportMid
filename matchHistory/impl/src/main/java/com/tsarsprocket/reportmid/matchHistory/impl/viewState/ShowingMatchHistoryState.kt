@@ -12,17 +12,17 @@ internal data class ShowingMatchHistoryState(
     override val puuid: String,
     override val region: Region,
     val lastLoadedAt: Long = System.currentTimeMillis(),
-    val matches: ImmutableList<MatchInfo> = persistentListOf(),
+    val matches: ImmutableList<ItemToShow> = persistentListOf(),
     val isLoading: Boolean,
     val canLoadMore: Boolean = true,
 ) : InternalMatchHistoryState {
     val itemsInList: Int
-        get() = if(canLoadMore) matches.size.inc() else matches.size
+        get() = matches.size + if (canLoadMore) 1 else 0
 
     fun getItemToShow(index: Int): ItemToShow {
-        return when {
-            index in matches.indices -> matches[index]
-            canLoadMore && index == matches.size -> LoadingMoreItem
+        return when (index) {
+            in matches.indices -> matches[index]
+            matches.size -> LoadingMoreItem
             else -> throw IndexOutOfBoundsException()
         }
     }

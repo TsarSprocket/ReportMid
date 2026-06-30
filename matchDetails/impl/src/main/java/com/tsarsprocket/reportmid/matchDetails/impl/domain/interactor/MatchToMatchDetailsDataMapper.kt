@@ -7,7 +7,7 @@ import com.tsarsprocket.reportmid.lol.api.domain.model.Item
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.lol.api.domain.model.TeamSide
 import com.tsarsprocket.reportmid.lol.api.domain.model.UnknownItem
-import com.tsarsprocket.reportmid.matchData.api.data.model.Match
+import com.tsarsprocket.reportmid.matchData.api.data.model.ActualMatch
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.Team
 import com.tsarsprocket.reportmid.matchDetails.impl.domain.model.GameOutcome
@@ -21,7 +21,7 @@ internal class MatchToMatchDetailsDataMapper @Inject constructor(
     private val dataDragon: DataDragon,
 ) {
 
-    fun map(match: Match, region: Region): MatchDetailsData {
+    fun map(match: ActualMatch, region: Region): MatchDetailsData {
         return MatchDetailsData(
             region = region,
             gameType = match.gameType,

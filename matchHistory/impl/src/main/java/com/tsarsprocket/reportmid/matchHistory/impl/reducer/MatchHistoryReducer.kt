@@ -8,8 +8,8 @@ import com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor.MatchHisto
 import com.tsarsprocket.reportmid.matchHistory.impl.viewIntent.LoadMoreIntent
 import com.tsarsprocket.reportmid.matchHistory.impl.viewIntent.ShowHistoryDataIntent
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.InternalMatchHistoryState
+import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ItemToShow
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.LoadingMatchHistoryState
-import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ShowingMatchHistoryState
 import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
@@ -40,7 +40,7 @@ internal class MatchHistoryReducer @Inject constructor(
                 puuid = state.puuid,
                 region = state.region,
                 lastLoadedAt = (state as? ShowingMatchHistoryState)?.lastLoadedAt ?: System.currentTimeMillis(),
-                listOfMatchInfos = intent.listOfMatchInfos,
+                items = intent.items,
                 hasMoreToLoad = intent.hasMoreToLoad,
             )
 
@@ -54,7 +54,10 @@ internal class MatchHistoryReducer @Inject constructor(
             try {
                 val data = matchHistoryInteractor.getMatchData(puuid, region, 0, CHUNK_SIZE)
 
-                postIntent(ShowHistoryDataIntent(data.matches.map { matchDataMapper.map(it) }.toPersistentList(), data.hasMoreToLoad))
+                postIntent(ShowHistoryDataIntent(
+                    items = data.matches.map { matchDataMapper.map(it) }.toPersistentList(),
+                    hasMoreToLoad = data.hasMoreToLoad,
+                ))
             } catch(ex: CancellationException) {
                 throw ex
             } catch(ex: Exception) {
@@ -72,7 +75,7 @@ internal class MatchHistoryReducer @Inject constructor(
 
                 postIntent(
                     ShowHistoryDataIntent(
-                        listOfMatchInfos = (state.matches + data.matches.map { matchDataMapper.map(it) }).toPersistentList(),
+                        items = (state.matches + data.matches.map { matchDataMapper.map(it) }).toPersistentList(),
                         hasMoreToLoad = data.hasMoreToLoad,
                     )
                 )
@@ -89,12 +92,12 @@ internal class MatchHistoryReducer @Inject constructor(
         )
     }
 
-    private fun showHistoryData(puuid: String, region: Region, lastLoadedAt: Long, listOfMatchInfos: ImmutableList<MatchInfo>, hasMoreToLoad: Boolean): ViewState {
+    private fun showHistoryData(puuid: String, region: Region, lastLoadedAt: Long, items: ImmutableList<ItemToShow>, hasMoreToLoad: Boolean): ViewState {
         return ShowingMatchHistoryState(
             puuid = puuid,
             region = region,
             lastLoadedAt = lastLoadedAt,
-            matches = listOfMatchInfos,
+            matches = items,
             isLoading = false,
             canLoadMore = hasMoreToLoad,
         )

@@ -33,9 +33,11 @@ import coil.compose.AsyncImage
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.lol.api.presentation.model.ChampionInfo
 import com.tsarsprocket.reportmid.lol.api.presentation.model.ItemInfo
+import com.tsarsprocket.reportmid.matchHistory.impl.R
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.LoadingMoreItem
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
+import com.tsarsprocket.reportmid.matchHistory.impl.viewState.NoMoreDataItem
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ShowingMatchHistoryState
 import com.tsarsprocket.reportmid.theme.ReportMidSpecialColors
 import com.tsarsprocket.reportmid.theme.ReportMidTheme
@@ -91,7 +93,8 @@ internal fun MatchHistory(
             items(state.itemsInList) { index ->
                 when(val item = state.getItemToShow(index)) {
                     is MatchInfo -> MatchItem(item) { onMatchClicked(item.matchId) }
-                    LoadingMoreItem -> if(state.canLoadMore) ShowLoadingMoreItem(state.itemsInList, state.isLoading, onMoreToShow)
+                    LoadingMoreItem -> ShowLoadingMoreItem(state.itemsInList, state.isLoading, onMoreToShow)
+                    NoMoreDataItem -> ShowNoMoreDataItem()
                 }
             }
         }
@@ -295,6 +298,21 @@ private fun PlayerItems(items: ImmutableList<ImmutableList<ItemInfo>>, ward: Ite
         }
 
         GameItem(Modifier.size(ITEM_ICON_SIZE.dp), ward)
+    }
+}
+
+@Composable
+private fun ShowNoMoreDataItem() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(32.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = stringResource(R.string.match_history_no_more_matches),
+            style = reportMidTypography.bodyMedium,
+        )
     }
 }
 

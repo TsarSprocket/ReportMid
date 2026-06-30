@@ -1,3 +1,3 @@
 package com.tsarsprocket.reportmid.matchData.api.data.model
 
-sealed interface Match
+data object NoMatch : Match
