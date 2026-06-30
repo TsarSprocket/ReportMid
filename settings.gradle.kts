@@ -4,6 +4,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":appApi")
 include(":appImpl")
+include(":appBar:api")
+include(":appBar:impl")
 include(":baseApi")
 include(":baseImpl")
 include(":currentGameData:api")

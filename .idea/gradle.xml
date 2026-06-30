@@ -17,12 +17,14 @@
         </compositeConfiguration>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$PROJECT_DIR$/../Gradle/gradle-8.14.2" />
         <option name="gradleJvm" value="corretto-18" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/appApi" />
+            <option value="$PROJECT_DIR$/appBar" />
+            <option value="$PROJECT_DIR$/appBar/api" />
+            <option value="$PROJECT_DIR$/appBar/impl" />
             <option value="$PROJECT_DIR$/appImpl" />
             <option value="$PROJECT_DIR$/baseApi" />
             <option value="$PROJECT_DIR$/baseImpl" />
