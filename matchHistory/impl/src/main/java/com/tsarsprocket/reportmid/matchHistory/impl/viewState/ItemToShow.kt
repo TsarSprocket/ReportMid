@@ -1,3 +1,5 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.viewState
 
-internal sealed interface ItemToShow
+import android.os.Parcelable
+
+internal sealed interface ItemToShow : Parcelable

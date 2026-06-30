@@ -1,3 +1,3 @@
 package com.tsarsprocket.reportmid.matchHistory.impl.domain.model
 
-internal sealed interface MatchData
+internal data object NoMatchData : MatchData

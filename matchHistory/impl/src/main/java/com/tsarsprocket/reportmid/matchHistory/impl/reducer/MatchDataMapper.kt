@@ -4,14 +4,18 @@ import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.lol.api.presentation.ItemInfoMapper
 import com.tsarsprocket.reportmid.lol.api.presentation.model.ChampionInfo
 import com.tsarsprocket.reportmid.lol.api.presentation.model.ItemInfo
+import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.ActualMatchData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchData
+import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.NoMatchData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.PlayerData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.TeamData
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.LOSE
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.REMAKE
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.GameOutcome.WIN
+import com.tsarsprocket.reportmid.matchHistory.impl.viewState.ItemToShow
 import com.tsarsprocket.reportmid.matchHistory.impl.viewState.MatchInfo
+import com.tsarsprocket.reportmid.matchHistory.impl.viewState.NoMoreDataItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -26,7 +30,12 @@ internal class MatchDataMapper @Inject constructor(
 
     private val tail by lazy { dataDragon.tail }
 
-    fun map(from: MatchData): MatchInfo {
+    fun map(from: MatchData): ItemToShow = when (from) {
+        is NoMatchData -> NoMoreDataItem
+        is ActualMatchData -> mapActualMatch(from)
+    }
+
+    private fun mapActualMatch(from: ActualMatchData): MatchInfo {
         val isSummonerRift = from.gameType.isSummonerRift
 
         return MatchInfo(
@@ -50,13 +59,13 @@ internal class MatchDataMapper @Inject constructor(
         }.toPersistentList()
     }
 
-    private fun mapOutcome(matchData: MatchData): GameOutcome = when {
+    private fun mapOutcome(matchData: ActualMatchData): GameOutcome = when {
         matchData.isRemake -> REMAKE
         matchData.isWin -> WIN
         else -> LOSE
     }
 
-    private fun mapSelf(matchData: MatchData): ChampionInfo = with(matchData.me) {
+    private fun mapSelf(matchData: ActualMatchData): ChampionInfo = with(matchData.me) {
         ChampionInfo(
             icon = championIcon,
             name = championName,
@@ -146,7 +155,7 @@ internal class MatchDataMapper @Inject constructor(
     /**
      * For ARAM etc teams should be shown face-to-face, i.e. the column order of the first one should be mirrored
      */
-    private fun mapTwoTeamsMirrored(firstTeam: List<PlayerData>, secondTeam: List<PlayerData>): ImmutableList<ImmutableList<ImmutableList<ChampionInfo?>>> {
+    private fun mapTwoTeamsMirrored(firstTeam: List<PlayerData>, secondTeam: List<PlayerData>): ImmutableList<ImmutableList<ImmutableList<ChampionInfo>>> {
         return persistentListOf(mapTeamSquared(firstTeam, isReversed = true), mapTeamSquared(secondTeam, isReversed = false))
     }
 

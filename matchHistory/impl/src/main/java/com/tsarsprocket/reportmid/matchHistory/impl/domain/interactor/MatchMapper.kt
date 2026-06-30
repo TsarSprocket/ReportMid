@@ -2,11 +2,15 @@ package com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
+import com.tsarsprocket.reportmid.matchData.api.data.model.ActualMatch
 import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint.NO_CHANCE
 import com.tsarsprocket.reportmid.matchData.api.data.model.MatchWithMeta
+import com.tsarsprocket.reportmid.matchData.api.data.model.NoMatch
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.Team
+import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.ActualMatchData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchData
+import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.NoMatchData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.PlayerData
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.TeamData
 import javax.inject.Inject
@@ -19,19 +23,22 @@ internal class MatchMapper @Inject constructor(
     private val dragonTail by lazy { dataDragon.tail }
 
     fun map(matchWithMeta: MatchWithMeta, playerPuuid: String): MatchData {
-        val match = matchWithMeta.match
-        val (me, myTeam, teams) = mapTeams(match.teams, playerPuuid)
-
-        return MatchData(
-            matchId = match.matchId,
-            gameType = match.gameType,
-            isRemake = match.isRemake,
-            isWin = myTeam.isWinner,
-            me = me,
-            myTeam = myTeam,
-            teams = teams,
-            isNotTheLast = matchWithMeta.hasMoreHint != NO_CHANCE,
-        )
+        return when (val match = matchWithMeta.match) {
+            is NoMatch -> NoMatchData
+            is ActualMatch -> {
+                val (me, myTeam, teams) = mapTeams(match.teams, playerPuuid)
+                ActualMatchData(
+                    matchId = match.matchId,
+                    gameType = match.gameType,
+                    isRemake = match.isRemake,
+                    isWin = myTeam.isWinner,
+                    me = me,
+                    myTeam = myTeam,
+                    teams = teams,
+                    isNotTheLast = matchWithMeta.hasMoreHint != NO_CHANCE,
+                )
+            }
+        }
     }
 
     private fun mapPlayer(participant: Participant): PlayerData {

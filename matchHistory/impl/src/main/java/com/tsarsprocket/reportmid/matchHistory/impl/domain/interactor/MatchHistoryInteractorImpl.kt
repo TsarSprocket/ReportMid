@@ -3,9 +3,10 @@ package com.tsarsprocket.reportmid.matchHistory.impl.domain.interactor
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Io
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.MatchDataRepository
-import com.tsarsprocket.reportmid.matchData.api.data.model.MatchNotFoundException
+import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint.NO_CHANCE
+import com.tsarsprocket.reportmid.matchData.api.data.model.NoMatch
 import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.MatchesData
-import com.tsarsprocket.reportmid.utils.common.orFalse
+import com.tsarsprocket.reportmid.matchHistory.impl.domain.model.NoMatchData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -19,22 +20,22 @@ internal class MatchHistoryInteractorImpl @Inject constructor(
 ) : MatchHistoryInteractor {
 
     override suspend fun getMatchData(puuid: String, region: Region, startPosition: Int, count: Int): MatchesData = coroutineScope {
-        val listOfMatchData = (startPosition until startPosition + count).map {
+        val matchesWithMeta = (startPosition until startPosition + count).map {
             async(ioDispatcher) {
-                try {
-                    matchMapper.map(matchDataRepository.getMatch(puuid, region, it), puuid)
-                } catch(ex: MatchNotFoundException) {
-                    null
-                }
+                matchDataRepository.getMatch(puuid, region, it)
             }
-        }
-            .awaitAll()
-            .filterNotNull()
+        }.awaitAll()
+
+        val hadNoChance = matchesWithMeta.any { it.hasMoreHint == NO_CHANCE }
+        val matches = matchesWithMeta
+            .filter { it.match !is NoMatch }
+            .map { matchMapper.map(it, puuid) }
+            .let { if (hadNoChance) it + NoMatchData else it }
 
         MatchesData(
             firstPosition = startPosition,
-            matches = listOfMatchData,
-            hasMoreToLoad = listOfMatchData.lastOrNull()?.isNotTheLast.orFalse(),
+            matches = matches,
+            hasMoreToLoad = !hadNoChance,
         )
     }
 }

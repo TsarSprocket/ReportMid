@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.matchData.impl.data
 
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
-import com.tsarsprocket.reportmid.matchData.api.data.model.Match
+import com.tsarsprocket.reportmid.matchData.api.data.model.ActualMatch
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPage
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPageKey
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
@@ -27,7 +27,7 @@ import org.mockito.kotlin.wheneverBlocking
 internal class MatchDataRepositoryImplUnitTest {
 
     val listOfMatchIds = List(PAGE_SIZE) { if(it == POSITION % PAGE_SIZE) MATCH_ID else EMPTY_STRING }
-    val match: Match = mock()
+    val match: ActualMatch = mock()
     val matchDto: MatchDto = mock()
     val matchIdPage: MatchIdPage = mock()
     val matchIdPageRequest: MatchIdPageRequest = mock()

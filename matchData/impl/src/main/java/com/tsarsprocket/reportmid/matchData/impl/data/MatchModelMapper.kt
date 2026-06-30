@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.lol.api.domain.GameTypeFactory
 import com.tsarsprocket.reportmid.lol.api.domain.model.Perk
 import com.tsarsprocket.reportmid.lol.api.domain.model.Rune
 import com.tsarsprocket.reportmid.lol.api.domain.model.RuneStyle
-import com.tsarsprocket.reportmid.matchData.api.data.model.Match
+import com.tsarsprocket.reportmid.matchData.api.data.model.ActualMatch
 import com.tsarsprocket.reportmid.matchData.api.data.model.Participant
 import com.tsarsprocket.reportmid.matchData.api.data.model.Team
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
@@ -19,7 +19,7 @@ internal class MatchModelMapper @Inject constructor(
     private val gameTypeFactory: GameTypeFactory,
 ) {
 
-    fun map(dto: MatchDto): Match {
+    fun map(dto: MatchDto): ActualMatch {
         var isRemake = false
         var winnerTeamId = IMPOSSIBLE_TEAM_ID
         val teamParticipants = dto.info.teams.map { teamDto -> teamDto.teamId }.associateWith { mutableListOf<Participant>() }
@@ -30,7 +30,7 @@ internal class MatchModelMapper @Inject constructor(
                 if(participantDto.win) winnerTeamId = participantDto.teamId
             }
         }
-        return Match(
+        return ActualMatch(
             matchId = dto.metadata.matchId,
             gameType = with(dto.info) { gameTypeFactory.getGameType(gameMode, gameType, mapId, queueId) },
             duration = dto.info.gameDuration,
