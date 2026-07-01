@@ -1,4 +1,5 @@
 import com.tsarsprocket.reportmid.gradle.api
+import com.tsarsprocket.reportmid.gradle.debug
 import com.tsarsprocket.reportmid.gradle.impl
 import com.tsarsprocket.reportmid.gradle.kapt
 import com.tsarsprocket.reportmid.gradle.ksp
@@ -13,6 +14,7 @@ library(
 
         impl(appApi)
         impl(baseApi)
+        impl(theme)
         impl(viewStateApi)
 
         impl(kspApi)
@@ -20,6 +22,8 @@ library(
     }
 
     with(libs) {
+        impl(kotlinx.collections.immutable)
+
         kapt(dagger.compiler)
         kapt(dagger.android.processor)
 
@@ -28,5 +32,9 @@ library(
         impl(compose.runtime)
         impl(compose.material3)
         impl(compose.ui.tooling.preview)
+        debug(compose.ui.tooling.main)
+
+        // Coil
+        impl(coil)
     }
 }
