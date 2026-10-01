@@ -59,6 +59,39 @@ internal class ViewStateViewModel @AssistedInject constructor(
         backStack.goBack()
     }
 
+    /**
+     * Restores the state identified by the back operation [uuid], unwinding every intermediate back operation
+     * along the way.
+     *
+     * Starting from the top of the back stack, operations are inspected one by one until the one identified by
+     * [uuid] is reached (the "target" operation, and the holder it belongs to the "target" holder). For each
+     * intermediate operation:
+     * - If the holder it belongs to is part of the target holder's hierarchy (i.e. the target holder can be
+     *   reached by following [ViewStateHolderImpl.parentHolder] references from it), the operation is discarded
+     *   without invoking its back [ViewIntent].
+     * - Otherwise, the operation is left untouched and the walk continues to the next one down the stack.
+     *
+     * Once the target operation is reached, it is removed and its back [ViewIntent] is invoked.
+     *
+     * The whole back stack manipulation happens synchronously; only the final back-intent dispatch may involve
+     * asynchronous work, and it only happens after every other adjustment has completed.
+     */
+    fun goBackTo(uuid: UUID) {
+        val operationIds = backStack.operationIdsFromTopTo(uuid)
+        val targetHolderId = operationIds.lastOrNull()?.let(backStack::holderIdFor) ?: return
+        val targetHolder = holders[targetHolderId] ?: return
+
+        for(operationId in operationIds) {
+            val holder = backStack.holderIdFor(operationId)?.let(holders::get) ?: continue
+
+            if(operationId == uuid) {
+                holder.doGoBack(operationId)
+            } else if(isWithinHierarchy(holder, targetHolder)) {
+                holder.removeOperation(operationId)
+            }
+        }
+    }
+
     fun postEffect(effect: ViewEffect, holder: ViewStateHolder) {
         viewModelScope.launch(immediateUiDispatcher) {
             mutableViewEffectActions.emit { fragment -> effectHandlers.findProcessor(effect).handle(effect, fragment, holder) }
@@ -75,6 +108,19 @@ internal class ViewStateViewModel @AssistedInject constructor(
 
     fun unregisterHolder(holder: ViewStateHolderImpl) {
         holders.remove(holder.globalId)
+    }
+
+    /**
+     * Returns `true` if [target] is reachable from [holder] by following [ViewStateHolderImpl.parentHolder]
+     * references (including when [holder] *is* [target]), `false` if the root is reached first.
+     */
+    private fun isWithinHierarchy(holder: ViewStateHolderImpl, target: ViewStateHolderImpl): Boolean {
+        var current: ViewStateHolderImpl? = holder
+        while(current != null) {
+            if(current === target) return true
+            current = current.parentHolder
+        }
+        return false
     }
 
     fun saveState() {

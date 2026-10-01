@@ -24,7 +24,7 @@ internal class BackStack private constructor(
 
     constructor() : this(
         top = null,
-        allOpRefs = mutableMapOf<UUID, OpRef>()
+        allOpRefs = mutableMapOf()
     )
 
     private constructor(parcel: Parcel) : this(
@@ -40,6 +40,27 @@ internal class BackStack private constructor(
 
     fun goBack() {
         top?.let { allOpRefs[it] }?.holderUUID?.holderResolver()?.doGoBack()
+    }
+
+    /**
+     * Returns the [ViewStateHolderImpl.globalId] of the holder that owns the operation identified by [uuid],
+     * or `null` if no such operation is currently on the stack.
+     */
+    fun holderIdFor(uuid: UUID): UUID? = allOpRefs[uuid]?.holderUUID
+
+    /**
+     * Returns the operation UUIDs ordered from the top of the stack down to and including [uuid].
+     * Returns an empty list if [uuid] is not currently present on the stack.
+     */
+    fun operationIdsFromTopTo(uuid: UUID): List<UUID> {
+        val result = mutableListOf<UUID>()
+        var cursor = top
+        while(cursor != null) {
+            result += cursor
+            if(cursor == uuid) return result
+            cursor = allOpRefs[cursor]?.down
+        }
+        return emptyList()
     }
 
     fun push(holder: ViewStateHolderImpl, operationUuid: UUID) {

@@ -11,7 +11,6 @@ import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
-import kotlinx.coroutines.CancellationException
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
@@ -23,6 +22,7 @@ import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
 import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackOperation
 import com.tsarsprocket.reportmid.viewStateImpl.di.component
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -112,10 +112,22 @@ internal class ViewStateHolderImpl private constructor(
 
     override fun describeContents() = 0
 
-    fun doGoBack() {
-        val operation = operationsStack.removeAt(operationsStack.lastIndex)
-        viewModel.backStack.removeOperation(operation.uuid)
+    fun doGoBack(uuid: UUID = operationsStack.last().uuid) {
+        val operation = removeOperation(uuid) ?: return
         postIntent(operation.goBackIntent)
+    }
+
+    /**
+     * Removes the operation identified by [uuid] from this holder's local stack as well as from the global
+     * [BackStack][com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStack], without invoking its [BackOperation.goBackIntent].
+     * Returns the removed [BackOperation], or `null` if no operation with [uuid] is present on this holder's stack.
+     */
+    fun removeOperation(uuid: UUID): BackOperation? {
+        val index = operationsStack.indexOfFirst { it.uuid == uuid }
+        if(index < 0) return null
+        val operation = operationsStack.removeAt(index)
+        viewModel.backStack.removeOperation(uuid)
+        return operation
     }
 
     override fun initializeCoroutineScope(scope: CoroutineScope) {
