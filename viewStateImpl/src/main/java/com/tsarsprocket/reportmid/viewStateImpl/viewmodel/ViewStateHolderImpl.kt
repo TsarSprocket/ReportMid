@@ -134,7 +134,7 @@ internal class ViewStateHolderImpl private constructor(
         viewHolderScope = SupervisorChildCoroutineScope(scope)
     }
 
-    override fun popTopReturnIntent(): ViewIntent = operationsStack.removeAt(operationsStack.lastIndex).goBackIntent
+    override fun popTopReturnIntent(): ViewIntent = removeOperation(operationsStack.last().uuid)!!.goBackIntent
 
     override fun postEffect(effect: ViewEffect) {
         viewModel.postEffect(effect, this)
