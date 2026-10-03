@@ -60,7 +60,7 @@ Module helpers are Gradle convention plugins defined in the `build-logic` includ
 - `id("reportmid.android.library")` + `reportMidLib { namespace = "..." }` — Android library module, used by most modules.
 - `id("reportmid.android.library.compose")` — additive plugin enabling Jetpack Compose on a library module; apply it alongside `reportmid.android.library` for modules that need Compose.
 - `id("reportmid.android.application")` + `reportMidApp { appId = "..."; namespace = "..." }` — Android application module, used by `:appImpl`.
-- `id("reportmid.jvm.library")` + (optional) `reportMidJavaLib { }` — pure JVM module, used by `:utilsTest`. (`:kspProcessor` predates this convention plugin and configures its JVM plugins directly.)
+- `id("reportmid.jvm.library")` — pure JVM module, used by `:utilsTest`. (`:kspProcessor` predates this convention plugin and configures its JVM plugins directly.)
 
 These convention plugins wire the relevant base plugins (Android/Kotlin/Kapt/Parcelize/KSP/Compose), SDK versions, and test options. Dependencies are declared conventionally in each module's own
 `dependencies {}` block (`api`, `implementation`, `kapt`, `ksp`, `testImplementation`, etc.) — they are not part of the convention plugins.

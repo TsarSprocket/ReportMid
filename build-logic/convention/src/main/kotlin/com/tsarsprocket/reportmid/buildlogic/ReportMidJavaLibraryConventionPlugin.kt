@@ -16,16 +16,12 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
  * Convention plugin for pure-JVM modules (e.g. `utils`, `utilsTest`, `kspProcessor`).
  *
  * Applies the `java-library` and Kotlin JVM plugins and wires up the common ReportMid JVM
- * configuration (Java/Kotlin version, JUnit Platform). Registers the (currently empty)
- * [ReportMidJavaLibExtension] as `reportMidJavaLib` for naming consistency with the
- * Android convention plugins. Dependencies are declared conventionally in the consuming module's
- * own `dependencies {}` block.
+ * configuration (Java/Kotlin version, JUnit Platform). Dependencies are declared conventionally
+ * in the consuming module's own `dependencies {}` block.
  */
 internal class ReportMidJavaLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
         val libs = the<LibrariesForLibs>()
-
-        extensions.create("reportMidJavaLib", ReportMidJavaLibExtension::class.java)
 
         plugins.apply {
             apply("java-library")
