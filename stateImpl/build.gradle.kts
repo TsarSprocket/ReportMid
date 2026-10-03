@@ -1,10 +1,12 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.stateImpl",
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.stateImpl"
+}
+
+dependencies {
     api(projects.baseApi)
     api(projects.stateApi)
     api(projects.stateRoom)

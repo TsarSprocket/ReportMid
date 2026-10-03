@@ -1,62 +1,57 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.application
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
+plugins {
+    id("reportmid.android.application")
+}
 
-application(
-    appId = "com.tsarsprocket.reportmid.app",
-    namespace = "com.tsarsprocket.reportmid.appImpl",
-) {
-    with(projects) {
-        api(appApi)
+reportMidApp {
+    appId = "com.tsarsprocket.reportmid.app"
+    namespace = "com.tsarsprocket.reportmid.appImpl"
+}
 
-        impl(baseImpl)
-        impl(currentGameData.impl)
-        impl(dataDragonImpl)
-        impl(findSummonerImpl)
-        impl(landingImpl)
-        impl(leaguePositionImpl)
-        impl(lol.impl)
-        impl(lolServicesImpl)
-        impl(mainScreenImpl)
-        impl(matchData.impl)
-        impl(matchDetails.impl)
-        impl(matchHistory.impl)
-        impl(matchUpView.impl)
-        impl(navigationMapImpl)
-        impl(profileOverviewImpl)
-        impl(requestManagerImpl)
-        impl(stateImpl)
-        impl(summonerImpl)
-        impl(summonerViewImpl)
-        impl(viewStateImpl)
+dependencies {
+    api(projects.appApi)
 
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+    implementation(projects.baseImpl)
+    implementation(projects.currentGameData.impl)
+    implementation(projects.dataDragonImpl)
+    implementation(projects.findSummonerImpl)
+    implementation(projects.landingImpl)
+    implementation(projects.leaguePositionImpl)
+    implementation(projects.lol.impl)
+    implementation(projects.lolServicesImpl)
+    implementation(projects.mainScreenImpl)
+    implementation(projects.matchData.impl)
+    implementation(projects.matchDetails.impl)
+    implementation(projects.matchHistory.impl)
+    implementation(projects.matchUpView.impl)
+    implementation(projects.navigationMapImpl)
+    implementation(projects.profileOverviewImpl)
+    implementation(projects.requestManagerImpl)
+    implementation(projects.stateImpl)
+    implementation(projects.summonerImpl)
+    implementation(projects.summonerViewImpl)
+    implementation(projects.viewStateImpl)
 
-    with(libs) {
-        // Android
-        impl(androidx.core.ktx)
-        impl(androidx.lifecycle.runtime.ktx)
-        impl(androidx.activity.compose)
-        impl(platform(compose.bom))
-        impl(androidx.ui.main)
-        impl(androidx.ui.graphics)
-        impl(compose.ui.tooling.preview)
-        impl(compose.material3)
-        debug(compose.ui.tooling.main)
-        debug(androidx.ui.test.manifest)
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
 
-        // Dagger
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+    // Android
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.ui.main)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    debugImplementation(libs.compose.ui.tooling.main)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
-        // Room
-        api(androidx.room.runtime)
-        kapt(androidx.room.compiler)
-        api(androidx.room.ktx)
-    }
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
+
+    // Room
+    api(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    api(libs.androidx.room.ktx)
 }

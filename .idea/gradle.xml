@@ -7,9 +7,10 @@
         <compositeConfiguration>
           <compositeBuild compositeDefinitionSource="SCRIPT">
             <builds>
-              <build path="$PROJECT_DIR$/buildSrc" name="buildSrc">
+              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
                 <projects>
-                  <project path="$PROJECT_DIR$/buildSrc" />
+                  <project path="$PROJECT_DIR$/build-logic" />
+                  <project path="$PROJECT_DIR$/build-logic/convention" />
                 </projects>
               </build>
             </builds>
@@ -28,7 +29,8 @@
             <option value="$PROJECT_DIR$/appImpl" />
             <option value="$PROJECT_DIR$/baseApi" />
             <option value="$PROJECT_DIR$/baseImpl" />
-            <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/currentGameData" />
             <option value="$PROJECT_DIR$/currentGameData/api" />
             <option value="$PROJECT_DIR$/currentGameData/impl" />

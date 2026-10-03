@@ -1,38 +1,37 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.mainScreenImpl",
-    enableCompose = true,
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.mainScreenImpl"
+}
+
+dependencies {
     api(projects.mainScreenApi)
 
-    impl(projects.summonerViewApi)
-    impl(projects.navigationMapApi)
-    impl(projects.theme)
+    implementation(projects.summonerViewApi)
+    implementation(projects.navigationMapApi)
+    implementation(projects.theme)
 
-    impl(projects.kspApi)
+    implementation(projects.kspApi)
     ksp(projects.kspProcessor)
 
-    impl(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.ktx)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.android.processor)
 
     // Compose
-    impl(platform(libs.compose.bom))
+    implementation(platform(libs.compose.bom))
 
     // Compose Material 3
-    impl(libs.compose.material3)
+    implementation(libs.compose.material3)
 
     // Compose preview support
-    impl(libs.compose.ui.tooling.preview)
-    debug(libs.compose.ui.tooling.main)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.main)
 
     // Optional - Integration with ViewModels
-    impl(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

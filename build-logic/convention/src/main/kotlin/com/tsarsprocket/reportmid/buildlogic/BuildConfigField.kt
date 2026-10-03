@@ -1,4 +1,4 @@
-package com.tsarsprocket.reportmid.gradle
+package com.tsarsprocket.reportmid.buildlogic
 
 class BuildConfigField(
     val name: String,

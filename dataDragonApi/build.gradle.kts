@@ -1,17 +1,19 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.dataDragonApi",
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.dataDragonApi"
+}
+
+dependencies {
     api(projects.baseApi)
     api(projects.lol.api)
 
     // Rx
-    impl(libs.rxandroid)
+    implementation(libs.rxandroid)
 
-    impl(libs.androidx.core.ktx)
-    impl(libs.androidx.appcompat)
-    impl(libs.material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 }

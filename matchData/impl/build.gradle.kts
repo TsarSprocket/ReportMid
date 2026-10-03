@@ -1,57 +1,49 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
-import com.tsarsprocket.reportmid.gradle.test
-import com.tsarsprocket.reportmid.gradle.testRuntimeOnly
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.matchData.impl",
-) {
-    with(projects) {
-        api(matchData.api)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.matchData.impl"
+}
 
-        impl(appApi)
-        impl(baseApi)
-        impl(dataDragonApi)
-        impl(lol.api)
-        impl(lolServicesApi)
-        impl(requestManagerApi)
-        impl(utils)
+dependencies {
+    api(projects.matchData.api)
 
-        // KSP
-        impl(kspApi)
-        ksp(kspProcessor)
+    implementation(projects.appApi)
+    implementation(projects.baseApi)
+    implementation(projects.dataDragonApi)
+    implementation(projects.lol.api)
+    implementation(projects.lolServicesApi)
+    implementation(projects.requestManagerApi)
+    implementation(projects.utils)
 
-        test(utilsTest)
-    }
+    // KSP
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
 
-    with(libs) {
-        impl(androidx.core.ktx)
+    testImplementation(projects.utilsTest)
 
-        impl(mayakapps.kache)
+    implementation(libs.androidx.core.ktx)
 
-        // Dagger
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+    implementation(libs.mayakapps.kache)
 
-        // Retrofit
-        impl(retrofit)
-        impl(converter.gson)
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 
-//        test(kotlin("test"))
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
-        // JUnit 5
-        test(platform(junit.bom))
-        test(junit.jupiter.api)
-        testRuntimeOnly(junit.platform.launcher)
-        testRuntimeOnly(junit.jupiter.engine)
+    // JUnit 5
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 
-        // Mockito
-        test(mockito.core)
-        test(mockito.kotlin)
+    // Mockito
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
 
-        test(kotlinx.coroutines.test)
-    }
+    testImplementation(libs.kotlinx.coroutines.test)
 }

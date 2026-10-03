@@ -1,17 +1,18 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.navigationMapApi",
-) {
-    with(projects) {
-        api(findSummonerApi)
-        api(landingApi)
-        api(mainScreenApi)
-        api(matchDetails.api)
-        api(matchHistory.api)
-        api(matchUpView.api)
-        api(summonerViewApi)
-        api(viewStateApi)
-    }
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.navigationMapApi"
+}
+
+dependencies {
+    api(projects.findSummonerApi)
+    api(projects.landingApi)
+    api(projects.mainScreenApi)
+    api(projects.matchDetails.api)
+    api(projects.matchHistory.api)
+    api(projects.matchUpView.api)
+    api(projects.summonerViewApi)
+    api(projects.viewStateApi)
 }

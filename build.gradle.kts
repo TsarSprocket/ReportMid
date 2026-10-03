@@ -9,14 +9,14 @@ allprojects {
 }
 
 plugins {
-    id(libs.plugins.android.application.get().pluginId) apply false
-    id(libs.plugins.android.library.get().pluginId) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
     alias(libs.plugins.devtools.ksp) apply false
-    id(libs.plugins.jetbrains.kotlin.android.get().pluginId) apply false
-    id(libs.plugins.jetbrains.kotlin.kapt.get().pluginId) apply false
+    alias(libs.plugins.jetbrains.kotlin.android) apply false
+    alias(libs.plugins.jetbrains.kotlin.kapt) apply false
     alias(libs.plugins.compose.compiler) apply false
-    id(libs.plugins.kotlin.parcelize.get().pluginId) apply false
-    id(libs.plugins.jetbrains.kotlin.jvm.get().pluginId) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
 }
 
 buildscript {

@@ -1,15 +1,16 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.viewStateApi",
-    enableCompose = true,
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.viewStateApi"
+}
+
+dependencies {
     api(projects.baseApi)
 
-    impl(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.ktx)
 
     // Compose
     api(platform(libs.compose.bom))
@@ -19,6 +20,6 @@ library(
     api(libs.compose.material3)
 
     // Compose preview support
-    impl(libs.compose.ui.tooling.preview)
-    debug(libs.compose.ui.tooling.main)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.main)
 }

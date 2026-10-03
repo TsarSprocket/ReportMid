@@ -1,3 +1,5 @@
+rootProject.name = "build-logic"
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
@@ -5,3 +7,5 @@ dependencyResolutionManagement {
         }
     }
 }
+
+include(":convention")

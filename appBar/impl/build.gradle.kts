@@ -1,40 +1,35 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.appBar.impl",
-    enableCompose = true,
-) {
-    with(projects) {
-        api(appBar.api)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.appBar.impl"
+}
 
-        impl(appApi)
-        impl(baseApi)
-        impl(theme)
-        impl(viewStateApi)
+dependencies {
+    api(projects.appBar.api)
 
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+    implementation(projects.appApi)
+    implementation(projects.baseApi)
+    implementation(projects.theme)
+    implementation(projects.viewStateApi)
 
-    with(libs) {
-        impl(kotlinx.collections.immutable)
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
 
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+    implementation(libs.kotlinx.collections.immutable)
 
-        impl(platform(compose.bom))
-        impl(compose.foundation)
-        impl(compose.runtime)
-        impl(compose.material3)
-        impl(compose.ui.tooling.preview)
-        debug(compose.ui.tooling.main)
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 
-        // Coil
-        impl(coil)
-    }
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.main)
+
+    // Coil
+    implementation(libs.coil)
 }

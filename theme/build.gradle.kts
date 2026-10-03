@@ -1,23 +1,25 @@
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.theme",
-    enableCompose = true,
-) {
-    impl(projects.resLib)
-    impl(libs.androidx.core.ktx)
-    impl(libs.androidx.appcompat)
-    impl(libs.material)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.theme"
+}
+
+dependencies {
+    implementation(projects.resLib)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
     // Compose
-    impl(platform(libs.compose.bom))
+    implementation(platform(libs.compose.bom))
 
     // Compose Material 3
-    impl(libs.compose.material3)
+    implementation(libs.compose.material3)
 
     // Compose preview support
-    impl(libs.compose.ui.tooling.preview)
-    debug(libs.compose.ui.tooling.main)
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.main)
 }

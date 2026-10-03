@@ -1,39 +1,36 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.utils",
-    enableCompose = true,
-) {
-    with(projects) {
-        impl(resLib)
-        impl(theme)
-    }
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.utils"
+}
 
-    with(libs) {
-        impl(androidx.core.ktx)
-        impl(androidx.appcompat)
+dependencies {
+    implementation(projects.resLib)
+    implementation(projects.theme)
 
-        // Material
-        impl(material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
 
-        // Dagger
-        api(dagger.main)
+    // Material
+    implementation(libs.material)
 
-        // Compose
-        impl(platform(compose.bom))
+    // Dagger
+    api(libs.dagger.main)
 
-        // Compose Material 3
-        impl(compose.material3)
-        impl(compose.material.icons.core)
+    // Compose
+    implementation(platform(libs.compose.bom))
 
-        // Compose preview support
-        impl(compose.ui.tooling.preview)
-        debug(compose.ui.tooling.main)
+    // Compose Material 3
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.core)
 
-        // Coil
-        impl(coil)
-    }
+    // Compose preview support
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.main)
+
+    // Coil
+    implementation(libs.coil)
 }

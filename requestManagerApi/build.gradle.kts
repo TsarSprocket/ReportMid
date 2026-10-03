@@ -1,5 +1,7 @@
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.requestManagerApi",
-)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.requestManagerApi"
+}

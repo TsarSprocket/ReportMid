@@ -1,11 +1,12 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.summonerImpl",
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.summonerImpl"
+}
+
+dependencies {
     api(projects.summonerApi)
     api(projects.summonerRoom)
     api(projects.dataDragonRoom)
@@ -19,10 +20,10 @@ library(
     kapt(libs.dagger.android.processor)
 
     // Retrofit
-    impl(libs.retrofit)
-    impl(libs.adapter.rxjava2)
-    impl(libs.converter.gson)
+    implementation(libs.retrofit)
+    implementation(libs.adapter.rxjava2)
+    implementation(libs.converter.gson)
 
     // Reactive streams
-    impl(libs.reactivestreams)
+    implementation(libs.reactivestreams)
 }

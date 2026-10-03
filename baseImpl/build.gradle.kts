@@ -1,23 +1,19 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.baseImpl",
-) {
-    with(projects) {
-        api(baseApi)
-        api(appApi)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.baseImpl"
+}
 
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+dependencies {
+    api(projects.baseApi)
+    api(projects.appApi)
 
-    with(libs) {
-        // Dagger
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
-    }
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
+
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 }

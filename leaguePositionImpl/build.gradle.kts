@@ -1,21 +1,21 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.leaguePositionImpl",
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.leaguePositionImpl"
+}
+
+dependencies {
     api(projects.leaguePositionApi)
     api(projects.lolServicesApi)
-    impl(projects.utils)
+    implementation(projects.utils)
 
-    impl(projects.kspApi)
+    implementation(projects.kspApi)
     ksp(projects.kspProcessor)
 
     // Retrofit
-    impl(libs.retrofit)
+    implementation(libs.retrofit)
 
     // Dagger
     kapt(libs.dagger.compiler)

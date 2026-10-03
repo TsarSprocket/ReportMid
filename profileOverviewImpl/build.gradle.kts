@@ -1,51 +1,46 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.debug
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.profileOverviewImpl",
-    enableCompose = true,
-) {
-    with(projects) {
-        api(profileOverviewApi)
-        api(theme)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.profileOverviewImpl"
+}
 
-        impl(baseApi)
-        impl(dataDragonApi)
-        impl(resLib)
-        impl(summonerApi)
-        impl(utils)
+dependencies {
+    api(projects.profileOverviewApi)
+    api(projects.theme)
 
-        // KSP
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+    implementation(projects.baseApi)
+    implementation(projects.dataDragonApi)
+    implementation(projects.resLib)
+    implementation(projects.summonerApi)
+    implementation(projects.utils)
 
-    with(libs) {
-        impl(androidx.core.ktx)
-        impl(kotlinx.collections.immutable)
+    // KSP
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
 
-        // Dagger
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.collections.immutable)
 
-        // Compose
-        impl(platform(compose.bom))
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 
-        // Compose Material 3
-        impl(compose.material3)
+    // Compose
+    implementation(platform(libs.compose.bom))
 
-        // Compose preview support
-        impl(compose.ui.tooling.preview)
-        debug(compose.ui.tooling.main)
+    // Compose Material 3
+    implementation(libs.compose.material3)
 
-        // Optional - Integration with ViewModels
-        impl(androidx.lifecycle.viewmodel.compose)
+    // Compose preview support
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling.main)
 
-        // Coil
-        impl(coil)
-    }
+    // Optional - Integration with ViewModels
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Coil
+    implementation(libs.coil)
 }

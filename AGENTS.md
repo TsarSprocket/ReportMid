@@ -55,13 +55,15 @@ The project uses a strict **api / impl split** for every feature.
 - Other modules may depend only on `*Api` modules, not on another feature's implementation module.
 - Implementation details that are not part of an API contract should be `internal`.
 
-Module helpers are defined in `buildSrc/src/main/java/com/tsarsprocket/reportmid/gradle/ProjectEx.kt`:
+Module helpers are Gradle convention plugins defined in the `build-logic` included build (`build-logic/convention/src/main/kotlin/com/tsarsprocket/reportmid/buildlogic/`):
 
-- `library(namespace) { ... }` — Android library module, used by most modules.
-- `application(appId) { ... }` — Android application module, used by `:appImpl`.
-- `javaLibrary { ... }` — pure JVM module, used by `:utils`, `:kspProcessor`, and `:utilsTest`.
+- `id("reportmid.android.library")` + `reportMidLib { namespace = "..." }` — Android library module, used by most modules.
+- `id("reportmid.android.library.compose")` — additive plugin enabling Jetpack Compose on a library module; apply it alongside `reportmid.android.library` for modules that need Compose.
+- `id("reportmid.android.application")` + `reportMidApp { appId = "..."; namespace = "..." }` — Android application module, used by `:appImpl`.
+- `id("reportmid.jvm.library")` + (optional) `reportMidJavaLib { }` — pure JVM module, used by `:utilsTest`. (`:kspProcessor` predates this convention plugin and configures its JVM plugins directly.)
 
-These helpers wire plugins, SDK versions, and test options.
+These convention plugins wire the relevant base plugins (Android/Kotlin/Kapt/Parcelize/KSP/Compose), SDK versions, and test options. Dependencies are declared conventionally in each module's own
+`dependencies {}` block (`api`, `implementation`, `kapt`, `ksp`, `testImplementation`, etc.) — they are not part of the convention plugins.
 
 ### Capability modules
 
@@ -424,7 +426,7 @@ The `returnIntent` should be produced from the target holder's current state so 
 
 ## Testing
 
-- Unit tests use JUnit 5 (`junit.jupiter`). Global test configuration uses `useJUnitPlatform()` in `buildSrc`.
+- Unit tests use JUnit 5 (`junit.jupiter`). Global test configuration uses `useJUnitPlatform()` in the `build-logic` convention plugins.
 - Test source sets live in `src/test/java/...` inside each module.
 - Mocking uses Mockito-Kotlin.
 - `utilsTest` provides `MainTestDispatcherExtension`; register it with `@RegisterExtension` for coroutine tests.

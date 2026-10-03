@@ -1,12 +1,11 @@
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.javaLibrary
+plugins {
+    id("reportmid.jvm.library")
+}
 
-javaLibrary {
-    with(libs) {
-        impl(platform(junit.bom))
-        impl(junit.jupiter.api)
+dependencies {
+    implementation(platform(libs.junit.bom))
+    implementation(libs.junit.jupiter.api)
 
-        impl(kotlinx.coroutines.core)
-        impl(kotlinx.coroutines.test)
-    }
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.test)
 }

@@ -1,15 +1,16 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.stateRoom",
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.stateRoom"
+}
+
+dependencies {
     api(projects.lolRoom)
-    impl(libs.androidx.room.rxjava2)
+    implementation(libs.androidx.room.rxjava2)
 
     // Room
-    impl(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
 }

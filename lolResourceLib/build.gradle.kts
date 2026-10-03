@@ -1,5 +1,7 @@
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.lolResourceLib",
-) {}
+reportMidLib {
+    namespace = "com.tsarsprocket.lolResourceLib"
+}

@@ -1,9 +1,12 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.lolServicesApi",
-) {
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.lolServicesApi"
+}
+
+dependencies {
     api(projects.baseApi)
     api(projects.lol.api)
 }

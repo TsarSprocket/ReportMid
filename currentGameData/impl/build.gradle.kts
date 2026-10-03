@@ -1,32 +1,28 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.currentGameData.impl",
-) {
-    with(projects) {
-        api(currentGameData.api)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.currentGameData.impl"
+}
 
-        impl(dataDragonApi)
-        impl(lol.api)
-        impl(lolServicesApi)
-        impl(requestManagerApi)
+dependencies {
+    api(projects.currentGameData.api)
 
-        // KSP
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+    implementation(projects.dataDragonApi)
+    implementation(projects.lol.api)
+    implementation(projects.lolServicesApi)
+    implementation(projects.requestManagerApi)
 
-    with(libs) {
-        // Dagger
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+    // KSP
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
 
-        // Retrofit
-        impl(retrofit)
-        impl(converter.gson)
-    }
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }

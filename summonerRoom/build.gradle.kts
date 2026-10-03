@@ -1,17 +1,18 @@
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.library
-import com.tsarsprocket.reportmid.gradle.test
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.summonerRoom",
-) {
-    impl(projects.lolRoom)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.summonerRoom"
+}
+
+dependencies {
+    implementation(projects.lolRoom)
 
     // Room
-    impl(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
-    impl(libs.androidx.room.ktx)
-    impl(libs.androidx.room.rxjava2)
-    test(libs.androidx.room.testing)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.rxjava2)
+    testImplementation(libs.androidx.room.testing)
 }

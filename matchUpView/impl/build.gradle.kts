@@ -1,45 +1,41 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+    id("reportmid.android.library.compose")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.matchUpView.impl",
-    enableCompose = true,
-) {
-    with(projects) {
-        api(matchUpView.api)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.matchUpView.impl"
+}
 
-        impl(appApi)
-        impl(baseApi)
-        impl(currentGameData.api)
-        impl(dataDragonApi)
-        impl(navigationMapApi)
-        impl(resLib)
-        impl(summonerApi)
-        impl(theme)
-        impl(utils)
-        impl(viewStateApi)
+dependencies {
+    api(projects.matchUpView.api)
 
-        // KSP
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+    implementation(projects.appApi)
+    implementation(projects.baseApi)
+    implementation(projects.currentGameData.api)
+    implementation(projects.dataDragonApi)
+    implementation(projects.navigationMapApi)
+    implementation(projects.resLib)
+    implementation(projects.summonerApi)
+    implementation(projects.theme)
+    implementation(projects.utils)
+    implementation(projects.viewStateApi)
 
-    with(libs) {
-        // Dagger
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+    // KSP
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
 
-        // Compose
-        impl(platform(compose.bom))
-        impl(compose.foundation)
-        impl(compose.runtime)
-        impl(compose.material3)
-        impl(compose.ui.tooling.preview)
+    // Dagger
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 
-        // Coil – required to resolve SubcomposeAsyncImageScope / State types in ReloadableImage lambdas
-        impl(coil)
-    }
+    // Compose
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui.tooling.preview)
+
+    // Coil – required to resolve SubcomposeAsyncImageScope / State types in ReloadableImage lambdas
+    implementation(libs.coil)
 }

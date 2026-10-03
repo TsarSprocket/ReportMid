@@ -1,12 +1,12 @@
-import com.tsarsprocket.reportmid.gradle.BuildConfigField
-import com.tsarsprocket.reportmid.gradle.BuildTypes
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.library
+import com.tsarsprocket.reportmid.buildlogic.BuildConfigField
+import com.tsarsprocket.reportmid.buildlogic.BuildTypes
 
-library(
-    namespace = "com.tsarsprocket.reportmid.lolServicesImpl",
+plugins {
+    id("reportmid.android.library")
+}
+
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.lolServicesImpl"
     buildConfigFields = listOf(
         BuildConfigField(
             name = "OKHTTP_LOGGING",
@@ -17,22 +17,24 @@ library(
             ),
         ),
     )
-) {
+}
+
+dependencies {
     api(projects.lolServicesApi)
     api(projects.appApi)
 
     // Retrofit
-    impl(libs.retrofit)
-    impl(libs.adapter.rxjava2)
-    impl(libs.converter.gson)
-    impl(libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.adapter.rxjava2)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
 
     // Dagger
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.android.processor)
 
     // Standard
-    impl(libs.androidx.core.ktx)
-    impl(libs.androidx.appcompat)
-    impl(libs.material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 }

@@ -1,6 +1,6 @@
-package com.tsarsprocket.reportmid.gradle
+package com.tsarsprocket.reportmid.buildlogic
 
-object ConfigVersions {
+internal object ConfigVersions {
     const val COMPILE_SDK_VERSION = 37
     const val COMPOSE_COMPILER_VERSION = "1.5.15"
     const val MIN_SDK_VERSION = 26

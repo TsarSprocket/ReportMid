@@ -1,24 +1,20 @@
-import com.tsarsprocket.reportmid.gradle.api
-import com.tsarsprocket.reportmid.gradle.impl
-import com.tsarsprocket.reportmid.gradle.kapt
-import com.tsarsprocket.reportmid.gradle.ksp
-import com.tsarsprocket.reportmid.gradle.library
+plugins {
+    id("reportmid.android.library")
+}
 
-library(
-    namespace = "com.tsarsprocket.reportmid.navigationMapImpl",
-) {
-    with(projects) {
-        api(navigationMapApi)
+reportMidLib {
+    namespace = "com.tsarsprocket.reportmid.navigationMapImpl"
+}
 
-        impl(baseApi)
-        impl(profileOverviewApi)
+dependencies {
+    api(projects.navigationMapApi)
 
-        impl(kspApi)
-        ksp(kspProcessor)
-    }
+    implementation(projects.baseApi)
+    implementation(projects.profileOverviewApi)
 
-    with(libs) {
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
-    }
+    implementation(projects.kspApi)
+    ksp(projects.kspProcessor)
+
+    kapt(libs.dagger.compiler)
+    kapt(libs.dagger.android.processor)
 }
