@@ -13,6 +13,7 @@ import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackObserver
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
@@ -83,6 +84,9 @@ internal class ViewStateHolderImpl private constructor(
     override val topReturnIntent: ViewIntent?
         get() = operationsStack.lastOrNull()?.goBackIntent
 
+    override val backStack: BackStackObserver
+        get() = viewModel.backStack
+
     init {
         component.inject(this)
     }
@@ -129,6 +133,13 @@ internal class ViewStateHolderImpl private constructor(
         viewModel.backStack.removeOperation(uuid)
         return operation
     }
+
+    /**
+     * Looks up the [ViewIntent] of the operation identified by [uuid] on this holder's local stack, without
+     * removing it. Used by the global back stack to expose [BackStackObserver.entries] without keeping its own
+     * copy of each operation's [ViewIntent].
+     */
+    fun goBackIntentFor(uuid: UUID): ViewIntent? = operationsStack.find { it.uuid == uuid }?.goBackIntent
 
     override fun initializeCoroutineScope(scope: CoroutineScope) {
         viewHolderScope = SupervisorChildCoroutineScope(scope)

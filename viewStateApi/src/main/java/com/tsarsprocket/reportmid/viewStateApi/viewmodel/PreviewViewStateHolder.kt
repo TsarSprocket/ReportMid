@@ -5,6 +5,8 @@ import android.os.Parcel
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackEntry
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackObserver
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.QuitViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
@@ -28,6 +30,9 @@ object PreviewViewStateHolder : ViewStateHolder {
     override val tag: String = EMPTY_STRING
     override val topReturnIntent: ViewIntent? = null
     override val viewStates: StateFlow<ViewState> = MutableStateFlow(currentState)
+    override val backStack: BackStackObserver = object : BackStackObserver {
+        override val entries: StateFlow<List<BackStackEntry>> = MutableStateFlow(emptyList())
+    }
 
     override fun createSubholder(tag: String, initialState: ViewState): ViewStateHolder = this
 

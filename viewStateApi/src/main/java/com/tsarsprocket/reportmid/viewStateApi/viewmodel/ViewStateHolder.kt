@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackObserver
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
@@ -26,6 +27,7 @@ interface ViewStateHolder : Parcelable {
     val tag: String
     val topReturnIntent: ViewIntent?
     val viewStates: StateFlow<ViewState>
+    val backStack: BackStackObserver
     fun createSubholder(tag: String = EMPTY_STRING, initialState: ViewState = EmptyScreenViewState): ViewStateHolder
     fun initializeCoroutineScope(scope: CoroutineScope)
     fun popTopReturnIntent(): ViewIntent

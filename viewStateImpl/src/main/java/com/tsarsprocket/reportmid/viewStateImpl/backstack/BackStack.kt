@@ -3,6 +3,9 @@ package com.tsarsprocket.reportmid.viewStateImpl.backstack
 import android.os.Parcel
 import android.os.ParcelUuid
 import android.os.Parcelable
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackEntry
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackObserver
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateHolderImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,14 +16,27 @@ import java.util.UUID
 internal class BackStack private constructor(
     private var top: UUID?,
     private val allOpRefs: MutableMap<UUID, OpRef>,
-) : Parcelable {
+) : Parcelable, BackStackObserver {
 
-    lateinit var holderResolver: UUID.() -> ViewStateHolderImpl?
+    /**
+     * Defaults to resolving nothing so that entries computed before this is wired up (e.g. while this instance
+     * is still being deserialized) don't crash; reassigning it (done once holders are registered) automatically
+     * refreshes [entries] against the now-resolvable holders.
+     */
+    var holderResolver: UUID.() -> ViewStateHolderImpl? = { null }
+        set(value) {
+            field = value
+            refreshPublishers()
+        }
 
     private val stackSizePublisher = MutableStateFlow(allOpRefs.size)
+    private val mutableEntries = MutableStateFlow(computeEntries())
 
     val stackSize: StateFlow<Int>
         get() = stackSizePublisher.asStateFlow()
+
+    override val entries: StateFlow<List<BackStackEntry>>
+        get() = mutableEntries.asStateFlow()
 
     constructor() : this(
         top = null,
@@ -54,11 +70,9 @@ internal class BackStack private constructor(
      */
     fun operationIdsFromTopTo(uuid: UUID): List<UUID> {
         val result = mutableListOf<UUID>()
-        var cursor = top
-        while(cursor != null) {
-            result += cursor
-            if(cursor == uuid) return result
-            cursor = allOpRefs[cursor]?.down
+        for(id in idsFromTop()) {
+            result += id
+            if(id == uuid) return result
         }
         return emptyList()
     }
@@ -68,7 +82,7 @@ internal class BackStack private constructor(
         allOpRefs[operationUuid] = opRef
         top?.let { allOpRefs[it]?.up = operationUuid }
         top = operationUuid
-        stackSizePublisher.value = allOpRefs.size
+        refreshPublishers()
     }
 
     /**
@@ -79,7 +93,28 @@ internal class BackStack private constructor(
             if(top === uuid) top = opRef.down
             opRef.down?.let { allOpRefs[it]?.up = opRef.up }
             opRef.up?.let { allOpRefs[it]?.down = opRef.down }
+            refreshPublishers()
         }
+    }
+
+    /**
+     * Yields operation UUIDs ordered from the top of the stack down to the bottom.
+     */
+    private fun idsFromTop(): Sequence<UUID> = generateSequence(top) { allOpRefs[it]?.down }
+
+    /**
+     * Resolves each entry's [ViewIntent] on demand from the owning holder's own local operations list rather
+     * than keeping a second copy of it here, so every [ViewIntent] is parceled exactly once (as part of its
+     * owning [ViewStateHolderImpl]'s state). An operation is omitted if its holder can no longer be resolved.
+     */
+    private fun computeEntries(): List<BackStackEntry> = idsFromTop().mapNotNull { id ->
+        val holder = allOpRefs[id]?.holderUUID?.holderResolver() ?: return@mapNotNull null
+        holder.goBackIntentFor(id)?.let { viewIntent -> BackStackEntryImpl(id, viewIntent) }
+    }.toList()
+
+    private fun refreshPublishers() {
+        stackSizePublisher.value = allOpRefs.size
+        mutableEntries.value = computeEntries()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -101,6 +136,11 @@ internal class BackStack private constructor(
         val uuid: UUID,
         val opRef: OpRef,
     ) : Parcelable
+
+    private data class BackStackEntryImpl(
+        override val uuid: UUID,
+        override val viewIntent: ViewIntent,
+    ) : BackStackEntry
 
     companion object CREATOR : Parcelable.Creator<BackStack> {
         override fun createFromParcel(parcel: Parcel?): BackStack? = parcel?.let { BackStack(it) }

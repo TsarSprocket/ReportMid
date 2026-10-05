@@ -29,8 +29,8 @@ import javax.inject.Provider
 
 internal class ViewStateViewModel @AssistedInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle,
-    @Aggregated private val effectHandlers: Map<Class<out ViewEffect>, @JvmSuppressWildcards Provider<ViewEffectHandler>>,
-    @Ui.Immediate val immediateUiDispatcher: CoroutineDispatcher,
+    @param:Aggregated private val effectHandlers: Map<Class<out ViewEffect>, @JvmSuppressWildcards Provider<ViewEffectHandler>>,
+    @param:Ui.Immediate val immediateUiDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val mutableViewEffectActions = MutableSharedFlow<suspend (ViewStateFragment) -> Unit>()
