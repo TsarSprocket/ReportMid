@@ -6,7 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
-import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackObserver
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
@@ -27,7 +27,8 @@ interface ViewStateHolder : Parcelable {
     val tag: String
     val topReturnIntent: ViewIntent?
     val viewStates: StateFlow<ViewState>
-    val backStack: BackStackObserver
+    val backStack: BackStack
+    val lastOperationUuid: UUID
     fun createSubholder(tag: String = EMPTY_STRING, initialState: ViewState = EmptyScreenViewState): ViewStateHolder
     fun initializeCoroutineScope(scope: CoroutineScope)
     fun popTopReturnIntent(): ViewIntent
@@ -40,6 +41,14 @@ interface ViewStateHolder : Parcelable {
     fun stop()
     @Composable
     fun Visualize(modifier: Modifier)
+    fun doGoBack(uuid: UUID = lastOperationUuid)
+
+    /**
+     * Looks up the [ViewIntent] of the operation identified by [uuid] on this holder's local stack, without
+     * removing it. Used by the global back stack to expose [BackStack.entriesFlow] without keeping its own
+     * copy of each operation's [ViewIntent].
+     */
+    fun goBackIntentFor(uuid: UUID): ViewIntent?
 
     companion object {
         const val ROOT_TAG = "root"

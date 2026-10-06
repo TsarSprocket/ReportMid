@@ -6,9 +6,10 @@ import com.tsarsprocket.reportmid.baseApi.di.ViewModelKey
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.DefaultState
 import com.tsarsprocket.reportmid.baseApi.viewmodel.ConvenienceViewModelFactoryCreator
 import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactoryCreator
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStack
+import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStackImpl
 import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateHolderImpl
 import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateViewModel
 import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateViewModel.Companion.KEY_BACKSTACK
@@ -19,6 +20,9 @@ import dagger.multibindings.IntoMap
 
 @Module
 internal class ViewStateViewModelModule {
+
+    @Provides
+    fun provideBackStack(): BackStack = BackStackImpl(null, mutableMapOf())
 
     @Provides
     @PerApi
@@ -33,10 +37,12 @@ internal class ViewStateViewModelModule {
 
     @Provides
     @DefaultState(ViewStateViewModel::class)
-    fun provideViewStateViewModelDefaultState(): Bundle {
+    fun provideViewStateViewModelDefaultState(
+        backStack: BackStack,
+    ): Bundle {
         return Bundle(2).apply {
             putParcelable(KEY_ROOT_HOLDER, ViewStateHolderImpl(tag = ViewStateHolder.ROOT_TAG, initialViewState = EmptyScreenViewState))
-            putParcelable(KEY_BACKSTACK, BackStack())
+            putParcelable(KEY_BACKSTACK, backStack)
         }
     }
 }

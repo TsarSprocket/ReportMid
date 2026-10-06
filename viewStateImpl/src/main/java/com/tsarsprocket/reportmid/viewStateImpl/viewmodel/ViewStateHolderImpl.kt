@@ -13,7 +13,7 @@ import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
-import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackObserver
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
@@ -84,8 +84,11 @@ internal class ViewStateHolderImpl private constructor(
     override val topReturnIntent: ViewIntent?
         get() = operationsStack.lastOrNull()?.goBackIntent
 
-    override val backStack: BackStackObserver
+    override val backStack: BackStack
         get() = viewModel.backStack
+
+    override val lastOperationUuid: UUID
+        get() = operationsStack.last().uuid
 
     init {
         component.inject(this)
@@ -116,14 +119,14 @@ internal class ViewStateHolderImpl private constructor(
 
     override fun describeContents() = 0
 
-    fun doGoBack(uuid: UUID = operationsStack.last().uuid) {
+    override fun doGoBack(uuid: UUID) {
         val operation = removeOperation(uuid) ?: return
         postIntent(operation.goBackIntent)
     }
 
     /**
      * Removes the operation identified by [uuid] from this holder's local stack as well as from the global
-     * [BackStack][com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStack], without invoking its [BackOperation.goBackIntent].
+     * [BackStack][com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStackImpl], without invoking its [BackOperation.goBackIntent].
      * Returns the removed [BackOperation], or `null` if no operation with [uuid] is present on this holder's stack.
      */
     fun removeOperation(uuid: UUID): BackOperation? {
@@ -136,10 +139,10 @@ internal class ViewStateHolderImpl private constructor(
 
     /**
      * Looks up the [ViewIntent] of the operation identified by [uuid] on this holder's local stack, without
-     * removing it. Used by the global back stack to expose [BackStackObserver.entries] without keeping its own
+     * removing it. Used by the global back stack to expose [BackStack.entriesFlow] without keeping its own
      * copy of each operation's [ViewIntent].
      */
-    fun goBackIntentFor(uuid: UUID): ViewIntent? = operationsStack.find { it.uuid == uuid }?.goBackIntent
+    override fun goBackIntentFor(uuid: UUID): ViewIntent? = operationsStack.find { it.uuid == uuid }?.goBackIntent
 
     override fun initializeCoroutineScope(scope: CoroutineScope) {
         viewHolderScope = SupervisorChildCoroutineScope(scope)
