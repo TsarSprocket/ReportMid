@@ -42,7 +42,7 @@ internal class ViewStateHolderImpl private constructor(
     initialState: ViewState,
     private val operationsStack: MutableList<BackOperation>,
     override val tag: String,
-) : ViewStateHolder {
+) : InternalViewStateHolder {
 
     @Inject
     @Aggregated
@@ -117,6 +117,8 @@ internal class ViewStateHolderImpl private constructor(
         }
     }
 
+    override fun getTagged(tag: String): ViewStateHolder? = generateSequence(this) { it.parentHolder }.firstOrNull() { it.tag == tag }
+
     override fun describeContents() = 0
 
     override fun doGoBack(uuid: UUID) {
@@ -129,7 +131,7 @@ internal class ViewStateHolderImpl private constructor(
      * [BackStack][com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStackImpl], without invoking its [BackOperation.goBackIntent].
      * Returns the removed [BackOperation], or `null` if no operation with [uuid] is present on this holder's stack.
      */
-    fun removeOperation(uuid: UUID): BackOperation? {
+    override fun removeOperation(uuid: UUID): BackOperation? {
         val index = operationsStack.indexOfFirst { it.uuid == uuid }
         if(index < 0) return null
         val operation = operationsStack.removeAt(index)
@@ -162,6 +164,10 @@ internal class ViewStateHolderImpl private constructor(
         }
     }
 
+    override fun <IntentMapper> postReturnIntent(processors: Map<Class<out ViewIntent>, Provider<IntentMapper>>, viewIntentProducer: IntentMapper.() -> ViewIntent) {
+        postIntent(processors.findProcessor(popTopReturnIntent()).viewIntentProducer())
+    }
+
     fun propagateParentHolder() {
         currentState.setParentHolder(this)
     }
@@ -172,17 +178,6 @@ internal class ViewStateHolderImpl private constructor(
         if(this::viewHolderScope.isInitialized) viewHolderScope.cancel()
         initializeCoroutineScope(parentHolder.viewHolderScope)
         propagateParentHolder()
-    }
-
-    override fun setState(state: ViewState) {
-        mutableViewStates.value.stop()
-        state.setParentHolder(this)
-        mutableViewStates.value = state
-        state.start()
-    }
-
-    override fun skipStack(conditionWhile: (ViewIntent) -> Boolean) {
-        while(operationsStack.getOrNull(operationsStack.lastIndex)?.let { conditionWhile(it.goBackIntent) } == true) operationsStack.removeAt(operationsStack.lastIndex)
     }
 
     override fun start() {
@@ -237,7 +232,7 @@ internal class ViewStateHolderImpl private constructor(
         }
     }
 
-    private fun pushReturnIntent(viewIntent: ViewIntent) {
+    override fun pushReturnIntent(viewIntent: ViewIntent) {
         val operation = BackOperation(viewIntent)
         operationsStack.add(operation)
         viewModel.backStack.push(this, operation.uuid)

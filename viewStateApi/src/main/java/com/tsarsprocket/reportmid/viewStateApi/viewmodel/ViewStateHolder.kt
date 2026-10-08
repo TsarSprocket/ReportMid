@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.utils.common.EMPTY_STRING
-import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
@@ -30,33 +29,19 @@ interface ViewStateHolder : Parcelable {
     val backStack: BackStack
     val lastOperationUuid: UUID
     fun createSubholder(tag: String = EMPTY_STRING, initialState: ViewState = EmptyScreenViewState): ViewStateHolder
-    fun initializeCoroutineScope(scope: CoroutineScope)
+    fun getTagged(tag: String): ViewStateHolder?
     fun popTopReturnIntent(): ViewIntent
     fun postIntent(intent: ViewIntent, returnIntent: ViewIntent? = null)
     fun postEffect(effect: ViewEffect)
+    fun <IntentMapper> postReturnIntent(processors: Map<Class<out ViewIntent>, Provider<IntentMapper>>, viewIntentProducer: IntentMapper.() -> ViewIntent)
     fun setParentHolder(parentHolder: ViewStateHolder)
-    fun setState(state: ViewState)
-    fun skipStack(conditionWhile: (ViewIntent) -> Boolean)
     fun start()
     fun stop()
     @Composable
     fun Visualize(modifier: Modifier)
-    fun doGoBack(uuid: UUID = lastOperationUuid)
-
-    /**
-     * Looks up the [ViewIntent] of the operation identified by [uuid] on this holder's local stack, without
-     * removing it. Used by the global back stack to expose [BackStack.entriesFlow] without keeping its own
-     * copy of each operation's [ViewIntent].
-     */
-    fun goBackIntentFor(uuid: UUID): ViewIntent?
+    fun pushReturnIntent(viewIntent: ViewIntent)
 
     companion object {
         const val ROOT_TAG = "root"
     }
 }
-
-fun <IntentMapper> ViewStateHolder.postReturnIntent(processors: Map<Class<out ViewIntent>, Provider<IntentMapper>>, viewIntentProducer: IntentMapper.() -> ViewIntent) {
-    postIntent(processors.findProcessor(popTopReturnIntent()).viewIntentProducer())
-}
-
-fun ViewStateHolder.getTagged(tag: String): ViewStateHolder? = generateSequence(this) { it.parentHolder }.firstOrNull() { it.tag == tag }

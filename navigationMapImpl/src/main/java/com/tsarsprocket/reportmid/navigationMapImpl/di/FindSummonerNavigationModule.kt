@@ -10,7 +10,6 @@ import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.navigation.ReturnProcessor
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.viewmodel.postReturnIntent
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap

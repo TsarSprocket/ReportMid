@@ -2,12 +2,11 @@ package com.tsarsprocket.reportmid.navigationMapImpl.di
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.mainScreenApi.constants.SUMMONER_VIEW_TAG
 import com.tsarsprocket.reportmid.matchUpView.api.navigation.MatchUpViewNavigation
 import com.tsarsprocket.reportmid.summonerViewApi.viewIntent.SummonerViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
-import com.tsarsprocket.reportmid.mainScreenApi.constants.SUMMONER_VIEW_TAG
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
-import com.tsarsprocket.reportmid.viewStateApi.viewmodel.getTagged
 import dagger.Module
 import dagger.Provides
 

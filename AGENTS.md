@@ -370,16 +370,12 @@ The `returnIntent` token is pushed onto the holder's `operationsStack` as a `Bac
 Call-and-return return leg:
 
 ```kotlin
-fun <M> ViewStateHolder.postReturnIntent(
-    processors: Map<Class<out ViewIntent>, Provider<M>>,
-    producer: M.() -> ViewIntent,
-) {
-    postIntent(processors.findProcessor(popTopReturnIntent()).producer())
-}
+override fun ViewStateHolder.returnSuccess(puuid: String, region: Region) =
+    postReturnIntent(resultProcessors) { getSuccessIntent(puuid, region) }
 ```
 
-`popTopReturnIntent()` removes the token. `findProcessor` does BFS through the token's class hierarchy to find the right processor. `producer` converts the result into a concrete intent handled by the
-caller's reducer.
+`postReturnIntent` is a `ViewStateHolder` member (implemented in `ViewStateHolderImpl`), not something capabilities define themselves. It calls `popTopReturnIntent()` to remove the token, uses
+`findProcessor` to BFS through the token's class hierarchy for the right processor, and posts the intent the processor's lambda produces to the caller's reducer.
 
 Processor maps use Dagger multibindings keyed by `@ViewIntentKey` and qualified with `@ReturnProcessor(IntentMapper::class)`:
 
@@ -394,11 +390,12 @@ fun provideLandingProcessor() = object : FindSummonerResultProcessor {
     }
 ```
 
-Hierarchical navigation posts an intent to a specific ancestor holder rather than the current holder. Walk `parentHolder` by state type, marker interface, or tag string:
+Hierarchical navigation posts an intent to a specific ancestor holder rather than the current holder. Walk `parentHolder` by state type or marker interface:
 
 ```kotlin
 val target = generateSequence(seed = this) { it.parentHolder }
     .find { it.viewStates.value is SummonerViewStateReturnPoint }
+    ?: throw IllegalStateException("Holder of ${SummonerViewStateReturnPoint::class.simpleName} not found starting $this")
 
 target.postIntent(
     intent = MatchDetailsIntent(matchId, region),
@@ -407,6 +404,18 @@ target.postIntent(
 ```
 
 The `returnIntent` should be produced from the target holder's current state so returning restores it exactly.
+
+When the target holder can be identified by its `tag` instead (e.g. a known screen tagged via `createSubholder(tag = ...)`), use the `getTagged(tag)` member instead of walking `parentHolder` by hand:
+
+```kotlin
+val summonerViewHolder = getTagged(SUMMONER_VIEW_TAG)
+    ?: throw IllegalStateException("Holder tagged '$SUMMONER_VIEW_TAG' not found")
+
+summonerViewHolder.postIntent(
+    intent = SummonerViewIntent(puuid = puuid, region = region),
+    returnIntent = summonerViewHolder.currentState.getRestoreStateIntent(),
+)
+```
 
 ### Adding navigation to a screen
 

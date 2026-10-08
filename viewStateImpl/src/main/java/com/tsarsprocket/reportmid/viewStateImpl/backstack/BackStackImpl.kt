@@ -3,10 +3,10 @@ package com.tsarsprocket.reportmid.viewStateImpl.backstack
 import android.os.Parcel
 import android.os.ParcelUuid
 import android.os.Parcelable
-import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackEntry
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.InternalViewStateHolder
 import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.ViewStateHolderImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +17,9 @@ import java.util.UUID
 internal class BackStackImpl(
     private var top: UUID?,
     private val allOpRefs: MutableMap<UUID, OpRef>,
-) : BackStack {
+) : InternalBackStack {
 
-    /**
-     * Defaults to resolving nothing so that entries computed before this is wired up (e.g. while this instance
-     * is still being deserialized) don't crash; reassigning it (done once holders are registered) automatically
-     * refreshes [entriesFlow] against the now-resolvable holders.
-     */
-    override var holderResolver: UUID.() -> ViewStateHolder? = { null }
+    override var holderResolver: UUID.() -> InternalViewStateHolder? = { null }
         set(value) {
             field = value
             refreshPublishers()
@@ -52,6 +47,39 @@ internal class BackStackImpl(
 
     override fun goBack() {
         top?.let { allOpRefs[it] }?.holderUUID?.holderResolver()?.doGoBack()
+    }
+
+    /**
+     * Restores the state identified by the back operation [uuid], unwinding every intermediate back operation
+     * along the way.
+     *
+     * Starting from the top of the back stack, operations are inspected one by one until the one identified by
+     * [uuid] is reached (the "target" operation, and the holder it belongs to the "target" holder). For each
+     * intermediate operation:
+     * - If the holder it belongs to is part of the target holder's hierarchy (i.e. the target holder can be
+     *   reached by following [ViewStateHolderImpl.parentHolder] references from it), the operation is discarded
+     *   without invoking its back [ViewIntent].
+     * - Otherwise, the operation is left untouched and the walk continues to the next one down the stack.
+     *
+     * Once the target operation is reached, it is removed and its back [ViewIntent] is invoked.
+     *
+     * The whole back stack manipulation happens synchronously; only the final back-intent dispatch may involve
+     * asynchronous work, and it only happens after every other adjustment has completed.
+     */
+    override fun goBackTo(uuid: UUID) {
+        val operationIds = operationIdsFromTopTo(uuid)
+        val targetHolderId = operationIds.lastOrNull()?.let(::holderIdFor) ?: return
+        val targetHolder = targetHolderId.holderResolver() ?: return
+
+        for(operationId in operationIds) {
+            val holder = holderIdFor(operationId)?.let(holderResolver) ?: continue
+
+            if(operationId == uuid) {
+                holder.doGoBack(operationId)
+            } else if(isWithinHierarchy(holder, targetHolder)) {
+                holder.removeOperation(operationId)
+            }
+        }
     }
 
     /**
@@ -118,6 +146,19 @@ internal class BackStackImpl(
             writeParcelable(top?.let { ParcelUuid(it) }, flags)
             writeParcelableArray(allOpRefs.entries.map { (uuid, opRef) -> ParcelableEntry(uuid, opRef) }.toTypedArray(), flags)
         }
+    }
+
+    /**
+     * Returns `true` if [target] is reachable from [holder] by following [ViewStateHolderImpl.parentHolder]
+     * references (including when [holder] *is* [target]), `false` if the root is reached first.
+     */
+    private fun isWithinHierarchy(holder: InternalViewStateHolder, target: InternalViewStateHolder): Boolean {
+        var current: InternalViewStateHolder? = holder
+        while(current != null) {
+            if(current === target) return true
+            current = current.parentHolder as InternalViewStateHolder
+        }
+        return false
     }
 
     @Parcelize

@@ -9,12 +9,12 @@ import androidx.lifecycle.viewModelScope
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Aggregated
 import com.tsarsprocket.reportmid.baseApi.di.qualifiers.Ui
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
-import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.view.ViewStateFragment
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
+import com.tsarsprocket.reportmid.viewStateImpl.backstack.InternalBackStack
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -46,7 +46,7 @@ internal class ViewStateViewModel @AssistedInject constructor(
         start()
     }
 
-    internal val backStack: BackStack = savedStateHandle[KEY_BACKSTACK]!!
+    internal val backStack: InternalBackStack = savedStateHandle[KEY_BACKSTACK]!!
 
     val stackSize: StateFlow<Int>
         get() = backStack.stackSize
@@ -57,39 +57,6 @@ internal class ViewStateViewModel @AssistedInject constructor(
 
     fun goBack() {
         backStack.goBack()
-    }
-
-    /**
-     * Restores the state identified by the back operation [uuid], unwinding every intermediate back operation
-     * along the way.
-     *
-     * Starting from the top of the back stack, operations are inspected one by one until the one identified by
-     * [uuid] is reached (the "target" operation, and the holder it belongs to the "target" holder). For each
-     * intermediate operation:
-     * - If the holder it belongs to is part of the target holder's hierarchy (i.e. the target holder can be
-     *   reached by following [ViewStateHolderImpl.parentHolder] references from it), the operation is discarded
-     *   without invoking its back [ViewIntent].
-     * - Otherwise, the operation is left untouched and the walk continues to the next one down the stack.
-     *
-     * Once the target operation is reached, it is removed and its back [ViewIntent] is invoked.
-     *
-     * The whole back stack manipulation happens synchronously; only the final back-intent dispatch may involve
-     * asynchronous work, and it only happens after every other adjustment has completed.
-     */
-    fun goBackTo(uuid: UUID) {
-        val operationIds = backStack.operationIdsFromTopTo(uuid)
-        val targetHolderId = operationIds.lastOrNull()?.let(backStack::holderIdFor) ?: return
-        val targetHolder = holders[targetHolderId] ?: return
-
-        for(operationId in operationIds) {
-            val holder = backStack.holderIdFor(operationId)?.let(holders::get) ?: continue
-
-            if(operationId == uuid) {
-                holder.doGoBack(operationId)
-            } else if(isWithinHierarchy(holder, targetHolder)) {
-                holder.removeOperation(operationId)
-            }
-        }
     }
 
     fun postEffect(effect: ViewEffect, holder: ViewStateHolder) {
@@ -110,24 +77,9 @@ internal class ViewStateViewModel @AssistedInject constructor(
         holders.remove(holder.globalId)
     }
 
-    /**
-     * Returns `true` if [target] is reachable from [holder] by following [ViewStateHolderImpl.parentHolder]
-     * references (including when [holder] *is* [target]), `false` if the root is reached first.
-     */
-    private fun isWithinHierarchy(holder: ViewStateHolderImpl, target: ViewStateHolderImpl): Boolean {
-        var current: ViewStateHolderImpl? = holder
-        while(current != null) {
-            if(current === target) return true
-            current = current.parentHolder
-        }
-        return false
-    }
-
     fun saveState() {
-        println("Saving state....")
         savedStateHandle[KEY_ROOT_HOLDER] = rootHolder
         savedStateHandle[KEY_BACKSTACK] = backStack
-        println("State saved")
     }
 
     @Composable
