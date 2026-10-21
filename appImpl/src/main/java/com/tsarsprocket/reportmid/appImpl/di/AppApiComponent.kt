@@ -1,6 +1,7 @@
 package com.tsarsprocket.reportmid.appImpl.di
 
 import com.tsarsprocket.reportmid.appApi.di.AppApi
+import com.tsarsprocket.reportmid.appBar.impl.di.AppBarCapabilityProvisionModule
 import com.tsarsprocket.reportmid.appImpl.activity.MainActivity
 import com.tsarsprocket.reportmid.baseApi.di.AppScope
 import com.tsarsprocket.reportmid.baseImpl.di.BaseCapabilityProvisionModule
@@ -34,6 +35,7 @@ import dagger.Component
         AggregatorModule::class,
         // Provision modules
         AppProvisionModule::class,
+        AppBarCapabilityProvisionModule::class,
         BaseCapabilityProvisionModule::class,
         CurrentGameDataCapabilityProvisionModule::class,
         DataDragonProvisionModule::class,

@@ -5,7 +5,7 @@ import com.tsarsprocket.reportmid.viewStateImpl.viewmodel.InternalViewStateHolde
 import kotlinx.coroutines.flow.StateFlow
 import java.util.UUID
 
-interface InternalBackStack : BackStack {
+internal interface InternalBackStack : BackStack {
 
     val stackSize: StateFlow<Int>
 

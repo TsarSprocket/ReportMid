@@ -141,6 +141,8 @@ class SummonerRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun requestRemoteSummonerByPuuidAndRegion(puuid: String, region: Region): Summoner = requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(Puuid(puuid), region))
+
     override suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: String, tagLine: String, region: Region): Summoner {
         return with(getRiotAccountByGameName(gameName, tagLine, region)) {
             requestRemoteSummonerByPuuidAndRegion(PuuidAndRegion(puuid, region))

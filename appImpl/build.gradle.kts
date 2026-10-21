@@ -10,6 +10,7 @@ reportMidApp {
 dependencies {
     api(projects.appApi)
 
+    implementation(projects.appBar.impl)
     implementation(projects.baseImpl)
     implementation(projects.currentGameData.impl)
     implementation(projects.dataDragonImpl)

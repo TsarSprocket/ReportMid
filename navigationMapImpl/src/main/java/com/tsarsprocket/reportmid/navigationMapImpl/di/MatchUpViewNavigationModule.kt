@@ -19,7 +19,7 @@ class MatchUpViewNavigationModule {
     fun provideMatchUpViewNavigation(): MatchUpViewNavigation = object : MatchUpViewNavigation {
 
         override fun ViewStateHolder.showSummonerInfo(puuid: String, region: Region) {
-            val summonerViewHolder = getTagged(SUMMONER_VIEW_TAG)
+            val summonerViewHolder = findTaggedParent(SUMMONER_VIEW_TAG)
                 ?: throw IllegalStateException("Holder tagged '$SUMMONER_VIEW_TAG' not found")
             summonerViewHolder.postIntent(
                 intent = SummonerViewIntent(puuid = puuid, region = region),

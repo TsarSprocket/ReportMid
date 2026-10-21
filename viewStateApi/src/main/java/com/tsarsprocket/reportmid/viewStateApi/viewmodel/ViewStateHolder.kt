@@ -29,9 +29,9 @@ interface ViewStateHolder : Parcelable {
     val backStack: BackStack
     val lastOperationUuid: UUID
     fun createSubholder(tag: String = EMPTY_STRING, initialState: ViewState = EmptyScreenViewState): ViewStateHolder
-    fun getTagged(tag: String): ViewStateHolder?
+    fun findTaggedParent(tag: String): ViewStateHolder?
     fun popTopReturnIntent(): ViewIntent
-    fun postIntent(intent: ViewIntent, returnIntent: ViewIntent? = null)
+    fun postIntent(intent: ViewIntent, returnIntent: ViewIntent? = null, routeTo: UUID = globalId)
     fun postEffect(effect: ViewEffect)
     fun <IntentMapper> postReturnIntent(processors: Map<Class<out ViewIntent>, Provider<IntentMapper>>, viewIntentProducer: IntentMapper.() -> ViewIntent)
     fun setParentHolder(parentHolder: ViewStateHolder)

@@ -7,8 +7,10 @@ import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackOperation
 import kotlinx.coroutines.CoroutineScope
 import java.util.UUID
 
-interface InternalViewStateHolder : ViewStateHolder {
+internal interface InternalViewStateHolder : ViewStateHolder {
+    var viewModel: ViewStateViewModel
     fun doGoBack(uuid: UUID = lastOperationUuid)
+    override var parentHolder: InternalViewStateHolder?
 
     /**
      * Looks up the [ViewIntent] of the operation identified by [uuid] on this holder's local stack, without
@@ -18,4 +20,6 @@ interface InternalViewStateHolder : ViewStateHolder {
     fun goBackIntentFor(uuid: UUID): ViewIntent?
     fun initializeCoroutineScope(scope: CoroutineScope)
     fun removeOperation(uuid: UUID): BackOperation?
+    fun propagateParentHolder()
+    fun postIntentToSelf(intent: ViewIntent, returnIntent: ViewIntent?)
 }

@@ -41,10 +41,10 @@ object PreviewViewStateHolder : ViewStateHolder {
     }
     override val lastOperationUuid: UUID = UUID.randomUUID()
     override fun createSubholder(tag: String, initialState: ViewState): ViewStateHolder = this
-    override fun getTagged(tag: String): ViewStateHolder? = null
+    override fun findTaggedParent(tag: String): ViewStateHolder? = null
 
     override fun describeContents() = 0
-    override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?) {}
+    override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?, routeTo: UUID) {}
     override fun popTopReturnIntent(): ViewIntent = QuitViewIntent
     override fun postEffect(effect: ViewEffect) {}
     override fun <IntentMapper> postReturnIntent(processors: Map<Class<out ViewIntent>, Provider<IntentMapper>>, viewIntentProducer: IntentMapper.() -> ViewIntent) {}

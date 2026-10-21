@@ -21,6 +21,7 @@ interface SummonerRepository {
     suspend fun isSummonerKnown(puuidAndRegion: PuuidAndRegion): Boolean
     suspend fun requestRemoteSummonerByGameNameAndTagLine(gameName: String, tagLine: String, region: Region): Summoner
     suspend fun requestRemoteSummonerByPuuidAndRegion(puuidAndRegion: PuuidAndRegion): Summoner
+    suspend fun requestRemoteSummonerByPuuidAndRegion(puuid: String, region: Region): Summoner
 
     suspend fun requestMasteriesByPuuidAndRegion(puuid: Puuid, region: Region): List<ChampionMastery>
 

@@ -39,7 +39,7 @@ import javax.inject.Provider
 
 internal class ViewStateHolderImpl private constructor(
     override val globalId: UUID,
-    initialState: ViewState,
+    private val initialState: ViewState,
     private val operationsStack: MutableList<BackOperation>,
     override val tag: String,
 ) : InternalViewStateHolder {
@@ -62,9 +62,9 @@ internal class ViewStateHolderImpl private constructor(
 
     override lateinit var viewHolderScope: CoroutineScope
 
-    lateinit var viewModel: ViewStateViewModel
-    override var parentHolder: ViewStateHolderImpl? = null
-    override val rootHolder: ViewStateHolderImpl
+    override lateinit var viewModel: ViewStateViewModel
+    override var parentHolder: InternalViewStateHolder? = null
+    override val rootHolder: InternalViewStateHolder
         get() = viewModel.rootHolder
 
     private var intentJob: Job? = null
@@ -77,6 +77,7 @@ internal class ViewStateHolderImpl private constructor(
         get() = mutableViewStates.value
 
     private var _stateCoroutineScope: CoroutineScope? = null
+
     // Use stateCoroutineScope for state-scoped operations
     override val stateCoroutineScope: CoroutineScope
         get() = _stateCoroutineScope ?: SupervisorChildCoroutineScope(viewHolderScope).also { _stateCoroutineScope = it }
@@ -117,7 +118,7 @@ internal class ViewStateHolderImpl private constructor(
         }
     }
 
-    override fun getTagged(tag: String): ViewStateHolder? = generateSequence(this) { it.parentHolder }.firstOrNull() { it.tag == tag }
+    override fun findTaggedParent(tag: String): ViewStateHolder? = generateSequence<InternalViewStateHolder>(this) { it.parentHolder }.firstOrNull() { it.tag == tag }
 
     override fun describeContents() = 0
 
@@ -156,8 +157,16 @@ internal class ViewStateHolderImpl private constructor(
         viewModel.postEffect(effect, this)
     }
 
-    override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?) {
-        logInfo("ViewIntent posted: $intent")
+    override fun postIntent(intent: ViewIntent, returnIntent: ViewIntent?, routeTo: UUID) {
+        logInfo("ViewIntent posted: $intent${if(returnIntent != null) " with return intent: $returnIntent" else ""}${if(routeTo != globalId) " to $routeTo" else ""}")
+        if(routeTo == globalId) {
+            postIntentToSelf(intent, returnIntent)
+        } else {
+            viewModel.findHolder(routeTo)?.postIntentToSelf(intent, returnIntent)
+        }
+    }
+
+    override fun postIntentToSelf(intent: ViewIntent, returnIntent: ViewIntent?) {
         returnIntent?.let { pushReturnIntent(returnIntent) }
         viewHolderScope.launch(immediateUiDispatcher) {
             mutableViewIntents.emit(intent)
@@ -168,7 +177,7 @@ internal class ViewStateHolderImpl private constructor(
         postIntent(processors.findProcessor(popTopReturnIntent()).viewIntentProducer())
     }
 
-    fun propagateParentHolder() {
+    override fun propagateParentHolder() {
         currentState.setParentHolder(this)
     }
 
@@ -187,7 +196,10 @@ internal class ViewStateHolderImpl private constructor(
                 processIntent(intent)
             }
         }
-        currentState.start()
+        currentState.let { theState ->
+            theState.start()
+            initializers.findProcessorOrNull(theState)?.initialize(theState, this)
+        }
     }
 
     override fun stop() {

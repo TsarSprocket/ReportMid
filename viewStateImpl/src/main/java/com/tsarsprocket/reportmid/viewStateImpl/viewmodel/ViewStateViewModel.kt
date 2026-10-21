@@ -37,9 +37,9 @@ internal class ViewStateViewModel @AssistedInject constructor(
 
     val viewEffectActions: SharedFlow<suspend (ViewStateFragment) -> Unit> = mutableViewEffectActions.asSharedFlow()
 
-    private val holders = mutableMapOf<UUID, ViewStateHolderImpl>()
+    private val holders = mutableMapOf<UUID, InternalViewStateHolder>()
 
-    val rootHolder: ViewStateHolderImpl = savedStateHandle.get<ViewStateHolderImpl>(KEY_ROOT_HOLDER)!!.apply {
+    val rootHolder: InternalViewStateHolder = savedStateHandle.get<InternalViewStateHolder>(KEY_ROOT_HOLDER)!!.apply {
         viewModel = this@ViewStateViewModel
         initializeCoroutineScope(viewModelScope)
         propagateParentHolder()
@@ -54,6 +54,8 @@ internal class ViewStateViewModel @AssistedInject constructor(
     init {
         backStack.holderResolver = holders::get
     }
+
+    fun findHolder(uuid: UUID): InternalViewStateHolder? = holders[uuid]
 
     fun goBack() {
         backStack.goBack()
