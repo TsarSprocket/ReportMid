@@ -203,8 +203,14 @@ internal class ViewStateHolderImpl private constructor(
     }
 
     override fun stop() {
+        currentState.stop()
+        _stateCoroutineScope?.run {
+            cancel()
+            _stateCoroutineScope = null
+        }
         viewHolderScope.coroutineContext.cancelChildren()
         intentJob = null
+        operationsStack.map { it.uuid }.forEach(::removeOperation)
         viewModel.unregisterHolder(this)
     }
 
