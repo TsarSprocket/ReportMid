@@ -29,7 +29,18 @@ internal interface InternalBackStack : BackStack {
     fun holderIdFor(uuid: UUID): UUID?
 
     /**
-     * Removes operation assuming the holder did it already on its side
+     * Discards operation assuming the holder did it already on its side
      */
-    fun removeOperation(uuid: UUID)
+    fun discardOperation(uuid: UUID)
+
+    /**
+     * Removes exactly the single operation identified by [uuid] from the back stack, without assuming the
+     * owning holder has already removed its own local reference to it (unlike [discardOperation]).
+     *
+     * The back stack's own integrity is maintained regardless: the surrounding entries are relinked and
+     * [top] is updated if [uuid] was on top. In addition, if the owning holder can still be resolved and
+     * still holds a local reference to the operation, that external reference is cleared as well, so callers
+     * don't need to check for or clear it themselves. A no-op if [uuid] is not currently present on the stack.
+     */
+    fun removeNoCheck(uuid: UUID)
 }

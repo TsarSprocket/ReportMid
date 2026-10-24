@@ -112,13 +112,34 @@ internal class BackStackImpl(
     /**
      * Removes operation assuming the holder did it already on its side
      */
-    override fun removeOperation(uuid: UUID) {
-        allOpRefs.remove(uuid)?.let { opRef ->
-            if(top === uuid) top = opRef.down
-            opRef.down?.let { allOpRefs[it]?.up = opRef.up }
-            opRef.up?.let { allOpRefs[it]?.down = opRef.down }
-            refreshPublishers()
-        }
+    override fun discardOperation(uuid: UUID) {
+        unlink(uuid)?.let { refreshPublishers() }
+    }
+
+    /**
+     * Removes exactly the single operation identified by [uuid] from the back stack, without assuming the
+     * owning holder has already removed its own local reference to it (unlike [discardOperation]).
+     *
+     * The back stack's own integrity is maintained regardless: the surrounding entries are relinked and
+     * [top] is updated if [uuid] was on top. In addition, if the owning holder can still be resolved and
+     * still holds a local reference to the operation, that external reference is cleared as well, so callers
+     * don't need to check for or clear it themselves. A no-op if [uuid] is not currently present on the stack.
+     */
+    override fun removeNoCheck(uuid: UUID) {
+        val opRef = unlink(uuid) ?: return
+        opRef.holderUUID.holderResolver()?.discardOperation(uuid)
+        refreshPublishers()
+    }
+
+    /**
+     * Removes the operation identified by [uuid] from [allOpRefs], relinking its neighbours and updating
+     * [top] as needed to preserve the back stack's doubly-linked integrity. Returns the removed [OpRef], or
+     * `null` if [uuid] was not present.
+     */
+    private fun unlink(uuid: UUID): OpRef? = allOpRefs.remove(uuid)?.also { opRef ->
+        if(top === uuid) top = opRef.down
+        opRef.down?.let { allOpRefs[it]?.up = opRef.up }
+        opRef.up?.let { allOpRefs[it]?.down = opRef.down }
     }
 
     /**

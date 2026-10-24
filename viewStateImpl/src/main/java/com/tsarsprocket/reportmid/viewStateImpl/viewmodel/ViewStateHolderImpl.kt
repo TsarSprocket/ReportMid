@@ -136,8 +136,16 @@ internal class ViewStateHolderImpl private constructor(
         val index = operationsStack.indexOfFirst { it.uuid == uuid }
         if(index < 0) return null
         val operation = operationsStack.removeAt(index)
-        viewModel.backStack.removeOperation(uuid)
+        viewModel.backStack.discardOperation(uuid)
         return operation
+    }
+
+    /**
+     * Removes the operation identified by [uuid] from this holder's own local stack only, without notifying
+     * the global back stack. A no-op if [uuid] is not present on this holder's stack.
+     */
+    override fun discardOperation(uuid: UUID) {
+        operationsStack.removeAll { it.uuid == uuid }
     }
 
     /**

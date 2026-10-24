@@ -20,6 +20,14 @@ internal interface InternalViewStateHolder : ViewStateHolder {
     fun goBackIntentFor(uuid: UUID): ViewIntent?
     fun initializeCoroutineScope(scope: CoroutineScope)
     fun removeOperation(uuid: UUID): BackOperation?
+
+    /**
+     * Removes the operation identified by [uuid] from this holder's own local stack only, without notifying
+     * the global back stack. Used by [com.tsarsprocket.reportmid.viewStateImpl.backstack.InternalBackStack.removeNoCheck]
+     * to clear this holder's external reference to an operation that was already removed on the back stack's
+     * side, so the two don't drift out of sync. A no-op if [uuid] is not present on this holder's stack.
+     */
+    fun discardOperation(uuid: UUID)
     fun propagateParentHolder()
     fun postIntentToSelf(intent: ViewIntent, returnIntent: ViewIntent?)
 }
