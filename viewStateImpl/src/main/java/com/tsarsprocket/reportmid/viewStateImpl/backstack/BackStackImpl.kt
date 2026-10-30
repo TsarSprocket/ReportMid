@@ -77,7 +77,7 @@ internal class BackStackImpl(
             if(operationId == uuid) {
                 holder.doGoBack(operationId)
             } else if(isWithinHierarchy(holder, targetHolder)) {
-                holder.removeOperation(operationId)
+                remove(operationId)
             }
         }
     }
@@ -110,25 +110,18 @@ internal class BackStackImpl(
     }
 
     /**
-     * Removes operation assuming the holder did it already on its side
-     */
-    override fun discardOperation(uuid: UUID) {
-        unlink(uuid)?.let { refreshPublishers() }
-    }
-
-    /**
      * Removes exactly the single operation identified by [uuid] from the back stack, without assuming the
-     * owning holder has already removed its own local reference to it (unlike [discardOperation]).
+     * owning holder has already removed its own local reference to it
      *
      * The back stack's own integrity is maintained regardless: the surrounding entries are relinked and
      * [top] is updated if [uuid] was on top. In addition, if the owning holder can still be resolved and
      * still holds a local reference to the operation, that external reference is cleared as well, so callers
      * don't need to check for or clear it themselves. A no-op if [uuid] is not currently present on the stack.
      */
-    override fun removeNoCheck(uuid: UUID) {
-        val opRef = unlink(uuid) ?: return
-        opRef.holderUUID.holderResolver()?.discardOperation(uuid)
-        refreshPublishers()
+    override fun remove(uuid: UUID): BackStackEntry? {
+        return unlink(uuid)?.holderUUID?.holderResolver()?.extractOperation(uuid).also {
+            refreshPublishers()
+        }
     }
 
     /**
@@ -154,7 +147,7 @@ internal class BackStackImpl(
      */
     private fun computeEntries(): List<BackStackEntry> = idsFromTop().mapNotNull { id ->
         val holder = allOpRefs[id]?.holderUUID?.holderResolver() ?: return@mapNotNull null
-        holder.goBackIntentFor(id)?.let { viewIntent -> BackStackEntryImpl(id, viewIntent) }
+        holder.goBackOperationFor(id)
     }.toList()
 
     private fun refreshPublishers() {
@@ -187,11 +180,6 @@ internal class BackStackImpl(
         val uuid: UUID,
         val opRef: OpRef,
     ) : Parcelable
-
-    private data class BackStackEntryImpl(
-        override val uuid: UUID,
-        override val viewIntent: ViewIntent,
-    ) : BackStackEntry
 
     companion object CREATOR : Parcelable.Creator<BackStackImpl> {
         override fun createFromParcel(parcel: Parcel?): BackStackImpl? = parcel?.let { BackStackImpl(it) }

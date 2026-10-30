@@ -36,6 +36,7 @@ object PreviewViewStateHolder : ViewStateHolder {
         override fun goBack() {}
         override fun goBackTo(uuid: UUID) {}
         override fun push(holder: ViewStateHolder, operationUuid: UUID) {}
+        override fun remove(uuid: UUID): BackStackEntry? = null
         override fun describeContents() = 0
         override fun writeToParcel(dest: Parcel, flags: Int) {}
     }

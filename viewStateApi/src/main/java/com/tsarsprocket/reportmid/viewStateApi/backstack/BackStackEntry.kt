@@ -1,6 +1,8 @@
 package com.tsarsprocket.reportmid.viewStateApi.backstack
 
+import android.os.Parcelable
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
+import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 /**
@@ -9,7 +11,8 @@ import java.util.UUID
  * [uuid] uniquely identifies the operation and can be passed to the back navigation mechanism
  * to unwind the stack down to this entry.
  */
-interface BackStackEntry {
-    val uuid: UUID
-    val viewIntent: ViewIntent
-}
+@Parcelize
+data class BackStackEntry(
+    val uuid: UUID,
+    val viewIntent: ViewIntent,
+) : Parcelable

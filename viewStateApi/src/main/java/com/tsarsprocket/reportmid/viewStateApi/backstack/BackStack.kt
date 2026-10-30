@@ -24,4 +24,5 @@ interface BackStack : Parcelable {
     fun goBack()
     fun goBackTo(uuid: UUID)
     fun push(holder: ViewStateHolder, operationUuid: UUID)
+    fun remove(uuid: UUID): BackStackEntry?
 }

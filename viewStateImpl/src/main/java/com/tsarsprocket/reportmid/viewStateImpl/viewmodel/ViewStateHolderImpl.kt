@@ -14,6 +14,7 @@ import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
 import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
 import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
+import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackEntry
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
 import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
@@ -21,7 +22,6 @@ import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import com.tsarsprocket.reportmid.viewStateApi.visualizer.ViewStateVisualizer
-import com.tsarsprocket.reportmid.viewStateImpl.backstack.BackOperation
 import com.tsarsprocket.reportmid.viewStateImpl.di.component
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -40,7 +40,7 @@ import javax.inject.Provider
 internal class ViewStateHolderImpl private constructor(
     override val globalId: UUID,
     private val initialState: ViewState,
-    private val operationsStack: MutableList<BackOperation>,
+    private val operationsStack: MutableList<BackStackEntry>,
     override val tag: String,
 ) : InternalViewStateHolder {
 
@@ -83,7 +83,7 @@ internal class ViewStateHolderImpl private constructor(
         get() = _stateCoroutineScope ?: SupervisorChildCoroutineScope(viewHolderScope).also { _stateCoroutineScope = it }
 
     override val topReturnIntent: ViewIntent?
-        get() = operationsStack.lastOrNull()?.goBackIntent
+        get() = operationsStack.lastOrNull()?.viewIntent
 
     override val backStack: BackStack
         get() = viewModel.backStack
@@ -106,7 +106,7 @@ internal class ViewStateHolderImpl private constructor(
         globalId = parcel.readParcelable<ParcelUuid>(ViewStateHolderImpl::class.java.classLoader)!!.uuid,
         initialState = parcel.readParcelable(ViewStateHolderImpl::class.java.classLoader)!!,
         operationsStack = parcel.readParcelableArray(ViewStateHolderImpl::class.java.classLoader)
-            ?.filterIsInstance<BackOperation>()
+            ?.filterIsInstance<BackStackEntry>()
             .orEmpty()
             .toMutableList(),
         tag = parcel.readString().orEmpty()
@@ -123,29 +123,27 @@ internal class ViewStateHolderImpl private constructor(
     override fun describeContents() = 0
 
     override fun doGoBack(uuid: UUID) {
-        val operation = removeOperation(uuid) ?: return
-        postIntent(operation.goBackIntent)
-    }
-
-    /**
-     * Removes the operation identified by [uuid] from this holder's local stack as well as from the global
-     * [BackStack][com.tsarsprocket.reportmid.viewStateImpl.backstack.BackStackImpl], without invoking its [BackOperation.goBackIntent].
-     * Returns the removed [BackOperation], or `null` if no operation with [uuid] is present on this holder's stack.
-     */
-    override fun removeOperation(uuid: UUID): BackOperation? {
-        val index = operationsStack.indexOfFirst { it.uuid == uuid }
-        if(index < 0) return null
-        val operation = operationsStack.removeAt(index)
-        viewModel.backStack.discardOperation(uuid)
-        return operation
+        backStack.remove(uuid)?.let { backStackEntry ->
+            postIntent(backStackEntry.viewIntent)
+        }
     }
 
     /**
      * Removes the operation identified by [uuid] from this holder's own local stack only, without notifying
      * the global back stack. A no-op if [uuid] is not present on this holder's stack.
      */
-    override fun discardOperation(uuid: UUID) {
-        operationsStack.removeAll { it.uuid == uuid }
+    override fun extractOperation(uuid: UUID): BackStackEntry? {
+        val iterator = operationsStack.iterator()
+
+        while(iterator.hasNext()) {
+            val entry = iterator.next()
+            if(entry.uuid == uuid) {
+                iterator.remove()
+                return entry
+            }
+        }
+
+        return null
     }
 
     /**
@@ -153,13 +151,13 @@ internal class ViewStateHolderImpl private constructor(
      * removing it. Used by the global back stack to expose [BackStack.entriesFlow] without keeping its own
      * copy of each operation's [ViewIntent].
      */
-    override fun goBackIntentFor(uuid: UUID): ViewIntent? = operationsStack.find { it.uuid == uuid }?.goBackIntent
+    override fun goBackOperationFor(uuid: UUID): BackStackEntry? = operationsStack.find { it.uuid == uuid }
 
     override fun initializeCoroutineScope(scope: CoroutineScope) {
         viewHolderScope = SupervisorChildCoroutineScope(scope)
     }
 
-    override fun popTopReturnIntent(): ViewIntent = removeOperation(operationsStack.last().uuid)!!.goBackIntent
+    override fun popTopReturnIntent(): ViewIntent = backStack.remove(operationsStack.last().uuid)!!.viewIntent
 
     override fun postEffect(effect: ViewEffect) {
         viewModel.postEffect(effect, this)
@@ -218,7 +216,11 @@ internal class ViewStateHolderImpl private constructor(
         }
         viewHolderScope.coroutineContext.cancelChildren()
         intentJob = null
-        operationsStack.map { it.uuid }.forEach(::removeOperation)
+        while(operationsStack.isNotEmpty()) {
+            val size = operationsStack.size
+            backStack.remove(operationsStack.first().uuid)
+            if(size == operationsStack.size) error("Backstack is corrupted")
+        }
         viewModel.unregisterHolder(this)
     }
 
@@ -259,7 +261,7 @@ internal class ViewStateHolderImpl private constructor(
     }
 
     override fun pushReturnIntent(viewIntent: ViewIntent) {
-        val operation = BackOperation(viewIntent)
+        val operation = BackStackEntry(UUID.randomUUID(), viewIntent)
         operationsStack.add(operation)
         viewModel.backStack.push(this, operation.uuid)
     }

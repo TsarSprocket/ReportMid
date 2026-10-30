@@ -306,7 +306,8 @@ override fun ViewStateHolder.proceed(puuid: Puuid, region: Region) =
 override fun ViewStateHolder.findSummoner() =
     postIntent(FindSummonerViewIntent, returnIntent = LandingIntent.QuitViewIntent)
 ```
-The token is pushed onto the holder's `operationsStack` as a `BackOperation`.
+
+The token is pushed onto the holder's `operationsStack` as a `BackStackEntry`.
 
 *Return leg:* the sub-capability calls `postReturnIntent`:
 ```kotlin

@@ -365,7 +365,7 @@ override fun ViewStateHolder.findSummoner() =
     postIntent(FindSummonerViewIntent, returnIntent = LandingIntent.QuitViewIntent)
 ```
 
-The `returnIntent` token is pushed onto the holder's `operationsStack` as a `BackOperation`.
+The `returnIntent` token is pushed onto the holder's `operationsStack` as a `BackStackEntry`.
 
 Call-and-return return leg:
 
