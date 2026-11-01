@@ -10,12 +10,9 @@ import com.tsarsprocket.reportmid.matchHistory.api.viewIntent.MatchHistoryIntent
 import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpIntent
 import com.tsarsprocket.reportmid.profileOverviewApi.viewIntent.ProfileOverviewViewIntent
 import com.tsarsprocket.reportmid.summonerViewApi.viewState.SummonerViewStateReturnPoint
-import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ReturnToSummoner
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.LazyViewIntent
-import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
-import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
@@ -30,14 +27,8 @@ internal class InternalSummonerViewState(
     initialActivePage: ActivePage,
 ) : ViewState, SummonerViewStateReturnPoint {
 
-    @IgnoredOnParcel
     var activePage: ActivePage by mutableStateOf(initialActivePage)
-
-    override fun getRestoreStateIntent(): ViewIntent = ReturnToSummoner(
-        puuid = summonerPuuid,
-        region = summonerRegion,
-        activePage = activePage,
-    )
+    var isInitialized: Boolean = false
 
     override fun setParentHolder(parentHolder: ViewStateHolder) {
         profileOverviewStateHolder.setParentHolder(parentHolder)
@@ -49,16 +40,17 @@ internal class InternalSummonerViewState(
         // TODO: Change to navigation
         profileOverviewStateHolder.apply {
             start()
-            postIntent(ProfileOverviewViewIntent(summonerPuuid, summonerRegion))
+            if(!isInitialized) postIntent(LazyViewIntent(ProfileOverviewViewIntent(summonerPuuid, summonerRegion), true))
         }
         matchUpStateHolder.apply {
             start()
-            postIntent(LazyViewIntent(MatchUpIntent(summonerPuuid, summonerRegion)))
+            if(!isInitialized) postIntent(LazyViewIntent(MatchUpIntent(summonerPuuid, summonerRegion), true))
         }
         matchHistoryStateHolder.apply {
             start()
-            postIntent(LazyViewIntent(MatchHistoryIntent(summonerPuuid, summonerRegion)))
+            if(!isInitialized) postIntent(LazyViewIntent(MatchHistoryIntent(summonerPuuid, summonerRegion), true))
         }
+        isInitialized = true
     }
 
     override fun stop() {
@@ -69,6 +61,9 @@ internal class InternalSummonerViewState(
 
     companion object : Parceler<InternalSummonerViewState> {
 
+        private const val TRUE: Byte = 1
+        private const val FALSE: Byte = 0
+
         @Suppress("DEPRECATION")
         override fun create(parcel: Parcel): InternalSummonerViewState {
             val profileOverviewStateHolder = parcel.readParcelable<ViewStateHolder>(ViewStateHolder::class.java.classLoader)!!
@@ -77,6 +72,7 @@ internal class InternalSummonerViewState(
             val summonerPuuid = parcel.readString()!!
             val summonerRegion = Region.getById(parcel.readInt())
             val activePage = ActivePage.entries[parcel.readInt()]
+            val isInitialized = parcel.readByte() == TRUE
             return InternalSummonerViewState(
                 profileOverviewStateHolder = profileOverviewStateHolder,
                 matchUpStateHolder = matchUpStateHolder,
@@ -94,6 +90,7 @@ internal class InternalSummonerViewState(
             parcel.writeString(summonerPuuid)
             parcel.writeInt(summonerRegion.id)
             parcel.writeInt(activePage.ordinal)
+            parcel.writeByte(if(isInitialized) TRUE else FALSE)
         }
     }
 }

@@ -7,4 +7,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @State
-data class LazyViewState(val intent: ViewIntent) : ViewState
+data class LazyViewState(
+    val intent: ViewIntent,
+    val isMaxSized: Boolean,
+) : ViewState

@@ -12,11 +12,9 @@ import com.tsarsprocket.reportmid.utils.common.logError
 import com.tsarsprocket.reportmid.utils.common.logInfo
 import com.tsarsprocket.reportmid.utils.coroutines.SupervisorChildCoroutineScope
 import com.tsarsprocket.reportmid.utils.dagger.findProcessor
-import com.tsarsprocket.reportmid.utils.dagger.findProcessorOrNull
 import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStack
 import com.tsarsprocket.reportmid.viewStateApi.backstack.BackStackEntry
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
-import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -47,10 +45,6 @@ internal class ViewStateHolderImpl private constructor(
     @Inject
     @Aggregated
     lateinit var reducers: Map<Class<out ViewIntent>, @JvmSuppressWildcards Provider<ViewStateReducer>>
-
-    @Inject
-    @Aggregated
-    lateinit var initializers: Map<Class<out ViewState>, @JvmSuppressWildcards Provider<ViewStateInitializer>>
 
     @Inject
     @Aggregated
@@ -109,7 +103,7 @@ internal class ViewStateHolderImpl private constructor(
             ?.filterIsInstance<BackStackEntry>()
             .orEmpty()
             .toMutableList(),
-        tag = parcel.readString().orEmpty()
+        tag = parcel.readString().orEmpty(),
     )
 
     override fun createSubholder(tag: String, initialState: ViewState): ViewStateHolderImpl {
@@ -204,7 +198,6 @@ internal class ViewStateHolderImpl private constructor(
         }
         currentState.let { theState ->
             theState.start()
-            initializers.findProcessorOrNull(theState)?.initialize(theState, this)
         }
     }
 
@@ -254,7 +247,6 @@ internal class ViewStateHolderImpl private constructor(
             }
             newState.setParentHolder(this@ViewStateHolderImpl)
             newState.start()
-            initializers.findProcessorOrNull(newState)?.initialize(newState, this)
             mutableViewStates.emit(newState)
             logInfo("View state emitted: $newState")
         }

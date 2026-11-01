@@ -1,11 +1,13 @@
 package com.tsarsprocket.reportmid.viewStateImpl.visualizer
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
+import com.tsarsprocket.reportmid.utils.common.runIf
 import com.tsarsprocket.reportmid.viewStateApi.viewState.EmptyScreenViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
@@ -34,7 +36,9 @@ class DefaultVisualizer @Inject constructor() : ViewStateVisualizer {
             stateHolder.postIntent(state.intent)
         }
 
-        Box(modifier)
+        Box(
+            modifier.runIf(state.isMaxSized) { fillMaxSize() }
+        )
     }
 
     @Composable

@@ -10,11 +10,9 @@ import com.tsarsprocket.reportmid.baseApi.di.qualifiers.BindingExport
 import com.tsarsprocket.reportmid.baseApi.viewmodel.ViewModelFactoryCreator
 import com.tsarsprocket.reportmid.viewStateApi.di.EffectHandlerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.ReducerBinding
-import com.tsarsprocket.reportmid.viewStateApi.di.ViewStateInitializerBinding
 import com.tsarsprocket.reportmid.viewStateApi.di.VisualizerBinding
 import com.tsarsprocket.reportmid.viewStateApi.effectHandler.ViewEffectHandler
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
-import com.tsarsprocket.reportmid.viewStateApi.stateInitializer.ViewStateInitializer
 import com.tsarsprocket.reportmid.viewStateApi.viewEffect.ViewEffect
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
@@ -38,13 +36,6 @@ internal class AggregatorModule {
     @Aggregated
     fun provideViewModelFactoryCreators(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewModel>, Provider<ViewModelFactoryCreator>> {
         return bindingExports.filterIsInstance<ViewModelFactoryCreatorBinding>().aggregate { getViewModelFactoryCreators() }
-    }
-
-    @Provides
-    @AppScope
-    @Aggregated
-    fun provideViewStateInitializers(@BindingExport bindingExports: @JvmSuppressWildcards Set<Any>): Map<Class<out ViewState>, Provider<ViewStateInitializer>> {
-        return bindingExports.filterIsInstance<ViewStateInitializerBinding>().aggregate { getViewStateInitializers() }
     }
 
     @Provides

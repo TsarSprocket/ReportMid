@@ -28,7 +28,7 @@ class GeneralPurposeReducer @Inject constructor() : ViewStateReducer {
         return if(intent is GeneralPurposeViewIntent) {
             when(intent) {
                 QuitViewIntent -> stateHolder.quit().run { state }
-                is LazyViewIntent -> LazyViewState(intent.intent)
+                is LazyViewIntent -> LazyViewState(intent.intent, intent.isMaxSized)
                 is ShowStateViewIntent -> intent.state
             }
         } else {

@@ -11,3 +11,5 @@ fun <R> Any.tryLogging(action: () -> R): R? = try {
 } catch(exception: Exception) {
     logError("Exception in lambda $action", exception); null
 }
+
+inline fun <T> T.runIf(condition: Boolean, action: T.() -> T): T = if(condition) action() else this

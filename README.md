@@ -138,7 +138,6 @@ The main concepts are:
 - `ViewStateReducer`
 - `ViewStateVisualizer`
 - `ViewEffectHandler`
-- `ViewStateInitializer`
 - `ViewStateHolder`
 
 ### ViewIntent
@@ -198,18 +197,6 @@ KSP generates Dagger bindings from visualizer annotations.
 Effect handlers process one-off effects.
 
 Handlers can be annotated with `@EffectHandler` and bound automatically by KSP.
-
-### StateInitializer
-
-`ViewStateInitializer` runs setup logic for specific states or holders.
-
-It is useful when opening a state should immediately create child holders, trigger navigation, or start loading nested content.
-
-Example use cases:
-
-- initialize main screen children,
-- initialize summoner view sections,
-- attach nested holders to a parent holder.
 
 ### ViewStateHolder
 

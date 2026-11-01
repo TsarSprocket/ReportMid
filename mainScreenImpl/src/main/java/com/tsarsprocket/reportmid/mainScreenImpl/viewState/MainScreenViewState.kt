@@ -2,6 +2,7 @@ package com.tsarsprocket.reportmid.mainScreenImpl.viewState
 
 import com.tsarsprocket.reportmid.kspApi.annotation.State
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.mainScreenImpl.di.MainScreenCapabilityProvisionModule
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.parcelize.Parcelize
@@ -20,6 +21,10 @@ class MainScreenViewState(
 
     override fun start() {
         summonerStateHolder.start()
+
+        with(
+            MainScreenCapabilityProvisionModule.mainScreenCapabilityComponent.getMainScreenNavigation()
+        ) { summonerStateHolder.startSummonerView(initialSummonerPuuid, initialSummonerRegion) }
     }
 
     override fun stop() {
