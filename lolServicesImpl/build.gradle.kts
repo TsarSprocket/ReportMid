@@ -30,8 +30,8 @@ dependencies {
     implementation(libs.logging.interceptor)
 
     // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 
     // Standard
     implementation(libs.androidx.core.ktx)

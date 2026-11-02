@@ -14,5 +14,5 @@ dependencies {
 
     // Room
     api(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 }

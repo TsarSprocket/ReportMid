@@ -10,13 +10,12 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /**
  * Convention plugin for the single Android application module.
  *
- * Applies the Android application, Kotlin Android, Compose compiler, Kapt, Parcelize and KSP
+ * Applies the Android application, Kotlin Android, Compose compiler, Parcelize and KSP
  * plugins, and wires up the common ReportMid application configuration (SDK versions, compile
  * options, Compose, packaging, test options). Module-specific configuration (application ID,
  * namespace, BuildConfig fields) is supplied through the [ReportMidAppExtension] registered as
@@ -31,18 +30,9 @@ internal class ReportMidApplicationConventionPlugin : Plugin<Project> {
 
         plugins.apply {
             apply(libs.plugins.android.application.get().pluginId)
-            apply(libs.plugins.jetbrains.kotlin.android.get().pluginId)
             apply(libs.plugins.compose.compiler.get().pluginId)
-            apply(libs.plugins.jetbrains.kotlin.kapt.get().pluginId)
             apply(libs.plugins.kotlin.parcelize.get().pluginId)
             apply(libs.plugins.devtools.ksp.get().pluginId)
-        }
-
-        configure<KotlinProjectExtension> {
-            sourceSets.getByName("main").kotlin {
-                srcDir("build/generated/ksp/debug/kotlin")
-                srcDir("build/generated/ksp/release/kotlin")
-            }
         }
 
         extensions.configure<ApplicationExtension> {

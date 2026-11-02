@@ -161,8 +161,8 @@ library(
         // impl(<other>.api) for each capability dependency listed in @Capability
     }
     with(libs) {
-        kapt(dagger.compiler)
-        kapt(dagger.android.processor)
+        ksp(dagger.compiler)
+        ksp(dagger.android.processor)
         // Compose, Retrofit, test deps as needed
     }
 }

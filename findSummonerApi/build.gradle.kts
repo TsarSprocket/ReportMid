@@ -11,6 +11,6 @@ dependencies {
     api(projects.viewStateApi)
     api(projects.lol.api)
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 }

@@ -17,8 +17,8 @@ dependencies {
     implementation(projects.utils)
     implementation(projects.navigationMapApi)
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 
     implementation(projects.kspApi)
     ksp(projects.kspProcessor)

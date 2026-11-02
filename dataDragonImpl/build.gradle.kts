@@ -23,8 +23,8 @@ dependencies {
     implementation(libs.converter.gson)
 
     // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

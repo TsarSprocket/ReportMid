@@ -22,8 +22,8 @@ dependencies {
     implementation(libs.kotlin.stdlib)
 
     // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 
     // Compose
     implementation(platform(libs.compose.bom))

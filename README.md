@@ -56,7 +56,7 @@ Impl modules may depend on:
 - other capability API modules,
 - base APIs,
 - KSP APIs,
-- Dagger/KAPT/KSP infrastructure,
+- Dagger/KSP infrastructure,
 - Retrofit/serialization/Room/etc. as needed.
 
 They should not depend directly on another feature’s implementation module.

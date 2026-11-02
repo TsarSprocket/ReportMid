@@ -19,8 +19,8 @@ dependencies {
     ksp(projects.kspProcessor)
 
     // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 
     // Retrofit
     implementation(libs.retrofit)

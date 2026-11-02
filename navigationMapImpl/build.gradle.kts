@@ -15,6 +15,6 @@ dependencies {
     implementation(projects.kspApi)
     ksp(projects.kspProcessor)
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 }

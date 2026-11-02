@@ -1,7 +1,7 @@
 package com.tsarsprocket.reportmid.buildlogic
 
+import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
-import com.android.build.gradle.LibraryExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -10,13 +10,12 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /**
  * Convention plugin for `*Api`/`*Impl`/Room Android library modules.
  *
- * Applies the Android library, Kotlin Android, Kapt, Parcelize and KSP plugins, and wires up the
+ * Applies the Android library, Kotlin Android, Parcelize and KSP plugins, and wires up the
  * common ReportMid library configuration (SDK versions, compile options, packaging, test
  * options). Module-specific configuration (namespace, BuildConfig fields) is supplied through the
  * [ReportMidLibExtension] registered as `reportMidLib`. Dependencies are declared
@@ -33,17 +32,8 @@ internal class ReportMidLibraryConventionPlugin : Plugin<Project> {
 
         plugins.apply {
             apply(libs.plugins.android.library.get().pluginId)
-            apply(libs.plugins.jetbrains.kotlin.android.get().pluginId)
-            apply(libs.plugins.jetbrains.kotlin.kapt.get().pluginId)
             apply(libs.plugins.kotlin.parcelize.get().pluginId)
             apply(libs.plugins.devtools.ksp.get().pluginId)
-        }
-
-        configure<KotlinProjectExtension> {
-            sourceSets.getByName("main").kotlin {
-                srcDir("build/generated/ksp/debug/kotlin")
-                srcDir("build/generated/ksp/release/kotlin")
-            }
         }
 
         extensions.configure<LibraryExtension> {

@@ -48,11 +48,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Dagger
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.android.processor)
 
     // Room
     api(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     api(libs.androidx.room.ktx)
 }
