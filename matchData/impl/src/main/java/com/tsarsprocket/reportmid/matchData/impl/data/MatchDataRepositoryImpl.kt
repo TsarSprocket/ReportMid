@@ -15,6 +15,7 @@ import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPageKey
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
 import com.tsarsprocket.reportmid.requestManagerApi.data.RequestManager
 import com.tsarsprocket.reportmid.requestManagerApi.data.request
+import com.tsarsprocket.reportmid.utils.common.tryLogging
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,7 @@ internal class MatchDataRepositoryImpl @Inject constructor(
     override suspend fun getMatch(puuid: String, region: Region, position: Int): MatchWithMeta = withContext(dispatcher) {
         val matchIdPageKey = MatchIdPageKey(puuid, region, position / PAGE_SIZE)
         val matchIdsPage = matchIdPageCache.getOrPut(matchIdPageKey) {
-            requestManager.request<MatchIdPage>(matchIdPageRequestFactory.createRequest(matchIdPageKey)).matchIds.takeIf { it.isNotEmpty() }
+            tryLogging { requestManager.request<MatchIdPage>(matchIdPageRequestFactory.createRequest(matchIdPageKey)).matchIds.takeIf { it.isNotEmpty() } }
         } ?: return@withContext MatchWithMeta(match = NoMatch, hasMoreHint = NO_CHANCE)
         val positionOnPage = position % PAGE_SIZE
 
@@ -64,7 +65,7 @@ internal class MatchDataRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMatch(matchId: String, region: Region): Match = matchModelCache.getOrPut(matchId) {
-        matchModelMapper.map(requestManager.request<MatchDto>(matchRequestFactory.createRequest(matchId, region)))
+        tryLogging { matchModelMapper.map(requestManager.request<MatchDto>(matchRequestFactory.createRequest(matchId, region))) }
     } ?: NoMatch
 
     companion object {

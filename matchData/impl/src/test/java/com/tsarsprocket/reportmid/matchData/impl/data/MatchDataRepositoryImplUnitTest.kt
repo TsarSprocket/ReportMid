@@ -2,6 +2,8 @@ package com.tsarsprocket.reportmid.matchData.impl.data
 
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.matchData.api.data.model.ActualMatch
+import com.tsarsprocket.reportmid.matchData.api.data.model.HasMoreHint
+import com.tsarsprocket.reportmid.matchData.api.data.model.NoMatch
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPage
 import com.tsarsprocket.reportmid.matchData.impl.data.model.MatchIdPageKey
 import com.tsarsprocket.reportmid.matchData.impl.retrofit.dto.MatchDto
@@ -11,7 +13,6 @@ import com.tsarsprocket.reportmid.utilsTest.MainTestDispatcherExtension
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
@@ -79,9 +80,10 @@ internal class MatchDataRepositoryImplUnitTest {
     fun `get match data with error having obtaining match ids unsuccessful`() = runTest {
         wheneverBlocking { requestManager.request(any(), eq(MatchIdPage::class)) }.thenThrow(RuntimeException())
 
-        assertThrows<RuntimeException> {
-            matchDataRepository.getMatch(PUUID, testRegion, POSITION)
-        }
+        val receivedMatch = matchDataRepository.getMatch(PUUID, testRegion, POSITION)
+
+        assert(receivedMatch.match === NoMatch)
+        assert(receivedMatch.hasMoreHint == HasMoreHint.NO_CHANCE)
 
         verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && region == testRegion && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory, never()).createRequest(any(), any())
@@ -94,9 +96,10 @@ internal class MatchDataRepositoryImplUnitTest {
         wheneverBlocking { requestManager.request(any(), eq(MatchIdPage::class)) }.thenReturn(matchIdPage)
         wheneverBlocking { requestManager.request(any(), eq(MatchDto::class)) }.thenThrow(RuntimeException())
 
-        assertThrows<RuntimeException> {
-            matchDataRepository.getMatch(PUUID, testRegion, POSITION)
-        }
+        val receivedMatch = matchDataRepository.getMatch(PUUID, testRegion, POSITION)
+
+        assert(receivedMatch.match === NoMatch)
+        assert(receivedMatch.hasMoreHint == HasMoreHint.NO_CHANCE)
 
         verify(matchIdPageRequestFactory).createRequest(argThat { puuid == PUUID && region == testRegion && pageNo == POSITION / PAGE_SIZE })
         verify(matchRequestFactory).createRequest(eq(MATCH_ID), same(testRegion))
