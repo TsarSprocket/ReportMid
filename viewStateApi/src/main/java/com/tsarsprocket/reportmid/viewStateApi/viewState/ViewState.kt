@@ -9,6 +9,6 @@ interface ViewState : Parcelable {
     fun getRestoreStateIntent(): ViewIntent = ShowStateViewIntent(this)
     // These methods should only be implemented by state that has a lifecycle (e.g. incorporates a state holder)
     fun setParentHolder(parentHolder: ViewStateHolder) {}
-    fun start() {}
+    fun start(holder: ViewStateHolder) {}
     fun stop() {}
 }

@@ -19,7 +19,7 @@ class MainScreenViewState(
         summonerStateHolder.setParentHolder(parentHolder)
     }
 
-    override fun start() {
+    override fun start(holder: ViewStateHolder) {
         summonerStateHolder.start()
 
         with(

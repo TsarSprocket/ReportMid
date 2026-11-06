@@ -36,7 +36,7 @@ internal class InternalSummonerViewState(
         matchHistoryStateHolder.setParentHolder(parentHolder)
     }
 
-    override fun start() {
+    override fun start(holder: ViewStateHolder) {
         // TODO: Change to navigation
         profileOverviewStateHolder.apply {
             start()

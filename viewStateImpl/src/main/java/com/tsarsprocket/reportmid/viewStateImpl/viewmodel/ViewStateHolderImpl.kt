@@ -196,9 +196,7 @@ internal class ViewStateHolderImpl private constructor(
                 processIntent(intent)
             }
         }
-        currentState.let { theState ->
-            theState.start()
-        }
+        currentState.start(this)
     }
 
     override fun stop() {
@@ -246,7 +244,7 @@ internal class ViewStateHolderImpl private constructor(
                 _stateCoroutineScope = null
             }
             newState.setParentHolder(this@ViewStateHolderImpl)
-            newState.start()
+            newState.start(this)
             mutableViewStates.emit(newState)
             logInfo("View state emitted: $newState")
         }
