@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Visualizer
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.matchDetails.api.navigation.MatchDetailNavigation
 import com.tsarsprocket.reportmid.matchDetails.api.viewIntent.MatchDetailsIntent
 import com.tsarsprocket.reportmid.matchDetails.impl.view.ErrorNotLoaded
 import com.tsarsprocket.reportmid.matchDetails.impl.view.Loading
@@ -13,7 +14,6 @@ import com.tsarsprocket.reportmid.matchDetails.impl.viewState.AbstractMatchDetai
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.LoadingState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.MatchDetailsState
 import com.tsarsprocket.reportmid.matchDetails.impl.viewState.NotLoadedState
-import com.tsarsprocket.reportmid.summonerViewApi.navigation.OngoingSummonerViewNavigation
 import com.tsarsprocket.reportmid.viewStateApi.navigation.Navigation
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
@@ -23,8 +23,8 @@ import javax.inject.Inject
 @PerApi
 @Visualizer
 internal class MatchDetailsVisualizer @Inject constructor(
-    @param:Navigation(OngoingSummonerViewNavigation.TAG)
-    private val navigation: OngoingSummonerViewNavigation
+    @param:Navigation(MatchDetailNavigation.TAG)
+    private val navigation: MatchDetailNavigation
 ) : ViewStateVisualizer {
 
     @Composable

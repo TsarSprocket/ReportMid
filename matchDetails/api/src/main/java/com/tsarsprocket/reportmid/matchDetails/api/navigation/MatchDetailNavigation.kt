@@ -1,9 +1,9 @@
-package com.tsarsprocket.reportmid.summonerViewApi.navigation
+package com.tsarsprocket.reportmid.matchDetails.api.navigation
 
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 
-interface OngoingSummonerViewNavigation {
+interface MatchDetailNavigation {
 
     fun ViewStateHolder.showProfileForSummoner(summonerPuuid: String, summonerRegion: Region)
 

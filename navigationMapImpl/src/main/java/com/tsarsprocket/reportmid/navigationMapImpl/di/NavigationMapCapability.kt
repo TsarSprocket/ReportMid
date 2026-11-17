@@ -18,7 +18,7 @@ import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
         MatchHistoryNavigationModule::class,
         MatchUpViewNavigationModule::class,
         NavigationMapModule::class,
-        SummonerViewNavigationModule::class,
+        MatchDetailNavigationModule::class,
     ],
 )
 internal interface NavigationMapCapability
