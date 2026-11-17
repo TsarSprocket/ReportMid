@@ -1,17 +1,30 @@
 package com.tsarsprocket.reportmid.mainScreenImpl.view
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.tsarsprocket.reportmid.mainScreenImpl.viewState.MainScreenViewState
 
 @Composable
-fun MainScreenView(modifier: Modifier, content: @Composable (Modifier) -> Unit) {
+fun MainScreenView(modifier: Modifier, state: MainScreenViewState) {
     Scaffold(modifier = modifier) { paddings ->
-        Box(modifier = Modifier.padding(paddings)) {
-            content(Modifier.fillMaxSize())
+        Column(
+            modifier = Modifier.padding(paddings),
+        ) {
+            state.appBarStateHolder.Visualize(
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(),
+            )
+
+            state.summonerStateHolder.Visualize(
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }

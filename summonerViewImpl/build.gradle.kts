@@ -10,11 +10,14 @@ reportMidLib {
 dependencies {
     api(projects.summonerViewApi)
 
+    implementation(projects.appBar.api)
+    implementation(projects.dataDragonApi)
     implementation(projects.matchHistory.api)
     implementation(projects.matchUpView.api)
     implementation(projects.navigationMapApi)
     implementation(projects.profileOverviewApi)
     implementation(projects.resLib)
+    implementation(projects.summonerApi)
     implementation(projects.theme)
 
     implementation(projects.kspApi)

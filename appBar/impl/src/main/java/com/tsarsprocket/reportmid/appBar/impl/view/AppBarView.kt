@@ -1,5 +1,8 @@
 package com.tsarsprocket.reportmid.appBar.impl.view
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,12 +16,12 @@ import com.tsarsprocket.reportmid.appBar.impl.viewState.AppBarState
 import com.tsarsprocket.reportmid.utils.compose.CrescentShape
 import com.tsarsprocket.reportmid.utils.compose.SteppedRow
 
-private const val BORDER_CUT_WIDTH = 2
-private const val ICON_OFFSET = 16
-private const val ICON_RADIUS = 10
+private const val BORDER_CUT_WIDTH = 4
+private const val ICON_OFFSET = 24
+private const val ICON_RADIUS = 16
 private const val ICON_SIZE = 2 * ICON_RADIUS
-private val PADDING_START = 8.dp
-private val PADDING_VERTICAL = 4.dp
+private const val PADDING_START = 8
+private const val PADDING_VERTICAL = 4
 
 @Composable
 internal fun AppBarView(modifier: Modifier = Modifier, state: AppBarState) {
@@ -35,21 +38,25 @@ internal fun AppBarView(modifier: Modifier = Modifier, state: AppBarState) {
         RoundedCornerShape(ICON_RADIUS.dp)
     }
 
-    SteppedRow(
-        modifier = modifier
-            .padding(start = PADDING_START, top = PADDING_VERTICAL, bottom = PADDING_VERTICAL),
-        step = ICON_OFFSET.dp,
-    ) {
-        for(index in urls.indices) {
-            AsyncImage(
-                modifier = Modifier
-                    .size(ICON_SIZE.dp)
-                    .run {
-                        if(index < urls.lastIndex) clip(crescentShape) else clip(fullMoonShape)
-                    },
-                model = urls[index],
-                contentDescription = null,
-            )
+    Row {
+        Spacer(Modifier.height(ICON_RADIUS.dp))
+
+        SteppedRow(
+            modifier = modifier
+                .padding(start = PADDING_START.dp, top = PADDING_VERTICAL.dp, bottom = PADDING_VERTICAL.dp),
+            step = ICON_OFFSET.dp,
+        ) {
+            for(index in urls.indices) {
+                AsyncImage(
+                    modifier = Modifier
+                        .size(ICON_SIZE.dp)
+                        .run {
+                            if(index < urls.lastIndex) clip(crescentShape) else clip(fullMoonShape)
+                        },
+                    model = urls[index].iconUrl,
+                    contentDescription = null,
+                )
+            }
         }
     }
 }

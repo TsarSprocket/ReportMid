@@ -10,7 +10,9 @@ import com.tsarsprocket.reportmid.matchHistory.api.viewIntent.MatchHistoryIntent
 import com.tsarsprocket.reportmid.matchUpView.api.viewIntent.MatchUpIntent
 import com.tsarsprocket.reportmid.profileOverviewApi.viewIntent.ProfileOverviewViewIntent
 import com.tsarsprocket.reportmid.summonerViewApi.viewState.SummonerViewStateReturnPoint
+import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowSummonerState
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.LazyViewIntent
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 import kotlinx.parcelize.Parceler
@@ -25,6 +27,7 @@ internal class InternalSummonerViewState(
     val summonerPuuid: String,
     val summonerRegion: Region,
     initialActivePage: ActivePage,
+    val iconUrl: String,
 ) : ViewState, SummonerViewStateReturnPoint {
 
     var activePage: ActivePage by mutableStateOf(initialActivePage)
@@ -35,6 +38,8 @@ internal class InternalSummonerViewState(
         matchUpStateHolder.setParentHolder(parentHolder)
         matchHistoryStateHolder.setParentHolder(parentHolder)
     }
+
+    override fun getRestoreStateIntent(): ViewIntent = ShowSummonerState(this, iconUrl)
 
     override fun start(holder: ViewStateHolder) {
         // TODO: Change to navigation
@@ -72,7 +77,7 @@ internal class InternalSummonerViewState(
             val summonerPuuid = parcel.readString()!!
             val summonerRegion = Region.getById(parcel.readInt())
             val activePage = ActivePage.entries[parcel.readInt()]
-            val isInitialized = parcel.readByte() == TRUE
+            val iconUrl = parcel.readString()!!
             return InternalSummonerViewState(
                 profileOverviewStateHolder = profileOverviewStateHolder,
                 matchUpStateHolder = matchUpStateHolder,
@@ -80,6 +85,7 @@ internal class InternalSummonerViewState(
                 summonerPuuid = summonerPuuid,
                 summonerRegion = summonerRegion,
                 initialActivePage = activePage,
+                iconUrl = iconUrl,
             )
         }
 
@@ -91,6 +97,7 @@ internal class InternalSummonerViewState(
             parcel.writeInt(summonerRegion.id)
             parcel.writeInt(activePage.ordinal)
             parcel.writeByte(if(isInitialized) TRUE else FALSE)
+            parcel.writeString(iconUrl)
         }
     }
 }

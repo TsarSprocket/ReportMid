@@ -18,11 +18,9 @@ import kotlinx.parcelize.parcelableCreator
 
 @Parcelize
 @State
-internal class AppBarState(initialItems: ImmutableList<NavigationItem>) : ViewState {
+internal class AppBarState(initialItems: ImmutableList<NavigationItem> = persistentListOf()) : ViewState {
 
     val items = mutableStateOf<ImmutableList<NavigationItem>>(initialItems)
-
-    constructor() : this(persistentListOf())
 
     override fun start(holder: ViewStateHolder) {
         holder.stateCoroutineScope.launch {
@@ -37,7 +35,7 @@ internal class AppBarState(initialItems: ImmutableList<NavigationItem>) : ViewSt
             (it.viewIntent as? Iconized)?.let { iconizedIntent ->
                 NavigationItem(it.uuid, iconizedIntent.iconUrl)
             }
-        }
+        }.reversed()
     }
 
     companion object : Parceler<AppBarState> {

@@ -22,8 +22,9 @@ class MainScreenVisualizer @Inject constructor() : ViewStateVisualizer {
 
     @Composable
     private fun MainScreen(modifier: Modifier, state: MainScreenViewState) {
-        MainScreenView(modifier) { innerModifier ->
-            state.summonerStateHolder.Visualize(innerModifier)
-        }
+        MainScreenView(
+            modifier = modifier,
+            state = state,
+        )
     }
 }

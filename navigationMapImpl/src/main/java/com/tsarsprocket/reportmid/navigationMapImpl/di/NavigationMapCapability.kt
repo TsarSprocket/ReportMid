@@ -1,5 +1,6 @@
 package com.tsarsprocket.reportmid.navigationMapImpl.di
 
+import com.tsarsprocket.reportmid.appBar.api.di.AppBarApi
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
 import com.tsarsprocket.reportmid.kspApi.annotation.Capability
 import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
@@ -7,6 +8,9 @@ import com.tsarsprocket.reportmid.navigationMapApi.di.NavigationMapApi
 @PerApi
 @Capability(
     api = NavigationMapApi::class,
+    dependencies = [
+        AppBarApi::class,
+    ],
     modules = [
         FindSummonerNavigationModule::class,
         LandingNavigationModule::class,

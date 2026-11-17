@@ -10,6 +10,7 @@ dependencies {
     api(projects.navigationMapApi)
 
     implementation(projects.baseApi)
+    implementation(projects.appBar.api)
     implementation(projects.profileOverviewApi)
 
     implementation(projects.kspApi)

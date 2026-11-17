@@ -10,16 +10,19 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @State
 class MainScreenViewState(
+    val appBarStateHolder: ViewStateHolder,
     val summonerStateHolder: ViewStateHolder,
     val initialSummonerPuuid: String,
     val initialSummonerRegion: Region,
 ) : ViewState {
 
     override fun setParentHolder(parentHolder: ViewStateHolder) {
+        appBarStateHolder.setParentHolder(parentHolder)
         summonerStateHolder.setParentHolder(parentHolder)
     }
 
     override fun start(holder: ViewStateHolder) {
+        appBarStateHolder.start()
         summonerStateHolder.start()
 
         with(
@@ -29,5 +32,6 @@ class MainScreenViewState(
 
     override fun stop() {
         summonerStateHolder.stop()
+        appBarStateHolder.stop()
     }
 }

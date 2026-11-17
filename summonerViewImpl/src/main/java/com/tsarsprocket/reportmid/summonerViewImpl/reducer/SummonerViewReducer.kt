@@ -1,20 +1,24 @@
 package com.tsarsprocket.reportmid.summonerViewImpl.reducer
 
 import com.tsarsprocket.reportmid.baseApi.di.PerApi
+import com.tsarsprocket.reportmid.dataDragonApi.data.DataDragon
 import com.tsarsprocket.reportmid.kspApi.annotation.Reducer
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.summonerApi.data.SummonerRepository
 import com.tsarsprocket.reportmid.summonerViewApi.viewIntent.SummonerViewIntent
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.InternalSummonerViewIntent
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ReturnToSummoner
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowMatchHistory
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowMatchUp
 import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowProfile
+import com.tsarsprocket.reportmid.summonerViewImpl.viewIntent.ShowSummonerState
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_HISTORY
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.MATCH_UP
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.ActivePage.PROFILE
 import com.tsarsprocket.reportmid.summonerViewImpl.viewState.InternalSummonerViewState
 import com.tsarsprocket.reportmid.viewStateApi.reducer.ViewStateReducer
+import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ShowStateViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewIntent.ViewIntent
 import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
@@ -26,12 +30,18 @@ import javax.inject.Inject
         SummonerViewIntent::class,
     ],
 )
-class SummonerViewReducer @Inject constructor() : ViewStateReducer {
+class SummonerViewReducer @Inject constructor(
+    dataDragon: DataDragon,
+    private val summonerRepository: SummonerRepository,
+) : ViewStateReducer {
+
+    private val dragonTail by lazy { dataDragon.tail }
 
     override suspend fun reduce(intent: ViewIntent, state: ViewState, stateHolder: ViewStateHolder): ViewState {
         return when(intent) {
             is SummonerViewIntent -> stateHolder.initializeSummonerView(puuid = intent.puuid, region = intent.region, activePage = PROFILE)
             is InternalSummonerViewIntent -> when(intent) {
+                is ShowSummonerState -> stateHolder.postIntent(ShowStateViewIntent(intent.summonerSate)).let { state }
                 is ReturnToSummoner -> stateHolder.initializeSummonerView(puuid = intent.puuid, region = intent.region, activePage = intent.activePage)
                 ShowProfile -> state.apply { (this as? InternalSummonerViewState)?.activePage = PROFILE }
                 ShowMatchUp -> state.apply { (this as? InternalSummonerViewState)?.activePage = MATCH_UP }
@@ -41,12 +51,17 @@ class SummonerViewReducer @Inject constructor() : ViewStateReducer {
         }
     }
 
-    private fun ViewStateHolder.initializeSummonerView(puuid: String, region: Region, activePage: ActivePage): ViewState = InternalSummonerViewState(
-        profileOverviewStateHolder = createSubholder(),
-        matchUpStateHolder = createSubholder(),
-        matchHistoryStateHolder = createSubholder(),
-        summonerPuuid = puuid,
-        summonerRegion = region,
-        initialActivePage = activePage,
-    )
+    private suspend fun ViewStateHolder.initializeSummonerView(puuid: String, region: Region, activePage: ActivePage): ViewState {
+        val iconUrl = dragonTail.getSummonerImageUrl(summonerRepository.requestRemoteSummonerByPuuidAndRegion(puuid, region).iconId)
+
+        return InternalSummonerViewState(
+            profileOverviewStateHolder = createSubholder(),
+            matchUpStateHolder = createSubholder(),
+            matchHistoryStateHolder = createSubholder(),
+            summonerPuuid = puuid,
+            summonerRegion = region,
+            initialActivePage = activePage,
+            iconUrl = iconUrl
+        )
+    }
 }

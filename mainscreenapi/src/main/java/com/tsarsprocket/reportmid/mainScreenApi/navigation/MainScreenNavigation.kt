@@ -1,9 +1,12 @@
 package com.tsarsprocket.reportmid.mainScreenApi.navigation
 
 import com.tsarsprocket.reportmid.lol.api.domain.model.Region
+import com.tsarsprocket.reportmid.viewStateApi.viewState.ViewState
 import com.tsarsprocket.reportmid.viewStateApi.viewmodel.ViewStateHolder
 
 interface MainScreenNavigation {
+
+    val appBarInitialState: ViewState
 
     fun ViewStateHolder.startSummonerView(puuid: String, region: Region)
 
